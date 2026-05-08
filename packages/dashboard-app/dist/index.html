@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>autocomplete-v5 Settings</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #1e1e2e;
+      color: #cdd6f4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    h1 { font-size: 1.6rem; font-weight: 600; margin-bottom: 0.5rem; }
+    p { color: #a6adc8; font-size: 0.9rem; margin-bottom: 2rem; }
+    .card {
+      background: #313244;
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      width: 100%;
+      max-width: 480px;
+      margin-bottom: 1rem;
+    }
+    .card h2 { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: #89b4fa; }
+    .row { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid #45475a; }
+    .row:last-child { border-bottom: none; }
+    .row label { font-size: 0.85rem; color: #cdd6f4; }
+    .row code { font-size: 0.8rem; color: #a6e3a1; background: #181825; padding: 2px 8px; border-radius: 4px; }
+    .tip { background: #1e1e2e; border-left: 3px solid #f38ba8; padding: 0.75rem 1rem; border-radius: 0 8px 8px 0; font-size: 0.82rem; color: #f38ba8; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>autocomplete-v5</h1>
+  <p>Shell autocomplete for your terminal</p>
+
+  <div class="card">
+    <h2>Binaries</h2>
+    <div class="row"><label>CLI</label><code>acv5</code></div>
+    <div class="row"><label>PTY wrapper</label><code>acv5term</code></div>
+    <div class="row"><label>Desktop app</label><code>autocomplete-v5</code></div>
+  </div>
+
+  <div class="card">
+    <h2>Quick Commands</h2>
+    <div class="row"><label>Shell setup</label><code>acv5 setup</code></div>
+    <div class="row"><label>Check doctor</label><code>acv5 doctor</code></div>
+    <div class="row"><label>Debug mode</label><code>acv5 debug</code></div>
+  </div>
+
+  <div class="card">
+    <div class="tip">
+      For autocomplete to show, grant <strong>Accessibility</strong> permission in<br>
+      System Settings → Privacy &amp; Security → Accessibility → autocomplete-v5
+    </div>
+  </div>
+</body>
+</html>

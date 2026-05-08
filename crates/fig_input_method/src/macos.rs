@@ -1,3 +1,8 @@
+use core_foundation::base::{
+    OSStatus,
+    TCFType,
+};
+use core_foundation::url::CFURL;
 use fig_log::{
     LogArgs,
     initialize_logging,
@@ -22,6 +27,22 @@ use crate::imk;
 
 const CONNECTION_NAME: &str = env!("InputMethodConnectionName");
 
+#[link(name = "Carbon", kind = "framework")]
+unsafe extern "C" {
+    fn TISRegisterInputSource(location: *const core_foundation::url::__CFURL) -> OSStatus;
+}
+
+fn register_self_with_tis() {
+    // Get the bundle path and register with TIS so macOS routes IMK connections to us
+    let bundle = objc2_foundation::NSBundle::mainBundle();
+    let bundle_path = unsafe { bundle.bundlePath() };
+    let path_str = bundle_path.to_string();
+    if let Some(url) = CFURL::from_path(&path_str, true) {
+        let result = unsafe { TISRegisterInputSource(url.as_concrete_TypeRef()) };
+        info!("TISRegisterInputSource result: {result}");
+    }
+}
+
 #[tokio::main]
 pub async fn main() {
     let _log_guard = initialize_logging(LogArgs {
@@ -45,6 +66,8 @@ pub async fn main() {
 
         let bundle = NSBundle::mainBundle();
         let identifier = unsafe { bundle.bundleIdentifier() };
+
+        register_self_with_tis();
 
         info!("Attempting connection...");
         imk::connect_imkserver(k_connection_name, identifier.as_deref());

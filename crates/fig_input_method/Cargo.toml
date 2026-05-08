@@ -11,9 +11,9 @@ license.workspace = true
 workspace = true
 
 [package.metadata.bundle]
-bundle_name = "CodeWhispererInputMethod"
-bundle_identifier = "com.amazon.inputmethod.codewhisperer"
-input_source_identifier = "com.amazon.inputmethod.codewhisperer"
+bundle_name = "AutocompleteInputMethod"
+bundle_identifier = "dev.emmmm.autocomplete-v5.inputmethod"
+input_source_identifier = "dev.emmmm.autocomplete-v5.inputmethod"
 invisible_in_system_ui = true
 input_method_type = "palette"
 
@@ -24,6 +24,7 @@ toml.workspace = true
 apple-bundle = "0.1.4"
 
 [target.'cfg(target_os = "macos")'.dependencies]
+core-foundation = { workspace = true }
 fig_ipc.workspace = true
 fig_log.workspace = true
 fig_proto.workspace = true

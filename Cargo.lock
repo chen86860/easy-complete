@@ -1889,6 +1889,7 @@ name = "fig_input_method"
 version = "1.19.7"
 dependencies = [
  "apple-bundle",
+ "core-foundation 0.10.1",
  "fig_ipc",
  "fig_log",
  "fig_proto",

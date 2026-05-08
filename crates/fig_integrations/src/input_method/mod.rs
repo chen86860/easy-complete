@@ -263,7 +263,7 @@ impl std::default::Default for InputMethod {
         let fig_app_path = fig_util::app_bundle_path();
         let bundle_path = fig_app_path
             .join(BUNDLE_CONTENTS_HELPERS_PATH)
-            .join("CodeWhispererInputMethod.app");
+            .join("AutocompleteInputMethod.app");
         Self { bundle_path }
     }
 }
@@ -334,40 +334,18 @@ unsafe extern "C" {}
 impl InputMethod {
     pub fn input_source(&self) -> Result<TISInputSource, InputMethodError> {
         let bundle_id_string: String = self.bundle_id()?;
+
+        let sources =
+            InputMethod::list_input_sources_for_bundle_id(&bundle_id_string).ok_or(InputMethodError::CouldNotListInputSources)?;
+
         let bundle_identifier = CFString::from(bundle_id_string.as_str());
-
-        unsafe {
-            let bundle_id_key: CFString = CFString::wrap_under_get_rule(kTISPropertyBundleID);
-            let category_key: CFString = CFString::wrap_under_get_rule(kTISPropertyInputSourceCategory);
-            let input_source_key: CFString = CFString::wrap_under_get_rule(kTISPropertyInputSourceID);
-
-            let properties = CFDictionary::from_CFType_pairs(&[
-                (bundle_id_key.as_CFType(), bundle_identifier.as_CFType()),
-                (
-                    category_key.as_CFType(),
-                    CFString::from_static_string("TISCategoryPaletteInputSource").as_CFType(),
-                ),
-                (input_source_key.as_CFType(), bundle_identifier.as_CFType()),
-            ]);
-
-            let sources = InputMethod::list_all_input_sources(Some(&properties), true);
-
-            match sources {
-                None => Err(InputMethodError::CouldNotListInputSources),
-                Some(sources) => {
-                    let len = sources.len();
-                    match len {
-                        0 => Err(InputMethodError::NoInputSourcesForBundleIdentifier {
-                            identifier: bundle_identifier.to_string().into(),
-                        }),
-                        _ => sources.into_iter().next().ok_or_else(|| {
-                            InputMethodError::NoInputSourcesForBundleIdentifier {
-                                identifier: bundle_identifier.to_string().into(),
-                            }
-                        }),
-                    }
-                },
-            }
+        match sources.len() {
+            0 => Err(InputMethodError::NoInputSourcesForBundleIdentifier {
+                identifier: bundle_identifier.to_string().into(),
+            }),
+            _ => sources.into_iter().next().ok_or_else(|| InputMethodError::NoInputSourcesForBundleIdentifier {
+                identifier: bundle_identifier.to_string().into(),
+            }),
         }
     }
 
@@ -512,66 +490,89 @@ impl Integration for InputMethod {
         {
             let destination = self.target_bundle_path()?;
 
-            // Attempt to emove existing symlink
-            fs::remove_file(&destination).await.ok();
+            // Only recreate the symlink if it's missing or points to the wrong place.
+            // Removing an existing correct symlink breaks the TIS registration.
+            let needs_symlink = match fs::read_link(&destination).await {
+                Ok(existing) => existing != self.bundle_path,
+                Err(_) => true,
+            };
 
-            // Create the parent directory if it doesn't exist
-            if let Some(parent) = destination.parent() {
-                fs::create_dir_all(parent)
+            if needs_symlink {
+                fs::remove_file(&destination).await.ok();
+
+                if let Some(parent) = destination.parent() {
+                    fs::create_dir_all(parent)
+                        .await
+                        .with_context(|_| format!("Could not create directory {}", parent.display()))?;
+                }
+
+                fs::symlink(&self.bundle_path, &destination)
                     .await
-                    .with_context(|_| format!("Could not create directory {}", parent.display()))?;
+                    .with_context(|_| format!("Could not create symlink {}", destination.display()))?;
+
+                // Register with TIS after creating a new symlink
+                InputMethod::register(&destination)?;
             }
 
-            // Create new symlink
-            fs::symlink(&self.bundle_path, &destination)
-                .await
-                .with_context(|_| format!("Could not create symlink {}", destination.display()))?;
-
-            // Register input source
-            InputMethod::register(&destination)?;
-
-            debug!("Launch Input Method...");
-            if let Some(dest) = destination.to_str() {
-                Command::new("open").arg(dest);
-            }
-
-            run_on_main(|| {
-                let source = self.input_source()?;
-                source.enable()?;
-                Ok::<(), InputMethodError>(())
-            })?;
-
-            // The 'enabled' property of an input source is never updated for the process that
-            // invokes `TISEnableInputSource` Unclear why this is, but we handle it by
-            // calling out to the q_cli to finish the second half of the installation.
-        }
-
-        // todo: pull this into a function in fig_directories
-        let q_cli_path = fig_util::app_bundle_path()
-            .join("Contents")
-            .join("MacOS")
-            .join(CLI_BINARY_NAME);
-
-        loop {
-            let out = tokio::process::Command::new(&q_cli_path)
-                .args(["_", "attempt-to-finish-input-method-installation"])
-                .arg(&self.bundle_path)
-                .output()
-                .await
-                .with_context(|err| format!("Could not run {CLI_BINARY_NAME} cli: {err}"))?;
-
-            if out.status.code() == Some(0) {
-                info!("Input method installed successfully!");
-                break;
+            // Launch the IME if not already running — the IME self-registers with TIS on startup.
+            let bundle_id = self.bundle_id()?;
+            let ime_running = !applications::running_applications_matching(&bundle_id).is_empty();
+            if !ime_running {
+                debug!("Launching Input Method...");
+                if let Some(dest) = destination.to_str() {
+                    Command::new("open").arg(dest).spawn().ok();
+                }
+                // Wait for the IME to start and self-register with TIS
+                std::thread::sleep(std::time::Duration::from_secs(3));
             } else {
-                let err = String::from_utf8_lossy(&out.stdout);
-                match serde_json::from_str::<InputMethodError>(&err).ok() {
-                    Some(error) => debug!("{error}"),
-                    None => debug!("Could not parse output as known error: {err}"),
+                // IME already running and self-registered; give TIS a moment if symlink changed
+                if needs_symlink {
+                    std::thread::sleep(std::time::Duration::from_secs(2));
                 }
             }
 
-            tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+            // Wait up to 10s for TIS to recognise the registered source.
+            let mut tis_ready = false;
+            for attempt in 0..10 {
+                let found = run_on_main(|| self.input_source().map(|_| ()));
+                match found {
+                    Ok(()) => {
+                        tis_ready = true;
+                        break;
+                    },
+                    Err(e) => {
+                        debug!("Waiting for TIS, attempt {}: {}", attempt + 1, e);
+                        std::thread::sleep(std::time::Duration::from_secs(1));
+                    },
+                }
+            }
+
+            if tis_ready {
+                // enable() triggers the macOS "Allow" dialog — call it exactly once.
+                let _ = run_on_main(|| -> Result<(), InputMethodError> {
+                    let source = self.input_source()?;
+                    if !source.is_enabled().unwrap_or(false) {
+                        source.enable()?;
+                    }
+                    Ok(())
+                });
+                // select() never triggers a dialog; retry a few times for TIS to settle.
+                for attempt in 0..5 {
+                    let result = run_on_main(|| self.input_source()?.select());
+                    match result {
+                        Ok(()) => {
+                            info!("Input method selected on attempt {}", attempt + 1);
+                            break;
+                        },
+                        Err(e) => {
+                            debug!("select() attempt {}: {e}", attempt + 1);
+                            std::thread::sleep(std::time::Duration::from_millis(500));
+                        },
+                    }
+                }
+            } else {
+                info!("TIS did not recognise the input source yet; IME will register on next launch");
+            }
         }
 
         // Store PIDs of all relevant terminal emulators (input method will not work until these
@@ -744,7 +745,7 @@ mod tests {
 
     const TEST_INPUT_METHOD_BUNDLE_ID: &str = "com.amazon.inputmethod.codewhisperer";
     const TEST_INPUT_METHOD_BUNDLE_URL: &str =
-        "/Applications/Amazon Q.app/Contents/Helpers/CodeWhispererInputMethod.app";
+        "/Applications/autocomplete-v5.app/Contents/Helpers/AutocompleteInputMethod.app";
 
     fn input_method() -> TISInputSource {
         let key: CFString = unsafe { CFString::wrap_under_create_rule(kTISPropertyBundleID) };

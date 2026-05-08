@@ -51,3 +51,4 @@ book/
 run-build.sh
 # Amazon Q CLI files
 .amazonq/
+*.app/

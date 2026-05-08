@@ -477,7 +477,6 @@ fn launch_shell(command: Option<&[String]>) -> Result<()> {
 
 fn figterm_main(command: Option<&[String]>) -> Result<()> {
     fig_settings::settings::init_global().ok();
-    fig_telemetry::init_global_telemetry_emitter();
 
     let context = Context::new();
 
@@ -955,7 +954,6 @@ fn figterm_main(command: Option<&[String]>) -> Result<()> {
         };
 
         let _ = stop_ipc_tx.send(());
-        fig_telemetry::finish_telemetry().await;
 
         result
     });

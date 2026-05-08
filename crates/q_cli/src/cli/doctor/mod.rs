@@ -26,7 +26,6 @@ use async_trait::async_trait;
 use checks::{
     BashVersionCheck,
     FishVersionCheck,
-    MidwayCheck,
     SshdConfigCheck,
 };
 use clap::Args;
@@ -1852,12 +1851,7 @@ impl DoctorCheck for LoginStatusCheck {
     }
 
     async fn check(&self, _: &()) -> Result<(), DoctorError> {
-        if !fig_util::system_info::in_cloudshell() && !fig_auth::is_logged_in().await {
-            return Err(doctor_error!(
-                "Not authenticated. Please run {}",
-                format!("{CLI_BINARY_NAME} login").bold()
-            ));
-        }
+        // Auth check removed (fig_auth deleted)
         Ok(())
     }
 }
@@ -1987,10 +1981,7 @@ where
             continue;
         }
 
-        if result.is_err() {
-            let analytics_event_name = check.analytics_event_name();
-            fig_telemetry::send_doctor_check_failed(analytics_event_name).await;
-        }
+        // Telemetry removed
 
         if let Err(DoctorError::Error { reason, fix, error, .. }) = result {
             if let Some(fixfn) = fix {
@@ -2189,7 +2180,6 @@ pub async fn doctor_cli(all: bool, strict: bool) -> Result<ExitCode> {
                 &PluginDevModeCheck,
                 &DashboardHostCheck,
                 &AutocompleteHostCheck,
-                &MidwayCheck,
                 &InlineCheck,
             ],
             config,

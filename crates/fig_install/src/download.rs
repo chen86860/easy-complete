@@ -19,7 +19,7 @@ pub(crate) async fn download_file(
     size: u64,
     tx: Option<Sender<UpdateStatus>>,
 ) -> Result<String, Error> {
-    let client = fig_request::client().expect("fig_request client must be instantiated on first request");
+    let client = reqwest::Client::new();
     let mut response = client.get(src).timeout(Duration::from_secs(30 * 60)).send().await?;
 
     let mut bytes_downloaded = 0;

@@ -5,10 +5,6 @@ use fig_os_shim::{
 };
 use fig_settings::keys::UPDATE_AVAILABLE_KEY;
 use fig_settings::settings::get_bool_or;
-use fig_telemetry::{
-    InstallMethod,
-    get_install_method,
-};
 use fig_util::CLI_BINARY_NAME;
 use fig_util::manifest::{
     Variant,
@@ -47,7 +43,7 @@ pub fn check_for_update(context: &Context) {
     let not_linux = context.platform().os() != Os::Linux;
     let in_cloudshell = context.env().in_cloudshell();
     let autoupdate_disabled = !get_bool_or("app.disableAutoupdates", true);
-    let installed_via_toolbox = get_install_method() == InstallMethod::Toolbox;
+    let installed_via_toolbox = false; // fig_telemetry removed
 
     // If any of the previous conditions, do not show the update notification
     if not_linux | in_cloudshell | autoupdate_disabled | installed_via_toolbox {

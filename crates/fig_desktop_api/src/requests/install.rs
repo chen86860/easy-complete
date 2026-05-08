@@ -2,6 +2,7 @@ use std::fmt::Display;
 
 use anstream::adapter::strip_str;
 use fig_integrations::Integration;
+#[cfg(target_os = "linux")]
 use fig_integrations::desktop_entry::{
     AutostartIntegration,
     DesktopEntryIntegration,
@@ -218,50 +219,64 @@ where
             }
         },
         (InstallComponent::DesktopEntry, action) => {
-            if !ctx.env().in_appimage() {
-                integration_result(Err(
-                    "Desktop entry installation is only supported for AppImage bundles.",
-                ))
-            } else {
-                let exec_path = ctx.env().get("APPIMAGE").map_err(super::Error::from_std)?;
-                let entry_path = ctx
-                    .env()
-                    .current_dir()
-                    .map_err(super::Error::from_std)?
-                    .join("share/applications/q-desktop.desktop");
-                let icon_path = ctx
-                    .env()
-                    .current_dir()
-                    .map_err(super::Error::from_std)?
-                    .join("share/icons/hicolor/128x128/apps/q-desktop.png");
-                let desktop_integration =
-                    DesktopEntryIntegration::new(ctx, Some(entry_path), Some(icon_path), Some(exec_path.into()));
-                match action {
-                    InstallAction::Install => {
-                        ctx.state()
-                            .set_value("appimage.manageDesktopEntry", true)
-                            .map_err(|err| error!(?err, "unable to set `appimage.manageDesktopEntry`"))
-                            .ok();
-                        integration_result(desktop_integration.install().await)
-                    },
-                    InstallAction::Uninstall => {
-                        ctx.state()
-                            .set_value("appimage.manageDesktopEntry", false)
-                            .map_err(|err| error!(?err, "unable to set `appimage.manageDesktopEntry`"))
-                            .ok();
-                        integration_result(desktop_integration.uninstall().await)
-                    },
-                    InstallAction::Status => integration_status(desktop_integration).await,
+            cfg_if::cfg_if! {
+                if #[cfg(target_os = "linux")] {
+                    if !ctx.env().in_appimage() {
+                        integration_result(Err(
+                            "Desktop entry installation is only supported for AppImage bundles.",
+                        ))
+                    } else {
+                        let exec_path = ctx.env().get("APPIMAGE").map_err(super::Error::from_std)?;
+                        let entry_path = ctx
+                            .env()
+                            .current_dir()
+                            .map_err(super::Error::from_std)?
+                            .join("share/applications/q-desktop.desktop");
+                        let icon_path = ctx
+                            .env()
+                            .current_dir()
+                            .map_err(super::Error::from_std)?
+                            .join("share/icons/hicolor/128x128/apps/q-desktop.png");
+                        let desktop_integration =
+                            DesktopEntryIntegration::new(ctx, Some(entry_path), Some(icon_path), Some(exec_path.into()));
+                        match action {
+                            InstallAction::Install => {
+                                ctx.state()
+                                    .set_value("appimage.manageDesktopEntry", true)
+                                    .map_err(|err| error!(?err, "unable to set `appimage.manageDesktopEntry`"))
+                                    .ok();
+                                integration_result(desktop_integration.install().await)
+                            },
+                            InstallAction::Uninstall => {
+                                ctx.state()
+                                    .set_value("appimage.manageDesktopEntry", false)
+                                    .map_err(|err| error!(?err, "unable to set `appimage.manageDesktopEntry`"))
+                                    .ok();
+                                integration_result(desktop_integration.uninstall().await)
+                            },
+                            InstallAction::Status => integration_status(desktop_integration).await,
+                        }
+                    }
+                } else {
+                    let _ = action;
+                    integration_result(Err("Desktop entry is only supported on Linux"))
                 }
             }
         },
         (InstallComponent::AutostartEntry, action) => {
-            let ctx = ctx.context();
-            let integration = AutostartIntegration::new(&ctx).map_err(super::Error::from_std)?;
-            match action {
-                InstallAction::Install => integration_result(integration.install().await),
-                InstallAction::Uninstall => integration_result(integration.uninstall().await),
-                InstallAction::Status => integration_status(integration).await,
+            cfg_if::cfg_if! {
+                if #[cfg(target_os = "linux")] {
+                    let ctx = ctx.context();
+                    let integration = AutostartIntegration::new(&ctx).map_err(super::Error::from_std)?;
+                    match action {
+                        InstallAction::Install => integration_result(integration.install().await),
+                        InstallAction::Uninstall => integration_result(integration.uninstall().await),
+                        InstallAction::Status => integration_status(integration).await,
+                    }
+                } else {
+                    let _ = action;
+                    integration_result(Err("Autostart entry is only supported on Linux"))
+                }
             }
         },
         #[allow(unused_variables)]
@@ -328,6 +343,7 @@ where
 mod tests {
     use std::sync::Arc;
 
+    #[cfg(target_os = "linux")]
     use fig_integrations::desktop_entry::global_entry_path;
     use fig_os_shim::{
         Context,
@@ -338,6 +354,7 @@ mod tests {
         Settings,
         State,
     };
+    #[cfg(target_os = "linux")]
     use fig_util::directories::{
         appimage_desktop_entry_icon_path,
         appimage_desktop_entry_path,
@@ -397,6 +414,7 @@ mod tests {
         }
     }
 
+    #[cfg(target_os = "linux")]
     #[tokio::test]
     async fn test_desktop_entry_installation_and_uninstallation() {
         let ctx = Context::builder()
@@ -438,6 +456,7 @@ mod tests {
         assert_status(&ctx, InstallComponent::DesktopEntry, InstallationStatus::NotInstalled).await;
     }
 
+    #[cfg(target_os = "linux")]
     #[tokio::test]
     async fn test_autostart_entry_installation_and_uninstallation() {
         let ctx = Context::builder().with_test_home().await.unwrap().build_fake();

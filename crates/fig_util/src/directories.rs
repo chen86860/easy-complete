@@ -20,6 +20,7 @@ use crate::env_var::{
     Q_BUNDLE_METADATA_PATH,
     Q_PARENT,
 };
+#[cfg(target_os = "linux")]
 use crate::linux::PACKAGE_NAME;
 use crate::system_info::{
     in_cloudshell,
@@ -411,7 +412,7 @@ pub fn resources_path_ctx<Ctx: EnvProvider + PlatformProvider>(ctx: &Ctx) -> Res
                     .current_dir()?
                     .join(format!("lib/{}", TAURI_PRODUCT_NAME.replace("_", "-"))))
             } else {
-                Ok(format!("/usr/share/{}", PACKAGE_NAME).into())
+                Ok(format!("/usr/share/{}", crate::DATA_DIR_NAME).into())
             }
         },
         fig_os_shim::Os::Windows => Ok(fig_data_dir()?.join("resources")),
@@ -525,6 +526,7 @@ pub fn appimage_desktop_entry_icon_path<Ctx: EnvProvider>(ctx: &Ctx) -> Result<P
 }
 
 /// The path to the data directory auto-created by the Linux windowing application.
+#[cfg(target_os = "linux")]
 pub fn local_webview_data_dir<Ctx: FsProvider + EnvProvider + PlatformProvider>(ctx: &Ctx) -> Result<PathBuf> {
     let os = ctx.platform().os();
     if os != Os::Linux {

@@ -418,8 +418,7 @@ fn index_endpoint(_channel: &Channel) -> Url {
 }
 
 pub async fn pull(channel: &Channel) -> Result<Index, Error> {
-    let response = fig_request::client()
-        .expect("Unable to create HTTP client")
+    let response = reqwest::Client::new()
         .get(index_endpoint(channel))
         .send()
         .await?;

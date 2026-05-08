@@ -1,56 +1,47 @@
-pub const APP_BUNDLE_ID: &str = "com.amazon.codewhisperer";
-pub const APP_BUNDLE_NAME: &str = "Amazon Q.app";
+pub const APP_BUNDLE_ID: &str = "dev.emmmm.autocomplete-v5";
+pub const APP_BUNDLE_NAME: &str = "autocomplete-v5.app";
 
 #[cfg(target_os = "macos")]
-pub const APP_PROCESS_NAME: &str = "q_desktop";
-#[cfg(target_os = "linux")]
-pub const APP_PROCESS_NAME: &str = "q-desktop";
+pub const APP_PROCESS_NAME: &str = "autocomplete-v5";
 
 #[cfg(windows)]
-pub const APP_PROCESS_NAME: &str = "q_desktop.exe";
+pub const APP_PROCESS_NAME: &str = "autocomplete-v5.exe";
 
 /// The name configured under `"package.productName"` in the tauri.conf.json file.
-pub const TAURI_PRODUCT_NAME: &str = "q_desktop";
+pub const TAURI_PRODUCT_NAME: &str = "autocomplete-v5";
 
-pub const CLI_BINARY_NAME: &str = "q";
-pub const CLI_BINARY_NAME_MINIMAL: &str = "q-minimal";
-pub const CHAT_BINARY_NAME: &str = "qchat";
-pub const PTY_BINARY_NAME: &str = "qterm";
+pub const CLI_BINARY_NAME: &str = "acv5";
+pub const CLI_BINARY_NAME_MINIMAL: &str = "acv5-minimal";
+pub const CHAT_BINARY_NAME: &str = "acv5chat";
+pub const PTY_BINARY_NAME: &str = "acv5term";
 
 pub const CLI_CRATE_NAME: &str = "q_cli";
 
-pub const URL_SCHEMA: &str = "q";
+pub const URL_SCHEMA: &str = "acv5";
 
-pub const PRODUCT_NAME: &str = "Amazon Q";
+pub const PRODUCT_NAME: &str = "autocomplete-v5";
 
-pub const RUNTIME_DIR_NAME: &str = "cwrun";
+pub const RUNTIME_DIR_NAME: &str = "acv5run";
 
 /// Data directory name used in paths like ~/.local/share/{DATA_DIR_NAME}
 #[cfg(unix)]
-pub const DATA_DIR_NAME: &str = "amazon-q";
+pub const DATA_DIR_NAME: &str = "autocomplete-v5";
 #[cfg(windows)]
-pub const DATA_DIR_NAME: &str = "AmazonQ";
+pub const DATA_DIR_NAME: &str = "autocomplete-v5";
 
 /// Backup directory name
-pub const BACKUP_DIR_NAME: &str = ".amazon-q.dotfiles.bak";
+pub const BACKUP_DIR_NAME: &str = ".autocomplete-v5.dotfiles.bak";
 
-// These are the old "CodeWhisperer" branding, used anywhere we will not update to Amazon Q
-pub const OLD_PRODUCT_NAME: &str = "CodeWhisperer";
-pub const OLD_CLI_BINARY_NAMES: &[&str] = &["cw"];
-pub const OLD_PTY_BINARY_NAMES: &[&str] = &["cwterm"];
+pub const OLD_PRODUCT_NAME: &str = "Amazon Q";
+pub const OLD_CLI_BINARY_NAMES: &[&str] = &["q"];
+pub const OLD_PTY_BINARY_NAMES: &[&str] = &["qterm"];
 
-pub const GITHUB_REPO_NAME: &str = "aws/amazon-q-developer-cli";
+pub const GITHUB_REPO_NAME: &str = "chen86860/amazon-q-developer-cli-autocomplete";
 
 pub mod url {
-    pub const USER_MANUAL: &str = "https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line.html";
-    pub const AUTOCOMPLETE_WIKI: &str =
-        "https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line-autocomplete.html";
-    pub const AUTOCOMPLETE_SSH_WIKI: &str =
-        "https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line-autocomplete-ssh.html";
-    pub const CHAT_WIKI: &str = "https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line-chat.html";
-    pub const TRANSLATE_WIKI: &str =
-        "https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line-conversation.html";
-    pub const TELEMETRY_WIKI: &str = "https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/opt-out-IDE.html";
+    pub const USER_MANUAL: &str = "https://github.com/chen86860/amazon-q-developer-cli-autocomplete";
+    pub const AUTOCOMPLETE_WIKI: &str = "https://github.com/chen86860/amazon-q-developer-cli-autocomplete";
+    pub const AUTOCOMPLETE_SSH_WIKI: &str = "https://github.com/chen86860/amazon-q-developer-cli-autocomplete";
 }
 
 /// Build time env vars
@@ -82,15 +73,6 @@ pub mod macos {
     pub const BUNDLE_CONTENTS_INFO_PLIST_PATH: &str = "Contents/Info.plist";
 }
 
-pub mod linux {
-    pub const DESKTOP_ENTRY_NAME: &str = "amazon-q.desktop";
-
-    /// Name of the deb package.
-    pub const PACKAGE_NAME: &str = "amazon-q";
-
-    /// The wm_class used for the application windows.
-    pub const DESKTOP_APP_WM_CLASS: &str = "Amazon-q";
-}
 
 pub mod env_var {
     macro_rules! define_env_vars {

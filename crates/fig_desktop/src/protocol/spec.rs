@@ -5,11 +5,10 @@ use std::sync::{
 };
 
 use anyhow::Result;
-use fig_auth::builder_id_token;
 use fig_os_shim::Context;
-use fig_request::reqwest::Client;
 use fnv::FnvHashSet;
 use futures::prelude::*;
+use reqwest::Client;
 use serde::{
     Deserialize,
     Serialize,
@@ -33,26 +32,15 @@ use crate::webview::WindowId;
 
 const APPLICATION_JAVASCRIPT: HeaderValue = HeaderValue::from_static("application/javascript");
 
-#[non_exhaustive]
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum AuthType {
-    None,
-    Midway,
-}
-
-impl AuthType {
-    pub async fn get(&self, default_client: &Client, url: Url) -> Result<fig_request::reqwest::Response> {
-        match self {
-            AuthType::Midway => Ok(fig_request::midway::midway_request(url).await?.error_for_status()?),
-            _ => Ok(default_client.get(url).send().await?.error_for_status()?),
-        }
-    }
-}
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct CdnSource {
     url: Url,
-    auth_type: AuthType,
+}
+
+impl CdnSource {
+    pub async fn get(&self, client: &Client, url: Url) -> Result<reqwest::Response> {
+        Ok(client.get(url).send().await?.error_for_status()?)
+    }
 }
 
 static CDNS: LazyLock<Vec<CdnSource>> = LazyLock::new(|| {
@@ -60,14 +48,6 @@ static CDNS: LazyLock<Vec<CdnSource>> = LazyLock::new(|| {
         // Public cdn
         CdnSource {
             url: "https://specs.q.us-east-1.amazonaws.com".try_into().unwrap(),
-            auth_type: AuthType::None,
-        },
-        // Internal Amazon spec cdn
-        CdnSource {
-            url: "https://prod.us-east-1.shellspecs.jupiter.ai.aws.dev"
-                .try_into()
-                .unwrap(),
-            auth_type: AuthType::Midway,
         },
     ]
 });
@@ -113,27 +93,10 @@ async fn remote_index_json(client: &Client) -> MappedMutexGuard<'_, Vec<Result<S
     if cache.is_none() {
         *cache = Some(
             future::join_all(CDNS.iter().map(|cdn_source| async move {
-                if AuthType::Midway == cdn_source.auth_type {
-                    let auth_token = match builder_id_token().await {
-                        Ok(auth_token) => match auth_token {
-                            Some(auth_token) => auth_token,
-                            None => return None,
-                        },
-                        Err(err) => {
-                            error!(%err, "Failed to load auth");
-                            return None;
-                        },
-                    };
-
-                    if !auth_token.is_amzn_user() {
-                        return None;
-                    }
-                }
-
                 let mut url = cdn_source.url.clone();
                 url.set_path("index.json");
 
-                let response = match cdn_source.auth_type.get(client, url).await {
+                let response = match cdn_source.get(client, url).await {
                     Ok(response) => response,
                     Err(err) => {
                         error!(%err, "Failed to fetch spec index");
@@ -198,41 +161,24 @@ pub async fn handle(
     request: Request<Vec<u8>>,
     _: WindowId,
 ) -> anyhow::Result<Response<Cow<'static, [u8]>>> {
-    let Some(client) = fig_request::client() else {
-        return Ok(res_404());
-    };
+    let client = Client::new();
 
     let path = request.uri().path();
 
     if path == "/index.json" {
-        let index = merged_index_json(client).await?;
+        let index = merged_index_json(&client).await?;
         Ok(res_ok(
             serde_json::to_vec(&index)?,
             "application/json".try_into().unwrap(),
         ))
     } else {
         // default to trying the first cdn
-        let mut cdn_source = CDNS[0].clone();
-
-        let spec_name = path.strip_prefix('/').unwrap_or(path);
-        let spec_name = spec_name.strip_suffix(".js").unwrap_or(spec_name);
-
-        for meta in remote_index_json(client).await.iter().skip(1).flatten() {
-            if meta
-                .spec_index
-                .completions
-                .binary_search_by(|name| name.as_str().cmp(spec_name))
-                .is_ok()
-            {
-                cdn_source = meta.cdn_source.clone();
-                break;
-            }
-        }
+        let cdn_source = CDNS[0].clone();
 
         let mut url = cdn_source.url.clone();
         url.set_path(path);
 
-        let response = cdn_source.auth_type.get(client, url).await?;
+        let response = cdn_source.get(&client, url).await?;
 
         let content_type = response
             .headers()
@@ -258,7 +204,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_index_json() {
-        let client = Client::new();
+        let client = reqwest::Client::new();
         let index = remote_index_json(&client).await;
         println!("{index:?}");
     }

@@ -1,4 +1,5 @@
 pub mod backup;
+#[cfg(target_os = "linux")]
 pub mod desktop_entry;
 pub mod error;
 pub mod file;

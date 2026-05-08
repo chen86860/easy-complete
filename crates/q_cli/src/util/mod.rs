@@ -320,16 +320,6 @@ pub fn dialoguer_theme() -> ColorfulTheme {
     }
 }
 
-pub async fn assert_logged_in() -> Result<(), Error> {
-    if !(fig_os_shim::Env::new().amazon_q_sigv4() || fig_auth::is_logged_in().await) {
-        bail!(
-            "You are not logged in, please log in with {}",
-            format!("{CLI_BINARY_NAME} login",).bold()
-        );
-    }
-
-    Ok(())
-}
 
 #[cfg(target_os = "macos")]
 pub async fn is_brew_reinstall() -> bool {

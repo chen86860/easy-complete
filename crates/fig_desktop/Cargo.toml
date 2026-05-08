@@ -1,8 +1,8 @@
 [package]
 name = "fig_desktop"
-authors = ["Amazon Q Devs"]
+authors = ["autocomplete-v5 contributors"]
 edition.workspace = true
-homepage = "https://aws.amazon.com/codewhisperer"
+homepage = "https://github.com/chen86860/amazon-q-developer-cli-autocomplete"
 publish.workspace = true
 version.workspace = true
 license.workspace = true
@@ -11,7 +11,7 @@ license.workspace = true
 workspace = true
 
 [package.metadata.bundle]
-name = "Fig"
+name = "autocomplete-v5"
 icon = [
     "./icons/128x128.png",
     "./icons/16x16.png",
@@ -23,7 +23,7 @@ icon = [
     "./icons/512x512.png",
     "./icons/64x64.png",
 ]
-identifier = "com.amazon.codewhisperer"
+identifier = "dev.emmmm.autocomplete-v5"
 resource = "./autocomplete-icons/*"
 
 [features]
@@ -41,8 +41,6 @@ camino.workspace = true
 cfg-if.workspace = true
 clap.workspace = true
 dashmap.workspace = true
-fig_api_client.workspace = true
-fig_auth.workspace = true
 fig_desktop_api.workspace = true
 fig_install.workspace = true
 fig_integrations = { workspace = true, features = ["dispatch"] }
@@ -51,9 +49,7 @@ fig_log.workspace = true
 fig_os_shim.workspace = true
 fig_proto.workspace = true
 fig_remote_ipc.workspace = true
-fig_request.workspace = true
 fig_settings.workspace = true
-fig_telemetry.workspace = true
 fig_util.workspace = true
 flume.workspace = true
 fnv = "1.0.7"
@@ -71,6 +67,7 @@ paste = "1.0.11"
 percent-encoding.workspace = true
 rand.workspace = true
 regex.workspace = true
+reqwest.workspace = true
 rfd = "0.15.1"
 semver.workspace = true
 serde.workspace = true
@@ -119,12 +116,6 @@ features = [
 [target.'cfg(unix)'.dependencies]
 nix.workspace = true
 
-[target.'cfg(target_os = "linux")'.dependencies]
-dbus = { path = "../dbus" }
-freedesktop-icons = "0.2.2"
-gtk = "0.18"
-x11rb = "0.13.0"
-zbus = { path = "../zbus" }
 
 [target.'cfg(target_os="macos")'.dependencies]
 accessibility-sys = { path = "../macos-utils/accessibility-master/accessibility-sys", version = "0.1.3" }

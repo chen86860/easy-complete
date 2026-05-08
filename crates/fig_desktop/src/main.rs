@@ -99,7 +99,7 @@ async fn main() -> ExitCode {
     })
     .expect("Failed to init logging");
 
-    fig_telemetry::init_global_telemetry_emitter();
+    // fig_telemetry removed
 
     #[cfg(target_os = "macos")]
     install::migrate_data_dir().await;
@@ -159,17 +159,14 @@ async fn main() -> ExitCode {
         platform::gtk::init().expect("Failed initializing GTK");
     }
 
-    let is_logged_in = fig_auth::is_logged_in().await;
-
-    if !is_logged_in {
-        tracing::info!("Showing onboarding");
-    }
+    // fig_auth removed - treat as always logged in
+    let is_logged_in = true;
 
     let accessibility_enabled = PlatformState::accessibility_is_enabled().unwrap_or(true);
     let visible = !cli.no_dashboard;
 
     let autocomplete_enabled =
-        !fig_settings::settings::get_bool_or("autocomplete.disable", false) && is_logged_in && accessibility_enabled;
+        !fig_settings::settings::get_bool_or("autocomplete.disable", false) && accessibility_enabled;
 
     let mut webview_manager = WebviewManager::new(ctx, visible);
     webview_manager
@@ -196,7 +193,6 @@ async fn main() -> ExitCode {
         .unwrap();
 
     webview_manager.run().await.unwrap();
-    fig_telemetry::finish_telemetry().await;
     ExitCode::SUCCESS
 }
 

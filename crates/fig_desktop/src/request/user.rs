@@ -16,7 +16,7 @@ use crate::{
 };
 
 pub async fn logout(_request: UserLogoutRequest, proxy: &EventLoopProxy) -> RequestResult {
-    fig_auth::logout().await.ok();
+    // fig_auth removed
 
     proxy
         .send_event(Event::WindowEvent {

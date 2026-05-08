@@ -13,7 +13,6 @@ use eyre::{
     WrapErr,
     bail,
 };
-use fig_auth::is_logged_in;
 use fig_ipc::local::open_ui_element;
 use fig_os_shim::Os;
 use fig_proto::local::UiElement;
@@ -213,16 +212,12 @@ impl SettingsArgs {
                         verbose: true,
                     })?;
 
-                    if is_logged_in().await {
-                        match open_ui_element(UiElement::Settings, None).await {
-                            Ok(()) => Ok(ExitCode::SUCCESS),
-                            Err(err) => {
-                                print_connection_error!();
-                                Err(err.into())
-                            },
-                        }
-                    } else {
-                        Ok(ExitCode::SUCCESS)
+                    match open_ui_element(UiElement::Settings, None).await {
+                        Ok(()) => Ok(ExitCode::SUCCESS),
+                        Err(err) => {
+                            print_connection_error!();
+                            Err(err.into())
+                        },
                     }
                 },
             },

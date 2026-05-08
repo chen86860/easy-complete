@@ -321,13 +321,8 @@ pub async fn process_figterm_message(
         Some(FigtermRequest::InlineShellCompletionSetEnabled(request)) => {
             tokio::spawn(inline::handle_set_enabled(request, session_id.to_owned()));
         },
-        Some(FigtermRequest::Telemtety(TelemetryRequest { event_blob })) => {
-            match fig_telemetry::AppTelemetryEvent::from_json(&event_blob) {
-                Ok(event) => {
-                    tokio::spawn(fig_telemetry::send_event(event));
-                },
-                Err(err) => error!(%err, "Failed to parse telemetry event"),
-            }
+        Some(FigtermRequest::Telemtety(TelemetryRequest { .. })) => {
+            // Telemetry removed
         },
         Some(request) => {
             match process_figterm_request(request, main_loop_tx, term, pty_master, key_interceptor).await {

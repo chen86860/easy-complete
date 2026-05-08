@@ -925,11 +925,14 @@ async fn remove_data_dir(ctx: Arc<OsContext>, force: bool) -> Result<ExitCode> {
         Err(err) => bail!("Failed to remove data dir: {:?}", err),
     }
 
-    let webview_dir = directories::local_webview_data_dir(&ctx)?;
-    match ctx.fs().remove_dir_all(&webview_dir).await {
-        Ok(_) => (),
-        Err(err) if err.kind() == std::io::ErrorKind::NotFound => (),
-        Err(err) => bail!("Failed to remove data dir: {:?}", err),
+    #[cfg(target_os = "linux")]
+    {
+        let webview_dir = directories::local_webview_data_dir(&ctx)?;
+        match ctx.fs().remove_dir_all(&webview_dir).await {
+            Ok(_) => (),
+            Err(err) if err.kind() == std::io::ErrorKind::NotFound => (),
+            Err(err) => bail!("Failed to remove data dir: {:?}", err),
+        }
     }
 
     Ok(ExitCode::SUCCESS)

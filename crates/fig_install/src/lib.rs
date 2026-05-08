@@ -13,17 +13,9 @@ use std::str::FromStr;
 use std::sync::Arc;
 use std::time::SystemTimeError;
 
-use fig_os_shim::{
-    Context,
-    Os,
-    PlatformProvider,
-};
-use fig_util::PRODUCT_NAME;
+use fig_os_shim::Context;
 use fig_util::manifest::{
     Channel,
-    FileType,
-    Variant,
-    bundle_metadata,
     manifest,
 };
 #[cfg(target_os = "freebsd")]
@@ -37,11 +29,7 @@ use macos as os;
 pub use os::uninstall_terminal_integrations;
 use thiserror::Error;
 use tokio::sync::mpsc::Receiver;
-use tracing::{
-    debug,
-    error,
-    info,
-};
+use tracing::error;
 #[cfg(windows)]
 use windows as os;
 
@@ -144,22 +132,9 @@ pub fn get_max_channel() -> Channel {
         .unwrap()
 }
 
-pub async fn check_for_updates(ignore_rollout: bool, is_auto_update: bool) -> Result<Option<UpdatePackage>, Error> {
-    let manifest = manifest();
-    let ctx = Context::new();
-    let file_type = match (&manifest.variant, ctx.platform().os()) {
-        (Variant::Full, fig_os_shim::Os::Linux) => (index::get_file_type(&ctx, &manifest.variant).await).ok(),
-        _ => Some(index::get_file_type(&Context::new(), &manifest.variant).await?),
-    };
-    index::check_for_updates(
-        get_channel()?,
-        &manifest.target_triple,
-        &manifest.variant,
-        file_type.as_ref(),
-        ignore_rollout,
-        is_auto_update,
-    )
-    .await
+pub async fn check_for_updates(_ignore_rollout: bool, _is_auto_update: bool) -> Result<Option<UpdatePackage>, Error> {
+    // Auto-update removed
+    Ok(None)
 }
 
 #[derive(Debug, Clone)]
@@ -182,89 +157,11 @@ pub struct UpdateOptions {
     pub is_auto_update: bool,
 }
 
-/// Attempt to update if there is a newer version of Fig
+/// Auto-update removed — always reports no update available.
 pub async fn update(
-    ctx: Arc<Context>,
-    on_update: Option<Box<dyn FnOnce(Receiver<UpdateStatus>) + Send>>,
-    UpdateOptions {
-        ignore_rollout,
-        interactive,
-        relaunch_dashboard,
-        is_auto_update,
-    }: UpdateOptions,
+    _ctx: Arc<Context>,
+    _on_update: Option<Box<dyn FnOnce(Receiver<UpdateStatus>) + Send>>,
+    _opts: UpdateOptions,
 ) -> Result<bool, Error> {
-    info!("Checking for updates...");
-    if let Some(update) = check_for_updates(ignore_rollout, is_auto_update).await? {
-        info!("Found update: {}", update.version);
-        debug!("Update info: {:?}", update);
-
-        if ctx.platform().os() == Os::Linux
-            && manifest().variant == Variant::Full
-            && bundle_metadata(&ctx)
-                .await?
-                .is_some_and(|md| md.packaged_as != FileType::AppImage)
-        {
-            return Err(Error::UpdateFailed(format!(
-                "Please use your package manager to update {}",
-                PRODUCT_NAME
-            )));
-        }
-
-        let (tx, rx) = tokio::sync::mpsc::channel(16);
-
-        let lock_file = fig_util::directories::update_lock_path(&ctx)?;
-
-        let now_unix_time = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .map(|d| d.as_secs())
-            .unwrap_or(0);
-
-        // If the lock file is older than 1hr, we can assume it's stale and remove it
-        if lock_file.exists() {
-            match std::fs::read_to_string(&lock_file) {
-                Ok(contents) => {
-                    let lock_unix_time = contents.parse::<u64>().unwrap_or(0);
-                    if now_unix_time - lock_unix_time < 3600 {
-                        return Err(Error::UpdateInProgress);
-                    } else {
-                        std::fs::remove_file(&lock_file)?;
-                    }
-                },
-                Err(err) => {
-                    error!(%err, "Failed to read lock file, but it exists");
-                },
-            }
-        }
-
-        tokio::fs::write(&lock_file, &format!("{now_unix_time}")).await?;
-
-        let join = tokio::spawn(async move {
-            tx.send(UpdateStatus::Message("Starting Update...".into())).await.ok();
-            if let Err(err) = os::update(update, tx.clone(), interactive, relaunch_dashboard).await {
-                error!(%err, "Failed to update");
-
-                if let Err(err) = tokio::fs::remove_file(&lock_file).await {
-                    error!(%err, "Failed to remove lock file");
-                }
-
-                tx.send(UpdateStatus::Error(format!("{err}"))).await.ok();
-                return Err(err);
-            }
-            tokio::fs::remove_file(&lock_file).await?;
-            Ok(())
-        });
-
-        if let Some(on_update) = on_update {
-            info!("Updating...");
-            on_update(rx);
-        } else {
-            drop(rx);
-        }
-
-        join.await.expect("Failed to join update thread")?;
-        Ok(true)
-    } else {
-        info!("No updates available");
-        Ok(false)
-    }
+    Ok(false)
 }

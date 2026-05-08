@@ -1,5 +1,3 @@
-use fig_install::UpdateOptions;
-use fig_os_shim::Context;
 use fig_proto::fig::{
     CheckForUpdatesRequest,
     CheckForUpdatesResponse,
@@ -12,30 +10,15 @@ use super::{
     ServerOriginatedSubMessage,
 };
 
-pub async fn update_application(request: UpdateApplicationRequest) -> RequestResult {
-    tokio::spawn(fig_install::update(
-        Context::new(),
-        Some(Box::new(|_| {})),
-        UpdateOptions {
-            ignore_rollout: request.ignore_rollout.unwrap_or(true),
-            interactive: request.interactive.unwrap_or(true),
-            relaunch_dashboard: request.relaunch_dashboard.unwrap_or(true),
-            is_auto_update: false,
-        },
-    ));
+pub async fn update_application(_request: UpdateApplicationRequest) -> RequestResult {
     RequestResult::success()
 }
 
 pub async fn check_for_updates(_request: CheckForUpdatesRequest) -> RequestResult {
-    fig_install::check_for_updates(true, false)
-        .await
-        .map(|res| {
-            Box::new(ServerOriginatedSubMessage::CheckForUpdatesResponse(
-                CheckForUpdatesResponse {
-                    is_update_available: Some(res.is_some()),
-                    version: res.map(|update| update.version.to_string()),
-                },
-            ))
-        })
-        .map_err(|err| format!("Failed to check for updates: {err}").into())
+    Ok(Box::new(ServerOriginatedSubMessage::CheckForUpdatesResponse(
+        CheckForUpdatesResponse {
+            is_update_available: Some(false),
+            version: None,
+        },
+    )))
 }

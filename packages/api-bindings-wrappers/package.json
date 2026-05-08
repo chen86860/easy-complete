@@ -1,5 +1,5 @@
 {
-  "name": "@aws/amazon-q-developer-cli-api-bindings-wrappers",
+  "name": "@autocomplete-v5/api-bindings-wrappers",
   "version": "0.2.0",
   "license": "MIT OR Apache-2.0",
   "author": "Amazon Web Services",
@@ -23,14 +23,14 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@aws/amazon-q-developer-cli-api-bindings": "workspace:~",
+    "@autocomplete-v5/api-bindings": "workspace:~",
     "loglevel": "^1.9.2"
   },
   "devDependencies": {
     "@autocomplete-v5/eslint-config": "workspace:^",
     "@autocomplete-v5/tsconfig": "workspace:^",
     "@autocomplete-v5/types": "workspace:^",
-    "@aws/amazon-q-developer-cli-shared": "workspace:^",
+    "@autocomplete-v5/shared": "workspace:^",
     "@withfig/autocomplete-types": "^1.31.0",
     "eslint": "^9.18.0",
     "prettier": "^3.4.2",

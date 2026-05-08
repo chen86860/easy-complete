@@ -1,5 +1,5 @@
 {
-  "name": "@aws/amazon-q-developer-cli-shell-parser",
+  "name": "@autocomplete-v5/shell-parser",
   "version": "0.1.0",
   "license": "MIT OR Apache-2.0",
   "author": "Amazon Web Services",
@@ -22,7 +22,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@aws/amazon-q-developer-cli-shared": "workspace:^"
+    "@autocomplete-v5/shared": "workspace:^"
   },
   "devDependencies": {
     "@autocomplete-v5/eslint-config": "workspace:^",

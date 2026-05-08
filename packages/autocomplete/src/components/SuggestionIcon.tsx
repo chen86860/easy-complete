@@ -2,8 +2,8 @@ import React from "react";
 import {
   Suggestion,
   SuggestionType,
-} from "@aws/amazon-q-developer-cli-shared/internal";
-import { localProtocol } from "@aws/amazon-q-developer-cli-shared/utils";
+} from "@autocomplete-v5/shared/internal";
+import { localProtocol } from "@autocomplete-v5/shared/utils";
 import { icons } from "../fig/icons";
 
 type SuggestionIconProps = {

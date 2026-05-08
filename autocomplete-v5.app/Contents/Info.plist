@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key>
+    <string>dev.emmmm.autocomplete-v5</string>
+    <key>CFBundleName</key>
+    <string>autocomplete-v5</string>
+    <key>CFBundleDisplayName</key>
+    <string>autocomplete-v5</string>
+    <key>CFBundleExecutable</key>
+    <string>autocomplete-v5</string>
+    <key>CFBundleVersion</key>
+    <string>1.19.7</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.19.7</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleSignature</key>
+    <string>????</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>LSUIElement</key>
+    <true/>
+    <key>NSSupportsAutomaticGraphicsSwitching</key>
+    <true/>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLName</key>
+            <string>autocomplete-v5 URL</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>acv5</string>
+            </array>
+        </dict>
+    </dict>
+</dict>
+</plist>

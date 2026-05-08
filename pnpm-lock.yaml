@@ -38,7 +38,7 @@ importers:
 
   packages/api-bindings:
     dependencies:
-      '@aws/amazon-q-developer-cli-proto':
+      '@autocomplete-v5/proto':
         specifier: workspace:^
         version: link:../../proto
       '@bufbuild/protobuf':
@@ -81,7 +81,7 @@ importers:
 
   packages/api-bindings-wrappers:
     dependencies:
-      '@aws/amazon-q-developer-cli-api-bindings':
+      '@autocomplete-v5/api-bindings':
         specifier: workspace:~
         version: link:../api-bindings
       loglevel:
@@ -91,15 +91,15 @@ importers:
       '@autocomplete-v5/eslint-config':
         specifier: workspace:^
         version: link:../eslint-config
+      '@autocomplete-v5/shared':
+        specifier: workspace:^
+        version: link:../shared
       '@autocomplete-v5/tsconfig':
         specifier: workspace:^
         version: link:../tsconfig
       '@autocomplete-v5/types':
         specifier: workspace:^
         version: link:../types
-      '@aws/amazon-q-developer-cli-shared':
-        specifier: workspace:^
-        version: link:../shared
       '@withfig/autocomplete-types':
         specifier: ^1.31.0
         version: 1.31.0
@@ -115,19 +115,19 @@ importers:
 
   packages/autocomplete:
     dependencies:
-      '@aws/amazon-q-developer-cli-api-bindings':
+      '@autocomplete-v5/api-bindings':
         specifier: workspace:~
         version: link:../api-bindings
-      '@aws/amazon-q-developer-cli-api-bindings-wrappers':
+      '@autocomplete-v5/api-bindings-wrappers':
         specifier: workspace:^
         version: link:../api-bindings-wrappers
-      '@aws/amazon-q-developer-cli-autocomplete-parser':
+      '@autocomplete-v5/autocomplete-parser':
         specifier: workspace:^
         version: link:../autocomplete-parser
-      '@aws/amazon-q-developer-cli-proto':
+      '@autocomplete-v5/proto':
         specifier: workspace:^
         version: link:../../proto
-      '@aws/amazon-q-developer-cli-shell-parser':
+      '@autocomplete-v5/shell-parser':
         specifier: workspace:^
         version: link:../shell-parser
       '@bufbuild/protobuf':
@@ -173,15 +173,15 @@ importers:
       '@autocomplete-v5/eslint-config':
         specifier: workspace:^
         version: link:../eslint-config
+      '@autocomplete-v5/fuzzysort':
+        specifier: workspace:^
+        version: link:../fuzzysort
+      '@autocomplete-v5/shared':
+        specifier: workspace:^
+        version: link:../shared
       '@autocomplete-v5/types':
         specifier: workspace:^
         version: link:../types
-      '@aws/amazon-q-developer-cli-fuzzysort':
-        specifier: workspace:^
-        version: link:../fuzzysort
-      '@aws/amazon-q-developer-cli-shared':
-        specifier: workspace:^
-        version: link:../shared
       '@types/js-yaml':
         specifier: ^4.0.9
         version: 4.0.9
@@ -239,19 +239,19 @@ importers:
 
   packages/autocomplete-app:
     dependencies:
-      '@aws/amazon-q-developer-cli-api-bindings':
+      '@autocomplete-v5/api-bindings':
         specifier: workspace:~
         version: link:../api-bindings
-      '@aws/amazon-q-developer-cli-api-bindings-wrappers':
+      '@autocomplete-v5/api-bindings-wrappers':
         specifier: workspace:^
         version: link:../api-bindings-wrappers
-      '@aws/amazon-q-developer-cli-autocomplete-parser':
+      '@autocomplete-v5/autocomplete-parser':
         specifier: workspace:^
         version: link:../autocomplete-parser
-      '@aws/amazon-q-developer-cli-proto':
+      '@autocomplete-v5/proto':
         specifier: workspace:^
         version: link:../../proto
-      '@aws/amazon-q-developer-cli-shell-parser':
+      '@autocomplete-v5/shell-parser':
         specifier: workspace:^
         version: link:../shell-parser
       '@bufbuild/protobuf':
@@ -297,15 +297,15 @@ importers:
       '@autocomplete-v5/eslint-config':
         specifier: workspace:^
         version: link:../eslint-config
+      '@autocomplete-v5/fuzzysort':
+        specifier: workspace:^
+        version: link:../fuzzysort
+      '@autocomplete-v5/shared':
+        specifier: workspace:^
+        version: link:../shared
       '@autocomplete-v5/types':
         specifier: workspace:^
         version: link:../types
-      '@aws/amazon-q-developer-cli-fuzzysort':
-        specifier: workspace:^
-        version: link:../fuzzysort
-      '@aws/amazon-q-developer-cli-shared':
-        specifier: workspace:^
-        version: link:../shared
       '@types/js-yaml':
         specifier: ^4.0.9
         version: 4.0.9
@@ -363,13 +363,13 @@ importers:
 
   packages/autocomplete-parser:
     dependencies:
-      '@aws/amazon-q-developer-cli-api-bindings':
+      '@autocomplete-v5/api-bindings':
         specifier: workspace:^
         version: link:../api-bindings
-      '@aws/amazon-q-developer-cli-api-bindings-wrappers':
+      '@autocomplete-v5/api-bindings-wrappers':
         specifier: workspace:^
         version: link:../api-bindings-wrappers
-      '@aws/amazon-q-developer-cli-shell-parser':
+      '@autocomplete-v5/shell-parser':
         specifier: workspace:^
         version: link:../shell-parser
       '@fig/autocomplete-generators':
@@ -394,15 +394,15 @@ importers:
       '@autocomplete-v5/eslint-config':
         specifier: workspace:^
         version: link:../eslint-config
+      '@autocomplete-v5/shared':
+        specifier: workspace:^
+        version: link:../shared
       '@autocomplete-v5/tsconfig':
         specifier: workspace:^
         version: link:../tsconfig
       '@autocomplete-v5/types':
         specifier: workspace:^
         version: link:../types
-      '@aws/amazon-q-developer-cli-shared':
-        specifier: workspace:^
-        version: link:../shared
       '@types/semver':
         specifier: ^7.7.0
         version: 7.7.0
@@ -478,15 +478,15 @@ importers:
       '@autocomplete-v5/eslint-config':
         specifier: workspace:^
         version: link:../eslint-config
+      '@autocomplete-v5/fuzzysort':
+        specifier: workspace:^
+        version: link:../fuzzysort
       '@autocomplete-v5/tsconfig':
         specifier: workspace:^
         version: link:../tsconfig
       '@autocomplete-v5/types':
         specifier: workspace:^
         version: link:../types
-      '@aws/amazon-q-developer-cli-fuzzysort':
-        specifier: workspace:^
-        version: link:../fuzzysort
       '@withfig/autocomplete-types':
         specifier: ^1.31.0
         version: 1.31.0
@@ -502,7 +502,7 @@ importers:
 
   packages/shell-parser:
     dependencies:
-      '@aws/amazon-q-developer-cli-shared':
+      '@autocomplete-v5/shared':
         specifier: workspace:^
         version: link:../shared
     devDependencies:
@@ -557,15 +557,15 @@ importers:
 
   tests/fig-api:
     devDependencies:
+      '@autocomplete-v5/api-bindings':
+        specifier: workspace:^
+        version: link:../../packages/api-bindings
       '@autocomplete-v5/tsconfig':
         specifier: workspace:^
         version: link:../../packages/tsconfig
       '@autocomplete-v5/types':
         specifier: workspace:^
         version: link:../../packages/types
-      '@aws/amazon-q-developer-cli-api-bindings':
-        specifier: workspace:^
-        version: link:../../packages/api-bindings
       '@types/node':
         specifier: ^22.15.20
         version: 22.15.20

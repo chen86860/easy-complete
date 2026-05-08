@@ -1,4 +1,4 @@
-import { Annotation } from "@aws/amazon-q-developer-cli-autocomplete-parser";
+import { Annotation } from "@autocomplete-v5/autocomplete-parser";
 import {
   MockInstance,
   afterEach,

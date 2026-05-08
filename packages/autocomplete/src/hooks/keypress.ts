@@ -1,10 +1,10 @@
 import { useCallback } from "react";
 import logger from "loglevel";
-import { Keybindings, Shell } from "@aws/amazon-q-developer-cli-api-bindings";
+import { Keybindings, Shell } from "@autocomplete-v5/api-bindings";
 import {
   SETTINGS,
   getSetting,
-} from "@aws/amazon-q-developer-cli-api-bindings-wrappers";
+} from "@autocomplete-v5/api-bindings-wrappers";
 import { ACTIONS, AutocompleteAction } from "../actions";
 import { useAutocompleteStore } from "../state";
 import { Visibility } from "../state/types";

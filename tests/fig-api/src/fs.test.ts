@@ -1,4 +1,4 @@
-import { fs as figFs } from "@aws/amazon-q-developer-cli-api-bindings";
+import { fs as figFs } from "@autocomplete-v5/api-bindings";
 import nodeFs from "node:fs";
 import { tempDir } from "./util.js";
 import { describe, it, expect } from "vitest";

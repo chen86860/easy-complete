@@ -1,22 +1,22 @@
 import logger, { Logger } from "loglevel";
-import { Settings } from "@aws/amazon-q-developer-cli-api-bindings";
+import { Settings } from "@autocomplete-v5/api-bindings";
 import { convertSubcommand, initializeDefault } from "@fig/autocomplete-shared";
 import {
   withTimeout,
   SpecLocationSource,
   splitPath,
   ensureTrailingSlash,
-} from "@aws/amazon-q-developer-cli-shared/utils";
+} from "@autocomplete-v5/shared/utils";
 import {
   Subcommand,
   SpecLocation,
-} from "@aws/amazon-q-developer-cli-shared/internal";
+} from "@autocomplete-v5/shared/internal";
 import {
   SETTINGS,
   getSetting,
   executeCommand,
   isInDevMode,
-} from "@aws/amazon-q-developer-cli-api-bindings-wrappers";
+} from "@autocomplete-v5/api-bindings-wrappers";
 import {
   importFromPublicCDN,
   publicSpecExists,

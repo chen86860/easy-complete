@@ -4,7 +4,7 @@ import {
   type NotificationRequest,
   NotificationRequestSchema,
   NotificationType,
-} from "@aws/amazon-q-developer-cli-proto/fig";
+} from "@autocomplete-v5/proto/fig";
 
 import { sendMessage } from "./core.js";
 import { create } from "@bufbuild/protobuf";

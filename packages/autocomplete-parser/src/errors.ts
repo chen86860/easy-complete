@@ -1,4 +1,4 @@
-import { createErrorInstance } from "@aws/amazon-q-developer-cli-shared/errors";
+import { createErrorInstance } from "@autocomplete-v5/shared/errors";
 
 // LoadSpecErrors
 export const MissingSpecError = createErrorInstance("MissingSpecError");

@@ -5,7 +5,7 @@ global.fig = {
 
 const originalGlobalFig = global.fig;
 
-import { Suggestion } from "@aws/amazon-q-developer-cli-shared/internal";
+import { Suggestion } from "@autocomplete-v5/shared/internal";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   getNameMatch,

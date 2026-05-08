@@ -3,7 +3,7 @@ import {
   type ClientOriginatedMessage,
   ClientOriginatedMessageSchema,
   ServerOriginatedMessageSchema,
-} from "@aws/amazon-q-developer-cli-proto/fig";
+} from "@autocomplete-v5/proto/fig";
 
 import { b64ToBytes, bytesToBase64 } from "./utils.js";
 import { create, fromBinary, toBinary } from "@bufbuild/protobuf";

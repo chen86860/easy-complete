@@ -1,4 +1,4 @@
-import { Subcommand } from "@aws/amazon-q-developer-cli-shared/internal";
+import { Subcommand } from "@autocomplete-v5/shared/internal";
 
 const allCaches: Array<Map<string, unknown>> = [];
 

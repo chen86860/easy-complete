@@ -1,6 +1,6 @@
-import * as apiBindingsWrappers from "@aws/amazon-q-developer-cli-api-bindings-wrappers/executeCommand";
+import * as apiBindingsWrappers from "@autocomplete-v5/api-bindings-wrappers/executeCommand";
 
-import { Annotation } from "@aws/amazon-q-developer-cli-autocomplete-parser";
+import { Annotation } from "@autocomplete-v5/autocomplete-parser";
 import {
   MockInstance,
   afterEach,
@@ -15,10 +15,10 @@ import { GeneratorContext } from "../helpers";
 import { getScriptSuggestions } from "../scriptSuggestionsGenerator";
 
 vi.mock(
-  "@aws/amazon-q-developer-cli-api-bindings-wrappers/src/executeCommand",
+  "@autocomplete-v5/api-bindings-wrappers/src/executeCommand",
   async () =>
     vi.importActual(
-      "@aws/amazon-q-developer-cli-api-bindings-wrappers/src/executeCommand",
+      "@autocomplete-v5/api-bindings-wrappers/src/executeCommand",
     ),
 );
 

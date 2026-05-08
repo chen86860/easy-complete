@@ -2,8 +2,8 @@ import logger from "loglevel";
 import {
   Annotation,
   TokenType,
-} from "@aws/amazon-q-developer-cli-autocomplete-parser";
-import { makeArray, findLast } from "@aws/amazon-q-developer-cli-shared/utils";
+} from "@autocomplete-v5/autocomplete-parser";
+import { makeArray, findLast } from "@autocomplete-v5/shared/utils";
 import { GeneratorContext } from "./helpers";
 import { getHistoryArgSuggestions } from "../history";
 

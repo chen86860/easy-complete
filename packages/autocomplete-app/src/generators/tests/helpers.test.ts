@@ -1,5 +1,5 @@
-import { sleep } from "@aws/amazon-q-developer-cli-shared/utils";
-import { Annotation } from "@aws/amazon-q-developer-cli-autocomplete-parser";
+import { sleep } from "@autocomplete-v5/shared/utils";
+import { Annotation } from "@autocomplete-v5/autocomplete-parser";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   generatorCache,

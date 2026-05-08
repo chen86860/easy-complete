@@ -4,12 +4,12 @@ import {
   ensureTrailingSlash,
   withTimeout,
   exponentialBackoff,
-} from "@aws/amazon-q-developer-cli-shared/utils";
+} from "@autocomplete-v5/shared/utils";
 import {
   executeCommand,
   fread,
   isInDevMode,
-} from "@aws/amazon-q-developer-cli-api-bindings-wrappers";
+} from "@autocomplete-v5/api-bindings-wrappers";
 import z from "zod";
 import { MOST_USED_SPECS } from "./constants.js";
 import { LoadLocalSpecError, SpecCDNError } from "./errors.js";

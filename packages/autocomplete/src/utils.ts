@@ -1,7 +1,7 @@
-import { fs } from "@aws/amazon-q-developer-cli-api-bindings";
+import { fs } from "@autocomplete-v5/api-bindings";
 // eslint-disable-next-line unicorn/prefer-node-protocol
 import util from "util";
-import { isInDevMode } from "@aws/amazon-q-developer-cli-api-bindings-wrappers";
+import { isInDevMode } from "@autocomplete-v5/api-bindings-wrappers";
 
 // Logging functions
 const DEFAULT_CONSOLE = {

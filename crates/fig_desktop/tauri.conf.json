@@ -3,13 +3,13 @@
     "distDir": []
   },
   "package": {
-    "productName": "q_desktop"
+    "productName": "autocomplete-v5"
   },
   "tauri": {
     "bundle": {
       "targets": "app",
       "active": true,
-      "identifier": "com.amazon.codewhisperer",
+      "identifier": "dev.emmmm.autocomplete-v5",
       "icon": [
         "icons/icon.icns",
         "icons/icon.ico",

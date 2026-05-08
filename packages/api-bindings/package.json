@@ -1,5 +1,5 @@
 {
-  "name": "@aws/amazon-q-developer-cli-api-bindings",
+  "name": "@autocomplete-v5/api-bindings",
   "version": "0.2.0",
   "license": "MIT OR Apache-2.0",
   "author": "Amazon Web Services",
@@ -22,7 +22,7 @@
     "generate-requests": "tsx codegen/generate-requests.ts && prettier -w src/requests.ts"
   },
   "dependencies": {
-    "@aws/amazon-q-developer-cli-proto": "workspace:^",
+    "@autocomplete-v5/proto": "workspace:^",
     "@bufbuild/protobuf": "2.4.0"
   },
   "devDependencies": {

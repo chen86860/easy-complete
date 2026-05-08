@@ -1,7 +1,7 @@
 import {
   getSetting,
   SETTINGS,
-} from "@aws/amazon-q-developer-cli-api-bindings-wrappers";
+} from "@autocomplete-v5/api-bindings-wrappers";
 
 // Default settings values.
 export const MAX_WIDTH = 320;

@@ -4,8 +4,8 @@
  * If it gets bundled in the same file as the functions that call it
  * vitest is not able to mock it (because of esm restrictions).
  */
-import { withTimeout } from "@aws/amazon-q-developer-cli-shared/utils";
-import { Process } from "@aws/amazon-q-developer-cli-api-bindings";
+import { withTimeout } from "@autocomplete-v5/shared/utils";
+import { Process } from "@autocomplete-v5/api-bindings";
 import logger from "loglevel";
 
 export const cleanOutput = (output: string) =>

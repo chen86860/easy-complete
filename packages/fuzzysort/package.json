@@ -1,5 +1,5 @@
 {
-  "name": "@aws/amazon-q-developer-cli-fuzzysort",
+  "name": "@autocomplete-v5/fuzzysort",
   "version": "0.1.0",
   "license": "MIT",
   "author": "Amazon Web Services",

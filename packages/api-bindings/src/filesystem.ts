@@ -10,7 +10,7 @@ import {
 import {
   type FilePath,
   FilePathSchema,
-} from "@aws/amazon-q-developer-cli-proto/fig";
+} from "@autocomplete-v5/proto/fig";
 
 function filePath(options: Omit<FilePath, "$typeName">) {
   return create(FilePathSchema, options);

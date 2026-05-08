@@ -1,4 +1,4 @@
-import { localProtocol } from "@aws/amazon-q-developer-cli-shared/utils";
+import { localProtocol } from "@autocomplete-v5/shared/utils";
 
 const generateSpec = async (
   tokenArray: string[] | undefined,

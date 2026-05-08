@@ -1,5 +1,5 @@
 {
-  "name": "@amzn/eslint-config",
+  "name": "@autocomplete-v5/eslint-config",
   "private": "true",
   "version": "0.1.0",
   "license": "MIT OR Apache-2.0",
@@ -25,7 +25,7 @@
     "typescript": ">=4.7.4"
   },
   "devDependencies": {
-    "@amzn/tsconfig": "workspace:^",
+    "@autocomplete-v5/tsconfig": "workspace:^",
     "@eslint/js": "^9.18.0",
     "@types/eslint__js": "^8.42.3",
     "@typescript-eslint/utils": "^8.31.1",

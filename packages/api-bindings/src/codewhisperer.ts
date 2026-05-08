@@ -1,7 +1,9 @@
-import { CodewhispererCustomization as Customization } from "@aws/amazon-q-developer-cli-proto/fig";
-import { sendCodewhispererListCustomizationRequest } from "./requests.js";
+// CodeWhisperer API bindings stubbed out — not used in autocomplete-v5
 
-const listCustomizations = async () =>
-  (await sendCodewhispererListCustomizationRequest({})).customizations;
+export interface Customization {
+  arn: string;
+  name: string;
+  description: string;
+}
 
-export { listCustomizations, Customization };
+export const listCustomizations = async (): Promise<Customization[]> => [];

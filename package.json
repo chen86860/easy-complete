@@ -1,5 +1,5 @@
 {
-  "name": "root",
+  "name": "autocomplete-v5",
   "private": true,
   "author": "Amazon Web Services",
   "repository": "https://github.com/aws/amazon-q-developer-cli",
@@ -22,9 +22,7 @@
     "lint:fix": "turbo lint:fix --parallel",
     "dev": "turbo dev",
     "dev:autocomplete": "pnpm -C packages/autocomplete dev",
-    "dev:dashboard": "pnpm -C packages/dashboard-app dev",
     "preview:autocomplete": "pnpm -C packages/autocomplete preview",
-    "preview:dashboard": "pnpm -C packages/dashboard-app preview",
     "clean": "turbo clean --parallel",
     "prepare": "husky",
     "precommit": "lint-staged --config .lintstagedrc.mjs",

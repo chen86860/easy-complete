@@ -1,5 +1,5 @@
 {
-  "name": "@amzn/autocomplete",
+  "name": "@autocomplete-v5/autocomplete",
   "private": true,
   "version": "1.0.0",
   "repository": "https://github.com/aws/amazon-q-developer-cli",
@@ -41,8 +41,8 @@
     "zustand": "^4.5.6"
   },
   "devDependencies": {
-    "@amzn/eslint-config": "workspace:^",
-    "@amzn/types": "workspace:^",
+    "@autocomplete-v5/eslint-config": "workspace:^",
+    "@autocomplete-v5/types": "workspace:^",
     "@aws/amazon-q-developer-cli-fuzzysort": "workspace:^",
     "@aws/amazon-q-developer-cli-shared": "workspace:^",
     "@types/js-yaml": "^4.0.9",

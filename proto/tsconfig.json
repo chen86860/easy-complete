@@ -1,5 +1,5 @@
 {
-  "extends": "@amzn/tsconfig/base.json",
+  "extends": "@autocomplete-v5/tsconfig/base.json",
   "compilerOptions": {
     "outDir": "dist"
   }

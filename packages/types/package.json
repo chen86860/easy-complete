@@ -1,5 +1,5 @@
 {
-  "name": "@amzn/types",
+  "name": "@autocomplete-v5/types",
   "private": true,
   "version": "0.1.0",
   "license": "MIT OR Apache-2.0",

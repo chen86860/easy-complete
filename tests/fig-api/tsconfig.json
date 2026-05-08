@@ -1,9 +1,9 @@
 {
-  "extends": ["@amzn/tsconfig/base.json"],
+  "extends": ["@autocomplete-v5/tsconfig/base.json"],
   "compilerOptions": {
     "noEmit": true,
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "types": ["@amzn/types", "node"],
+    "types": ["@autocomplete-v5/types", "node"],
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]

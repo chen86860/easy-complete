@@ -7,11 +7,11 @@
       "outputs": ["dist"]
     },
     "lint": {
-      "dependsOn": ["@amzn/eslint-config#build"],
+      "dependsOn": ["@autocomplete-v5/eslint-config#build"],
       "cache": false
     },
     "lint:fix": {
-      "dependsOn": ["@amzn/eslint-config#build"],
+      "dependsOn": ["@autocomplete-v5/eslint-config#build"],
       "cache": false
     },
     "clean": {

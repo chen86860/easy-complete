@@ -1,11 +1,8 @@
-import { Telemetry } from "@aws/amazon-q-developer-cli-api-bindings";
-import { version } from "../package.json";
+// Telemetry stubbed out — not used in autocomplete-v5
 
 export const trackEvent = (
-  event: string,
-  props: Record<string, string | boolean | number | null>,
-) =>
-  Telemetry.track(event, {
-    ...props,
-    autocomplete_engine_version: version,
-  });
+  _event: string,
+  _props: Record<string, string | boolean | number | null>,
+): void => {
+  // no-op
+};

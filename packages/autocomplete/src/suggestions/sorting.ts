@@ -1,9 +1,9 @@
-import { makeArray } from "@autocomplete-v5/shared/utils";
-import { Suggestion } from "@autocomplete-v5/shared/internal";
+import { makeArray } from "@easy-complete/shared/utils";
+import { Suggestion } from "@easy-complete/shared/internal";
 import {
   SETTINGS,
   getSetting,
-} from "@autocomplete-v5/api-bindings-wrappers";
+} from "@easy-complete/api-bindings-wrappers";
 
 // { command: { commandParam: count/lastUsedDate } }
 // e.g. git: { add: 2, push: 4 }

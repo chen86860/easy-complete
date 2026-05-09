@@ -10,7 +10,7 @@ import {
 import {
   type FilePath,
   FilePathSchema,
-} from "@autocomplete-v5/proto/fig";
+} from "@easy-complete/proto/fig";
 
 function filePath(options: Omit<FilePath, "$typeName">) {
   return create(FilePathSchema, options);

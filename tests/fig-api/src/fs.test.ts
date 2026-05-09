@@ -1,4 +1,4 @@
-import { fs as figFs } from "@autocomplete-v5/api-bindings";
+import { fs as figFs } from "@easy-complete/api-bindings";
 import nodeFs from "node:fs";
 import { tempDir } from "./util.js";
 import { describe, it, expect } from "vitest";

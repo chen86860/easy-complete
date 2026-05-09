@@ -1,4 +1,4 @@
-import { PointSchema, SizeSchema } from "@autocomplete-v5/proto/fig";
+import { PointSchema, SizeSchema } from "@easy-complete/proto/fig";
 import {
   sendPositionWindowRequest,
   sendDragWindowRequest,

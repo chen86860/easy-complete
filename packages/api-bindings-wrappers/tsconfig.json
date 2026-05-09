@@ -1,8 +1,8 @@
 {
-  "extends": ["@autocomplete-v5/tsconfig/base.json", "@autocomplete-v5/tsconfig/dom.json"],
+  "extends": ["@easy-complete/tsconfig/base.json", "@easy-complete/tsconfig/dom.json"],
   "compilerOptions": {
     "outDir": "./dist",
-    "types": ["@withfig/autocomplete-types", "@autocomplete-v5/types"]
+    "types": ["@withfig/autocomplete-types", "@easy-complete/types"]
   },
   "include": ["src"]
 }

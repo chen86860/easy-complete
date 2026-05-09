@@ -9,21 +9,21 @@ import {
   getSpecPath,
   loadSubcommandCached,
   serializeSpecLocation,
-} from "@autocomplete-v5/autocomplete-parser";
+} from "@easy-complete/autocomplete-parser";
 import {
   getAllCommandsWithAlias,
   AliasMap,
   Command,
-} from "@autocomplete-v5/shell-parser";
-import { SpecLocationSource } from "@autocomplete-v5/shared/utils";
-import { Suggestion } from "@autocomplete-v5/shared/internal";
+} from "@easy-complete/shell-parser";
+import { SpecLocationSource } from "@easy-complete/shared/utils";
+import { Suggestion } from "@easy-complete/shared/internal";
 import {
   executeCommand,
   executeLoginShell,
   SETTINGS,
   getSetting,
-} from "@autocomplete-v5/api-bindings-wrappers";
-import { History } from "@autocomplete-v5/api-bindings";
+} from "@easy-complete/api-bindings-wrappers";
+import { History } from "@easy-complete/api-bindings";
 import {
   AnnotatedCommand,
   HistoryEntry,

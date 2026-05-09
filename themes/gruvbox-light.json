@@ -1,0 +1,26 @@
+{
+  "author": { "name": "morhetz", "github": "morhetz" },
+  "version": "1.0",
+  "theme": {
+    "backgroundColor": "#fbf1c7",
+    "textColor": "#3c3836",
+    "matchBackgroundColor": "#ebdbb2",
+    "selection": {
+      "backgroundColor": "#458588",
+      "textColor": "#fbf1c7",
+      "matchBackgroundColor": "#689d6a"
+    },
+    "description": {
+      "textColor": "#7c6f64",
+      "borderColor": "#d5c4a1"
+    }
+  },
+  "accent0": "#cc241d",
+  "accent1": "#d65d0e",
+  "accent2": "#d79921",
+  "accent3": "#98971a",
+  "accent4": "#689d6a",
+  "accent5": "#458588",
+  "accent6": "#b16286",
+  "accent7": "#fe8019"
+}

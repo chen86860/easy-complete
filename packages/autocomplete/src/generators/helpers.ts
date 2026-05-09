@@ -1,10 +1,10 @@
-import { Annotation } from "@autocomplete-v5/autocomplete-parser";
-import { Suggestion } from "@autocomplete-v5/shared/internal";
-import { getCWDForFilesAndFolders } from "@autocomplete-v5/shared/utils";
+import { Annotation } from "@easy-complete/autocomplete-parser";
+import { Suggestion } from "@easy-complete/shared/internal";
+import { getCWDForFilesAndFolders } from "@easy-complete/shared/utils";
 import {
   getSetting,
   SETTINGS,
-} from "@autocomplete-v5/api-bindings-wrappers";
+} from "@easy-complete/api-bindings-wrappers";
 import { Cache } from "./cache";
 
 export type GeneratorContext = Fig.ShellContext & {

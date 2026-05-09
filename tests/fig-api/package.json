@@ -10,9 +10,9 @@
     "precommit": "exit 0"
   },
   "devDependencies": {
-    "@autocomplete-v5/tsconfig": "workspace:^",
-    "@autocomplete-v5/types": "workspace:^",
-    "@autocomplete-v5/api-bindings": "workspace:^",
+    "@easy-complete/tsconfig": "workspace:^",
+    "@easy-complete/types": "workspace:^",
+    "@easy-complete/api-bindings": "workspace:^",
     "@types/node": "^22.15.20",
     "typescript": "^5.8.3",
     "vitest": "^3.0.8"

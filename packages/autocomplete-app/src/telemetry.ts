@@ -1,4 +1,4 @@
-// Telemetry stubbed out — not used in autocomplete-v5
+// Telemetry stubbed out — not used in easy-complete
 
 export const trackEvent = (
   _event: string,

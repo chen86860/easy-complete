@@ -1,4 +1,4 @@
-// AWS auth bindings stubbed out — not used in autocomplete-v5
+// AWS auth bindings stubbed out — not used in easy-complete
 
 export function status(): Promise<{
   authed: boolean;

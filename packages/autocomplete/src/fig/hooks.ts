@@ -6,13 +6,13 @@ import {
   Settings,
   Shell,
   Types,
-} from "@autocomplete-v5/api-bindings";
-import { AliasMap } from "@autocomplete-v5/shell-parser";
+} from "@easy-complete/api-bindings";
+import { AliasMap } from "@easy-complete/shell-parser";
 import {
   SettingsMap,
   updateSettings,
-} from "@autocomplete-v5/api-bindings-wrappers";
-import { clearSpecIndex } from "@autocomplete-v5/autocomplete-parser";
+} from "@easy-complete/api-bindings-wrappers";
+import { clearSpecIndex } from "@easy-complete/autocomplete-parser";
 import { updateSelectSuggestionKeybindings } from "../actions";
 import { generatorCache } from "../generators/helpers";
 

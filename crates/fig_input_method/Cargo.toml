@@ -11,9 +11,9 @@ license.workspace = true
 workspace = true
 
 [package.metadata.bundle]
-bundle_name = "AutocompleteInputMethod"
-bundle_identifier = "dev.emmmm.autocomplete-v5.inputmethod"
-input_source_identifier = "dev.emmmm.autocomplete-v5.inputmethod"
+bundle_name = "EasyCompleteInputMethod"
+bundle_identifier = "dev.emmmm.easy-complete.inputmethod"
+input_source_identifier = "dev.emmmm.easy-complete.inputmethod"
 invisible_in_system_ui = true
 input_method_type = "palette"
 

@@ -1,0 +1,26 @@
+{
+  "author": { "name": "Mattia Astorino", "github": "equinusocio" },
+  "version": "1.0",
+  "theme": {
+    "backgroundColor": "#263238",
+    "textColor": "#eeffff",
+    "matchBackgroundColor": "#2e3c43",
+    "selection": {
+      "backgroundColor": "#546e7a",
+      "textColor": "#eeffff",
+      "matchBackgroundColor": "#82aaff"
+    },
+    "description": {
+      "textColor": "#546e7a",
+      "borderColor": "#2e3c43"
+    }
+  },
+  "accent0": "#f07178",
+  "accent1": "#f78c6c",
+  "accent2": "#ffcb6b",
+  "accent3": "#c3e88d",
+  "accent4": "#89ddff",
+  "accent5": "#82aaff",
+  "accent6": "#c792ea",
+  "accent7": "#ff5370"
+}

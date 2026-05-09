@@ -1,11 +1,11 @@
-import { GetPlatformInfoResponse } from "@autocomplete-v5/proto/fig";
+import { GetPlatformInfoResponse } from "@easy-complete/proto/fig";
 import { sendGetPlatformInfoRequest } from "./requests.js";
 import {
   AppBundleType,
   DesktopEnvironment,
   DisplayServerProtocol,
   Os,
-} from "@autocomplete-v5/proto/fig";
+} from "@easy-complete/proto/fig";
 
 export { AppBundleType, DesktopEnvironment, DisplayServerProtocol, Os };
 

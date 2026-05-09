@@ -1,0 +1,26 @@
+{
+  "author": { "name": "Wimer Hazenberg" },
+  "version": "1.0",
+  "theme": {
+    "backgroundColor": "#272822",
+    "textColor": "#f8f8f2",
+    "matchBackgroundColor": "#49483e",
+    "selection": {
+      "backgroundColor": "#75715e",
+      "textColor": "#f8f8f2",
+      "matchBackgroundColor": "#a59f85"
+    },
+    "description": {
+      "textColor": "#75715e",
+      "borderColor": "#49483e"
+    }
+  },
+  "accent0": "#f92672",
+  "accent1": "#fd971f",
+  "accent2": "#e6db74",
+  "accent3": "#a6e22e",
+  "accent4": "#66d9e8",
+  "accent5": "#66d9e8",
+  "accent6": "#ae81ff",
+  "accent7": "#f92672"
+}

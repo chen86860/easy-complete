@@ -5,7 +5,7 @@ import {
   InstallResponse_InstallationStatus,
   NotificationType,
   Result_Result,
-} from "@autocomplete-v5/proto/fig";
+} from "@easy-complete/proto/fig";
 
 import { sendInstallRequest } from "./requests.js";
 import { NotificationResponse, _subscribe } from "./notifications.js";

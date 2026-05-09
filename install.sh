@@ -1,13 +1,14 @@
 #!/bin/bash
 set -euo pipefail
 
-# ── autocomplete-v5 macOS installer ──────────────────────────────────────────
+# ── Easy Complete macOS installer ──────────────────────────────────────────
 
-APP_NAME="autocomplete-v5"
-BUNDLE_ID="dev.emmmm.autocomplete-v5"
+APP_NAME="easy-complete"          # binary / process name (no spaces)
+APP_DISPLAY="Easy Complete"       # human-readable / bundle directory name
+BUNDLE_ID="dev.emmmm.easy-complete"
 VERSION=$(cargo metadata --no-deps --format-version 1 | python3 -c "import sys,json; print(json.load(sys.stdin)['packages'][0]['version'])" 2>/dev/null || echo "dev")
 
-APP_BUNDLE="/Applications/${APP_NAME}.app"
+APP_BUNDLE="/Applications/${APP_DISPLAY}.app"
 MACOS_DIR="${APP_BUNDLE}/Contents/MacOS"
 RESOURCES_DIR="${APP_BUNDLE}/Contents/Resources"
 LOCAL_BIN="${HOME}/.local/bin"
@@ -29,21 +30,23 @@ info "Building TypeScript frontend..."
 pnpm turbo build --filter="./packages/*"
 
 # ── 2. Assemble .app bundle ───────────────────────────────────────────────────
-info "Assembling ${APP_NAME}.app..."
+info "Assembling '${APP_DISPLAY}.app'..."
 rm -rf "$APP_BUNDLE"
 mkdir -p "$MACOS_DIR"
 mkdir -p "${RESOURCES_DIR}/autocomplete"
 mkdir -p "${RESOURCES_DIR}/dashboard"
+mkdir -p "${RESOURCES_DIR}/themes"
 
 cp "target/release/${APP_NAME}"  "$MACOS_DIR/"
-cp "target/release/acv5"         "$MACOS_DIR/"
-cp "target/release/acv5term"     "$MACOS_DIR/"
+cp "target/release/ec"         "$MACOS_DIR/"
+cp "target/release/ecterm"     "$MACOS_DIR/"
 
 cp -r packages/autocomplete-app/dist/* "${RESOURCES_DIR}/autocomplete/"
 cp -r packages/dashboard-app/dist/*    "${RESOURCES_DIR}/dashboard/"
+cp themes/*.json                        "${RESOURCES_DIR}/themes/"
 
 # Input Method helper app
-IM_APP="${APP_BUNDLE}/Contents/Helpers/AutocompleteInputMethod.app"
+IM_APP="${APP_BUNDLE}/Contents/Helpers/EasyCompleteInputMethod.app"
 mkdir -p "${IM_APP}/Contents/MacOS"
 mkdir -p "${IM_APP}/Contents/Resources"
 cp "target/release/fig_input_method"                            "${IM_APP}/Contents/MacOS/"
@@ -58,9 +61,9 @@ cat > "${APP_BUNDLE}/Contents/Info.plist" <<PLIST
     <key>CFBundleIdentifier</key>
     <string>${BUNDLE_ID}</string>
     <key>CFBundleName</key>
-    <string>${APP_NAME}</string>
+    <string>${APP_DISPLAY}</string>
     <key>CFBundleDisplayName</key>
-    <string>${APP_NAME}</string>
+    <string>${APP_DISPLAY}</string>
     <key>CFBundleExecutable</key>
     <string>${APP_NAME}</string>
     <key>CFBundleVersion</key>
@@ -79,10 +82,10 @@ cat > "${APP_BUNDLE}/Contents/Info.plist" <<PLIST
     <array>
         <dict>
             <key>CFBundleURLName</key>
-            <string>${APP_NAME} URL</string>
+            <string>${APP_DISPLAY} URL</string>
             <key>CFBundleURLSchemes</key>
             <array>
-                <string>acv5</string>
+                <string>ec</string>
             </array>
         </dict>
     </array>
@@ -104,8 +107,8 @@ cp -r "$APP_BUNDLE" /Applications/
 # ── 4. Symlink CLI binaries to ~/.local/bin ───────────────────────────────────
 info "Linking binaries to ${LOCAL_BIN}..."
 mkdir -p "$LOCAL_BIN"
-ln -sf "/Applications/${APP_NAME}.app/Contents/MacOS/acv5"     "${LOCAL_BIN}/acv5"
-ln -sf "/Applications/${APP_NAME}.app/Contents/MacOS/acv5term" "${LOCAL_BIN}/acv5term"
+ln -sf "/Applications/${APP_DISPLAY}.app/Contents/MacOS/ec"     "${LOCAL_BIN}/ec"
+ln -sf "/Applications/${APP_DISPLAY}.app/Contents/MacOS/ecterm" "${LOCAL_BIN}/ecterm"
 
 # Ensure ~/.local/bin is in PATH
 SHELL_RC=""
@@ -130,7 +133,7 @@ cat > "$PLIST_PATH" <<PLIST
     <key>Label</key>
     <string>${BUNDLE_ID}</string>
     <key>Program</key>
-    <string>/Applications/${APP_NAME}.app/Contents/MacOS/${APP_NAME}</string>
+    <string>/Applications/${APP_DISPLAY}.app/Contents/MacOS/${APP_NAME}</string>
     <key>RunAtLoad</key>
     <true/>
     <key>KeepAlive</key>
@@ -150,20 +153,20 @@ launchctl load "$PLIST_PATH"
 # ── 6. Shell integration ───────────────────────────────────────────────────────
 info "Installing shell integration..."
 export PATH="${LOCAL_BIN}:${PATH}"
-acv5 setup --no-confirm 2>/dev/null || {
+ec setup --no-confirm 2>/dev/null || {
   warn "Automatic shell setup skipped. Run manually:"
-  warn "  acv5 setup"
+  warn "  ec setup"
 }
 
 # ── 7. Input Method ────────────────────────────────────────────────────────────
 info "Registering Input Method..."
-# Kill old IME and start new one so it can self-register with TIS
+# Kill any stale IME process so the integration installer can launch it fresh
+# from the correct ~/Library/Input Methods/ symlink path (required for TIS registration).
 pkill -f "fig_input_method" 2>/dev/null || true
+pkill -f "EasyCompleteInputMethod" 2>/dev/null || true
 sleep 1
-open "${IM_APP}"
-sleep 3  # Wait for the IME to start and register with TIS
 
-acv5 integrations install input-method 2>/dev/null || {
+ec integrations install input-method 2>/dev/null || {
   warn "Input method registration skipped (only needed for Kitty/Alacritty/Zed/Ghostty/WezTerm)"
 }
 
@@ -171,8 +174,8 @@ acv5 integrations install input-method 2>/dev/null || {
 echo ""
 info "Installation complete!"
 echo ""
-echo "  App:  /Applications/${APP_NAME}.app"
-echo "  CLI:  ${LOCAL_BIN}/acv5  ($(acv5 --version 2>/dev/null || echo 'restart shell to verify'))"
+echo "  App:  /Applications/${APP_DISPLAY}.app"
+echo "  CLI:  ${LOCAL_BIN}/ec  ($(ec --version 2>/dev/null || echo 'restart shell to verify'))"
 echo ""
-echo "  Reload your shell to activate autocomplete:"
+echo "  Reload your shell to activate Easy Complete:"
 echo "    exec \$SHELL"

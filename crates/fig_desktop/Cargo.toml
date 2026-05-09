@@ -1,6 +1,6 @@
 [package]
 name = "fig_desktop"
-authors = ["autocomplete-v5 contributors"]
+authors = ["easy-complete contributors"]
 edition.workspace = true
 homepage = "https://github.com/chen86860/amazon-q-developer-cli-autocomplete"
 publish.workspace = true
@@ -8,14 +8,14 @@ version.workspace = true
 license.workspace = true
 
 [[bin]]
-name = "autocomplete-v5"
+name = "easy-complete"
 path = "src/main.rs"
 
 [lints]
 workspace = true
 
 [package.metadata.bundle]
-name = "autocomplete-v5"
+name = "easy-complete"
 icon = [
     "./icons/128x128.png",
     "./icons/16x16.png",
@@ -27,7 +27,7 @@ icon = [
     "./icons/512x512.png",
     "./icons/64x64.png",
 ]
-identifier = "dev.emmmm.autocomplete-v5"
+identifier = "dev.emmmm.easy-complete"
 resource = "./autocomplete-icons/*"
 
 [features]

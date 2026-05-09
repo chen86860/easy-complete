@@ -3,23 +3,23 @@ import logger from "loglevel";
 import { Mutate, StateCreator, StoreApi } from "zustand";
 import { createWithEqualityFn } from "zustand/traditional";
 
-import { Suggestion } from "@autocomplete-v5/shared/internal";
+import { Suggestion } from "@easy-complete/shared/internal";
 import {
   fieldsAreEqual,
   makeArray,
   memoizeOne,
-} from "@autocomplete-v5/shared/utils";
-import { AliasMap, getCommand } from "@autocomplete-v5/shell-parser";
+} from "@easy-complete/shared/utils";
+import { AliasMap, getCommand } from "@easy-complete/shell-parser";
 import {
   ArgumentParserResult,
   initialParserState,
-} from "@autocomplete-v5/autocomplete-parser";
+} from "@easy-complete/autocomplete-parser";
 import {
   getSetting,
   SETTINGS,
   SettingsMap,
-} from "@autocomplete-v5/api-bindings-wrappers";
-import { type Types } from "@autocomplete-v5/api-bindings";
+} from "@easy-complete/api-bindings-wrappers";
+import { type Types } from "@easy-complete/api-bindings";
 import { detailedDiff } from "deep-object-diff";
 import { trackEvent } from "../telemetry.js";
 import { FigState, initialFigState } from "../fig/hooks";

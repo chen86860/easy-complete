@@ -1,5 +1,5 @@
 import logger from "loglevel";
-import { fread } from "@autocomplete-v5/api-bindings-wrappers";
+import { fread } from "@easy-complete/api-bindings-wrappers";
 import { SystemTheme } from "../hooks/helpers";
 import { MissingThemeError } from "./errors";
 

@@ -1,8 +1,8 @@
 import { useCallback, useMemo, CSSProperties, useRef } from "react";
 import logger from "loglevel";
-import fuzzysort from "@autocomplete-v5/fuzzysort";
-import { Suggestion as SuggestionT } from "@autocomplete-v5/shared/internal";
-import { makeArray } from "@autocomplete-v5/shared/utils";
+import fuzzysort from "@easy-complete/fuzzysort";
+import { Suggestion as SuggestionT } from "@easy-complete/shared/internal";
+import { makeArray } from "@easy-complete/shared/utils";
 import { getQueryTermForSuggestion } from "../suggestions/helpers";
 import SuggestionIcon from "./SuggestionIcon";
 

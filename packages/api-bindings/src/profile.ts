@@ -1,4 +1,4 @@
-// AWS profile API bindings stubbed out — not used in autocomplete-v5
+// AWS profile API bindings stubbed out — not used in easy-complete
 
 export async function listAvailableProfiles(): Promise<{ profiles: never[] }> {
   return { profiles: [] };

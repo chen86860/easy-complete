@@ -4,7 +4,7 @@ import {
   type NotificationRequest,
   NotificationRequestSchema,
   NotificationType,
-} from "@autocomplete-v5/proto/fig";
+} from "@easy-complete/proto/fig";
 
 import { sendMessage } from "./core.js";
 import { create } from "@bufbuild/protobuf";

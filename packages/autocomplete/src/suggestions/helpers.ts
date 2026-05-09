@@ -1,11 +1,11 @@
-import fuzzysort from "@autocomplete-v5/fuzzysort";
+import fuzzysort from "@easy-complete/fuzzysort";
 import logger from "loglevel";
-import { Suggestion } from "@autocomplete-v5/shared/internal";
+import { Suggestion } from "@easy-complete/shared/internal";
 import {
   makeArray,
   longestCommonPrefix,
   ensureTrailingSlash,
-} from "@autocomplete-v5/shared/utils";
+} from "@easy-complete/shared/utils";
 
 const SHORTCUT_PREFIX = "?";
 

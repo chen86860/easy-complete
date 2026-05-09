@@ -2,8 +2,8 @@ import React from "react";
 import {
   Suggestion,
   SuggestionType,
-} from "@autocomplete-v5/shared/internal";
-import { localProtocol } from "@autocomplete-v5/shared/utils";
+} from "@easy-complete/shared/internal";
+import { localProtocol } from "@easy-complete/shared/utils";
 import { icons } from "../fig/icons";
 
 type SuggestionIconProps = {

@@ -1,8 +1,8 @@
 import React from "react";
 import logger from "loglevel";
 import ReactDOM from "react-dom/client";
-import { State } from "@autocomplete-v5/api-bindings-wrappers";
-import { preloadSpecs } from "@autocomplete-v5/autocomplete-parser";
+import { State } from "@easy-complete/api-bindings-wrappers";
+import { preloadSpecs } from "@easy-complete/autocomplete-parser";
 import App from "./App";
 import ErrorBoundary from "./components/ErrorBoundary";
 

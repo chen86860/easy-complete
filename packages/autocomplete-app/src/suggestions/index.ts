@@ -1,4 +1,4 @@
-import { Result } from "@autocomplete-v5/fuzzysort";
+import { Result } from "@easy-complete/fuzzysort";
 import logger from "loglevel";
 import {
   Option,
@@ -6,7 +6,7 @@ import {
   Arg,
   Suggestion,
   SuggestionType,
-} from "@autocomplete-v5/shared/internal";
+} from "@easy-complete/shared/internal";
 import {
   makeArray,
   SuggestionFlags,
@@ -15,17 +15,17 @@ import {
   memoizeOne,
   localProtocol,
   fieldsAreEqual,
-} from "@autocomplete-v5/shared/utils";
+} from "@easy-complete/shared/utils";
 import {
   countEqualOptions,
   Annotation,
   TokenType,
-} from "@autocomplete-v5/autocomplete-parser";
+} from "@easy-complete/autocomplete-parser";
 import {
   getSetting,
   SETTINGS,
   SettingsMap,
-} from "@autocomplete-v5/api-bindings-wrappers";
+} from "@easy-complete/api-bindings-wrappers";
 import { GeneratorState } from "../generators/helpers";
 
 import {

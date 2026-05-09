@@ -1,5 +1,5 @@
 import logger from "loglevel";
-import { executeCommandTimeout } from "@autocomplete-v5/api-bindings-wrappers";
+import { executeCommandTimeout } from "@easy-complete/api-bindings-wrappers";
 import { runPipingConsoleMethods } from "../utils";
 import {
   GeneratorContext,

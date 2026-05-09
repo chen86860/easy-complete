@@ -1,0 +1,26 @@
+{
+  "author": { "name": "Arctic Ice Studio", "github": "arcticicestudio" },
+  "version": "1.0",
+  "theme": {
+    "backgroundColor": "#2e3440",
+    "textColor": "#d8dee9",
+    "matchBackgroundColor": "#3b4252",
+    "selection": {
+      "backgroundColor": "#5e81ac",
+      "textColor": "#eceff4",
+      "matchBackgroundColor": "#81a1c1"
+    },
+    "description": {
+      "textColor": "#4c566a",
+      "borderColor": "#3b4252"
+    }
+  },
+  "accent0": "#bf616a",
+  "accent1": "#d08770",
+  "accent2": "#ebcb8b",
+  "accent3": "#a3be8c",
+  "accent4": "#8fbcbb",
+  "accent5": "#81a1c1",
+  "accent6": "#b48ead",
+  "accent7": "#88c0d0"
+}

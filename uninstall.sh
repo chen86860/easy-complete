@@ -1,18 +1,19 @@
 #!/bin/bash
 set -euo pipefail
 
-# ── autocomplete-v5 macOS uninstaller ────────────────────────────────────────
+# ── Easy Complete macOS uninstaller ────────────────────────────────────────
 
-APP_NAME="autocomplete-v5"
-BUNDLE_ID="dev.emmmm.autocomplete-v5"
-IME_BUNDLE_ID="dev.emmmm.autocomplete-v5.inputmethod"
+APP_NAME="easy-complete"
+APP_DISPLAY="Easy Complete"
+BUNDLE_ID="dev.emmmm.easy-complete"
+IME_BUNDLE_ID="dev.emmmm.easy-complete.inputmethod"
 
-APP_BUNDLE="/Applications/${APP_NAME}.app"
+APP_BUNDLE="/Applications/${APP_DISPLAY}.app"
 LOCAL_BIN="${HOME}/.local/bin"
 LAUNCH_AGENTS="${HOME}/Library/LaunchAgents"
 PLIST_PATH="${LAUNCH_AGENTS}/${BUNDLE_ID}.plist"
 INPUT_METHODS_DIR="${HOME}/Library/Input Methods"
-IME_SYMLINK="${INPUT_METHODS_DIR}/AutocompleteInputMethod.app"
+IME_SYMLINK="${INPUT_METHODS_DIR}/EasyCompleteInputMethod.app"
 APP_SUPPORT="${HOME}/Library/Application Support/${APP_NAME}"
 LOGS_DIR="${HOME}/.local/share/${APP_NAME}"
 
@@ -24,11 +25,11 @@ error() { echo -e "${RED}==>${NC} $*" >&2; }
 # ── Confirm ───────────────────────────────────────────────────────────────────
 if [[ "${1:-}" != "--yes" ]]; then
   echo ""
-  warn "This will completely remove ${APP_NAME} and all its data."
-  echo "  • /Applications/${APP_NAME}.app"
+  warn "This will completely remove ${APP_DISPLAY} and all its data."
+  echo "  • /Applications/${APP_DISPLAY}.app"
   echo "  • ${IME_SYMLINK}"
   echo "  • ${PLIST_PATH}"
-  echo "  • ${LOCAL_BIN}/acv5  and  acv5term"
+  echo "  • ${LOCAL_BIN}/ec  and  ecterm"
   echo "  • ${APP_SUPPORT}/"
   echo "  • ${LOGS_DIR}/"
   echo "  • Shell integration lines in ~/.zshrc / ~/.bashrc / ~/.config/fish/config.fish"
@@ -39,15 +40,15 @@ fi
 
 # ── 1. Uninstall input method via CLI (disables TIS source cleanly) ───────────
 info "Uninstalling input method integration..."
-if command -v acv5 &>/dev/null; then
-  acv5 integrations uninstall input-method 2>/dev/null || true
+if command -v ec &>/dev/null; then
+  ec integrations uninstall input-method 2>/dev/null || true
 fi
 
 # ── 2. Kill running processes ─────────────────────────────────────────────────
 info "Stopping processes..."
 pkill -x "${APP_NAME}"       2>/dev/null || true
 pkill -f "fig_input_method"  2>/dev/null || true
-pkill -f "acv5term"          2>/dev/null || true
+pkill -f "ecterm"          2>/dev/null || true
 sleep 0.5
 
 # ── 3. Unload and remove LaunchAgent ─────────────────────────────────────────
@@ -68,13 +69,13 @@ fi
 defaults delete com.apple.HIToolbox AppleEnabledInputSources 2>/dev/null || true
 
 # ── 5. Remove app bundle ───────────────────────────────────────────────────────
-info "Removing /Applications/${APP_NAME}.app..."
+info "Removing /Applications/${APP_DISPLAY}.app..."
 rm -rf "$APP_BUNDLE"
 
 # ── 6. Remove CLI symlinks ─────────────────────────────────────────────────────
 info "Removing CLI symlinks..."
-rm -f "${LOCAL_BIN}/acv5"
-rm -f "${LOCAL_BIN}/acv5term"
+rm -f "${LOCAL_BIN}/ec"
+rm -f "${LOCAL_BIN}/ecterm"
 
 # ── 7. Remove shell integration from rc files ─────────────────────────────────
 info "Cleaning shell integration..."
@@ -83,10 +84,10 @@ strip_shell_integration() {
   local rc_file="$1"
   [[ -f "$rc_file" ]] || return 0
 
-  # Lines added by acv5 setup / install.sh
+  # Lines added by ec setup / install.sh
   local tmp
   tmp="$(mktemp)"
-  grep -v 'autocomplete-v5\|acv5\|\.local/bin.*PATH\|fig_integration\|QTERM_SESSION\|acv5term\|fig\.sh\|figterm' \
+  grep -v 'easy-complete\|ec\|\.local/bin.*PATH\|fig_integration\|QTERM_SESSION\|ecterm\|fig\.sh\|figterm' \
     "$rc_file" > "$tmp" || true
   mv "$tmp" "$rc_file"
 }
@@ -99,12 +100,12 @@ strip_shell_integration "${HOME}/.bash_profile"
 FISH_CONFIG="${HOME}/.config/fish/config.fish"
 if [[ -f "$FISH_CONFIG" ]]; then
   tmp="$(mktemp)"
-  grep -v 'autocomplete-v5\|acv5\|fig_integration\|QTERM_SESSION\|acv5term\|fig\.fish\|figterm' \
+  grep -v 'easy-complete\|ec\|fig_integration\|QTERM_SESSION\|ecterm\|fig\.fish\|figterm' \
     "$FISH_CONFIG" > "$tmp" || true
   mv "$tmp" "$FISH_CONFIG"
 fi
 
-# Remove acv5-generated shell integration files
+# Remove ec-generated shell integration files
 rm -f "${HOME}/.local/share/fig/zsh_fig_integration.sh"
 rm -f "${HOME}/.local/share/fig/bash_fig_integration.sh"
 rm -f "${HOME}/.config/fish/functions/fig.fish"
@@ -115,8 +116,8 @@ rm -rf "$APP_SUPPORT"
 rm -rf "$LOGS_DIR"
 
 # IPC sockets / temp dirs
-rm -rf "${TMPDIR}acv5run"  2>/dev/null || true
-rm -rf "/tmp/acv5run"      2>/dev/null || true
+rm -rf "${TMPDIR}ecrun"  2>/dev/null || true
+rm -rf "/tmp/ecrun"      2>/dev/null || true
 
 # Preferences
 defaults delete "$BUNDLE_ID"     2>/dev/null || true
@@ -127,7 +128,7 @@ security delete-generic-password -s "$BUNDLE_ID" 2>/dev/null || true
 
 # ── Done ───────────────────────────────────────────────────────────────────────
 echo ""
-info "autocomplete-v5 has been fully uninstalled."
+info "Easy Complete has been fully uninstalled."
 echo ""
 echo "  To remove the ~/.local/bin directory itself (if empty):"
 echo "    rmdir ~/.local/bin 2>/dev/null"

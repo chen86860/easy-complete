@@ -2,7 +2,7 @@ import * as Auth from "./auth.js";
 import * as Codewhisperer from "./codewhisperer.js";
 import * as EditBufferNotifications from "./editbuffer.js";
 import * as Event from "./event.js";
-import * as Fig from "@autocomplete-v5/proto/fig";
+import * as Fig from "@easy-complete/proto/fig";
 import * as fs from "./filesystem.js";
 import * as History from "./history.js";
 import * as Install from "./install.js";

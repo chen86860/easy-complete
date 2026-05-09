@@ -5,7 +5,7 @@ global.fig = {
 
 const originalGlobalFig = global.fig;
 
-import { Suggestion } from "@autocomplete-v5/shared/internal";
+import { Suggestion } from "@easy-complete/shared/internal";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   getNameMatch,

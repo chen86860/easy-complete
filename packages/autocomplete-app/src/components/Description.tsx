@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useRef, useMemo } from "react";
-import { Suggestion, Arg } from "@autocomplete-v5/shared/internal";
+import { Suggestion, Arg } from "@easy-complete/shared/internal";
 import { getMaxHeight, POPOUT_WIDTH } from "../window";
 import { useAutocompleteStore } from "../state";
 import { AutocompleteAction } from "../actions";

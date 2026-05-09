@@ -1,5 +1,5 @@
 {
-  "name": "@autocomplete-v5/shell-parser",
+  "name": "@easy-complete/shell-parser",
   "version": "0.1.0",
   "license": "MIT OR Apache-2.0",
   "author": "Amazon Web Services",
@@ -22,11 +22,11 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@autocomplete-v5/shared": "workspace:^"
+    "@easy-complete/shared": "workspace:^"
   },
   "devDependencies": {
-    "@autocomplete-v5/eslint-config": "workspace:^",
-    "@autocomplete-v5/tsconfig": "workspace:^",
+    "@easy-complete/eslint-config": "workspace:^",
+    "@easy-complete/tsconfig": "workspace:^",
     "@vitest/coverage-v8": "^3.0.8",
     "eslint": "^9.18.0",
     "prettier": "^3.4.2",

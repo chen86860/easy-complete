@@ -1,4 +1,4 @@
-import { createErrorInstance } from "@autocomplete-v5/shared/errors";
+import { createErrorInstance } from "@easy-complete/shared/errors";
 
 // LoadSpecErrors
 export const MissingSpecError = createErrorInstance("MissingSpecError");

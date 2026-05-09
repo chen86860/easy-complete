@@ -1,8 +1,8 @@
 import {
   Annotation,
   TokenType,
-} from "@autocomplete-v5/autocomplete-parser";
-import { Subcommand } from "@autocomplete-v5/shared/internal";
+} from "@easy-complete/autocomplete-parser";
+import { Subcommand } from "@easy-complete/shared/internal";
 import { describe, expect, it } from "vitest";
 import { getTemplateSuggestions } from "../templateSuggestionsGenerator";
 import { GeneratorContext } from "../helpers";

@@ -1,6 +1,6 @@
-import { Suggestion } from "@autocomplete-v5/shared/internal";
-import { SETTINGS } from "@autocomplete-v5/api-bindings-wrappers";
-import * as settings from "@autocomplete-v5/api-bindings-wrappers";
+import { Suggestion } from "@easy-complete/shared/internal";
+import { SETTINGS } from "@easy-complete/api-bindings-wrappers";
+import * as settings from "@easy-complete/api-bindings-wrappers";
 import {
   MockInstance,
   afterAll,

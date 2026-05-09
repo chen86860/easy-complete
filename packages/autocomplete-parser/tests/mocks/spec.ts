@@ -1,4 +1,4 @@
-import { localProtocol } from "@autocomplete-v5/shared/utils";
+import { localProtocol } from "@easy-complete/shared/utils";
 
 const generateSpec = async (
   tokenArray: string[] | undefined,

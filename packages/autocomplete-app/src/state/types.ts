@@ -1,7 +1,7 @@
-import { Suggestion } from "@autocomplete-v5/shared/internal";
-import { ArgumentParserResult } from "@autocomplete-v5/autocomplete-parser";
-import { Command } from "@autocomplete-v5/shell-parser";
-import { SettingsMap } from "@autocomplete-v5/api-bindings-wrappers";
+import { Suggestion } from "@easy-complete/shared/internal";
+import { ArgumentParserResult } from "@easy-complete/autocomplete-parser";
+import { Command } from "@easy-complete/shell-parser";
+import { SettingsMap } from "@easy-complete/api-bindings-wrappers";
 import { FigState } from "../fig/hooks";
 import { GeneratorState } from "../generators/helpers";
 

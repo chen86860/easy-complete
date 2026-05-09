@@ -1,4 +1,4 @@
-// CodeWhisperer API bindings stubbed out — not used in autocomplete-v5
+// CodeWhisperer API bindings stubbed out — not used in easy-complete
 
 export interface Customization {
   arn: string;

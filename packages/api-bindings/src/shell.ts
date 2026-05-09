@@ -5,7 +5,7 @@ import {
   TextUpdate,
   HistoryUpdatedNotification,
   TextUpdateSchema,
-} from "@autocomplete-v5/proto/fig";
+} from "@easy-complete/proto/fig";
 import { sendInsertTextRequest } from "./requests.js";
 import { _subscribe, NotificationResponse } from "./notifications.js";
 import { create } from "@bufbuild/protobuf";

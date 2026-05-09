@@ -1,4 +1,4 @@
-// Telemetry bindings stubbed out — not used in autocomplete-v5
+// Telemetry bindings stubbed out — not used in easy-complete
 
 type Property = string | boolean | number | null;
 

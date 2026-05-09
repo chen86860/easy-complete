@@ -263,7 +263,7 @@ impl std::default::Default for InputMethod {
         let fig_app_path = fig_util::app_bundle_path();
         let bundle_path = fig_app_path
             .join(BUNDLE_CONTENTS_HELPERS_PATH)
-            .join("AutocompleteInputMethod.app");
+            .join("EasyCompleteInputMethod.app");
         Self { bundle_path }
     }
 }
@@ -514,21 +514,27 @@ impl Integration for InputMethod {
                 InputMethod::register(&destination)?;
             }
 
-            // Launch the IME if not already running — the IME self-registers with TIS on startup.
+            // Launch (or restart) the IME so it self-registers with TIS on startup.
+            // We always restart when the symlink changed. When the symlink was already
+            // correct we still need to restart if TIS doesn't recognise the bundle ID
+            // yet (e.g. after a rename where the bundle ID changed).
             let bundle_id = self.bundle_id()?;
             let ime_running = !applications::running_applications_matching(&bundle_id).is_empty();
-            if !ime_running {
-                debug!("Launching Input Method...");
+            let tis_recognises = run_on_main(|| self.input_source().map(|_| ())).is_ok();
+
+            if !ime_running || needs_symlink || !tis_recognises {
+                debug!("Launching/restarting Input Method for TIS registration...");
+                // Kill any stale IME process first
+                Command::new("pkill")
+                    .args(["-f", "EasyCompleteInputMethod"])
+                    .output()
+                    .ok();
+                std::thread::sleep(std::time::Duration::from_millis(500));
                 if let Some(dest) = destination.to_str() {
                     Command::new("open").arg(dest).spawn().ok();
                 }
                 // Wait for the IME to start and self-register with TIS
                 std::thread::sleep(std::time::Duration::from_secs(3));
-            } else {
-                // IME already running and self-registered; give TIS a moment if symlink changed
-                if needs_symlink {
-                    std::thread::sleep(std::time::Duration::from_secs(2));
-                }
             }
 
             // Wait up to 10s for TIS to recognise the registered source.
@@ -548,7 +554,7 @@ impl Integration for InputMethod {
             }
 
             if tis_ready {
-                // enable() triggers the macOS "Allow" dialog — call it exactly once.
+                // Try TIS API enable first (may silently fail without a UI run loop).
                 let _ = run_on_main(|| -> Result<(), InputMethodError> {
                     let source = self.input_source()?;
                     if !source.is_enabled().unwrap_or(false) {
@@ -556,6 +562,25 @@ impl Integration for InputMethod {
                     }
                     Ok(())
                 });
+
+                // If the TIS API didn't stick (common when called from a CLI process
+                // without an NSApplication run loop), fall back to directly writing
+                // the new bundle ID into HIToolbox's AppleSelectedInputSources list.
+                let still_disabled = run_on_main(|| {
+                    self.input_source()
+                        .map(|s| !s.is_enabled().unwrap_or(false))
+                        .unwrap_or(true)
+                });
+                if still_disabled {
+                    if let Ok(bundle_id) = self.bundle_id() {
+                        info!("TISEnableInputSource did not stick; patching HIToolbox directly for {bundle_id}");
+                        force_enable_in_hitoolbox(&bundle_id);
+                        // Treat the HIToolbox patch as a successful enable so the desktop
+                        // app doesn't block autocomplete for terminals that need the IME.
+                        self.set_is_enabled(true);
+                    }
+                }
+
                 // select() never triggers a dialog; retry a few times for TIS to settle.
                 for attempt in 0..5 {
                     let result = run_on_main(|| self.input_source()?.select());
@@ -724,6 +749,58 @@ impl InputMethod {
     }
 }
 
+/// Directly patch `com.apple.HIToolbox`'s `AppleSelectedInputSources` to add
+/// `bundle_id` as a non-keyboard input method.  This is a fallback for when
+/// `TISEnableInputSource` silently fails because the calling process has no
+/// NSApplication run loop (e.g. the CLI installer).
+fn force_enable_in_hitoolbox(bundle_id: &str) {
+    // We use Python's plistlib so we don't need to link against any extra
+    // macOS frameworks.  The script is intentionally self-contained.
+    // Build the script with the bundle_id substituted as a plain string literal.
+    // Derive the vendor prefix so we can remove stale entries from past installs
+    // (e.g. "dev.emmmm.autocomplete-v5.inputmethod" when renaming to
+    // "dev.emmmm.easy-complete.inputmethod").  We extract everything up to the
+    // second-to-last dot-separated segment.
+    let prefix = bundle_id
+        .rsplitn(2, '.')
+        .nth(1)
+        .unwrap_or("")
+        .rsplitn(2, '.')
+        .nth(1)
+        .unwrap_or("");
+
+    let script = [
+        "import subprocess, plistlib, sys",
+        "domain = 'com.apple.HIToolbox'",
+        "key    = 'AppleSelectedInputSources'",
+        &format!("new_id = '{bundle_id}'"),
+        &format!("prefix = '{prefix}'"),
+        "kind   = 'Non Keyboard Input Method'",
+        "proc = subprocess.run(['defaults', 'export', domain, '-'], capture_output=True)",
+        "if proc.returncode != 0: sys.exit(0)",
+        "data = plistlib.loads(proc.stdout)",
+        "sources = data.get(key, [])",
+        // Remove any stale entry with the same vendor prefix (covers renames)
+        // and remove the exact new_id to avoid duplicates before re-adding.
+        "sources = [s for s in sources if not (s.get('Bundle ID', '').startswith(prefix) and s.get('InputSourceKind') == kind and s.get('Bundle ID') != new_id)]",
+        "sources = [s for s in sources if s.get('Bundle ID') != new_id]",
+        "sources.append({'Bundle ID': new_id, 'InputSourceKind': kind})",
+        "data[key] = sources",
+        "proc2 = subprocess.run(['defaults', 'import', domain, '-'], input=plistlib.dumps(data))",
+        "sys.exit(proc2.returncode)",
+    ]
+    .join("\n");
+
+    match Command::new("python3").arg("-c").arg(&script).output() {
+        Ok(out) if out.status.success() => info!("HIToolbox patched successfully for {bundle_id}"),
+        Ok(out) => {
+            let stderr = String::from_utf8_lossy(&out.stderr);
+            info!("HIToolbox patch failed: {stderr}");
+        },
+        Err(e) => info!("Could not run python3 for HIToolbox patch: {e}"),
+    }
+}
+
 fn run_on_main<T, F>(work: F) -> T
 where
     F: Send + FnOnce() -> T,
@@ -745,7 +822,7 @@ mod tests {
 
     const TEST_INPUT_METHOD_BUNDLE_ID: &str = "com.amazon.inputmethod.codewhisperer";
     const TEST_INPUT_METHOD_BUNDLE_URL: &str =
-        "/Applications/autocomplete-v5.app/Contents/Helpers/AutocompleteInputMethod.app";
+        "/Applications/Easy Complete.app/Contents/Helpers/EasyCompleteInputMethod.app";
 
     fn input_method() -> TISInputSource {
         let key: CFString = unsafe { CFString::wrap_under_create_rule(kTISPropertyBundleID) };

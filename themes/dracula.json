@@ -1,0 +1,26 @@
+{
+  "author": { "name": "Zeno Rocha", "github": "zenorocha" },
+  "version": "1.0",
+  "theme": {
+    "backgroundColor": "#282a36",
+    "textColor": "#f8f8f2",
+    "matchBackgroundColor": "#44475a",
+    "selection": {
+      "backgroundColor": "#6272a4",
+      "textColor": "#f8f8f2",
+      "matchBackgroundColor": "#bd93f9"
+    },
+    "description": {
+      "textColor": "#6272a4",
+      "borderColor": "#44475a"
+    }
+  },
+  "accent0": "#ff5555",
+  "accent1": "#ffb86c",
+  "accent2": "#f1fa8c",
+  "accent3": "#50fa7b",
+  "accent4": "#8be9fd",
+  "accent5": "#6272a4",
+  "accent6": "#bd93f9",
+  "accent7": "#ff79c6"
+}

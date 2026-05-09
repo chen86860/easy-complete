@@ -1,7 +1,7 @@
 import {
   SettingsChangedNotification,
   NotificationType,
-} from "@autocomplete-v5/proto/fig";
+} from "@easy-complete/proto/fig";
 import { _subscribe, NotificationResponse } from "./notifications.js";
 
 import {

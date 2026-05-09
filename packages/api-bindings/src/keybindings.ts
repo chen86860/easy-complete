@@ -3,7 +3,7 @@ import {
   ActionListSchema,
   KeybindingPressedNotification,
   NotificationType,
-} from "@autocomplete-v5/proto/fig";
+} from "@easy-complete/proto/fig";
 import { sendUpdateApplicationPropertiesRequest } from "./requests.js";
 import { _subscribe, NotificationResponse } from "./notifications.js";
 import { create } from "@bufbuild/protobuf";

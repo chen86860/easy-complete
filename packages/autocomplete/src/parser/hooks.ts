@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { shallow } from "zustand/shallow";
-import { parseArguments } from "@autocomplete-v5/autocomplete-parser";
+import { parseArguments } from "@easy-complete/autocomplete-parser";
 import { useAutocompleteStore } from "../state";
 import { shellContextSelector } from "../state/generators";
 

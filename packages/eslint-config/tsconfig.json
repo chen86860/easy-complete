@@ -1,5 +1,5 @@
 {
-  "extends": ["@autocomplete-v5/tsconfig/base.json"],
+  "extends": ["@easy-complete/tsconfig/base.json"],
   "compilerOptions": {
     "outDir": "dist"
   },

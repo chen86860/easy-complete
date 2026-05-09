@@ -1,22 +1,22 @@
 import logger, { Logger } from "loglevel";
-import { Settings } from "@autocomplete-v5/api-bindings";
+import { Settings } from "@easy-complete/api-bindings";
 import { convertSubcommand, initializeDefault } from "@fig/autocomplete-shared";
 import {
   withTimeout,
   SpecLocationSource,
   splitPath,
   ensureTrailingSlash,
-} from "@autocomplete-v5/shared/utils";
+} from "@easy-complete/shared/utils";
 import {
   Subcommand,
   SpecLocation,
-} from "@autocomplete-v5/shared/internal";
+} from "@easy-complete/shared/internal";
 import {
   SETTINGS,
   getSetting,
   executeCommand,
   isInDevMode,
-} from "@autocomplete-v5/api-bindings-wrappers";
+} from "@easy-complete/api-bindings-wrappers";
 import {
   importFromPublicCDN,
   publicSpecExists,

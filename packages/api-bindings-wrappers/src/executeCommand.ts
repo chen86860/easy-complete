@@ -4,8 +4,8 @@
  * If it gets bundled in the same file as the functions that call it
  * vitest is not able to mock it (because of esm restrictions).
  */
-import { withTimeout } from "@autocomplete-v5/shared/utils";
-import { Process } from "@autocomplete-v5/api-bindings";
+import { withTimeout } from "@easy-complete/shared/utils";
+import { Process } from "@easy-complete/api-bindings";
 import logger from "loglevel";
 
 export const cleanOutput = (output: string) =>

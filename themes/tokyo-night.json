@@ -1,0 +1,26 @@
+{
+  "author": { "name": "enkia", "github": "enkia" },
+  "version": "1.0",
+  "theme": {
+    "backgroundColor": "#1a1b26",
+    "textColor": "#a9b1d6",
+    "matchBackgroundColor": "#292e42",
+    "selection": {
+      "backgroundColor": "#364a82",
+      "textColor": "#c0caf5",
+      "matchBackgroundColor": "#3d59a1"
+    },
+    "description": {
+      "textColor": "#565f89",
+      "borderColor": "#292e42"
+    }
+  },
+  "accent0": "#f7768e",
+  "accent1": "#ff9e64",
+  "accent2": "#e0af68",
+  "accent3": "#9ece6a",
+  "accent4": "#73daca",
+  "accent5": "#7aa2f7",
+  "accent6": "#bb9af7",
+  "accent7": "#f7768e"
+}

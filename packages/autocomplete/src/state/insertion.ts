@@ -1,17 +1,17 @@
 import logger from "loglevel";
 import { StoreApi } from "zustand";
-import { Shell } from "@autocomplete-v5/api-bindings";
+import { Shell } from "@easy-complete/api-bindings";
 import { SpecLocationSource } from "@fig/autocomplete-shared";
 import {
   SpecLocation,
   Suggestion,
-} from "@autocomplete-v5/shared/internal";
+} from "@easy-complete/shared/internal";
 import {
   makeArray,
   longestCommonPrefix,
   ensureTrailingSlash,
-} from "@autocomplete-v5/shared/utils";
-import { SETTINGS } from "@autocomplete-v5/api-bindings-wrappers";
+} from "@easy-complete/shared/utils";
+import { SETTINGS } from "@easy-complete/api-bindings-wrappers";
 import { trackEvent } from "../telemetry";
 import { NamedSetState, AutocompleteState, Visibility } from "./types";
 import {

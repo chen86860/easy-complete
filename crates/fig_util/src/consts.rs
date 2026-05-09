@@ -1,36 +1,36 @@
-pub const APP_BUNDLE_ID: &str = "dev.emmmm.autocomplete-v5";
-pub const APP_BUNDLE_NAME: &str = "autocomplete-v5.app";
+pub const APP_BUNDLE_ID: &str = "dev.emmmm.easy-complete";
+pub const APP_BUNDLE_NAME: &str = "Easy Complete.app";
 
 #[cfg(target_os = "macos")]
-pub const APP_PROCESS_NAME: &str = "autocomplete-v5";
+pub const APP_PROCESS_NAME: &str = "easy-complete";
 
 #[cfg(windows)]
-pub const APP_PROCESS_NAME: &str = "autocomplete-v5.exe";
+pub const APP_PROCESS_NAME: &str = "easy-complete.exe";
 
 /// The name configured under `"package.productName"` in the tauri.conf.json file.
-pub const TAURI_PRODUCT_NAME: &str = "autocomplete-v5";
+pub const TAURI_PRODUCT_NAME: &str = "Easy Complete";
 
-pub const CLI_BINARY_NAME: &str = "acv5";
-pub const CLI_BINARY_NAME_MINIMAL: &str = "acv5-minimal";
-pub const CHAT_BINARY_NAME: &str = "acv5chat";
-pub const PTY_BINARY_NAME: &str = "acv5term";
+pub const CLI_BINARY_NAME: &str = "ec";
+pub const CLI_BINARY_NAME_MINIMAL: &str = "ec-minimal";
+pub const CHAT_BINARY_NAME: &str = "ec-chat";
+pub const PTY_BINARY_NAME: &str = "ecterm";
 
 pub const CLI_CRATE_NAME: &str = "q_cli";
 
-pub const URL_SCHEMA: &str = "acv5";
+pub const URL_SCHEMA: &str = "ec";
 
-pub const PRODUCT_NAME: &str = "autocomplete-v5";
+pub const PRODUCT_NAME: &str = "Easy Complete";
 
-pub const RUNTIME_DIR_NAME: &str = "acv5run";
+pub const RUNTIME_DIR_NAME: &str = "ecrun";
 
 /// Data directory name used in paths like ~/.local/share/{DATA_DIR_NAME}
 #[cfg(unix)]
-pub const DATA_DIR_NAME: &str = "autocomplete-v5";
+pub const DATA_DIR_NAME: &str = "easy-complete";
 #[cfg(windows)]
-pub const DATA_DIR_NAME: &str = "autocomplete-v5";
+pub const DATA_DIR_NAME: &str = "easy-complete";
 
 /// Backup directory name
-pub const BACKUP_DIR_NAME: &str = ".autocomplete-v5.dotfiles.bak";
+pub const BACKUP_DIR_NAME: &str = ".easy-complete.dotfiles.bak";
 
 pub const OLD_PRODUCT_NAME: &str = "Amazon Q";
 pub const OLD_CLI_BINARY_NAMES: &[&str] = &["q"];

@@ -1,0 +1,26 @@
+{
+  "author": { "name": "Ethan Schoonover" },
+  "version": "1.0",
+  "theme": {
+    "backgroundColor": "#fdf6e3",
+    "textColor": "#657b83",
+    "matchBackgroundColor": "#eee8d5",
+    "selection": {
+      "backgroundColor": "#268bd2",
+      "textColor": "#fdf6e3",
+      "matchBackgroundColor": "#2aa198"
+    },
+    "description": {
+      "textColor": "#93a1a1",
+      "borderColor": "#eee8d5"
+    }
+  },
+  "accent0": "#dc322f",
+  "accent1": "#cb4b16",
+  "accent2": "#b58900",
+  "accent3": "#859900",
+  "accent4": "#2aa198",
+  "accent5": "#268bd2",
+  "accent6": "#6c71c4",
+  "accent7": "#d33682"
+}

@@ -1,5 +1,5 @@
 {
-  "name": "@autocomplete-v5/api-bindings",
+  "name": "@easy-complete/api-bindings",
   "version": "0.2.0",
   "license": "MIT OR Apache-2.0",
   "author": "Amazon Web Services",
@@ -22,12 +22,12 @@
     "generate-requests": "tsx codegen/generate-requests.ts && prettier -w src/requests.ts"
   },
   "dependencies": {
-    "@autocomplete-v5/proto": "workspace:^",
+    "@easy-complete/proto": "workspace:^",
     "@bufbuild/protobuf": "2.4.0"
   },
   "devDependencies": {
-    "@autocomplete-v5/eslint-config": "workspace:^",
-    "@autocomplete-v5/tsconfig": "workspace:^",
+    "@easy-complete/eslint-config": "workspace:^",
+    "@easy-complete/tsconfig": "workspace:^",
     "@tsconfig/recommended": "^1.0.8",
     "@types/node": "^22.15.20",
     "@typescript/analyze-trace": "^0.10.1",

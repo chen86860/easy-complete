@@ -1,0 +1,26 @@
+{
+  "author": { "name": "Atom" },
+  "version": "1.0",
+  "theme": {
+    "backgroundColor": "#282c34",
+    "textColor": "#abb2bf",
+    "matchBackgroundColor": "#3e4452",
+    "selection": {
+      "backgroundColor": "#528bff",
+      "textColor": "#ffffff",
+      "matchBackgroundColor": "#4078f2"
+    },
+    "description": {
+      "textColor": "#5c6370",
+      "borderColor": "#3e4452"
+    }
+  },
+  "accent0": "#e06c75",
+  "accent1": "#d19a66",
+  "accent2": "#e5c07b",
+  "accent3": "#98c379",
+  "accent4": "#56b6c2",
+  "accent5": "#61afef",
+  "accent6": "#c678dd",
+  "accent7": "#be5046"
+}

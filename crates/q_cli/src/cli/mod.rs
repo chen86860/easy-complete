@@ -104,7 +104,7 @@ pub enum Processes {
     App,
 }
 
-/// The autocomplete-v5 CLI
+/// The easy-complete CLI
 #[deny(missing_docs)]
 #[derive(Debug, PartialEq, Subcommand)]
 pub enum CliRootCommands {
@@ -201,7 +201,7 @@ impl CliRootCommands {
 
 const HELP_TEXT: &str = color_print::cstr! {"
 
-<magenta,em>q</magenta,em> (autocomplete-v5)
+<magenta,em>q</magenta,em> (easy-complete)
 
 <magenta,em>Popular Subcommands</magenta,em>              <black!><em>Usage:</em> q [subcommand]</black!>
 ╭────────────────────────────────────────────────────╮

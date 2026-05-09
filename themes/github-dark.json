@@ -1,0 +1,18 @@
+{
+  "author": { "name": "GitHub" },
+  "version": "1.0",
+  "theme": {
+    "backgroundColor": "#0d1117",
+    "textColor": "#c9d1d9",
+    "matchBackgroundColor": "#3d2200",
+    "selection": {
+      "backgroundColor": "#1f6feb",
+      "textColor": "#ffffff",
+      "matchBackgroundColor": "#388bfd"
+    },
+    "description": {
+      "textColor": "#8b949e",
+      "borderColor": "#30363d"
+    }
+  }
+}

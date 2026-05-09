@@ -3,13 +3,13 @@
     "distDir": []
   },
   "package": {
-    "productName": "autocomplete-v5"
+    "productName": "Easy Complete"
   },
   "tauri": {
     "bundle": {
       "targets": "app",
       "active": true,
-      "identifier": "dev.emmmm.autocomplete-v5",
+      "identifier": "dev.emmmm.easy-complete",
       "icon": [
         "icons/icon.icns",
         "icons/icon.ico",

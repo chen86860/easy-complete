@@ -3,7 +3,7 @@ import { sendRunProcessRequest } from "./requests.js";
 import {
   DurationSchema,
   EnvironmentVariableSchema,
-} from "@autocomplete-v5/proto/fig_common";
+} from "@easy-complete/proto/fig_common";
 
 export async function run({
   executable,

@@ -1,4 +1,4 @@
-import { Subcommand } from "@autocomplete-v5/shared/internal";
+import { Subcommand } from "@easy-complete/shared/internal";
 
 const allCaches: Array<Map<string, unknown>> = [];
 

@@ -1,8 +1,8 @@
 import {
   WindowPosition,
   Settings,
-} from "@autocomplete-v5/api-bindings";
-import { SETTINGS } from "@autocomplete-v5/api-bindings-wrappers";
+} from "@easy-complete/api-bindings";
+import { SETTINGS } from "@easy-complete/api-bindings-wrappers";
 import React, {
   useState,
   useEffect,
@@ -13,9 +13,9 @@ import React, {
 } from "react";
 
 import logger from "loglevel";
-import { getCWDForFilesAndFolders } from "@autocomplete-v5/shared/utils";
+import { getCWDForFilesAndFolders } from "@easy-complete/shared/utils";
 import * as jsxRuntime from "react/jsx-runtime";
-import * as figApiBindings from "@autocomplete-v5/api-bindings";
+import * as figApiBindings from "@easy-complete/api-bindings";
 import { getMaxHeight, getMaxWidth, POPOUT_WIDTH } from "./window";
 import { useParseArgumentsEffect } from "./parser/hooks";
 import { loadHistory } from "./history";

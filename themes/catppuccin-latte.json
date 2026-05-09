@@ -1,0 +1,26 @@
+{
+  "author": { "name": "Catppuccin", "github": "catppuccin" },
+  "version": "1.0",
+  "theme": {
+    "backgroundColor": "#eff1f5",
+    "textColor": "#4c4f69",
+    "matchBackgroundColor": "#e6e9ef",
+    "selection": {
+      "backgroundColor": "#1e66f5",
+      "textColor": "#eff1f5",
+      "matchBackgroundColor": "#209fb5"
+    },
+    "description": {
+      "textColor": "#6c6f85",
+      "borderColor": "#ccd0da"
+    }
+  },
+  "accent0": "#d20f39",
+  "accent1": "#fe640b",
+  "accent2": "#df8e1d",
+  "accent3": "#40a02b",
+  "accent4": "#179299",
+  "accent5": "#1e66f5",
+  "accent6": "#8839ef",
+  "accent7": "#ea76cb"
+}

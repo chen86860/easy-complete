@@ -1,11 +1,11 @@
 import logger from "loglevel";
 import { StoreApi } from "zustand";
-import { sleep } from "@autocomplete-v5/shared/utils";
-import { ArgumentParserResult } from "@autocomplete-v5/autocomplete-parser";
+import { sleep } from "@easy-complete/shared/utils";
+import { ArgumentParserResult } from "@easy-complete/autocomplete-parser";
 import {
   SETTINGS,
   getSetting,
-} from "@autocomplete-v5/api-bindings-wrappers";
+} from "@easy-complete/api-bindings-wrappers";
 import { runPipingConsoleMethods } from "../utils";
 import { getTemplateSuggestions } from "../generators/templateSuggestionsGenerator";
 import { getScriptSuggestions } from "../generators/scriptSuggestionsGenerator";

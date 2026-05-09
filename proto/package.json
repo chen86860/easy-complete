@@ -1,5 +1,5 @@
 {
-  "name": "@autocomplete-v5/proto",
+  "name": "@easy-complete/proto",
   "version": "0.2.0",
   "license": "MIT OR Apache-2.0",
   "author": "Amazon Web Services",
@@ -27,7 +27,7 @@
     "@bufbuild/protobuf": "2.4.0"
   },
   "devDependencies": {
-    "@autocomplete-v5/tsconfig": "workspace:^",
+    "@easy-complete/tsconfig": "workspace:^",
     "@bufbuild/buf": "^1.54.0",
     "@bufbuild/protoc-gen-es": "^2.2.5",
     "typescript": "^5.8.3"

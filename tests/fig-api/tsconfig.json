@@ -1,9 +1,9 @@
 {
-  "extends": ["@autocomplete-v5/tsconfig/base.json"],
+  "extends": ["@easy-complete/tsconfig/base.json"],
   "compilerOptions": {
     "noEmit": true,
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "types": ["@autocomplete-v5/types", "node"],
+    "types": ["@easy-complete/types", "node"],
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]

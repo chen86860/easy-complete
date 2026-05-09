@@ -8,7 +8,7 @@ version.workspace = true
 license.workspace = true
 
 [[bin]]
-name = "acv5"
+name = "ec"
 path = "src/main.rs"
 
 [lints]

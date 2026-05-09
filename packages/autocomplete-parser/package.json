@@ -1,5 +1,5 @@
 {
-  "name": "@autocomplete-v5/autocomplete-parser",
+  "name": "@easy-complete/autocomplete-parser",
   "version": "0.2.0",
   "license": "MIT OR Apache-2.0",
   "author": "Amazon Web Services",
@@ -21,9 +21,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@autocomplete-v5/api-bindings-wrappers": "workspace:^",
-    "@autocomplete-v5/api-bindings": "workspace:^",
-    "@autocomplete-v5/shell-parser": "workspace:^",
+    "@easy-complete/api-bindings-wrappers": "workspace:^",
+    "@easy-complete/api-bindings": "workspace:^",
+    "@easy-complete/shell-parser": "workspace:^",
     "@fig/autocomplete-generators": "^2.4.0",
     "@fig/autocomplete-helpers": "^2.0.0",
     "@fig/autocomplete-shared": "^1.1.2",
@@ -32,10 +32,10 @@
     "zod": "^3.25.7"
   },
   "devDependencies": {
-    "@autocomplete-v5/eslint-config": "workspace:^",
-    "@autocomplete-v5/tsconfig": "workspace:^",
-    "@autocomplete-v5/types": "workspace:^",
-    "@autocomplete-v5/shared": "workspace:^",
+    "@easy-complete/eslint-config": "workspace:^",
+    "@easy-complete/tsconfig": "workspace:^",
+    "@easy-complete/types": "workspace:^",
+    "@easy-complete/shared": "workspace:^",
     "@types/semver": "^7.7.0",
     "@withfig/autocomplete-types": "^1.31.0",
     "eslint": "^9.18.0",

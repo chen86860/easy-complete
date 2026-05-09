@@ -1,4 +1,4 @@
-import { Annotation } from "@autocomplete-v5/autocomplete-parser";
+import { Annotation } from "@easy-complete/autocomplete-parser";
 import {
   MockInstance,
   afterEach,

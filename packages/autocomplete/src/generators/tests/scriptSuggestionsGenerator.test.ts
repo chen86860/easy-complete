@@ -1,6 +1,6 @@
-import * as apiBindingsWrappers from "@autocomplete-v5/api-bindings-wrappers/executeCommand";
+import * as apiBindingsWrappers from "@easy-complete/api-bindings-wrappers/executeCommand";
 
-import { Annotation } from "@autocomplete-v5/autocomplete-parser";
+import { Annotation } from "@easy-complete/autocomplete-parser";
 import {
   MockInstance,
   afterEach,
@@ -15,10 +15,10 @@ import { GeneratorContext } from "../helpers";
 import { getScriptSuggestions } from "../scriptSuggestionsGenerator";
 
 vi.mock(
-  "@autocomplete-v5/api-bindings-wrappers/src/executeCommand",
+  "@easy-complete/api-bindings-wrappers/src/executeCommand",
   async () =>
     vi.importActual(
-      "@autocomplete-v5/api-bindings-wrappers/src/executeCommand",
+      "@easy-complete/api-bindings-wrappers/src/executeCommand",
     ),
 );
 

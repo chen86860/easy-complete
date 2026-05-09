@@ -1,4 +1,4 @@
-import { State as DefaultState } from "@autocomplete-v5/api-bindings";
+import { State as DefaultState } from "@easy-complete/api-bindings";
 
 export enum States {
   DEVELOPER_API_HOST = "developer.apiHost",

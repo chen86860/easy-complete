@@ -1,6 +1,6 @@
 import logger from "loglevel";
 
-import { executeCommand } from "@autocomplete-v5/api-bindings-wrappers";
+import { executeCommand } from "@easy-complete/api-bindings-wrappers";
 import { runPipingConsoleMethods } from "../utils";
 import {
   runCachedGenerator,

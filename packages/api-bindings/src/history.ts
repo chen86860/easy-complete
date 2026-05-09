@@ -1,10 +1,10 @@
 import {
   HistoryQueryRequest_Param,
   HistoryQueryRequest_ParamSchema,
-} from "@autocomplete-v5/proto/fig";
+} from "@easy-complete/proto/fig";
 import { sendHistoryQueryRequest } from "./requests.js";
 import { create } from "@bufbuild/protobuf";
-import { EmptySchema } from "@autocomplete-v5/proto/fig_common";
+import { EmptySchema } from "@easy-complete/proto/fig_common";
 
 export type Param = string | number | Uint8Array | null;
 

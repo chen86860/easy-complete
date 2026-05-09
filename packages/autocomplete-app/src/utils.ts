@@ -1,7 +1,7 @@
-import { fs } from "@autocomplete-v5/api-bindings";
+import { fs } from "@easy-complete/api-bindings";
 // eslint-disable-next-line unicorn/prefer-node-protocol
 import util from "util";
-import { isInDevMode } from "@autocomplete-v5/api-bindings-wrappers";
+import { isInDevMode } from "@easy-complete/api-bindings-wrappers";
 
 // Logging functions
 const DEFAULT_CONSOLE = {

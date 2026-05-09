@@ -1,7 +1,7 @@
 import {
   SETTINGS,
   updateSettings,
-} from "@autocomplete-v5/api-bindings-wrappers";
+} from "@easy-complete/api-bindings-wrappers";
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   getMaxWidth,

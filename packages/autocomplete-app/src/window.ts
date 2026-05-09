@@ -1,7 +1,7 @@
 import {
   getSetting,
   SETTINGS,
-} from "@autocomplete-v5/api-bindings-wrappers";
+} from "@easy-complete/api-bindings-wrappers";
 
 // Default settings values.
 export const MAX_WIDTH = 320;

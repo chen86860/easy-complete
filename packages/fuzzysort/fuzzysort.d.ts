@@ -1,4 +1,4 @@
-declare module "@autocomplete-v5/fuzzysort" {
+declare module "@easy-complete/fuzzysort" {
   export interface Result {
     /**
      * Higher is better

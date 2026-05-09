@@ -79,6 +79,8 @@ cat > "${STAGING_BUNDLE}/Contents/Info.plist" <<PLIST
     <true/>
     <key>NSSupportsAutomaticGraphicsSwitching</key>
     <true/>
+    <key>CFBundleIconFile</key>
+    <string>icon</string>
     <key>CFBundleURLTypes</key>
     <array>
         <dict>
@@ -93,6 +95,9 @@ cat > "${STAGING_BUNDLE}/Contents/Info.plist" <<PLIST
 </dict>
 </plist>
 PLIST
+
+# Copy app icon to Resources
+cp "${REPO_DIR}/crates/fig_desktop/icons/icon.icns" "${RESOURCES_DIR}/icon.icns"
 
 # ── 3. Install to /Applications ───────────────────────────────────────────────
 info "Installing to /Applications/..."

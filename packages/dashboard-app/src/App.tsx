@@ -5,7 +5,75 @@ import { SETTINGS } from "@easy-complete/api-bindings-wrappers";
 // ── Types ────────────────────────────────────────────────────────────────────
 
 type S = Record<string, unknown>;
-type Section = "appearance" | "behavior" | "history" | "advanced";
+type Section = "appearance" | "behavior" | "history" | "advanced" | "about";
+
+// ── SVG Icons ─────────────────────────────────────────────────────────────────
+
+function IconAppearance({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 12.5 L9.5 5 L11 3.5 L12.5 5 L11 6.5 L3.5 14" />
+      <path d="M9.5 5 L11 6.5" />
+      <circle cx="2.8" cy="13.2" r="1.5" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+function IconBehavior({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
+      <line x1="3" y1="4.5" x2="13" y2="4.5" />
+      <circle cx="6.5" cy="4.5" r="1.8" fill="currentColor" stroke="none" />
+      <line x1="3" y1="8" x2="13" y2="8" />
+      <circle cx="10" cy="8" r="1.8" fill="currentColor" stroke="none" />
+      <line x1="3" y1="11.5" x2="13" y2="11.5" />
+      <circle cx="6" cy="11.5" r="1.8" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+function IconHistory({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="8" cy="8" r="5.5" />
+      <path d="M8 5.5V8L9.8 9.8" />
+    </svg>
+  );
+}
+
+function IconAdvanced({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="8" cy="8" r="2.2" />
+      <path d="M8 1.5V3M8 13V14.5M1.5 8H3M13 8H14.5M3.4 3.4L4.5 4.5M11.5 11.5L12.6 12.6M3.4 12.6L4.5 11.5M11.5 4.5L12.6 3.4" />
+    </svg>
+  );
+}
+
+function IconAbout({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="8" cy="8" r="5.5" />
+      <path d="M8 7.5V11" />
+      <circle cx="8" cy="5.2" r="0.8" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+// Logo SVG for About page
+function AppLogo({ size = 64 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="64" height="64" rx="14" fill="#1a1a1a" />
+      <rect x="10" y="14" width="44" height="30" rx="4" fill="#2a2a2a" />
+      <path d="M18 24 L24 29 L18 34" stroke="#34c759" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="27" y1="34" x2="38" y2="34" stroke="#8e8e93" strokeWidth="2" strokeLinecap="round" />
+      <rect x="16" y="48" width="32" height="6" rx="3" fill="#007aff" opacity="0.9" />
+      <rect x="16" y="48" width="18" height="6" rx="3" fill="#007aff" />
+      <text x="17.5" y="53.2" fontSize="4.2" fill="white" fontFamily="monospace" fontWeight="600">autocomplete</text>
+    </svg>
+  );
+}
 
 // ── Theme catalog ─────────────────────────────────────────────────────────────
 
@@ -19,11 +87,9 @@ type ThemeEntry = {
 };
 
 const THEMES: ThemeEntry[] = [
-  // Built-ins
   { id: "dark",    label: "Dark",    bg: "#303030", text: "#b4b4b4", selection: "#1e5ac7", accent: "#5f5938" },
   { id: "light",   label: "Light",   bg: "#fefefe", text: "#070707", selection: "#2969da", accent: "#fff899" },
   { id: "system",  label: "System",  bg: "#1c1c1c", text: "#d0d0d0", selection: "#1e5ac7", accent: "#5f5938" },
-  // Bundled themes (filenames without .json)
   { id: "github-dark",       label: "GitHub Dark",        bg: "#0d1117", text: "#c9d1d9", selection: "#1f6feb", accent: "#388bfd" },
   { id: "github-light",      label: "GitHub Light",       bg: "#ffffff", text: "#24292f", selection: "#0969da", accent: "#fff8c5" },
   { id: "dracula",           label: "Dracula",            bg: "#282a36", text: "#f8f8f2", selection: "#6272a4", accent: "#bd93f9" },
@@ -54,14 +120,33 @@ function Toggle({
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full transition-colors duration-200 focus:outline-none ${
-        checked ? "bg-blue" : "bg-surface2"
-      }`}
+      style={{
+        width: 51,
+        height: 31,
+        borderRadius: 999,
+        backgroundColor: checked ? "#34c759" : "#e5e5ea",
+        border: "none",
+        cursor: "pointer",
+        position: "relative",
+        transition: "background-color 0.2s ease",
+        flexShrink: 0,
+        outline: "none",
+        padding: 0,
+      }}
     >
       <span
-        className={`inline-block h-4 w-4 transform rounded-full bg-text shadow transition-transform duration-200 mt-0.5 ${
-          checked ? "translate-x-4.5" : "translate-x-0.5"
-        }`}
+        style={{
+          display: "block",
+          width: 27,
+          height: 27,
+          borderRadius: 999,
+          backgroundColor: "#ffffff",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.20), 0 1px 2px rgba(0,0,0,0.12)",
+          position: "absolute",
+          top: 2,
+          left: checked ? 22 : 2,
+          transition: "left 0.2s ease",
+        }}
       />
     </button>
   );
@@ -80,7 +165,21 @@ function Select({
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="bg-surface0 border border-surface1 text-text text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-blue cursor-pointer"
+      style={{
+        backgroundColor: "#f2f2f7",
+        border: "1px solid #e5e5ea",
+        color: "#000000",
+        fontSize: 13,
+        borderRadius: 8,
+        padding: "5px 28px 5px 10px",
+        cursor: "pointer",
+        outline: "none",
+        appearance: "none",
+        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238e8e93'/%3E%3C/svg%3E")`,
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "right 10px center",
+        minWidth: 140,
+      }}
     >
       {options.map((o) => (
         <option key={o.value} value={o.value}>
@@ -120,7 +219,17 @@ function NumberInput({
         if (!isNaN(n)) onChange(n);
         else setDraft(String(value));
       }}
-      className="w-24 bg-surface0 border border-surface1 text-text text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-blue text-right"
+      style={{
+        width: 80,
+        backgroundColor: "#f2f2f7",
+        border: "1px solid #e5e5ea",
+        color: "#000000",
+        fontSize: 13,
+        borderRadius: 8,
+        padding: "5px 10px",
+        outline: "none",
+        textAlign: "right",
+      }}
     />
   );
 }
@@ -144,7 +253,16 @@ function TextInput({
       placeholder={placeholder}
       onChange={(e) => setDraft(e.target.value)}
       onBlur={() => onChange(draft)}
-      className="w-48 bg-surface0 border border-surface1 text-text text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-blue placeholder-overlay0"
+      style={{
+        width: 160,
+        backgroundColor: "#f2f2f7",
+        border: "1px solid #e5e5ea",
+        color: "#000000",
+        fontSize: 13,
+        borderRadius: 8,
+        padding: "5px 10px",
+        outline: "none",
+      }}
     />
   );
 }
@@ -155,20 +273,35 @@ function Row({
   label,
   description,
   children,
+  last,
 }: {
   label: string;
   description?: string;
   children: React.ReactNode;
+  last?: boolean;
 }) {
   return (
-    <div className="flex items-center justify-between py-3.5 border-b border-surface1 last:border-b-0">
-      <div className="flex-1 mr-6">
-        <div className="text-text text-sm font-medium">{label}</div>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "11px 16px",
+        borderBottom: last ? "none" : "1px solid rgba(60,60,67,0.12)",
+        gap: 16,
+      }}
+    >
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 14, color: "#000000", fontWeight: 400, lineHeight: "20px" }}>
+          {label}
+        </div>
         {description && (
-          <div className="text-subtext0 text-xs mt-0.5">{description}</div>
+          <div style={{ fontSize: 12, color: "#8e8e93", marginTop: 2, lineHeight: "16px" }}>
+            {description}
+          </div>
         )}
       </div>
-      <div className="flex-shrink-0">{children}</div>
+      <div style={{ flexShrink: 0 }}>{children}</div>
     </div>
   );
 }
@@ -181,11 +314,30 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-surface0 rounded-xl px-5 mb-4">
-      <h3 className="text-blue text-xs font-semibold uppercase tracking-wider pt-4 pb-1">
+    <div style={{ marginBottom: 24 }}>
+      <div
+        style={{
+          fontSize: 12,
+          fontWeight: 600,
+          color: "#8e8e93",
+          textTransform: "uppercase",
+          letterSpacing: "0.06em",
+          marginBottom: 8,
+          paddingLeft: 16,
+        }}
+      >
         {title}
-      </h3>
-      {children}
+      </div>
+      <div
+        style={{
+          backgroundColor: "#ffffff",
+          borderRadius: 12,
+          border: "1px solid rgba(60,60,67,0.12)",
+          overflow: "hidden",
+        }}
+      >
+        {children}
+      </div>
     </div>
   );
 }
@@ -200,7 +352,7 @@ function ThemePicker({
   onChange: (id: string) => void;
 }) {
   return (
-    <div className="grid grid-cols-3 gap-2 pb-3 pt-1">
+    <div style={{ padding: "12px 16px 16px", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
       {THEMES.map((t) => {
         const active = value === t.id;
         return (
@@ -208,41 +360,40 @@ function ThemePicker({
             key={t.id}
             onClick={() => onChange(t.id)}
             title={t.label}
-            className={`rounded-lg overflow-hidden border-2 transition-all text-left focus:outline-none ${
-              active
-                ? "border-blue shadow-md shadow-blue/20 scale-[1.02]"
-                : "border-surface1 hover:border-surface2"
-            }`}
+            style={{
+              borderRadius: 10,
+              overflow: "hidden",
+              border: active ? "2px solid #007aff" : "2px solid transparent",
+              outline: active ? "none" : "1px solid rgba(60,60,67,0.15)",
+              outlineOffset: active ? 0 : -1,
+              cursor: "pointer",
+              padding: 0,
+              textAlign: "left",
+              background: "none",
+              transform: active ? "scale(1.02)" : "scale(1)",
+              transition: "all 0.15s ease",
+              boxShadow: active ? "0 0 0 3px rgba(0,122,255,0.18)" : "0 1px 3px rgba(0,0,0,0.08)",
+            }}
           >
-            {/* Mini preview */}
             <div
-              className="h-10 flex flex-col justify-center px-2 gap-1"
-              style={{ backgroundColor: t.bg }}
+              style={{
+                height: 40,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                padding: "0 10px",
+                gap: 4,
+                backgroundColor: t.bg,
+              }}
             >
-              {/* Selection bar */}
-              <div
-                className="h-2 rounded-sm w-3/4"
-                style={{ backgroundColor: t.selection }}
-              />
-              {/* Text bars */}
-              <div
-                className="h-1.5 rounded-sm w-full opacity-70"
-                style={{ backgroundColor: t.text }}
-              />
-              <div
-                className="h-1.5 rounded-sm w-1/2 opacity-40"
-                style={{ backgroundColor: t.text }}
-              />
+              <div style={{ height: 7, borderRadius: 3, width: "72%", backgroundColor: t.selection }} />
+              <div style={{ height: 5, borderRadius: 3, width: "100%", backgroundColor: t.text, opacity: 0.7 }} />
+              <div style={{ height: 5, borderRadius: 3, width: "50%", backgroundColor: t.text, opacity: 0.35 }} />
             </div>
-            {/* Label */}
-            <div
-              className="px-2 py-1 text-xs font-medium truncate"
-              style={{ backgroundColor: t.bg, color: t.text }}
-            >
+            <div style={{ padding: "5px 10px 4px", fontSize: 11, fontWeight: 500, backgroundColor: t.bg, color: t.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
               {t.label}
             </div>
-            {/* Accent strip */}
-            <div className="h-1 w-full" style={{ backgroundColor: t.accent }} />
+            <div style={{ height: 3, backgroundColor: t.accent }} />
           </button>
         );
       })}
@@ -252,13 +403,7 @@ function ThemePicker({
 
 // ── Sections ─────────────────────────────────────────────────────────────────
 
-function AppearanceSection({
-  s,
-  set,
-}: {
-  s: S;
-  set: (k: SETTINGS, v: unknown) => void;
-}) {
+function AppearanceSection({ s, set }: { s: S; set: (k: SETTINGS, v: unknown) => void }) {
   return (
     <>
       <Card title="Theme">
@@ -272,11 +417,11 @@ function AppearanceSection({
         <Row label="Font Family" description="Font used in the autocomplete popup">
           <TextInput
             value={String(s[SETTINGS.FONT_FAMILY] ?? "")}
-            placeholder="system default"
+            placeholder="System default"
             onChange={(v) => set(SETTINGS.FONT_FAMILY, v || null)}
           />
         </Row>
-        <Row label="Font Size" description="Popup font size in pixels">
+        <Row label="Font Size" description="Popup font size in pixels" last>
           <NumberInput
             value={Number(s[SETTINGS.FONT_SIZE] ?? 13)}
             min={10}
@@ -296,7 +441,7 @@ function AppearanceSection({
             onChange={(v) => set(SETTINGS.WIDTH, v)}
           />
         </Row>
-        <Row label="Max Height" description="Maximum popup height in pixels">
+        <Row label="Max Height" description="Maximum popup height in pixels" last>
           <NumberInput
             value={Number(s[SETTINGS.HEIGHT] ?? 140)}
             min={80}
@@ -310,141 +455,69 @@ function AppearanceSection({
   );
 }
 
-function BehaviorSection({
-  s,
-  set,
-}: {
-  s: S;
-  set: (k: SETTINGS, v: unknown) => void;
-}) {
+function BehaviorSection({ s, set }: { s: S; set: (k: SETTINGS, v: unknown) => void }) {
   return (
     <>
       <Card title="Filtering">
         <Row label="Fuzzy Search" description="Match suggestions by fuzzy character matching">
-          <Toggle
-            checked={Boolean(s[SETTINGS.FUZZY_SEARCH])}
-            onChange={(v) => set(SETTINGS.FUZZY_SEARCH, v)}
-          />
+          <Toggle checked={Boolean(s[SETTINGS.FUZZY_SEARCH])} onChange={(v) => set(SETTINGS.FUZZY_SEARCH, v)} />
         </Row>
         <Row label="Sort Method" description="How to order suggestions">
           <Select
             value={String(s[SETTINGS.SORT_METHOD] ?? "default")}
             options={[
-              { value: "default", label: "By relevance" },
+              { value: "default", label: "By Relevance" },
               { value: "alphabetical", label: "Alphabetical" },
             ]}
             onChange={(v) => set(SETTINGS.SORT_METHOD, v)}
           />
         </Row>
-        <Row
-          label="Prefer Verbose Suggestions"
-          description="Show the longer form of suggestion names when available"
-        >
-          <Toggle
-            checked={Boolean(s[SETTINGS.PREFER_VERBOSE_SUGGESTIONS])}
-            onChange={(v) => set(SETTINGS.PREFER_VERBOSE_SUGGESTIONS, v)}
-          />
+        <Row label="Prefer Verbose Suggestions" description="Show the longer form of suggestion names when available">
+          <Toggle checked={Boolean(s[SETTINGS.PREFER_VERBOSE_SUGGESTIONS])} onChange={(v) => set(SETTINGS.PREFER_VERBOSE_SUGGESTIONS, v)} />
         </Row>
-        <Row
-          label="Always Suggest Current Token"
-          description="Keep the current typed text as a suggestion"
-        >
-          <Toggle
-            checked={Boolean(s[SETTINGS.ALWAYS_SUGGEST_CURRENT_TOKEN])}
-            onChange={(v) => set(SETTINGS.ALWAYS_SUGGEST_CURRENT_TOKEN, v)}
-          />
+        <Row label="Always Suggest Current Token" description="Keep the current typed text as a suggestion" last>
+          <Toggle checked={Boolean(s[SETTINGS.ALWAYS_SUGGEST_CURRENT_TOKEN])} onChange={(v) => set(SETTINGS.ALWAYS_SUGGEST_CURRENT_TOKEN, v)} />
         </Row>
       </Card>
 
       <Card title="Trigger">
-        <Row
-          label="Only Show on Tab"
-          description="Suppress popup until Tab is pressed"
-        >
-          <Toggle
-            checked={Boolean(s[SETTINGS.ONLY_SHOW_ON_TAB])}
-            onChange={(v) => set(SETTINGS.ONLY_SHOW_ON_TAB, v)}
-          />
+        <Row label="Only Show on Tab" description="Suppress popup until Tab is pressed">
+          <Toggle checked={Boolean(s[SETTINGS.ONLY_SHOW_ON_TAB])} onChange={(v) => set(SETTINGS.ONLY_SHOW_ON_TAB, v)} />
         </Row>
-        <Row
-          label="Navigate to History with ↑"
-          description="Up-arrow enters shell history navigation mode"
-        >
-          <Toggle
-            checked={Boolean(s[SETTINGS.NAVIGATE_TO_HISTORY])}
-            onChange={(v) => set(SETTINGS.NAVIGATE_TO_HISTORY, v)}
-          />
+        <Row label="Navigate to History with ↑" description="Up-arrow enters shell history navigation mode" last>
+          <Toggle checked={Boolean(s[SETTINGS.NAVIGATE_TO_HISTORY])} onChange={(v) => set(SETTINGS.NAVIGATE_TO_HISTORY, v)} />
         </Row>
       </Card>
 
       <Card title="Insertion">
-        <Row
-          label="Insert Space Automatically"
-          description="Append a space after inserting a suggestion"
-        >
-          <Toggle
-            checked={Boolean(s[SETTINGS.INSERT_SPACE_AUTOMATICALLY])}
-            onChange={(v) => set(SETTINGS.INSERT_SPACE_AUTOMATICALLY, v)}
-          />
+        <Row label="Insert Space Automatically" description="Append a space after inserting a suggestion">
+          <Toggle checked={Boolean(s[SETTINGS.INSERT_SPACE_AUTOMATICALLY])} onChange={(v) => set(SETTINGS.INSERT_SPACE_AUTOMATICALLY, v)} />
         </Row>
-        <Row
-          label="Immediately Execute After Space"
-          description="Run command immediately when a space is inserted after a suggestion"
-        >
-          <Toggle
-            checked={Boolean(s[SETTINGS.IMMEDIATELY_EXEC_AFTER_SPACE])}
-            onChange={(v) => set(SETTINGS.IMMEDIATELY_EXEC_AFTER_SPACE, v)}
-          />
+        <Row label="Immediately Execute After Space" description="Run command immediately when a space is inserted after a suggestion">
+          <Toggle checked={Boolean(s[SETTINGS.IMMEDIATELY_EXEC_AFTER_SPACE])} onChange={(v) => set(SETTINGS.IMMEDIATELY_EXEC_AFTER_SPACE, v)} />
         </Row>
-        <Row
-          label="Scroll Wrap Around"
-          description="Wrap selection from bottom to top of the list"
-        >
-          <Toggle
-            checked={Boolean(s[SETTINGS.SCROLL_WRAP_AROUND])}
-            onChange={(v) => set(SETTINGS.SCROLL_WRAP_AROUND, v)}
-          />
+        <Row label="Scroll Wrap Around" description="Wrap selection from bottom to top of the list" last>
+          <Toggle checked={Boolean(s[SETTINGS.SCROLL_WRAP_AROUND])} onChange={(v) => set(SETTINGS.SCROLL_WRAP_AROUND, v)} />
         </Row>
       </Card>
 
       <Card title="Description Panel">
-        <Row
-          label="Always Show Description"
-          description="Display the description panel in a detached popout window"
-        >
-          <Toggle
-            checked={Boolean(s[SETTINGS.ALWAYS_SHOW_DESCRIPTION])}
-            onChange={(v) => set(SETTINGS.ALWAYS_SHOW_DESCRIPTION, v)}
-          />
+        <Row label="Always Show Description" description="Display the description panel in a detached popout window">
+          <Toggle checked={Boolean(s[SETTINGS.ALWAYS_SHOW_DESCRIPTION])} onChange={(v) => set(SETTINGS.ALWAYS_SHOW_DESCRIPTION, v)} />
         </Row>
-        <Row
-          label="Hide Auto-Execute Suggestion"
-          description="Hide suggestions that would auto-execute a command"
-        >
-          <Toggle
-            checked={Boolean(s[SETTINGS.HIDE_AUTO_EXECUTE_SUGGESTION])}
-            onChange={(v) => set(SETTINGS.HIDE_AUTO_EXECUTE_SUGGESTION, v)}
-          />
+        <Row label="Hide Auto-Execute Suggestion" description="Hide suggestions that would auto-execute a command" last>
+          <Toggle checked={Boolean(s[SETTINGS.HIDE_AUTO_EXECUTE_SUGGESTION])} onChange={(v) => set(SETTINGS.HIDE_AUTO_EXECUTE_SUGGESTION, v)} />
         </Row>
       </Card>
     </>
   );
 }
 
-function HistorySection({
-  s,
-  set,
-}: {
-  s: S;
-  set: (k: SETTINGS, v: unknown) => void;
-}) {
+function HistorySection({ s, set }: { s: S; set: (k: SETTINGS, v: unknown) => void }) {
   return (
     <>
       <Card title="History Suggestions">
-        <Row
-          label="History Mode"
-          description="How shell history is blended with completions"
-        >
+        <Row label="History Mode" description="How shell history is blended with completions">
           <Select
             value={String(s[SETTINGS.HISTORY_MODE] ?? "show")}
             options={[
@@ -455,40 +528,19 @@ function HistorySection({
             onChange={(v) => set(SETTINGS.HISTORY_MODE, v)}
           />
         </Row>
-        <Row
-          label="Merge All Shells"
-          description="Include history from all shells (bash, zsh, fish)"
-        >
-          <Toggle
-            checked={Boolean(s[SETTINGS.HISTORY_MERGE_SHELLS])}
-            onChange={(v) => set(SETTINGS.HISTORY_MERGE_SHELLS, v)}
-          />
+        <Row label="Merge All Shells" description="Include history from all shells (bash, zsh, fish)">
+          <Toggle checked={Boolean(s[SETTINGS.HISTORY_MERGE_SHELLS])} onChange={(v) => set(SETTINGS.HISTORY_MERGE_SHELLS, v)} />
         </Row>
-        <Row
-          label="Ctrl-R Toggle"
-          description="Use Ctrl-R to toggle history-only mode"
-        >
-          <Toggle
-            checked={Boolean(s[SETTINGS.HISTORY_CTRL_R_TOGGLE])}
-            onChange={(v) => set(SETTINGS.HISTORY_CTRL_R_TOGGLE, v)}
-          />
+        <Row label="Ctrl-R Toggle" description="Use Ctrl-R to toggle history-only mode">
+          <Toggle checked={Boolean(s[SETTINGS.HISTORY_CTRL_R_TOGGLE])} onChange={(v) => set(SETTINGS.HISTORY_CTRL_R_TOGGLE, v)} />
         </Row>
-        <Row
-          label="Disable History Loading"
-          description="Skip loading shell history on startup (faster launch)"
-        >
-          <Toggle
-            checked={Boolean(s[SETTINGS.DISABLE_HISTORY_LOADING])}
-            onChange={(v) => set(SETTINGS.DISABLE_HISTORY_LOADING, v)}
-          />
+        <Row label="Disable History Loading" description="Skip loading shell history on startup (faster launch)" last>
+          <Toggle checked={Boolean(s[SETTINGS.DISABLE_HISTORY_LOADING])} onChange={(v) => set(SETTINGS.DISABLE_HISTORY_LOADING, v)} />
         </Row>
       </Card>
 
       <Card title="Custom History Command">
-        <Row
-          label="Custom History Command"
-          description="Shell command to use as the history source (leave empty for default)"
-        >
+        <Row label="History Command" description="Shell command to use as the history source (leave empty for default)" last>
           <TextInput
             value={String(s[SETTINGS.HISTORY_COMMAND] ?? "")}
             placeholder="e.g. atuin search"
@@ -500,20 +552,11 @@ function HistorySection({
   );
 }
 
-function AdvancedSection({
-  s,
-  set,
-}: {
-  s: S;
-  set: (k: SETTINGS, v: unknown) => void;
-}) {
+function AdvancedSection({ s, set }: { s: S; set: (k: SETTINGS, v: unknown) => void }) {
   return (
     <>
       <Card title="Performance">
-        <Row
-          label="Script Timeout"
-          description="Max milliseconds to wait for a completion generator to run"
-        >
+        <Row label="Script Timeout" description="Max milliseconds to wait for a completion generator to run" last>
           <NumberInput
             value={Number(s[SETTINGS.SCRIPT_TIMEOUT] ?? 5000)}
             min={500}
@@ -525,48 +568,148 @@ function AdvancedSection({
       </Card>
 
       <Card title="Dangerous Commands">
-        <Row
-          label="Immediately Run Dangerous Commands"
-          description="Auto-execute suggestions marked as dangerous without confirmation"
-        >
-          <Toggle
-            checked={Boolean(s[SETTINGS.IMMEDIATELY_RUN_DANGEROUS_COMMANDS])}
-            onChange={(v) => set(SETTINGS.IMMEDIATELY_RUN_DANGEROUS_COMMANDS, v)}
-          />
+        <Row label="Immediately Run Dangerous Commands" description="Auto-execute suggestions marked as dangerous without confirmation">
+          <Toggle checked={Boolean(s[SETTINGS.IMMEDIATELY_RUN_DANGEROUS_COMMANDS])} onChange={(v) => set(SETTINGS.IMMEDIATELY_RUN_DANGEROUS_COMMANDS, v)} />
         </Row>
-        <Row
-          label="Immediately Run Git Aliases"
-          description="Auto-execute git alias suggestions"
-        >
-          <Toggle
-            checked={Boolean(s[SETTINGS.IMMEDIATELY_RUN_GIT_ALIAS])}
-            onChange={(v) => set(SETTINGS.IMMEDIATELY_RUN_GIT_ALIAS, v)}
-          />
+        <Row label="Immediately Run Git Aliases" description="Auto-execute git alias suggestions" last>
+          <Toggle checked={Boolean(s[SETTINGS.IMMEDIATELY_RUN_GIT_ALIAS])} onChange={(v) => set(SETTINGS.IMMEDIATELY_RUN_GIT_ALIAS, v)} />
         </Row>
       </Card>
 
       <Card title="Developer">
-        <Row
-          label="Developer Mode"
-          description="Enable additional debug logging and dev tools"
-        >
-          <Toggle
-            checked={Boolean(s[SETTINGS.DEV_MODE])}
-            onChange={(v) => set(SETTINGS.DEV_MODE, v)}
-          />
+        <Row label="Developer Mode" description="Enable additional debug logging and dev tools" last>
+          <Toggle checked={Boolean(s[SETTINGS.DEV_MODE])} onChange={(v) => set(SETTINGS.DEV_MODE, v)} />
         </Row>
       </Card>
     </>
   );
 }
 
-// ── Sidebar ───────────────────────────────────────────────────────────────────
+// ── About section ─────────────────────────────────────────────────────────────
 
-const NAV: { id: Section; label: string; icon: string }[] = [
-  { id: "appearance", label: "Appearance", icon: "✦" },
-  { id: "behavior", label: "Behavior", icon: "⚡" },
-  { id: "history", label: "History", icon: "⏳" },
-  { id: "advanced", label: "Advanced", icon: "⚙" },
+function AboutSection() {
+  const REPO_URL = "https://github.com/chen86860/amazon-q-developer-cli-autocomplete";
+  const VERSION = "1.0.0";
+
+  return (
+    <>
+      <Card title="Application">
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            padding: "32px 16px 28px",
+            gap: 12,
+          }}
+        >
+          <AppLogo size={72} />
+          <div style={{ textAlign: "center", marginTop: 4 }}>
+            <div style={{ fontSize: 20, fontWeight: 700, color: "#000000", letterSpacing: "-0.02em" }}>
+              Easy Complete
+            </div>
+            <div style={{ fontSize: 13, color: "#8e8e93", marginTop: 4 }}>
+              macOS Terminal Autocomplete
+            </div>
+            <div
+              style={{
+                display: "inline-block",
+                marginTop: 10,
+                padding: "3px 10px",
+                backgroundColor: "rgba(0,122,255,0.1)",
+                borderRadius: 6,
+                fontSize: 12,
+                fontWeight: 600,
+                color: "#007aff",
+                letterSpacing: "0.02em",
+              }}
+            >
+              v{VERSION}
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      <Card title="Project">
+        <Row label="GitHub Repository" description="Source code and issue tracker">
+          <a
+            href={REPO_URL}
+            onClick={(e) => {
+              e.preventDefault();
+              window.open(REPO_URL, "_blank");
+            }}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 5,
+              fontSize: 13,
+              color: "#007aff",
+              textDecoration: "none",
+              padding: "4px 10px",
+              backgroundColor: "rgba(0,122,255,0.08)",
+              borderRadius: 7,
+              fontWeight: 500,
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+            </svg>
+            View on GitHub
+          </a>
+        </Row>
+        <Row label="Version" description="Current application version" last>
+          <span style={{ fontSize: 13, color: "#8e8e93", fontVariantNumeric: "tabular-nums" }}>
+            {VERSION}
+          </span>
+        </Row>
+      </Card>
+
+      <Card title="License">
+        <Row label="Open Source" description="Licensed under MIT and Apache 2.0" last>
+          <div style={{ display: "flex", gap: 6 }}>
+            {["MIT", "Apache 2.0"].map((lic) => (
+              <span
+                key={lic}
+                style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: "#34c759",
+                  backgroundColor: "rgba(52,199,89,0.1)",
+                  padding: "2px 8px",
+                  borderRadius: 5,
+                  letterSpacing: "0.02em",
+                }}
+              >
+                {lic}
+              </span>
+            ))}
+          </div>
+        </Row>
+      </Card>
+
+      <Card title="Based On">
+        <Row label="Amazon Q Developer CLI" description="Fork of the open-source Amazon Q Developer CLI autocomplete" last>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#8e8e93" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M7 3H3a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V9" />
+            <path d="M10 2h4v4" />
+            <path d="M14 2L8 8" />
+          </svg>
+        </Row>
+      </Card>
+    </>
+  );
+}
+
+// ── Sidebar nav ───────────────────────────────────────────────────────────────
+
+type NavItem = { id: Section; label: string; icon: React.ReactNode };
+
+const NAV: NavItem[] = [
+  { id: "appearance", label: "Appearance", icon: <IconAppearance /> },
+  { id: "behavior",   label: "Behavior",   icon: <IconBehavior /> },
+  { id: "history",    label: "History",    icon: <IconHistory /> },
+  { id: "advanced",   label: "Advanced",   icon: <IconAdvanced /> },
+  { id: "about",      label: "About",      icon: <IconAbout /> },
 ];
 
 // ── App ───────────────────────────────────────────────────────────────────────
@@ -580,9 +723,7 @@ export default function App() {
   useEffect(() => {
     Settings.current()
       .then((s: Record<string, unknown>) => setSettings(s as S))
-      .catch(() => {
-        // not inside desktop WebView — show empty defaults
-      });
+      .catch(() => {});
 
     let unsubscribe: (() => void) | undefined;
     Settings.didChange
@@ -592,9 +733,7 @@ export default function App() {
           .catch(() => {});
         return { unsubscribe: false };
       })
-      ?.then((sub) => {
-        unsubscribe = sub.unsubscribe;
-      })
+      ?.then((sub) => { unsubscribe = sub.unsubscribe; })
       .catch(() => {});
 
     return () => unsubscribe?.();
@@ -602,9 +741,7 @@ export default function App() {
 
   const set = async (key: SETTINGS, value: unknown) => {
     if (savingTimer.current) clearTimeout(savingTimer.current);
-
     setSettings((prev) => ({ ...prev, [key]: value }));
-
     try {
       if (value === null || value === undefined) {
         await Settings.remove(key);
@@ -615,64 +752,142 @@ export default function App() {
     } catch {
       setSaving("Error saving");
     }
-
     savingTimer.current = setTimeout(() => setSaving(null), 1500);
   };
 
+  const SECTION_TITLES: Record<Section, string> = {
+    appearance: "Appearance",
+    behavior: "Behavior",
+    history: "History",
+    advanced: "Advanced",
+    about: "About",
+  };
+
   return (
-    <div className="flex h-screen bg-base text-text overflow-hidden">
+    <div
+      style={{
+        display: "flex",
+        height: "100vh",
+        backgroundColor: "#f2f2f7",
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif",
+        color: "#000000",
+        overflow: "hidden",
+        WebkitFontSmoothing: "antialiased",
+      }}
+    >
       {/* Sidebar */}
-      <aside className="w-44 flex-shrink-0 bg-mantle flex flex-col py-4 border-r border-surface1">
-        <div className="px-4 mb-6">
-          <h1 className="text-text text-sm font-semibold">Easy Complete</h1>
-          <p className="text-subtext0 text-xs mt-0.5">Settings</p>
-        </div>
-        <nav className="flex-1">
-          {NAV.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setSection(item.id)}
-              className={`w-full flex items-center gap-2.5 px-4 py-2 text-sm text-left transition-colors ${
-                section === item.id
-                  ? "bg-surface0 text-blue font-medium"
-                  : "text-subtext1 hover:text-text hover:bg-surface0/50"
-              }`}
-            >
-              <span className="text-base leading-none">{item.icon}</span>
-              {item.label}
-            </button>
-          ))}
-        </nav>
-        {saving && (
-          <div className="px-4 py-2">
-            <span
-              className={`text-xs ${saving === "Saved" ? "text-green" : "text-red"}`}
-            >
-              {saving}
-            </span>
+      <aside
+        style={{
+          width: 200,
+          flexShrink: 0,
+          backgroundColor: "#f2f2f7",
+          borderRight: "1px solid rgba(60,60,67,0.18)",
+          display: "flex",
+          flexDirection: "column",
+          paddingTop: 20,
+        }}
+      >
+        {/* App title */}
+        <div style={{ padding: "0 16px 20px" }}>
+          <div style={{ fontSize: 15, fontWeight: 600, color: "#000000", letterSpacing: "-0.01em" }}>
+            Easy Complete
           </div>
-        )}
+          <div style={{ fontSize: 12, color: "#8e8e93", marginTop: 2 }}>Settings</div>
+        </div>
+
+        {/* Nav items */}
+        <nav style={{ flex: 1 }}>
+          {NAV.map((item) => {
+            const active = section === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setSection(item.id)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  padding: "8px 12px",
+                  margin: "1px 8px",
+                  width: "calc(100% - 16px)",
+                  borderRadius: 8,
+                  border: "none",
+                  cursor: "pointer",
+                  textAlign: "left",
+                  fontSize: 13,
+                  fontWeight: active ? 500 : 400,
+                  color: active ? "#000000" : "#3c3c43",
+                  backgroundColor: active ? "rgba(60,60,67,0.12)" : "transparent",
+                  transition: "background-color 0.12s ease",
+                  fontFamily: "inherit",
+                }}
+                onMouseEnter={(e) => {
+                  if (!active) (e.currentTarget as HTMLButtonElement).style.backgroundColor = "rgba(60,60,67,0.06)";
+                }}
+                onMouseLeave={(e) => {
+                  if (!active) (e.currentTarget as HTMLButtonElement).style.backgroundColor = "transparent";
+                }}
+              >
+                <span style={{ lineHeight: 1, opacity: active ? 1 : 0.55, width: 18, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  {item.icon}
+                </span>
+                {item.label}
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Save indicator */}
+        <div style={{ padding: "12px 20px", height: 36, display: "flex", alignItems: "center" }}>
+          {saving && (
+            <span
+              style={{
+                fontSize: 12,
+                color: saving === "Saved" ? "#34c759" : "#ff3b30",
+                fontWeight: 500,
+                display: "flex",
+                alignItems: "center",
+                gap: 5,
+              }}
+            >
+              {saving === "Saved" ? (
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="8" cy="8" r="6.5" />
+                  <path d="M5 8l2.2 2.2L11 5.5" />
+                </svg>
+              ) : (
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M8 1.5L14.5 13H1.5L8 1.5Z" />
+                  <path d="M8 6.5V9.5" />
+                  <circle cx="8" cy="11.5" r="0.8" fill="currentColor" stroke="none" />
+                </svg>
+              )}
+              {saving === "Saved" ? "Saved" : "Error saving"}
+            </span>
+          )}
+        </div>
       </aside>
 
       {/* Content */}
-      <main className="flex-1 overflow-y-auto">
-        <div className="max-w-2xl mx-auto px-6 py-6">
-          <h2 className="text-lg font-semibold text-text mb-4 capitalize">
-            {section}
+      <main style={{ flex: 1, overflowY: "auto", backgroundColor: "#f2f2f7" }}>
+        <div style={{ maxWidth: 600, margin: "0 auto", padding: "24px 24px 40px" }}>
+          <h2
+            style={{
+              fontSize: 22,
+              fontWeight: 700,
+              color: "#000000",
+              marginBottom: 20,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            {SECTION_TITLES[section]}
           </h2>
 
-          {section === "appearance" && (
-            <AppearanceSection s={settings} set={set} />
-          )}
-          {section === "behavior" && (
-            <BehaviorSection s={settings} set={set} />
-          )}
-          {section === "history" && (
-            <HistorySection s={settings} set={set} />
-          )}
-          {section === "advanced" && (
-            <AdvancedSection s={settings} set={set} />
-          )}
+          {section === "appearance" && <AppearanceSection s={settings} set={set} />}
+          {section === "behavior"   && <BehaviorSection   s={settings} set={set} />}
+          {section === "history"    && <HistorySection    s={settings} set={set} />}
+          {section === "advanced"   && <AdvancedSection   s={settings} set={set} />}
+          {section === "about"      && <AboutSection />}
         </div>
       </main>
     </div>

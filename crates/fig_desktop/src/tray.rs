@@ -19,9 +19,9 @@ use muda::{
     Menu,
     MenuEvent,
     MenuId,
-    MenuItemBuilder,
     PredefinedMenuItem,
     Submenu,
+    accelerator::Accelerator,
 };
 use tao::event_loop::ControlFlow;
 use tracing::{
@@ -403,6 +403,7 @@ enum MenuElement {
         image_icon: Option<muda::Icon>,
         text: Cow<'static, str>,
         id: Cow<'static, str>,
+        accelerator: Option<Accelerator>,
     },
     Separator,
     #[allow(dead_code)]
@@ -431,7 +432,15 @@ impl MenuElement {
             image_icon: image_icon.and_then(|(bytes, width, height)| muda::Icon::from_rgba(bytes, width, height).ok()),
             text: text.into(),
             id: id.into(),
+            accelerator: None,
         }
+    }
+
+    fn with_accelerator(mut self, accel: &str) -> Self {
+        if let Self::Entry { ref mut accelerator, .. } = self {
+            *accelerator = accel.parse::<Accelerator>().ok();
+        }
+        self
     }
 
     // fn sub_menu(title: impl Into<Cow<'static, str>>, elements: Vec<MenuElement>) -> Self {
@@ -457,18 +466,19 @@ impl MenuElement {
                 image_icon,
                 text,
                 id,
-                ..
+                accelerator,
             } => {
                 let text = match (std::env::consts::OS, emoji_icon) {
                     ("linux", Some(emoji_icon)) => format!("{emoji_icon} {text}"),
                     _ => text.to_string(),
                 };
-                let menu_item = muda::IconMenuItemBuilder::new()
-                    .text(text)
-                    .id(MenuId::new(id))
-                    .enabled(true)
-                    .icon(image_icon.clone())
-                    .build();
+                let menu_item = IconMenuItem::with_id(
+                    MenuId::new(id),
+                    text,
+                    true,
+                    image_icon.clone(),
+                    accelerator.clone(),
+                );
                 menu.append(&menu_item).unwrap();
             },
             MenuElement::Separator => {
@@ -498,17 +508,18 @@ impl MenuElement {
                 submenu.append(&menu_item).unwrap();
             },
             MenuElement::Entry {
-                emoji_icon, text, id, ..
+                emoji_icon, text, id, accelerator, ..
             } => {
                 let text: String = match (std::env::consts::OS, emoji_icon) {
                     ("linux", Some(emoji_icon)) => format!("{emoji_icon} {text}"),
                     _ => text.to_string(),
                 };
-                let menu_item = MenuItemBuilder::new()
-                    .text(text)
-                    .id(MenuId::new(id))
-                    .enabled(true)
-                    .build();
+                let menu_item = muda::MenuItem::with_id(
+                    MenuId::new(id),
+                    text,
+                    true,
+                    accelerator.clone(),
+                );
                 submenu.append(&menu_item).unwrap();
             },
             MenuElement::Separator => {
@@ -527,18 +538,8 @@ impl MenuElement {
 }
 
 fn menu(is_logged_in: bool) -> Vec<MenuElement> {
-    let not_working = MenuElement::entry(None, None, format!("{PRODUCT_NAME} not working?"), "not-working");
-    let manual = MenuElement::entry(None, None, "User Guide", "user-manual");
-    let version = MenuElement::info(None, format!("Version: {}", env!("CARGO_PKG_VERSION")));
-    let update = MenuElement::entry(None, None, "Check for updates...", "update");
-    let quit = MenuElement::entry(None, None, format!("Quit {PRODUCT_NAME}"), "quit");
-    // let dashboard = MenuElement::entry(None, None, "Dashboard", "dashboard");
-    let settings = MenuElement::entry(None, None, "Settings", "settings");
-    // let developer = MenuElement::sub_menu("Developer", vec![
-    //     MenuElement::entry(None, None, "Dashboard Devtools", "dashboard-devtools"),
-    //     MenuElement::entry(None, None, "Autocomplete Devtools", "autocomplete-devtools"),
-    //     MenuElement::entry(None, None, "Companion Devtools", "companion-devtools"),
-    // ]);
+    let quit = MenuElement::entry(None, None, "Quit", "quit").with_accelerator("super+KeyQ");
+    let settings = MenuElement::entry(None, None, "Settings", "settings").with_accelerator("super+Comma");
 
     let onboarded_completed = fig_settings::state::get_bool_or("desktop.completedOnboarding", false);
     let yellow_circle_img = get_image_rgba(include_bytes!("../icons/yellow-circle.png"));
@@ -559,16 +560,7 @@ fn menu(is_logged_in: bool) -> Vec<MenuElement> {
         vec![settings]
     };
 
-    menu.extend(vec![
-        MenuElement::Separator,
-        manual,
-        not_working,
-        MenuElement::Separator,
-        version,
-        update,
-        MenuElement::Separator,
-        quit,
-    ]);
+    menu.extend(vec![MenuElement::Separator, quit]);
 
     menu
 }

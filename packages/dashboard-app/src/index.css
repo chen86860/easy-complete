@@ -21,9 +21,9 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #45475a;
+  background: rgba(60,60,67,0.28);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #585b70;
+  background: rgba(60,60,67,0.45);
 }

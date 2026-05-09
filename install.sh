@@ -8,13 +8,14 @@ APP_DISPLAY="Easy Complete"       # human-readable / bundle directory name
 BUNDLE_ID="dev.emmmm.easy-complete"
 VERSION=$(cargo metadata --no-deps --format-version 1 | python3 -c "import sys,json; print(json.load(sys.stdin)['packages'][0]['version'])" 2>/dev/null || echo "dev")
 
+REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
+STAGING_BUNDLE="${REPO_DIR}/build/${APP_DISPLAY}.app"
 APP_BUNDLE="/Applications/${APP_DISPLAY}.app"
-MACOS_DIR="${APP_BUNDLE}/Contents/MacOS"
-RESOURCES_DIR="${APP_BUNDLE}/Contents/Resources"
+MACOS_DIR="${STAGING_BUNDLE}/Contents/MacOS"
+RESOURCES_DIR="${STAGING_BUNDLE}/Contents/Resources"
 LOCAL_BIN="${HOME}/.local/bin"
 LAUNCH_AGENTS="${HOME}/Library/LaunchAgents"
 PLIST_PATH="${LAUNCH_AGENTS}/${BUNDLE_ID}.plist"
-REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 GREEN='\033[0;32m'; YELLOW='\033[0;33m'; RED='\033[0;31m'; NC='\033[0m'
 info()  { echo -e "${GREEN}==>${NC} $*"; }
@@ -31,7 +32,7 @@ pnpm turbo build --filter="./packages/*"
 
 # ── 2. Assemble .app bundle ───────────────────────────────────────────────────
 info "Assembling '${APP_DISPLAY}.app'..."
-rm -rf "$APP_BUNDLE"
+rm -rf "$STAGING_BUNDLE"
 mkdir -p "$MACOS_DIR"
 mkdir -p "${RESOURCES_DIR}/autocomplete"
 mkdir -p "${RESOURCES_DIR}/dashboard"
@@ -46,14 +47,14 @@ cp -r packages/dashboard-app/dist/*    "${RESOURCES_DIR}/dashboard/"
 cp themes/*.json                        "${RESOURCES_DIR}/themes/"
 
 # Input Method helper app
-IM_APP="${APP_BUNDLE}/Contents/Helpers/EasyCompleteInputMethod.app"
+IM_APP="${STAGING_BUNDLE}/Contents/Helpers/EasyCompleteInputMethod.app"
 mkdir -p "${IM_APP}/Contents/MacOS"
 mkdir -p "${IM_APP}/Contents/Resources"
 cp "target/release/fig_input_method"                            "${IM_APP}/Contents/MacOS/"
 cp "crates/fig_input_method/Info.plist"                         "${IM_APP}/Contents/"
 cp crates/fig_input_method/resources/*                          "${IM_APP}/Contents/Resources/" 2>/dev/null || true
 
-cat > "${APP_BUNDLE}/Contents/Info.plist" <<PLIST
+cat > "${STAGING_BUNDLE}/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -102,7 +103,8 @@ sleep 0.5
 # Remove old launchd job if loaded
 launchctl unload "$PLIST_PATH" 2>/dev/null || true
 
-cp -r "$APP_BUNDLE" /Applications/
+rm -rf "$APP_BUNDLE"
+cp -r "$STAGING_BUNDLE" /Applications/
 
 # ── 4. Symlink CLI binaries to ~/.local/bin ───────────────────────────────────
 info "Linking binaries to ${LOCAL_BIN}..."
@@ -110,17 +112,6 @@ mkdir -p "$LOCAL_BIN"
 ln -sf "/Applications/${APP_DISPLAY}.app/Contents/MacOS/ec"     "${LOCAL_BIN}/ec"
 ln -sf "/Applications/${APP_DISPLAY}.app/Contents/MacOS/ecterm" "${LOCAL_BIN}/ecterm"
 
-# Ensure ~/.local/bin is in PATH
-SHELL_RC=""
-case "${SHELL:-}" in
-  */zsh)  SHELL_RC="${HOME}/.zshrc" ;;
-  */bash) SHELL_RC="${HOME}/.bashrc" ;;
-esac
-
-if [[ -n "$SHELL_RC" ]] && ! grep -q '\.local/bin' "$SHELL_RC" 2>/dev/null; then
-  echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$SHELL_RC"
-  warn "Added ~/.local/bin to PATH in ${SHELL_RC}"
-fi
 
 # ── 5. LaunchAgent (autostart on login) ───────────────────────────────────────
 info "Installing LaunchAgent for autostart..."

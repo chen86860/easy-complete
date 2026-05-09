@@ -1,5 +1,4 @@
 mod generate_ssh;
-mod inline_shell_completion;
 pub mod local_state;
 mod multiplexer;
 pub mod should_figterm_launch;
@@ -89,10 +88,6 @@ use tracing::{
     warn,
 };
 
-use self::inline_shell_completion::{
-    inline_shell_completion,
-    inline_shell_completion_accept,
-};
 use crate::cli::installation::install_cli;
 use crate::util::desktop::{
     LaunchArgs,
@@ -279,16 +274,6 @@ pub enum InternalSubcommand {
     /// This lets us bypass a bug in Include and vdollar_expand that causes environment variables to
     /// be expanded, even in files that are only referenced in match blocks that resolve to false
     GenerateSsh(generate_ssh::GenerateSshArgs),
-    InlineShellCompletion {
-        #[arg(long, allow_hyphen_values = true)]
-        buffer: String,
-    },
-    InlineShellCompletionAccept {
-        #[arg(long, allow_hyphen_values = true)]
-        buffer: String,
-        #[arg(long, allow_hyphen_values = true)]
-        suggestion: String,
-    },
     #[command(alias = "mux")]
     Multiplexer(MultiplexerArgs),
 }
@@ -853,10 +838,6 @@ impl InternalSubcommand {
                 Ok(ExitCode::SUCCESS)
             },
             InternalSubcommand::GenerateSsh(args) => args.execute().await,
-            InternalSubcommand::InlineShellCompletion { buffer } => Ok(inline_shell_completion(buffer).await),
-            InternalSubcommand::InlineShellCompletionAccept { buffer, suggestion } => {
-                Ok(inline_shell_completion_accept(buffer, suggestion).await)
-            },
             InternalSubcommand::Multiplexer(args) => match multiplexer::execute(args).await {
                 Ok(()) => Ok(ExitCode::SUCCESS),
                 Err(err) => {

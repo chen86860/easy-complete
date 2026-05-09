@@ -199,28 +199,12 @@ impl Env {
         self.get("Q_TERM")
     }
 
-    pub fn q_using_zsh_autosuggestions(&self) -> bool {
-        self.get_os("Q_USING_ZSH_AUTOSUGGESTIONS").is_some()
-    }
-
     pub fn q_init_snapshot_test(&self) -> bool {
         self.get_os("Q_INIT_SNAPSHOT_TEST").is_some()
     }
 
     pub fn q_desktop_release_url(&self) -> Result<String, VarError> {
         self.get("Q_DESKTOP_RELEASE_URL")
-    }
-
-    pub fn q_inline_shell_completion_cache_enabled(&self) -> bool {
-        self.get_os("Q_INLINE_SHELL_COMPLETION_CACHE_DISABLE").is_none()
-    }
-
-    pub fn q_inline_shell_completion_history_count(&self) -> Result<String, VarError> {
-        self.get("Q_INLINE_SHELL_COMPLETION_HISTORY_COUNT")
-    }
-
-    pub fn q_inline_shell_completion_debounce_ms(&self) -> Result<String, VarError> {
-        self.get("Q_INLINE_SHELL_COMPLETION_DEBOUNCE_MS")
     }
 
     pub fn q_backend(&self) -> Result<String, VarError> {

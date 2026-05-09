@@ -36,38 +36,6 @@ use crate::{
     backup_file,
 };
 
-pub mod inline_shell_completion_plugin {
-    pub const ZSH_SCRIPT: &str = concat!(
-        "\n",
-        include_str!(concat!(env!("OUT_DIR"), "/inline_shell_completion.zsh")),
-        "\n"
-    );
-
-    #[cfg(test)]
-    mod tests {
-        use fig_util::CLI_BINARY_NAME;
-
-        use super::*;
-
-        #[test]
-        fn script_checks() {
-            // Ensure script has license
-            assert!(ZSH_SCRIPT.contains("Copyright"));
-
-            // Ensure script has _q_autosuggest_strategy_inline_shell_completion()
-            let cli_binary_name_underscore = CLI_BINARY_NAME.replace('-', "_");
-            assert!(ZSH_SCRIPT.contains(&format!(
-                "_{cli_binary_name_underscore}_autosuggest_strategy_inline_shell_completion()"
-            )));
-
-            // Ensure script adds precmd hook
-            assert!(ZSH_SCRIPT.contains(&format!(
-                "add-zsh-hook precmd _{cli_binary_name_underscore}_autosuggest_start"
-            )));
-        }
-    }
-}
-
 #[derive(Debug, Copy, Clone, PartialEq, Eq, ValueEnum, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum When {
@@ -654,11 +622,6 @@ impl Integration for DotfileShellIntegration {
         if dotfile.exists() {
             let mut contents = std::fs::read_to_string(&dotfile)?;
 
-            // Remove comment lines
-            contents = Regex::new(r"(?mi)^#.*fig.*var.*$\n?")?
-                .replace_all(&contents, "")
-                .into();
-
             contents = Regex::new(r"(?mi)^#.*Please make sure this block is at the .* of this file.*$\n?")?
                 .replace_all(&contents, "")
                 .into();
@@ -671,7 +634,7 @@ impl Integration for DotfileShellIntegration {
                 contents = self.remove_from_text(&contents, When::Post)?;
             }
 
-            contents = contents.trim().to_string();
+            contents = contents.trim_end().to_string();
             contents.push('\n');
 
             std::fs::write(&dotfile, contents.as_bytes()).with_path(self.path())?;

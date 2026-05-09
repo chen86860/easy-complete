@@ -38,10 +38,15 @@ if [[ "${1:-}" != "--yes" ]]; then
   [[ "${confirm}" =~ ^[Yy]$ ]] || { echo "Aborted."; exit 0; }
 fi
 
-# ── 1. Uninstall input method via CLI (disables TIS source cleanly) ───────────
+# ── 1. Uninstall integrations via CLI (must run before binary is removed) ─────
 info "Uninstalling input method integration..."
 if command -v ec &>/dev/null; then
   ec integrations uninstall input-method 2>/dev/null || true
+fi
+
+info "Uninstalling shell integration..."
+if command -v ec &>/dev/null; then
+  ec integrations uninstall shell 2>/dev/null || true
 fi
 
 # ── 2. Kill running processes ─────────────────────────────────────────────────
@@ -77,38 +82,34 @@ info "Removing CLI symlinks..."
 rm -f "${LOCAL_BIN}/ec"
 rm -f "${LOCAL_BIN}/ecterm"
 
-# ── 7. Remove shell integration from rc files ─────────────────────────────────
-info "Cleaning shell integration..."
+# ── 7. Fallback shell integration cleanup (in case ec was already removed) ────
+# ec integrations uninstall shell was already called in step 1.
+# This fallback removes any remaining lines using targeted patterns only.
+info "Verifying shell integration removal..."
 
-strip_shell_integration() {
+strip_shell_integration_fallback() {
   local rc_file="$1"
   [[ -f "$rc_file" ]] || return 0
 
-  # Lines added by ec setup / install.sh
   local tmp
   tmp="$(mktemp)"
-  grep -v 'easy-complete\|ec\|\.local/bin.*PATH\|fig_integration\|QTERM_SESSION\|ecterm\|fig\.sh\|figterm' \
+  # Only remove lines that are specifically part of the Easy Complete integration block:
+  #   - The block comment headers
+  #   - The source lines referencing our shell data directory
+  grep -Ev \
+    'Easy Complete (pre|post) block|easy-complete/shell/(zshrc|zprofile|bashrc|bash_profile)\.(pre|post)\.(zsh|bash)' \
     "$rc_file" > "$tmp" || true
   mv "$tmp" "$rc_file"
 }
 
-strip_shell_integration "${HOME}/.zshrc"
-strip_shell_integration "${HOME}/.bashrc"
-strip_shell_integration "${HOME}/.bash_profile"
+strip_shell_integration_fallback "${HOME}/.zshrc"
+strip_shell_integration_fallback "${HOME}/.zprofile"
+strip_shell_integration_fallback "${HOME}/.bashrc"
+strip_shell_integration_fallback "${HOME}/.bash_profile"
 
-# Fish shell
-FISH_CONFIG="${HOME}/.config/fish/config.fish"
-if [[ -f "$FISH_CONFIG" ]]; then
-  tmp="$(mktemp)"
-  grep -v 'easy-complete\|ec\|fig_integration\|QTERM_SESSION\|ecterm\|fig\.fish\|figterm' \
-    "$FISH_CONFIG" > "$tmp" || true
-  mv "$tmp" "$FISH_CONFIG"
-fi
-
-# Remove ec-generated shell integration files
-rm -f "${HOME}/.local/share/fig/zsh_fig_integration.sh"
-rm -f "${HOME}/.local/share/fig/bash_fig_integration.sh"
-rm -f "${HOME}/.config/fish/functions/fig.fish"
+# Fish shell — remove the dedicated fish integration conf files directly
+rm -f "${HOME}/.config/fish/conf.d/00_fig_pre.fish"
+rm -f "${HOME}/.config/fish/conf.d/99_fig_post.fish"
 
 # ── 8. Remove application data ────────────────────────────────────────────────
 info "Removing application data..."

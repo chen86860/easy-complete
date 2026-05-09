@@ -477,12 +477,25 @@ impl Integration for InputMethod {
             self.set_is_enabled(true);
             Ok(())
         } else {
-            self.set_is_enabled(false);
             let err = String::from_utf8_lossy(&out.stdout);
-            match serde_json::from_str::<InputMethodError>(&err).ok() {
-                Some(error) => Err(error.into()),
-                None => Err(InputMethodError::UnknownError.into()),
+            let error = serde_json::from_str::<InputMethodError>(&err).unwrap_or(InputMethodError::UnknownError);
+
+            // TISEnableInputSource silently fails when called from a CLI process without an
+            // NSApplication run loop, so we fall back to patching HIToolbox directly in install().
+            // If TIS still reports not-enabled but our bundle ID is already in HIToolbox's
+            // AppleSelectedInputSources, treat the IME as enabled so Ghostty/Kitty/etc. work.
+            if matches!(error, InputMethodError::NotEnabled | InputMethodError::NotSelected) {
+                if let Ok(bundle_id) = self.bundle_id() {
+                    if is_bundle_in_hitoolbox_sources(&bundle_id) {
+                        info!("TIS reports not-enabled but bundle is in HIToolbox sources; treating as enabled");
+                        self.set_is_enabled(true);
+                        return Ok(());
+                    }
+                }
             }
+
+            self.set_is_enabled(false);
+            Err(error.into())
         }
     }
 
@@ -746,6 +759,21 @@ impl InputMethod {
     fn set_is_enabled(&self, enabled: bool) {
         let key = self.input_method_is_enabled_key();
         state::set_value(key, enabled).ok();
+    }
+}
+
+/// Check whether `bundle_id` appears in HIToolbox's `AppleSelectedInputSources` plist.
+/// Used as a fallback when the TIS API reports not-enabled due to missing run loop.
+fn is_bundle_in_hitoolbox_sources(bundle_id: &str) -> bool {
+    let output = Command::new("defaults")
+        .args(["read", "com.apple.HIToolbox", "AppleSelectedInputSources"])
+        .output();
+    match output {
+        Ok(out) if out.status.success() => {
+            let text = String::from_utf8_lossy(&out.stdout);
+            text.contains(bundle_id)
+        },
+        _ => false,
     }
 }
 

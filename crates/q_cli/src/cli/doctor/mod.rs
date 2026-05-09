@@ -710,64 +710,6 @@ impl DoctorCheck for FigIntegrationsCheck {
     }
 }
 
-struct InlineCheck;
-
-#[async_trait]
-impl DoctorCheck for InlineCheck {
-    fn name(&self) -> Cow<'static, str> {
-        "Inline".into()
-    }
-
-    async fn get_type(&self, _: &(), _: Platform) -> DoctorCheckType {
-        let shell = get_shell_context().await;
-        let inline_enabled = fig_settings::settings::get_bool_or("inline.enabled", true);
-        let is_zsh = matches!(shell, Ok(Some(Shell::Zsh)));
-
-        if is_zsh && inline_enabled {
-            DoctorCheckType::NormalCheck
-        } else if !is_zsh {
-            DoctorCheckType::NoCheck
-        } else {
-            DoctorCheckType::SoftCheck
-        }
-    }
-
-    async fn check(&self, _: &()) -> Result<(), DoctorError> {
-        if !fig_settings::settings::get_bool_or("inline.enabled", true) {
-            return Err(DoctorError::Warning(
-                format!(
-                    "Inline is disabled, to re-enable run: {}",
-                    format!("{CLI_BINARY_NAME} inline enable").magenta()
-                )
-                .into(),
-            ));
-        }
-
-        if fig_os_shim::Env::new().q_using_zsh_autosuggestions() {
-            return Err(DoctorError::Error {
-                reason: "Using zsh-autosuggestions is not supported at the same time as Inline".into(),
-                info: vec![
-                    "To fix either:".into(),
-                    format!(
-                        "- Remove zsh-autosuggestions from {} and restart your terminal",
-                        "~/.zshrc".bold()
-                    )
-                    .into(),
-                    format!(
-                        "- Disable Inline by running: {}",
-                        format!("{CLI_BINARY_NAME} inline disable").magenta()
-                    )
-                    .into(),
-                ],
-                fix: None,
-                error: None,
-            });
-        }
-
-        Ok(())
-    }
-}
-
 struct PtySocketCheck;
 
 #[async_trait]
@@ -2180,7 +2122,6 @@ pub async fn doctor_cli(all: bool, strict: bool) -> Result<ExitCode> {
                 &PluginDevModeCheck,
                 &DashboardHostCheck,
                 &AutocompleteHostCheck,
-                &InlineCheck,
             ],
             config,
             &mut spinner,

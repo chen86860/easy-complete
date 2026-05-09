@@ -8,7 +8,6 @@ mod doctor;
 mod feed;
 mod hook;
 mod init;
-mod inline;
 mod installation;
 mod integrations;
 pub mod internal;
@@ -168,9 +167,6 @@ pub enum CliRootCommands {
         #[arg(long, num_args = 0..=1, default_missing_value = "")]
         changelog: Option<String>,
     },
-    /// Inline shell completions
-    #[command(subcommand)]
-    Inline(inline::InlineSubcommand),
 }
 
 impl CliRootCommands {
@@ -194,7 +190,6 @@ impl CliRootCommands {
             CliRootCommands::Restart { .. } => "restart",
             CliRootCommands::Integrations(_) => "integrations",
             CliRootCommands::Version { .. } => "version",
-            CliRootCommands::Inline(_) => "inline",
         }
     }
 }
@@ -292,7 +287,6 @@ impl Cli {
                 },
                 CliRootCommands::Integrations(subcommand) => subcommand.execute().await,
                 CliRootCommands::Version { changelog } => Self::print_version(changelog),
-                CliRootCommands::Inline(subcommand) => subcommand.execute(&cli_context).await,
             },
             // Root command - show help
             None => {
@@ -486,59 +480,6 @@ mod test {
             ],
             CliRootCommands::Internal(InternalSubcommand::AttemptToFinishInputMethodInstallation {
                 bundle_path: Some(std::path::PathBuf::from("/path/to/bundle.app"))
-            })
-        );
-    }
-
-    #[test]
-    fn test_inline_shell_completion() {
-        use internal::InternalSubcommand;
-
-        assert_parse!(
-            ["_", "inline-shell-completion", "--buffer", ""],
-            CliRootCommands::Internal(InternalSubcommand::InlineShellCompletion { buffer: "".to_string() })
-        );
-
-        assert_parse!(
-            ["_", "inline-shell-completion", "--buffer", "foo"],
-            CliRootCommands::Internal(InternalSubcommand::InlineShellCompletion {
-                buffer: "foo".to_string()
-            })
-        );
-
-        assert_parse!(
-            ["_", "inline-shell-completion", "--buffer", "-"],
-            CliRootCommands::Internal(InternalSubcommand::InlineShellCompletion {
-                buffer: "-".to_string()
-            })
-        );
-
-        assert_parse!(
-            ["_", "inline-shell-completion", "--buffer", "--"],
-            CliRootCommands::Internal(InternalSubcommand::InlineShellCompletion {
-                buffer: "--".to_string()
-            })
-        );
-
-        assert_parse!(
-            ["_", "inline-shell-completion", "--buffer", "--foo bar"],
-            CliRootCommands::Internal(InternalSubcommand::InlineShellCompletion {
-                buffer: "--foo bar".to_string()
-            })
-        );
-
-        assert_parse!(
-            [
-                "_",
-                "inline-shell-completion-accept",
-                "--buffer",
-                "abc",
-                "--suggestion",
-                "def"
-            ],
-            CliRootCommands::Internal(InternalSubcommand::InlineShellCompletionAccept {
-                buffer: "abc".to_string(),
-                suggestion: "def".to_string()
             })
         );
     }

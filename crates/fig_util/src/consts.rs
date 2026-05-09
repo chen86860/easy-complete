@@ -117,9 +117,6 @@ pub mod env_var {
         /// Indicates the user is debugging the shell
         Q_DEBUG_SHELL = "Q_DEBUG_SHELL",
 
-        /// Indicates the user is using zsh autosuggestions which disables Inline
-        Q_USING_ZSH_AUTOSUGGESTIONS = "Q_USING_ZSH_AUTOSUGGESTIONS",
-
         /// Overrides the path to the bundle metadata released with certain desktop builds.
         Q_BUNDLE_METADATA_PATH = "Q_BUNDLE_METADATA_PATH"
     }

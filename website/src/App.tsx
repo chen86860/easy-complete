@@ -1,5 +1,7 @@
 import { Terminal } from "./components/Terminal.tsx";
+import logoUrl from "./assets/logo.png";
 import { GITHUB_URL, features, processes, reasons, terminals } from "./data.ts";
+import { DOWNLOAD_PATH } from "./download.ts";
 
 const SECTION_LABEL =
   "font-mono text-xs uppercase tracking-[.22em] text-[var(--accent)] mb-[14px]";
@@ -12,9 +14,13 @@ export function App() {
         <div className="mx-auto flex max-w-[1240px] items-center justify-between gap-5 px-7 py-[14px]">
           <a
             href="#"
-            className="flex items-center gap-[9px] font-mono text-[16px] font-bold tracking-[-.01em]"
+            className="flex items-center gap-[10px] font-mono text-[16px] font-bold tracking-[-.01em]"
           >
-            <span className="text-[var(--accent)]">❯</span>
+            <img
+              src={logoUrl}
+              alt=""
+              className="h-8 w-8 rounded-[9px] shadow-[0_0_24px_-12px_var(--accent)]"
+            />
             <span>easy-complete</span>
           </a>
           <nav className="flex items-center gap-[26px] text-sm text-[#9aa4b0]">
@@ -43,7 +49,7 @@ export function App() {
               GitHub ↗
             </a>
             <a
-              href="#get"
+              href={DOWNLOAD_PATH}
               className="rounded-lg bg-[var(--accent)] px-4 py-2 font-semibold text-[#06140a] transition hover:brightness-110 hover:shadow-[0_8px_24px_-8px_var(--accent-line)]"
             >
               Install
@@ -75,7 +81,7 @@ export function App() {
           </p>
           <div className="mb-[44px] flex flex-wrap justify-center gap-[13px]">
             <a
-              href="#get"
+              href={DOWNLOAD_PATH}
               className="rounded-[11px] bg-[var(--accent)] px-[26px] py-[13px] text-[16px] font-semibold text-[#06140a] transition hover:brightness-110 hover:shadow-[0_14px_34px_-12px_var(--accent-line)]"
             >
               Install for macOS
@@ -258,7 +264,7 @@ export function App() {
           </p>
           <div className="mb-[30px] flex flex-wrap justify-center gap-[13px]">
             <a
-              href="#get"
+              href={DOWNLOAD_PATH}
               className="rounded-[11px] bg-[var(--accent)] px-[26px] py-[13px] text-[16px] font-semibold text-[#06140a] transition hover:brightness-110 hover:shadow-[0_14px_34px_-12px_var(--accent-line)]"
             >
               Install for macOS
@@ -277,8 +283,9 @@ export function App() {
           </p>
         </div>
         <div className="relative mx-auto mt-16 flex max-w-[1180px] flex-wrap items-center justify-between gap-4 border-t border-[#161d25] pt-[26px] text-[13px] text-[#5d6773]">
-          <span className="font-mono">
-            <span className="text-[var(--accent)]">❯</span> easy-complete
+          <span className="inline-flex items-center gap-2 font-mono">
+            <img src={logoUrl} alt="" className="h-5 w-5 rounded-[6px]" />
+            easy-complete
           </span>
           <span>cli · terminal · macOS</span>
         </div>

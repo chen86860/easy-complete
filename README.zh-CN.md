@@ -38,7 +38,35 @@
 
 ## ⚡️ 安装
 
-从源码构建并安装到 `/Applications`：
+### 下载 DMG
+
+打开 GitHub Releases 页面，下载最新的 Apple Silicon DMG：
+
+[前往 Releases 页面](https://github.com/chen86860/easy-complete/releases)
+
+然后：
+
+1. 打开 `Easy-Complete-arm64.dmg`。
+2. 把 **Easy Complete.app** 拖到 `/Applications`。
+3. 这个构建未签名，macOS 可能会加上 quarantine 标记。首次安装后执行一次：
+
+   ```bash
+   xattr -dr com.apple.quarantine "/Applications/Easy Complete.app"
+   ```
+
+4. 从 `/Applications` 启动 **Easy Complete**。
+5. 按提示授予**辅助功能**权限。
+6. 重新加载你的 shell：
+
+   ```bash
+   exec $SHELL
+   ```
+
+首次启动时，Easy Complete 会设置随附的 CLI 二进制、shell 集成、输入法和登录启动项。
+
+### 从源码构建
+
+如果你要做开发，或需要在本机自行构建，可以克隆仓库并运行安装脚本：
 
 ```bash
 git clone https://github.com/chen86860/easy-complete.git
@@ -46,7 +74,7 @@ cd easy-complete
 ./install.sh
 ```
 
-安装脚本会：
+源码安装脚本会：
 
 1. 构建 Rust 二进制和 TypeScript 前端。
 2. 组装出 `Easy Complete.app` 并复制到 `/Applications`。

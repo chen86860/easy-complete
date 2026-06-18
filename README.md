@@ -48,7 +48,37 @@ You get fish-shell-style suggestions for hundreds of CLIs (`git`, `npm`, `docker
 
 ## ⚡️ Install
 
-Build everything from source and install into `/Applications`:
+### Download the DMG
+
+Open the GitHub Releases page and download the latest Apple Silicon DMG:
+
+[Go to Releases](https://github.com/chen86860/easy-complete/releases)
+
+Then:
+
+1. Open `Easy-Complete-arm64.dmg`.
+2. Drag **Easy Complete.app** into `/Applications`.
+3. The build is unsigned, so macOS may quarantine it. Clear the quarantine flag once:
+
+   ```bash
+   xattr -dr com.apple.quarantine "/Applications/Easy Complete.app"
+   ```
+
+4. Launch **Easy Complete** from `/Applications`.
+5. Grant **Accessibility** permission when prompted.
+6. Reload your shell:
+
+   ```bash
+   exec $SHELL
+   ```
+
+On first launch, Easy Complete sets up the bundled CLI binaries, shell integration,
+input method, and login startup entries.
+
+### Build from source
+
+For development, or if you need to build locally, clone the repository and run the
+installer:
 
 ```bash
 git clone https://github.com/chen86860/easy-complete.git
@@ -56,7 +86,7 @@ cd easy-complete
 ./install.sh
 ```
 
-The installer will:
+The source installer will:
 
 1. Build the Rust binaries and the TypeScript frontend.
 2. Assemble `Easy Complete.app` and copy it to `/Applications`.

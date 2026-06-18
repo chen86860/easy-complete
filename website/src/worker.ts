@@ -5,16 +5,23 @@
  * The Worker fronts the assets so we can add headers (and later, edge logic
  * such as redirects or API routes) without changing the deploy model.
  */
+import { DOWNLOAD_PATH, DOWNLOAD_URL } from "./download";
+
 export interface Env {
   ASSETS: Fetcher;
 }
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
+    const url = new URL(request.url);
+
+    if (url.pathname === DOWNLOAD_PATH) {
+      return Response.redirect(DOWNLOAD_URL, 302);
+    }
+
     const response = await env.ASSETS.fetch(request);
 
     // Long-cache fingerprinted assets, keep HTML fresh.
-    const url = new URL(request.url);
     if (url.pathname.startsWith("/assets/")) {
       const headers = new Headers(response.headers);
       headers.set("Cache-Control", "public, max-age=31536000, immutable");

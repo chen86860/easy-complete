@@ -5,7 +5,16 @@
 <h1 align="center">Easy Complete</h1>
 
 <p align="center">
-  为 macOS 终端打造的 IDE 风格行内自动补全。
+  <b>为 macOS 终端打造的 IDE 风格行内自动补全。</b><br/>
+  一款开源、纯本地、Fig 风格的命令行补全引擎，支持 <code>zsh</code>、<code>bash</code> 与 <code>fish</code>。
+</p>
+
+<p align="center">
+  <a href="https://github.com/chen86860/easy-complete/releases"><img alt="Release" src="https://img.shields.io/github/v/release/chen86860/easy-complete?color=brightgreen"></a>
+  <img alt="Platform" src="https://img.shields.io/badge/platform-macOS-lightgrey">
+  <img alt="Built with Rust" src="https://img.shields.io/badge/built%20with-Rust-orange">
+  <img alt="License" src="https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue">
+  <a href="https://github.com/chen86860/easy-complete/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/chen86860/easy-complete?style=social"></a>
 </p>
 
 <p align="center">
@@ -14,7 +23,7 @@
 
 **Easy Complete** 是一款 macOS 终端自动补全应用——以原生浮层窗口跟随光标，为你的 shell
 提供 IDE 风格的行内补全。它基于 Amazon Q Developer CLI 精简而来，只专注于终端自动补全这
-一件事。
+一件事——是一款轻量、完全本地、开源的 Fig 替代品。
 
 你会在输入 `git`、`npm`、`docker`、`cargo` 等数百种命令行工具时，获得类似 fish shell 的
 建议：参数、子命令、文件路径、选项，边打边补。
@@ -32,8 +41,8 @@
 从源码构建并安装到 `/Applications`：
 
 ```bash
-git clone <你的-fork-地址> easy-autocomplete
-cd easy-autocomplete
+git clone https://github.com/chen86860/easy-complete.git
+cd easy-complete
 ./install.sh
 ```
 

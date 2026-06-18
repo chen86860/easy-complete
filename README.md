@@ -5,7 +5,16 @@
 <h1 align="center">Easy Complete</h1>
 
 <p align="center">
-  IDE-style inline autocomplete for your macOS terminal.
+  <b>IDE-style inline autocomplete for your macOS terminal.</b><br/>
+  An open-source, Fig-style completion engine for <code>zsh</code>, <code>bash</code> & <code>fish</code>.
+</p>
+
+<p align="center">
+  <a href="https://github.com/chen86860/easy-complete/releases"><img alt="Release" src="https://img.shields.io/github/v/release/chen86860/easy-complete?color=brightgreen"></a>
+  <img alt="Platform" src="https://img.shields.io/badge/platform-macOS-lightgrey">
+  <img alt="Built with Rust" src="https://img.shields.io/badge/built%20with-Rust-orange">
+  <a href="#-license"><img alt="License" src="https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue"></a>
+  <a href="https://github.com/chen86860/easy-complete/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/chen86860/easy-complete?style=social"></a>
 </p>
 
 <p align="center">
@@ -15,7 +24,7 @@
 **Easy Complete** is a macOS terminal autocomplete app — IDE-style inline completions
 for your shell, rendered in a native overlay window that follows your cursor. It is a
 fork of the Amazon Q Developer CLI, stripped down to focus purely on terminal
-autocompletion.
+autocompletion — a lightweight, fully local, open-source alternative to Fig.
 
 You get fish-shell-style suggestions for hundreds of CLIs (`git`, `npm`, `docker`,
 `cargo`, …): flags, subcommands, file paths, and arguments, completed as you type.
@@ -26,6 +35,15 @@ You get fish-shell-style suggestions for hundreds of CLIs (`git`, `npm`, `docker
 
 > **Platform:** macOS only (Apple Silicon & Intel).
 
+## Contents
+
+- [Install](#-install)
+- [Usage](#-usage)
+- [Uninstall](#-uninstall)
+- [How it works](#-how-it-works)
+- [Development](#-development)
+- [License](#-license)
+
 ---
 
 ## ⚡️ Install
@@ -33,8 +51,8 @@ You get fish-shell-style suggestions for hundreds of CLIs (`git`, `npm`, `docker
 Build everything from source and install into `/Applications`:
 
 ```bash
-git clone <your-fork-url> easy-autocomplete
-cd easy-autocomplete
+git clone https://github.com/chen86860/easy-complete.git
+cd easy-complete
 ./install.sh
 ```
 

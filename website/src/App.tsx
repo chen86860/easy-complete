@@ -1,7 +1,7 @@
 import { Terminal } from "./components/Terminal.tsx";
 import logoUrl from "./assets/logo.png";
 import { GITHUB_URL, features, processes, reasons, terminals } from "./data.ts";
-import { DOWNLOAD_PATH } from "./download.ts";
+import { DOWNLOAD_URL } from "./download.ts";
 
 const SECTION_LABEL =
   "font-mono text-xs uppercase tracking-[.22em] text-[var(--accent)] mb-[14px]";
@@ -49,7 +49,7 @@ export function App() {
               GitHub ↗
             </a>
             <a
-              href={DOWNLOAD_PATH}
+              href={DOWNLOAD_URL}
               className="rounded-lg bg-[var(--accent)] px-4 py-2 font-semibold text-[#06140a] transition hover:brightness-110 hover:shadow-[0_8px_24px_-8px_var(--accent-line)]"
             >
               Install
@@ -81,7 +81,7 @@ export function App() {
           </p>
           <div className="mb-[44px] flex flex-wrap justify-center gap-[13px]">
             <a
-              href={DOWNLOAD_PATH}
+              href={DOWNLOAD_URL}
               className="rounded-[11px] bg-[var(--accent)] px-[26px] py-[13px] text-[16px] font-semibold text-[#06140a] transition hover:brightness-110 hover:shadow-[0_14px_34px_-12px_var(--accent-line)]"
             >
               Install for macOS
@@ -264,7 +264,7 @@ export function App() {
           </p>
           <div className="mb-[30px] flex flex-wrap justify-center gap-[13px]">
             <a
-              href={DOWNLOAD_PATH}
+              href={DOWNLOAD_URL}
               className="rounded-[11px] bg-[var(--accent)] px-[26px] py-[13px] text-[16px] font-semibold text-[#06140a] transition hover:brightness-110 hover:shadow-[0_14px_34px_-12px_var(--accent-line)]"
             >
               Install for macOS

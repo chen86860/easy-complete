@@ -29,7 +29,7 @@ pnpm deploy       # build + wrangler deploy
 
 Wrangler config lives in `wrangler.jsonc`. The Worker (`src/worker.ts`) fronts the static build
 and adds cache headers; `not_found_handling: single-page-application` serves `index.html` for
-unknown routes. The `/download` route redirects to the latest GitHub Release DMG.
+unknown routes. Download CTAs link directly to the latest GitHub Release DMG.
 
 ## Structure
 

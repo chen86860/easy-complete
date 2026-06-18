@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+/* Accent theme — defaults to the GitHub-green palette from the design.
+   Swapped at runtime by setting CSS variables on :root (see useAccent). */
+:root {
+  --accent: #39d353;
+  --accent-soft: rgba(57, 211, 83, 0.14);
+  --accent-line: rgba(57, 211, 83, 0.45);
+  --accent-glow: rgba(57, 211, 83, 0.22);
+}
+
+@theme {
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+}
+
+body {
+  background: #0a0d12;
+  color: #e6edf3;
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(57, 211, 83, 0.28);
+}
+
+@keyframes ec-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes ec-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ec-blink {
+  animation: ec-blink 1s steps(1) infinite;
+}
+
+.ec-pop {
+  animation: ec-pop 0.16s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ec-blink {
+    animation: none;
+  }
+}

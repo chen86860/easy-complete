@@ -790,12 +790,10 @@ fn force_enable_in_hitoolbox(bundle_id: &str) {
     // "dev.emmmm.easy-complete.inputmethod").  We extract everything up to the
     // second-to-last dot-separated segment.
     let prefix = bundle_id
-        .rsplitn(2, '.')
-        .nth(1)
-        .unwrap_or("")
-        .rsplitn(2, '.')
-        .nth(1)
-        .unwrap_or("");
+        .rsplit_once('.')
+        .map_or("", |(head, _)| head)
+        .rsplit_once('.')
+        .map_or("", |(head, _)| head);
 
     let script = [
         "import subprocess, plistlib, sys",

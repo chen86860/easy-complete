@@ -1,0 +1,10 @@
+# Standalone project — kept out of the parent Rust/TS monorepo workspace.
+packages: []
+allowBuilds:
+  esbuild: true
+  sharp: true
+  workerd: true
+onlyBuiltDependencies:
+  - esbuild
+  - workerd
+  - sharp

@@ -11,6 +11,8 @@
     "cf-dev": "pnpm build && wrangler dev"
   },
   "dependencies": {
+    "@fontsource/jetbrains-mono": "^5.2.8",
+    "@fontsource/space-grotesk": "^5.2.10",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

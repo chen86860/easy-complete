@@ -95,6 +95,34 @@ export const terminals: string[] = [
   "JetBrains IDEs",
 ];
 
+export interface Faq {
+  question: string;
+  answer: string;
+}
+
+export const faqs: Faq[] = [
+  {
+    question: "What is Easy Complete?",
+    answer:
+      "Easy Complete is a macOS terminal autocomplete app that shows IDE-style inline suggestions for command-line tools.",
+  },
+  {
+    question: "Does Easy Complete run locally?",
+    answer:
+      "Yes. Easy Complete runs on-device and does not require an account, telemetry, cloud calls, or AI requests for autocomplete.",
+  },
+  {
+    question: "Which terminals does Easy Complete support?",
+    answer:
+      "Easy Complete supports Ghostty, Kitty, WezTerm, Alacritty, Zed, iTerm2, Apple Terminal, VS Code, and JetBrains IDE terminals.",
+  },
+  {
+    question: "How do I install Easy Complete?",
+    answer:
+      "Download the latest macOS DMG from GitHub Releases, open it, and follow the install instructions.",
+  },
+];
+
 export interface Process {
   bin: string;
   crate: string;

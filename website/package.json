@@ -4,19 +4,23 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
+    "dev": "vite dev",
+    "build": "vite build && tsc --noEmit",
     "preview": "vite preview",
     "deploy": "pnpm build && wrangler deploy",
-    "cf-dev": "pnpm build && wrangler dev"
+    "cf-dev": "pnpm build && wrangler dev",
+    "cf-typegen": "wrangler types"
   },
   "dependencies": {
     "@fontsource/jetbrains-mono": "^5.2.8",
     "@fontsource/space-grotesk": "^5.2.10",
+    "@tanstack/react-router": "^1.170.16",
+    "@tanstack/react-start": "^1.168.26",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.41.0",
     "@cloudflare/workers-types": "^4.20250601.0",
     "@tailwindcss/vite": "^4.0.0",
     "@types/react": "^19.0.0",

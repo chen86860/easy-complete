@@ -30,10 +30,10 @@ You get fish-shell-style suggestions for hundreds of CLIs (`git`, `npm`, `docker
 `cargo`, …): flags, subcommands, file paths, and arguments, completed as you type.
 
 <p align="center">
-  <img src="./.github/media/amazon-q-cli-features.jpeg" alt="Easy Complete autocomplete in action">
+  <img src="./.github/media/screnshoot.jpeg" alt="Easy Complete autocomplete in action">
 </p>
 
-> **Platform:** macOS only (Apple Silicon & Intel).
+> **Platform:** macOS only (Apple Silicon / ARM64).
 
 ## Contents
 
@@ -123,11 +123,11 @@ ec debug prompt-accessibility
 Once installed and granted permission, just start typing in any supported terminal —
 suggestions appear inline as you type.
 
-| Key | Action |
-|---|---|
-| `↑` / `↓` | Move through suggestions |
+| Key             | Action                            |
+| --------------- | --------------------------------- |
+| `↑` / `↓`       | Move through suggestions          |
 | `⇥` (Tab) / `→` | Accept the highlighted suggestion |
-| `Esc` | Dismiss the popup |
+| `Esc`           | Dismiss the popup                 |
 
 The settings & onboarding dashboard is available from the **Easy Complete menu bar
 icon** (system tray).
@@ -169,11 +169,11 @@ methods are left untouched).
 Easy Complete runs as three cooperating native processes that talk over Unix domain
 sockets (Protobuf messages):
 
-| Binary | Crate | Role |
-|---|---|---|
+| Binary          | Crate         | Role                                                                                                                             |
+| --------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | `easy-complete` | `fig_desktop` | Native app host — owns the autocomplete overlay and dashboard (React apps in `wry` WebViews), system tray, and window management |
-| `ecterm` | `figterm` | Pseudoterminal between your shell and terminal emulator; intercepts the shell edit buffer to drive completions |
-| `ec` | `q_cli` | CLI entry point — `setup`, `integrations`, `diagnostic`, `settings`, and more |
+| `ecterm`        | `figterm`     | Pseudoterminal between your shell and terminal emulator; intercepts the shell edit buffer to drive completions                   |
+| `ec`            | `q_cli`       | CLI entry point — `setup`, `integrations`, `diagnostic`, `settings`, and more                                                    |
 
 Shell hooks (`.zshrc`, `.bashrc`, fish config) report shell state — CWD, command text,
 cursor position — back to `ecterm` on every prompt and keystroke. On macOS, the
@@ -224,24 +224,24 @@ instead of the bundled `Contents/Resources/`.
 
 ### Key crates
 
-| Crate | Role |
-|---|---|
-| `fig_desktop` | Native app host: windowing (`tao`), WebView (`wry`), system tray |
-| `figterm` | PTY interceptor, shell edit-buffer tracking |
-| `q_cli` | CLI binary, all `ec` subcommands |
-| `fig_input_method` | macOS input method helper (cursor tracking) |
-| `fig_integrations` | Shell/terminal/editor integration install logic |
-| `fig_ipc` / `fig_proto` | Unix-socket IPC primitives & generated Protobuf types |
+| Crate                   | Role                                                             |
+| ----------------------- | ---------------------------------------------------------------- |
+| `fig_desktop`           | Native app host: windowing (`tao`), WebView (`wry`), system tray |
+| `figterm`               | PTY interceptor, shell edit-buffer tracking                      |
+| `q_cli`                 | CLI binary, all `ec` subcommands                                 |
+| `fig_input_method`      | macOS input method helper (cursor tracking)                      |
+| `fig_integrations`      | Shell/terminal/editor integration install logic                  |
+| `fig_ipc` / `fig_proto` | Unix-socket IPC primitives & generated Protobuf types            |
 
 ### Key TypeScript packages
 
-| Package | Role |
-|---|---|
-| `autocomplete-app` | Autocomplete overlay React UI |
-| `dashboard-app` | Settings / onboarding React UI |
+| Package               | Role                                   |
+| --------------------- | -------------------------------------- |
+| `autocomplete-app`    | Autocomplete overlay React UI          |
+| `dashboard-app`       | Settings / onboarding React UI         |
 | `autocomplete-parser` | CLI spec parser, suggestion generation |
-| `shell-parser` | Shell command-line tokenizer |
-| `api-bindings` | Generated TS Protobuf IPC bindings |
+| `shell-parser`        | Shell command-line tokenizer           |
+| `api-bindings`        | Generated TS Protobuf IPC bindings     |
 
 ---
 

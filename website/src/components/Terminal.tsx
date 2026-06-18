@@ -284,13 +284,13 @@ export function Terminal({ showKeys = true, demoSpeed = 1 }: TerminalProps) {
           </div>
 
           {frame.menu.length > 0 && (
-            <div className="ec-pop absolute left-[96px] top-[52px] w-max max-w-[84%] overflow-hidden rounded-[11px] border border-[#2a323d] bg-[#0e141d] shadow-[0_22px_48px_-14px_rgba(0,0,0,.85)]">
+            <div className="ec-pop absolute left-[18px] top-[52px] w-[calc(100%-36px)] overflow-hidden rounded-[11px] border border-[#2a323d] bg-[#0e141d] shadow-[0_22px_48px_-14px_rgba(0,0,0,.85)] sm:left-[96px] sm:w-max sm:max-w-[84%]">
               {frame.menu.map((m, i) => {
                 const selected = i === frame.sel;
                 return (
                   <div
                     key={m.name}
-                    className={`flex items-center gap-[10px] px-[13px] py-2 ${
+                    className={`flex min-w-0 items-center gap-[10px] px-[13px] py-2 ${
                       selected
                         ? "bg-[var(--accent-soft)] shadow-[inset_2px_0_0_var(--accent)]"
                         : ""
@@ -302,10 +302,10 @@ export function Terminal({ showKeys = true, demoSpeed = 1 }: TerminalProps) {
                     >
                       {m.t}
                     </span>
-                    <span className="min-w-[96px] font-medium text-[#eaf0f6]">
+                    <span className="min-w-[80px] font-medium text-[#eaf0f6] sm:min-w-[96px]">
                       {m.name}
                     </span>
-                    <span className="whitespace-nowrap text-xs text-[#5d6773]">
+                    <span className="min-w-0 truncate whitespace-nowrap text-xs text-[#5d6773]">
                       {m.desc}
                     </span>
                   </div>

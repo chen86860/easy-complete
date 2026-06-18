@@ -1,11 +1,14 @@
 import { defineConfig } from "vite";
+import { cloudflare } from "@cloudflare/vite-plugin";
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
-  build: {
-    outDir: "dist/client",
-    emptyOutDir: true,
-  },
+  plugins: [
+    cloudflare({ viteEnvironment: { name: "ssr" } }),
+    tanstackStart(),
+    react(),
+    tailwindcss(),
+  ],
 });

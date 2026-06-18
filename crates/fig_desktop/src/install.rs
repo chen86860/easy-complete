@@ -10,10 +10,9 @@ use fig_util::directories::fig_data_dir;
 #[cfg(target_os = "macos")]
 use macos_utils::bundle::get_bundle_path_for_executable;
 use semver::Version;
-use tracing::{
-    error,
-    info,
-};
+use tracing::error;
+#[cfg(target_os = "linux")]
+use tracing::info;
 
 #[allow(unused_imports)]
 use crate::utils::is_cargo_debug_build;
@@ -141,40 +140,6 @@ pub async fn run_install(ctx: Arc<Context>, ignore_immediate_update: bool) {
         // remove the updater if it exists
         #[cfg(target_os = "windows")]
         std::fs::remove_file(fig_util::directories::fig_dir().unwrap().join("fig_installer.exe")).ok();
-    }
-
-    // install vscode integration
-    #[cfg(target_os = "macos")]
-    for variant in fig_integrations::vscode::variants_installed() {
-        let integration = fig_integrations::vscode::VSCodeIntegration { variant };
-        if integration.is_installed().await.is_err() {
-            info!(
-                "Attempting to install vscode integration for variant {}",
-                integration.variant.application_name
-            );
-            if let Err(err) = integration.install().await {
-                error!(%err, "Failed installing vscode integration for variant {}", integration.variant.application_name);
-            }
-        }
-    }
-
-    // install intellij integration
-    #[cfg(target_os = "macos")]
-    match fig_integrations::intellij::variants_installed().await {
-        Ok(variants) => {
-            for integration in variants {
-                if integration.is_installed().await.is_err() {
-                    info!(
-                        "Attempting to install intellij integration for variant {}",
-                        integration.variant.application_name()
-                    );
-                    if let Err(err) = integration.install().await {
-                        error!(%err, "Failed installing intellij integration for variant {}", integration.variant.application_name());
-                    }
-                }
-            }
-        },
-        Err(err) => error!(%err, "Failed getting installed intellij variants"),
     }
 
     // update ssh integration

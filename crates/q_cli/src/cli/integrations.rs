@@ -59,10 +59,6 @@ pub enum Integration {
     },
     Ssh,
     InputMethod,
-    #[command(name = "vscode")]
-    VSCode,
-    #[command(alias = "jetbrains-plugin")]
-    IntellijPlugin,
     AutostartEntry,
     GnomeShellExtension,
     #[doc(hidden)]
@@ -190,36 +186,6 @@ async fn install(integration: Integration, silent: bool) -> Result<()> {
                 }
             }
         },
-        Integration::VSCode => {
-            cfg_if::cfg_if! {
-                if #[cfg(target_os = "macos")] {
-                    let variants = fig_integrations::vscode::variants_installed();
-                    installed = !variants.is_empty();
-                    for variant in variants {
-                        fig_integrations::vscode::VSCodeIntegration { variant }.install().await?;
-                    }
-                    Ok(())
-                } else {
-                    errored = true;
-                    Err(eyre::eyre!("VSCode integration is only supported on macOS"))
-                }
-            }
-        },
-        Integration::IntellijPlugin => {
-            cfg_if::cfg_if! {
-                if #[cfg(target_os = "macos")] {
-                    let variants = fig_integrations::intellij::variants_installed().await?;
-                    installed = !variants.is_empty();
-                    for variant in variants {
-                        variant.install().await?;
-                    }
-                    Ok(())
-                } else {
-                    errored = true;
-                    Err(eyre::eyre!("IntelliJ integration is only supported on macOS"))
-                }
-            }
-        },
         Integration::AutostartEntry => {
             errored = true;
             Err(eyre::eyre!(
@@ -311,39 +277,6 @@ async fn uninstall(integration: Integration, silent: bool) -> Result<()> {
                     Ok(())
                 } else {
                     Err(eyre::eyre!("Input method integration is only supported on macOS"))
-                }
-            }
-        },
-        Integration::VSCode => {
-            cfg_if::cfg_if! {
-                if #[cfg(target_os = "macos")] {
-                    for variant in fig_integrations::vscode::variants_installed() {
-                        let integration = fig_integrations::vscode::VSCodeIntegration { variant };
-                        if integration.is_installed().await.is_ok() {
-                            integration.uninstall().await?;
-                            uninstalled = true;
-                        }
-                    }
-                    println!("Warning: VSCode integrations are automatically reinstalled on launch");
-                    Ok(())
-                } else {
-                    Err(eyre::eyre!("VSCode integration is only supported on macOS"))
-                }
-            }
-        },
-        Integration::IntellijPlugin => {
-            cfg_if::cfg_if! {
-                if #[cfg(any(target_os = "macos", target_os = "linux"))] {
-                    for variant in fig_integrations::intellij::variants_installed().await? {
-                        if variant.is_installed().await.is_ok() {
-                            variant.uninstall().await?;
-                            uninstalled = true;
-                        }
-                    }
-                    println!("Warning: IntelliJ integrations are automatically reinstalled on launch");
-                    Ok(())
-                } else {
-                    Err(eyre::eyre!("IntelliJ integration is only supported on macOS and Linux"))
                 }
             }
         },
@@ -494,47 +427,6 @@ async fn status(integration: Integration, format: OutputFormat) -> Result<ExitCo
                     Ok(ExitCode::SUCCESS)
                 } else {
                     Err(eyre::eyre!("Input method integration is only supported on macOS"))
-                }
-            }
-        },
-        Integration::VSCode => {
-            cfg_if::cfg_if! {
-                if #[cfg(target_os = "macos")] {
-                    let variants = fig_integrations::vscode::variants_installed();
-                    for variant in variants {
-                        let integration = fig_integrations::vscode::VSCodeIntegration { variant };
-                        match integration.is_installed().await {
-                            Ok(_) => {
-                                println!("{}: Installed", integration.variant.application_name);
-                            }
-                            Err(_) => {
-                                println!("{}: Not installed", integration.variant.application_name);
-                            }
-                        }
-                    }
-                    Ok(ExitCode::SUCCESS)
-                } else {
-                    Err(eyre::eyre!("VSCode integration is only supported on macOS"))
-                }
-            }
-        },
-        Integration::IntellijPlugin => {
-            cfg_if::cfg_if! {
-                if #[cfg(any(target_os = "macos", target_os = "linux"))] {
-                    let variants = fig_integrations::intellij::variants_installed().await?;
-                    for variant in variants {
-                        match variant.is_installed().await {
-                            Ok(_) => {
-                                println!("{}: Installed", variant.variant.application_name());
-                            }
-                            Err(_) => {
-                                println!("{}: Not installed", variant.variant.application_name());
-                            }
-                        }
-                    }
-                    Ok(ExitCode::SUCCESS)
-                } else {
-                    Err(eyre::eyre!("IntelliJ integration is only supported on macOS and Linux"))
                 }
             }
         },

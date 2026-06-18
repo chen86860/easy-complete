@@ -7,11 +7,8 @@ pub mod file;
 pub mod gnome_extension;
 #[cfg(target_os = "macos")]
 pub mod input_method;
-pub mod intellij;
 pub mod shell;
 pub mod ssh;
-#[cfg(target_os = "macos")]
-pub mod vscode;
 
 use async_trait::async_trait;
 pub use backup::backup_file;

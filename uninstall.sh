@@ -69,9 +69,31 @@ if [[ -L "$IME_SYMLINK" || -d "$IME_SYMLINK" ]]; then
   rm -rf "$IME_SYMLINK"
 fi
 
-# Remove IME from HIToolbox prefs so it no longer appears in System Settings
-# (best-effort — macOS cleans this up on next login if the bundle is gone)
-defaults delete com.apple.HIToolbox AppleEnabledInputSources 2>/dev/null || true
+# Remove ONLY our IME entry from HIToolbox prefs so it no longer appears in
+# System Settings. We surgically strip our bundle ID from both the enabled and
+# the selected input-source lists — NOT `defaults delete` on the whole array,
+# which would wipe every keyboard layout and input method the user has.
+info "Removing Input Method from HIToolbox..."
+python3 - "$IME_BUNDLE_ID" <<'PY' 2>/dev/null || true
+import subprocess, plistlib, sys
+bundle_id = sys.argv[1]
+domain = "com.apple.HIToolbox"
+proc = subprocess.run(["defaults", "export", domain, "-"], capture_output=True)
+if proc.returncode != 0:
+    sys.exit(0)
+data = plistlib.loads(proc.stdout)
+changed = False
+for key in ("AppleEnabledInputSources", "AppleSelectedInputSources"):
+    sources = data.get(key)
+    if not isinstance(sources, list):
+        continue
+    kept = [s for s in sources if s.get("Bundle ID") != bundle_id]
+    if len(kept) != len(sources):
+        data[key] = kept
+        changed = True
+if changed:
+    subprocess.run(["defaults", "import", domain, "-"], input=plistlib.dumps(data))
+PY
 
 # ── 5. Remove app bundle ───────────────────────────────────────────────────────
 info "Removing /Applications/${APP_DISPLAY}.app..."
@@ -123,6 +145,10 @@ rm -rf "/tmp/ecrun"      2>/dev/null || true
 # Preferences
 defaults delete "$BUNDLE_ID"     2>/dev/null || true
 defaults delete "$IME_BUNDLE_ID" 2>/dev/null || true
+
+# Accessibility grant — drop the now-dead TCC entry so it doesn't linger in
+# System Settings pointing at a removed binary.
+tccutil reset Accessibility "$BUNDLE_ID" 2>/dev/null || true
 
 # Keychain entries (best-effort)
 security delete-generic-password -s "$BUNDLE_ID" 2>/dev/null || true

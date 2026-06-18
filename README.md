@@ -1,256 +1,203 @@
-
 <p align="center">
-  <a href="https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line-installing.html">
-    <picture>
-      <img src="./.github/media/amazon-q-logo.avif" alt="Amazon Q"
-        width="200px"
-      >
-    </picture>
-  </a>
+  <img src="./assets/logo.png" alt="Easy Complete" width="140px">
 </p>
 
-<h4 align="center">
-  Amazon Q CLI brings IDE-style autocomplete and agentic capabilities to your terminal.
-</h4>
-
-
-<div align="center">
-  <a href="https://github.com/aws/amazon-q-developer-cli/graphs/commit-activity"><img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/aws/amazon-q-developer-cli"/></a>
-  <a href="https://github.com/aws/amazon-q-developer-cli/issues"><img alt="GitHub open issues" src="https://img.shields.io/github/issues/aws/amazon-q-developer-cli"/></a>
-</div>
-
-
-<div align="center">
-
-[![Rust Test](https://github.com/aws/amazon-q-developer-cli/actions/workflows/rust.yml/badge.svg)](https://github.com/aws/amazon-q-developer-cli/actions/workflows/rust.yml)
-[![Typos Test](https://github.com/aws/amazon-q-developer-cli/actions/workflows/typos.yml/badge.svg)](https://github.com/aws/amazon-q-developer-cli/actions/workflows/typos.yml)
-[![Typescript Test](https://github.com/aws/amazon-q-developer-cli/actions/workflows/typescript.yml/badge.svg)](https://github.com/aws/amazon-q-developer-cli/actions/workflows/typescript.yml)
-</div>
+<h1 align="center">Easy Complete</h1>
 
 <p align="center">
-  <a href="https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line-installing.html">
-    <picture>
-      <img src="./.github/media/amazon-q-cli-features.jpeg" alt="Amazon Q CLI Features"
-      >
-    </picture>
-  </a>
+  IDE-style inline autocomplete for your macOS terminal.
 </p>
 
-## 😍 Features
--   🔮 [**Auto Completion**](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line-autocomplete.html): IDE-style completions to hundreds of popular CLIs like `git`, `npm`, `docker`, and `aws`.
--   💬 [**Natural Language Chat**](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line-chat.html): Interact with your terminal using natural language to ask questions, debug issues, or explore the codebase.
--   🧠 [**Contextual Awareness**](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line-chat.html#command-line-chat-context-integration): Integrates context from your local development environment, so answers are tailored to your specific code and setup.
--   🤖 [**Agentic Execution**](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line-autocomplete.html): Let Amazon Q take action: generate code, edit files, automate Git workflows, resolve merge conflicts, and more — with your permission.
+<p align="center">
+  <b>English</b> · <a href="./README.zh-CN.md">简体中文</a>
+</p>
 
-## ⚡️ Installation
+**Easy Complete** is a macOS terminal autocomplete app — IDE-style inline completions
+for your shell, rendered in a native overlay window that follows your cursor. It is a
+fork of the Amazon Q Developer CLI, stripped down to focus purely on terminal
+autocompletion.
 
-- **macOS**:
-  - **DMG**: [Download now](https://desktop-release.q.us-east-1.amazonaws.com/latest/Amazon%20Q.dmg)
-  - **Homebrew**: `brew install amazon-q`
-- **Linux**:
-  - [Ubuntu/Debian](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line-installing.html#command-line-installing-ubuntu)
-  - [AppImage](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line-installing.html#command-line-installing-appimage)
-  - [Alternative Linux builds](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line-installing.html#command-line-installing-alternative-linux)
-- **Windows**:
-  - Follow the discussions for
-    [Windows](https://github.com/aws/q-command-line-discussions/discussions/15)
-  - Or [use it on Windows with WSL](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line-installing.html#command-line-installing-windows)
-- **Remote machines**
-  - [Autocomplete in SSH](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line-autocomplete-ssh.html)
+You get fish-shell-style suggestions for hundreds of CLIs (`git`, `npm`, `docker`,
+`cargo`, …): flags, subcommands, file paths, and arguments, completed as you type.
 
+<p align="center">
+  <img src="./.github/media/amazon-q-cli-features.jpeg" alt="Easy Complete autocomplete in action">
+</p>
 
-## 🚀 Start Contributing
+> **Platform:** macOS only (Apple Silicon & Intel).
 
-### Prerequisites
+---
 
-- MacOS
-  - Xcode 13 or later
-  - Brew
+## ⚡️ Install
 
-### 1. Clone repo
+Build everything from source and install into `/Applications`:
 
-```shell
-git clone https://github.com/aws/amazon-q-developer-cli-autocomplete.git
+```bash
+git clone <your-fork-url> easy-autocomplete
+cd easy-autocomplete
+./install.sh
 ```
 
-### 2. Setup
-Hassle-free setup:
-```shell
-npm run setup
+The installer will:
+
+1. Build the Rust binaries and the TypeScript frontend.
+2. Assemble `Easy Complete.app` and copy it to `/Applications`.
+3. Symlink the `ec` and `ecterm` CLIs into `~/.local/bin`.
+4. Install a LaunchAgent so the app starts on login.
+5. Set up shell integration and register the input method.
+6. **Prompt you to grant Accessibility permission** (required — see below).
+
+When it finishes, reload your shell:
+
+```bash
+exec $SHELL
 ```
 
-Or if you'd like to DIY:
+### Grant Accessibility permission
 
-<details>
-<summary>Manual Setup</summary>
-<div>
+Easy Complete positions the completion popup relative to your focused terminal
+window, which requires the macOS **Accessibility** permission. The installer triggers
+the system prompt automatically; approve **Easy Complete** in:
 
-### 1. Install platform dependencies
+> System Settings → Privacy & Security → Accessibility
 
-For Debian/Ubuntu:
+If completions never appear, this is almost always the cause. Re-trigger the prompt
+with:
 
-```shell
-sudo apt update
-sudo apt install build-essential pkg-config jq dpkg curl wget cmake clang libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev libdbus-1-dev libwebkit2gtk-4.1-dev libjavascriptcoregtk-4.1-dev valac libibus-1.0-dev libglib2.0-dev sqlite3 libxdo-dev protobuf-compiler
-```
-### 2. Install Rust toolchain using [Rustup](https://rustup.rs):
-
-```shell
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-rustup default stable
+```bash
+ec debug prompt-accessibility
 ```
 
-For pre-commit hooks, the following commands are required:
+---
 
-```shell
-rustup toolchain install nightly
-cargo install typos-cli
+## 🚀 Usage
+
+Once installed and granted permission, just start typing in any supported terminal —
+suggestions appear inline as you type.
+
+| Key | Action |
+|---|---|
+| `↑` / `↓` | Move through suggestions |
+| `⇥` (Tab) / `→` | Accept the highlighted suggestion |
+| `Esc` | Dismiss the popup |
+
+The settings & onboarding dashboard is available from the **Easy Complete menu bar
+icon** (system tray).
+
+Useful CLI commands:
+
+```bash
+ec doctor                       # diagnose common problems
+ec diagnostic                   # print environment / integration status
+ec integrations install input-method   # (re)register the macOS input method
+ec settings list                # view settings
+ec settings <key> <value>       # change a setting
 ```
 
-For MacOS development make sure the right targets are installed:
+### Supported terminals
 
-```shell
-rustup target add x86_64-apple-darwin
-rustup target add aarch64-apple-darwin
+Most terminals work out of the box via the PTY integration. Terminals that bypass the
+standard PTY path (**Ghostty, Kitty, WezTerm, Zed, Alacritty**) additionally rely on
+the bundled input method for cursor tracking — this is registered automatically during
+install.
+
+---
+
+## 🗑️ Uninstall
+
+```bash
+./uninstall.sh
 ```
 
-### 3. Setup Python and Node using [`mise`](https://mise.jdx.dev)
+This removes the app bundle, CLI symlinks, LaunchAgent, input method, shell
+integration, and all application data. It surgically removes only Easy Complete's own
+input source from the system preferences (your other keyboard layouts and input
+methods are left untouched).
 
-Add mise integrations to your shell:
+---
 
-For zsh:
-```shell
-echo 'eval "$(mise activate zsh)"' >> "${ZDOTDIR-$HOME}/.zshrc"
+## 🧩 How it works
+
+Easy Complete runs as three cooperating native processes that talk over Unix domain
+sockets (Protobuf messages):
+
+| Binary | Crate | Role |
+|---|---|---|
+| `easy-complete` | `fig_desktop` | Native app host — owns the autocomplete overlay and dashboard (React apps in `wry` WebViews), system tray, and window management |
+| `ecterm` | `figterm` | Pseudoterminal between your shell and terminal emulator; intercepts the shell edit buffer to drive completions |
+| `ec` | `q_cli` | CLI entry point — `setup`, `integrations`, `diagnostic`, `settings`, and more |
+
+Shell hooks (`.zshrc`, `.bashrc`, fish config) report shell state — CWD, command text,
+cursor position — back to `ecterm` on every prompt and keystroke. On macOS, the
+`fig_input_method` helper app reports caret position for terminals that bypass the PTY.
+
+**Identifiers**
+
+- App bundle ID: `dev.emmmm.easy-complete`
+- Input method bundle ID: `dev.emmmm.easy-complete.inputmethod`
+- App bundle: `/Applications/Easy Complete.app`
+
+---
+
+## 🛠️ Development
+
+### Toolchain
+
+- Rust `1.87.0` (pinned in `rust-toolchain.toml`), edition 2024
+- Node `^22`, pnpm `10`
+- Turborepo for the TypeScript build graph
+
+### Rust
+
+```bash
+# Build all release binaries
+cargo build --release -p fig_desktop -p figterm -p q_cli -p fig_input_method
+
+# Run a single crate in dev mode
+cargo run --bin q_cli -- <subcommand>
+cargo run --bin easy-complete
+
+cargo clippy --locked --workspace --color always -- -D warnings   # lint (CI: -D warnings)
+cargo +nightly fmt                                                # format (nightly)
+cargo test -p <crate_name>                                        # test a crate
 ```
 
-For bash:
-```shell
-echo 'eval "$(mise activate bash)"' >> ~/.bashrc
+### TypeScript
+
+```bash
+pnpm turbo build --filter="./packages/*"   # build all packages
+pnpm dev:autocomplete                       # watch the autocomplete UI (port 3124)
+pnpm lint                                   # lint
+pnpm test                                   # run Vitest
 ```
 
-For fish:
-```shell
-echo 'mise activate fish | source' >> ~/.config/fish/config.fish
-```
+In dev, Vite serves the WebView UIs on localhost and `fig_desktop` connects to those
+instead of the bundled `Contents/Resources/`.
 
-Install the Python and Node toolchains using:
+### Key crates
 
-```shell
-mise trust
-mise install
-```
+| Crate | Role |
+|---|---|
+| `fig_desktop` | Native app host: windowing (`tao`), WebView (`wry`), system tray |
+| `figterm` | PTY interceptor, shell edit-buffer tracking |
+| `q_cli` | CLI binary, all `ec` subcommands |
+| `fig_input_method` | macOS input method helper (cursor tracking) |
+| `fig_integrations` | Shell/terminal/editor integration install logic |
+| `fig_ipc` / `fig_proto` | Unix-socket IPC primitives & generated Protobuf types |
 
-### 4. Setup precommit hooks
+### Key TypeScript packages
 
-Run `pnpm` in root directory to add pre-commit hooks:
+| Package | Role |
+|---|---|
+| `autocomplete-app` | Autocomplete overlay React UI |
+| `dashboard-app` | Settings / onboarding React UI |
+| `autocomplete-parser` | CLI spec parser, suggestion generation |
+| `shell-parser` | Shell command-line tokenizer |
+| `api-bindings` | Generated TS Protobuf IPC bindings |
 
-```shell
-pnpm install --ignore-scripts
-```
+---
 
-</div>
-</details>
+## 📜 License
 
-
-### 3. Start Local Development
-To compile and view changes made to `q chat`:
-```shell
-cargo run --bin q_cli
-```
-
-> If you are working on other q commands, just append `-- <command name>`. For example, to run `q login`, you can run `cargo run --bin q_cli -- login`
-
-To run tests for the Q CLI crate:
-```shell
-cargo test -p q_cli
-```
-
-To format Rust files:
-```shell
-cargo +nightly fmt
-```
-
-To run clippy:
-```shell
-cargo clippy --locked --workspace --color always -- -D warnings
-```
-
-
-
-### 💡 Quick Tip for Onboarding
-
-Use Q CLI to help you onboard Q CLI! 
-
-Start a `q chat` session:
-
-```shell
-q chat
-```
-
-Once inside `q chat`, you can supply project context by adding the [`codebase-summary.md`](codebase-summary.md) file:
-
-```shell
-/context add codebase-summary.md
-```
-
-This enables Q to answer onboarding questions like:
-
-- “What does this crate do?”
-
-- “Where is X implemented?”
-
-- “How do these components interact?”
-
-Great for speeding up your ramp-up and navigating the repo more effectively.
-
-
-
-
-## 🏗️ Project Layout
-
-Several projects live here:
-
-- [`autocomplete`](packages/autocomplete/) - The autocomplete react app
-- [`dashboard`](packages/dashboard-app/) - The dashboard react app
-- [`figterm`](crates/figterm/) - figterm, our headless terminal/pseudoterminal that
-  intercepts the user’s terminal edit buffer.
-- [`q_cli`](crates/q_cli/) - the `q` CLI, allows users to interface with Amazon Q Developer from
-  the command line
-- [`fig_desktop`](crates/fig_desktop/) - the Rust desktop app, uses
-  [`tao`](https://docs.rs/tao/latest/tao/)/[`wry`](https://docs.rs/wry/latest/wry/)
-  for windowing/webviews
-- [`fig_input_method`](crates/fig_input_method/) - The input method used to get cursor
-  position on macOS
-- [`vscode`](extensions/vscode/) - Contains the VSCode plugin needed
-  for the Amazon Q Developer for command line to work in VSCode
-- [`jetbrains`](extensions/jetbrains/) - Contains the VSCode plugin
-  needed for the Amazon Q Developer for command line to work in Jetbrains IDEs
-
-Other folder to be aware of
-
-- [`build-scripts/`](build-scripts/) - Contains all python scripts to build,
-  sign, and test the project on macOS and Linux
-- [`crates/`](crates/) - Contains all internal rust crates
-- [`packages/`](packages/) - Contains all internal npm packages
-- [`proto/`](proto/) -
-  [protocol buffer](https://developers.google.com/protocol-buffers/) message
-  specification for inter-process communication
-- [`tests/`](tests/) - Contain integration tests for the projects
-
-Below is a high level architecture of how the different components of the app and
-their IPC:
-
-![architecture](docs/assets/architecture.svg)
-
-
-
-
-## 🛡️ Security
-
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
-
-## 📜 Licensing
-
-This repo is dual licensed under MIT and Apache 2.0 licenses.
-
-“Amazon Web Services” and all related marks, including logos, graphic designs, and service names, are trademarks or trade dress of AWS in the U.S. and other countries. AWS’s trademarks and trade dress may not be used in connection with any product or service that is not AWS’s, in any manner that is likely to cause confusion among customers, or in any manner that disparages or discredits AWS.
+Dual licensed under the MIT and Apache 2.0 licenses, inherited from the upstream Amazon
+Q Developer CLI.

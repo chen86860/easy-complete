@@ -111,6 +111,15 @@ launchctl unload "$PLIST_PATH" 2>/dev/null || true
 rm -rf "$APP_BUNDLE"
 cp -r "$STAGING_BUNDLE" /Applications/
 
+# Reset the stale Accessibility grant. The rebuilt binary carries a new code
+# signature, so macOS invalidates the previous grant but leaves a dead entry that
+# still points at the old binary — re-ticking the box in System Settings then has
+# no effect. Clearing it forces the fresh prompt issued in step 8 to take hold.
+# Without Accessibility the app never receives window-focus events, so the
+# autocomplete popup can never position itself and simply never appears.
+info "Resetting stale Accessibility permission..."
+tccutil reset Accessibility "$BUNDLE_ID" 2>/dev/null || true
+
 # ── 4. Symlink CLI binaries to ~/.local/bin ───────────────────────────────────
 info "Linking binaries to ${LOCAL_BIN}..."
 mkdir -p "$LOCAL_BIN"
@@ -166,6 +175,26 @@ ec integrations install input-method 2>/dev/null || {
   warn "Input method registration skipped (only needed for Kitty/Alacritty/Zed/Ghostty/WezTerm)"
 }
 
+# ── 8. Accessibility permission ─────────────────────────────────────────────────
+info "Requesting Accessibility permission..."
+# The autocomplete popup positions itself relative to the focused terminal window,
+# which requires Accessibility (AXIsProcessTrusted). After a reinstall the grant was
+# just reset in step 3, so trigger the system prompt now. `ec debug prompt-accessibility`
+# talks to the running desktop process over its local socket, so retry briefly while
+# the app (launched by `launchctl load` above) finishes coming up.
+prompted=false
+for _ in 1 2 3 4 5; do
+  if ec debug prompt-accessibility 2>/dev/null; then prompted=true; break; fi
+  sleep 1
+done
+if [ "$prompted" = true ]; then
+  warn "Grant '${APP_DISPLAY}' in System Settings → Privacy & Security → Accessibility,"
+  warn "then open a terminal and start typing — autocomplete will not appear until it is granted."
+else
+  warn "Could not reach the desktop app to prompt for Accessibility. Once it is running, run:"
+  warn "  ec debug prompt-accessibility"
+fi
+
 # ── Done ───────────────────────────────────────────────────────────────────────
 echo ""
 info "Installation complete!"
@@ -175,3 +204,6 @@ echo "  CLI:  ${LOCAL_BIN}/ec  ($(ec --version 2>/dev/null || echo 'restart shel
 echo ""
 echo "  Reload your shell to activate Easy Complete:"
 echo "    exec \$SHELL"
+echo ""
+echo "  If autocomplete does not appear, grant Accessibility to '${APP_DISPLAY}' in"
+echo "    System Settings → Privacy & Security → Accessibility  (re-run: ec debug prompt-accessibility)"

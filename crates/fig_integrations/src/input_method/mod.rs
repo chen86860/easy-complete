@@ -829,6 +829,16 @@ fn force_enable_in_hitoolbox(bundle_id: &str) {
     }
 }
 
+/// Returns true if the calling thread is the process main thread.
+#[cfg(feature = "dispatch")]
+fn is_main_thread() -> bool {
+    // `pthread_main_np` lives in libSystem and is always linked on macOS.
+    unsafe extern "C" {
+        fn pthread_main_np() -> std::os::raw::c_int;
+    }
+    unsafe { pthread_main_np() != 0 }
+}
+
 fn run_on_main<T, F>(work: F) -> T
 where
     F: Send + FnOnce() -> T,
@@ -836,7 +846,17 @@ where
 {
     cfg_if::cfg_if! {
         if #[cfg(feature = "dispatch")] {
-            dispatch::Queue::main().exec_sync(work)
+            // `dispatch_sync` onto the main queue *from the main thread itself* is a
+            // deadlock that libdispatch traps with SIGTRAP. This happens in the CLI
+            // (`ec integrations install input-method`), whose work runs on the main
+            // thread and where the `dispatch` feature is enabled via workspace feature
+            // unification. Run inline in that case; only dispatch when we are on another
+            // thread (e.g. fig_desktop, which has a live main run loop to service it).
+            if is_main_thread() {
+                work()
+            } else {
+                dispatch::Queue::main().exec_sync(work)
+            }
         } else {
             work()
         }

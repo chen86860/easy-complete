@@ -1,78 +1,82 @@
-name: Release
+name: Build ARM DMG
 
 on:
   push:
     tags:
-      - "v*"          # e.g. v2.0.1
-      - "*.*.*"       # e.g. 2.0.0 (matches the existing tag style too)
-  workflow_dispatch: # allow manual runs (uploads artifacts only, no release)
+      - "v*"
+      - "*.*.*"
 
 permissions:
-  contents: write   # needed to create/update the GitHub Release
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
 
 jobs:
-  build-dmg:
-    name: Build DMG (${{ matrix.arch }})
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - arch: arm64
-            runner: macos-14   # Apple Silicon
-          - arch: x86_64
-            runner: macos-13   # Intel
-    runs-on: ${{ matrix.runner }}
+  build-arm-dmg:
+    name: Build ARM DMG
+    runs-on: macos-15
     timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+
+      - name: Verify Apple Silicon runner
+        run: |
+          test "$(uname -m)" = "arm64"
+          sw_vers
 
       - name: Install build dependencies
-        run: brew install protobuf
+        run: brew install bash fish jq protobuf shellcheck zsh
 
-      - name: Set up Rust (honors rust-toolchain.toml)
-        run: rustup show
+      - name: Set up Rust
+        run: |
+          rustup show
+          rustup target add aarch64-apple-darwin
 
       - uses: Swatinem/rust-cache@v2
+        with:
+          key: arm64-dmg
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: pnpm
 
       - name: Install JS dependencies
+        env:
+          HUSKY: 0
         run: pnpm install --frozen-lockfile
 
-      - name: Build & assemble the .app
+      - name: Build app bundle
         run: ./scripts/build-app.sh
 
-      - name: Package DMG
-        run: ./scripts/make-dmg.sh "dist/Easy-Complete-${{ matrix.arch }}.dmg"
+      - name: Package ARM DMG
+        run: ./scripts/make-dmg.sh dist/Easy-Complete-arm64.dmg
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
-          name: Easy-Complete-${{ matrix.arch }}
-          path: dist/Easy-Complete-${{ matrix.arch }}.dmg
+          name: Easy-Complete-arm64
+          path: dist/Easy-Complete-arm64.dmg
 
-      - name: Attach DMG to release
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Attach DMG to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/Easy-Complete-${{ matrix.arch }}.dmg
+          files: dist/Easy-Complete-arm64.dmg
           fail_on_unmatched_files: true
           body: |
             ### Install
 
-            1. Download the DMG for your Mac (`arm64` for Apple Silicon, `x86_64` for Intel), open it, and drag **Easy Complete** to Applications.
+            1. Download `Easy-Complete-arm64.dmg`, open it, and drag **Easy Complete** to Applications.
             2. The build is unsigned, so macOS Gatekeeper will quarantine it. Clear the quarantine flag once:
                ```bash
                xattr -dr com.apple.quarantine "/Applications/Easy Complete.app"
                ```
             3. Launch **Easy Complete**, then grant **Accessibility** permission when prompted
-               (System Settings → Privacy & Security → Accessibility). Autocomplete will not
+               (System Settings -> Privacy & Security -> Accessibility). Autocomplete will not
                appear until this is granted.
             4. Reload your shell: `exec $SHELL`

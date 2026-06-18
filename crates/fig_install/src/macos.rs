@@ -48,6 +48,7 @@ use crate::{
     UpdateStatus,
 };
 
+#[allow(dead_code)]
 pub(crate) async fn update(
     update: UpdatePackage,
     tx: Sender<UpdateStatus>,

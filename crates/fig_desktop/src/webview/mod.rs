@@ -30,7 +30,10 @@ use fig_util::{
 use fnv::FnvBuildHasher;
 use muda::MenuEvent;
 use regex::RegexSet;
-use tao::dpi::LogicalSize;
+use tao::dpi::{
+    LogicalPosition,
+    LogicalSize,
+};
 use tao::event::{
     Event as WryEvent,
     StartCause,
@@ -110,8 +113,11 @@ use crate::{
     utils,
 };
 
-pub const DASHBOARD_SIZE: LogicalSize<f64> = LogicalSize::new(960.0, 720.0);
-pub const DASHBOARD_MINIMUM_SIZE: LogicalSize<f64> = LogicalSize::new(700.0, 480.0);
+pub const DASHBOARD_SIZE: LogicalSize<f64> = LogicalSize::new(820.0, 640.0);
+pub const DASHBOARD_MINIMUM_SIZE: LogicalSize<f64> =
+    LogicalSize::new(DASHBOARD_SIZE.width, 520.0);
+pub const DASHBOARD_MAXIMUM_SIZE: LogicalSize<f64> =
+    LogicalSize::new(DASHBOARD_SIZE.width, 10_000.0);
 
 pub const AUTOCOMPLETE_WINDOW_TITLE: &str = "Fig Autocomplete";
 
@@ -652,6 +658,52 @@ pub struct DashboardOptions {
     pub page: Option<String>,
 }
 
+fn dashboard_initialization_script() -> String {
+    let mut script = javascript_init(true);
+    let accent = system_accent_css_color();
+    let accent_json = serde_json::to_string(&accent).unwrap_or_else(|_| "\"AccentColor\"".to_string());
+
+    script.push_str(&format!(
+        r#"
+(function() {{
+  const accent = {accent_json};
+  const applyAccent = () => {{
+    document.documentElement.style.setProperty("--dashboard-accent-color", accent);
+    document.documentElement.style.accentColor = accent;
+  }};
+
+  applyAccent();
+  if (document.readyState === "loading") {{
+    document.addEventListener("DOMContentLoaded", applyAccent, {{ once: true }});
+  }}
+}})();
+"#
+    ));
+    script
+}
+
+#[cfg(target_os = "macos")]
+fn system_accent_css_color() -> String {
+    use objc2::rc::autoreleasepool;
+    use objc2_app_kit::{NSColor, NSColorSpace};
+
+    autoreleasepool(|_| unsafe {
+        let accent = NSColor::controlAccentColor();
+        let srgb = NSColorSpace::sRGBColorSpace();
+        let color = accent.colorUsingColorSpace(&srgb).unwrap_or(accent);
+        let red = (color.redComponent().clamp(0.0, 1.0) * 255.0).round() as u8;
+        let green = (color.greenComponent().clamp(0.0, 1.0) * 255.0).round() as u8;
+        let blue = (color.blueComponent().clamp(0.0, 1.0) * 255.0).round() as u8;
+
+        format!("rgb({red}, {green}, {blue})")
+    })
+}
+
+#[cfg(not(target_os = "macos"))]
+fn system_accent_css_color() -> String {
+    "AccentColor".to_string()
+}
+
 pub fn build_dashboard(
     ctx: Arc<Context>,
     web_context: &mut WebContext,
@@ -662,18 +714,31 @@ pub fn build_dashboard(
         page,
     }: DashboardOptions,
 ) -> anyhow::Result<(Window, WebView)> {
-    let window = WindowBuilder::new()
+    let window_builder = WindowBuilder::new()
         .with_title(PRODUCT_NAME)
         .with_inner_size(DASHBOARD_SIZE)
         .with_min_inner_size(DASHBOARD_MINIMUM_SIZE)
+        .with_max_inner_size(DASHBOARD_MAXIMUM_SIZE)
         .with_resizable(true)
         .with_maximizable(false)
         .with_visible(visible)
         .with_focused(visible)
         .with_always_on_top(false)
         .with_window_icon(Some(utils::icon()))
-        .with_theme(THEME.and_then(to_tao_theme))
-        .build(event_loop)?;
+        .with_theme(THEME.and_then(to_tao_theme));
+
+    #[cfg(target_os = "macos")]
+    let window_builder = {
+        use tao::platform::macos::WindowBuilderExtMacOS;
+
+        window_builder
+            .with_titlebar_transparent(true)
+            .with_title_hidden(true)
+            .with_fullsize_content_view(true)
+            .with_traffic_light_inset(LogicalPosition::new(16.0, 16.0))
+    };
+
+    let window = window_builder.build(event_loop)?;
 
     // #[cfg(not(target_os = "linux"))]
     // {
@@ -698,6 +763,7 @@ pub fn build_dashboard(
         url.set_path(&page);
     }
 
+    let dashboard_init_script = dashboard_initialization_script();
     let webview_builder = WebViewBuilder::with_web_context(web_context)
         .with_url(url.as_str())
         .with_ipc_handler(move |payload| {
@@ -725,7 +791,7 @@ pub fn build_dashboard(
             utils::wrap_custom_protocol(Arc::clone(&ctx), "api", DashboardId, api::handle),
         )
         .with_navigation_handler(navigation_handler(DASHBOARD_ID, &[r"^localhost$", r"^127\.0\.0\.1$"]))
-        .with_initialization_script(&javascript_init(true))
+        .with_initialization_script(&dashboard_init_script)
         .with_clipboard(true)
         .with_hotkeys_zoom(true);
 

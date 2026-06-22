@@ -1,7 +1,7 @@
 {
   "name": "@easy-complete/autocomplete-app",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "repository": "https://github.com/aws/amazon-q-developer-cli",
   "type": "module",
   "scripts": {

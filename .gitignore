@@ -52,8 +52,4 @@ run-build.sh
 # Amazon Q CLI files
 .amazonq/
 *.app/
-packages/dashboard-app/dist/index.html
-packages/dashboard-app/dist/assets/index-C0axeKvH.css
-packages/dashboard-app/dist/assets/index-CiF6RV6E.css
-packages/dashboard-app/dist/assets/index-DM6QetwH.js
-packages/dashboard-app/dist/assets/index-ThpV0dJ6.js
+packages/dashboard-app/dist/

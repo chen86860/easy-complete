@@ -6,6 +6,9 @@ export enum SETTINGS {
   DEV_COMPLETIONS_FOLDER = "autocomplete.devCompletionsFolder",
   DEV_COMPLETIONS_SERVER_PORT = "autocomplete.devCompletionsServerPort",
 
+  // App settings
+  LAUNCH_ON_STARTUP = "app.launchOnStartup",
+
   // Style settings
   WIDTH = "autocomplete.width",
   HEIGHT = "autocomplete.height",

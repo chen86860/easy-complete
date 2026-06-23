@@ -16,8 +16,7 @@ import { ThemePicker } from "../components/theme-picker";
 import { useCheckForUpdates } from "../hooks/use-check-for-updates";
 
 const APP_VERSION = __APP_VERSION__;
-const REPO_URL =
-  "https://github.com/chen86860/amazon-q-developer-cli-autocomplete";
+const REPO_URL = "https://github.com/chen86860/easy-complete";
 const RELEASES_URL = `${REPO_URL}/releases`;
 const ISSUES_URL = `${REPO_URL}/issues/new/choose`;
 const UPSTREAM_REPO_URL = "https://github.com/aws/amazon-q-developer-cli";
@@ -431,7 +430,13 @@ export function AdvancedSection({
   );
 }
 
-export function AboutSection() {
+export function AboutSection({
+  settings,
+  set,
+}: {
+  settings: SettingsMap;
+  set: SettingSetter;
+}) {
   const { isChecking, check: checkForUpdates } = useCheckForUpdates();
   const [copyState, setCopyState] = useState<"idle" | "done" | "error">("idle");
 
@@ -520,6 +525,19 @@ export function AboutSection() {
             href={ISSUES_URL}
             label="Open Issue"
             icon={<IconExternalLink />}
+          />
+        </Row>
+      </Card>
+
+      <Card title="Updates">
+        <Row
+          label="Check for Updates Automatically"
+          description="When Easy Complete opens, Sparkle checks in the background and shows the update window when a new version is available"
+          last
+        >
+          <Toggle
+            checked={!(settings[SETTINGS.DISABLE_AUTO_UPDATES] ?? false)}
+            onChange={(value) => set(SETTINGS.DISABLE_AUTO_UPDATES, !value)}
           />
         </Row>
       </Card>

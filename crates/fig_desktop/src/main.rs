@@ -169,8 +169,12 @@ async fn main() -> ExitCode {
         !fig_settings::settings::get_bool_or("autocomplete.disable", false) && accessibility_enabled;
 
     let mut webview_manager = WebviewManager::new(ctx, visible);
-    if !fig_settings::settings::get_bool_or("app.disableAutoupdates", false) {
+    let auto_updates_enabled = !fig_settings::settings::get_bool_or("app.disableAutoupdates", false);
+    if auto_updates_enabled {
         update::start_automatic_checks();
+        tokio::spawn(async {
+            let _ = update::check_for_update(false, false).await;
+        });
     }
     webview_manager
         .build_webview(

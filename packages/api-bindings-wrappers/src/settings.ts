@@ -8,6 +8,7 @@ export enum SETTINGS {
 
   // App settings
   LAUNCH_ON_STARTUP = "app.launchOnStartup",
+  DISABLE_AUTO_UPDATES = "app.disableAutoupdates",
 
   // Style settings
   WIDTH = "autocomplete.width",

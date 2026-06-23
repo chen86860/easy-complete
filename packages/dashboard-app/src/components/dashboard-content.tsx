@@ -67,7 +67,9 @@ export function DashboardContent({
         {section === "advanced" ? (
           <AdvancedSection settings={settings} set={set} />
         ) : null}
-        {section === "about" ? <AboutSection /> : null}
+        {section === "about" ? (
+          <AboutSection settings={settings} set={set} />
+        ) : null}
       </div>
     </main>
   );

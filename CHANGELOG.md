@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.17
+
+- feat: update version to 2.0.17 and add auto-update functionality
+
 ## v2.0.16
 
 - Enhance dashboard components with new features

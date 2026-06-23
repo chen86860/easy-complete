@@ -31,8 +31,8 @@ export function Sidebar({
   onSectionChange: (section: Section) => void;
 }) {
   return (
-    <aside className="flex w-[228px] flex-shrink-0 flex-col border-r border-[rgba(60,60,67,0.14)] bg-white pt-5">
-      <div className="px-3.5 py-1.5 text-[17px] font-semibold tracking-[-0.02em] text-[rgba(0,0,0,0.76)]">
+    <aside className="flex w-[228px] flex-shrink-0 flex-col border-r border-[rgba(60,60,67,0.14)] bg-white pt-[32px]">
+      <div className="px-5 py-3 text-[17px] font-semibold tracking-[-0.02em] text-[#050505]">
         Settings
       </div>
       <nav

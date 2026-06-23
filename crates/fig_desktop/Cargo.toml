@@ -2,7 +2,7 @@
 name = "fig_desktop"
 authors = ["easy-complete contributors"]
 edition.workspace = true
-homepage = "https://github.com/chen86860/amazon-q-developer-cli-autocomplete"
+homepage = "https://github.com/chen86860/easy-complete"
 publish.workspace = true
 version.workspace = true
 license.workspace = true

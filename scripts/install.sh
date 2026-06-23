@@ -22,7 +22,7 @@ error() { echo -e "${RED}==>${NC} $*" >&2; }
 # ── 1. Build & assemble the .app ──────────────────────────────────────────────
 # Shared with CI (see .github/workflows/release.yml) so the bundle is assembled
 # identically whether installed locally or packaged into a release DMG.
-"${REPO_DIR}/scripts/build-app.sh"
+"${REPO_DIR}/build-app.sh"
 
 # ── 3. Install to /Applications ───────────────────────────────────────────────
 info "Installing to /Applications/..."

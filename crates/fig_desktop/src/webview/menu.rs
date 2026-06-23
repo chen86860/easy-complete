@@ -18,6 +18,7 @@ use crate::{
 };
 
 const DASHBOARD_QUIT: &str = "dashboard-quit";
+const DASHBOARD_CLOSE: &str = "dashboard-close";
 const DASHBOARD_ABOUT: &str = "dashboard-about";
 
 #[cfg(target_os = "macos")]
@@ -37,6 +38,14 @@ pub fn menu_bar() -> Menu {
                 .text("About Project")
                 .id(DASHBOARD_ABOUT.into())
                 .enabled(true)
+                .build(),
+            &PredefinedMenuItem::separator(),
+            &MenuItemBuilder::new()
+                .text("Close Settings Window")
+                .id(DASHBOARD_CLOSE.into())
+                .enabled(true)
+                .accelerator(Some("super+w"))
+                .unwrap()
                 .build(),
             &PredefinedMenuItem::separator(),
             &MenuItemBuilder::new()
@@ -94,6 +103,12 @@ pub fn handle_event(menu_event: &MenuEvent, proxy: &EventLoopProxy) {
     match &menu_event.id().0 {
         menu_id if menu_id == DASHBOARD_QUIT => proxy
             .send_event(Event::ControlFlow(ControlFlow::Exit))
+            .unwrap(),
+        menu_id if menu_id == DASHBOARD_CLOSE => proxy
+            .send_event(Event::WindowEvent {
+                window_id: DASHBOARD_ID,
+                window_event: WindowEvent::Hide,
+            })
             .unwrap(),
         menu_id if menu_id == DASHBOARD_ABOUT => proxy
             .send_event(Event::WindowEvent {

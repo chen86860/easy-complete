@@ -1,0 +1,2 @@
+var n={script:["chsh","-l"],postProcess:e=>e.startsWith("fatal:")?[]:e.split(`
+`).map(s=>({name:s.replace("*","").trim()}))},i={name:"chsh",description:"Change your login shell",options:[{name:["-s","--shell"],description:"Specify login shell",args:{name:"shell",generators:n}},{name:["-l","--list-shells"],description:"Print list of shells and exit"},{name:["-u","-h","--help"],description:"Print help message and exit"},{name:["-v","--version"],description:"Print version and exit"}],args:{name:"username",description:"Target user",isOptional:!0}},r=i;export{r as default};

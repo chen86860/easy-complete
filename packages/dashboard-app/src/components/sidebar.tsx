@@ -32,7 +32,10 @@ export function Sidebar({
   onSectionChange: (section: Section) => void;
 }) {
   return (
-    <aside className="flex w-[236px] flex-shrink-0 flex-col border-r border-[rgba(60,60,67,0.14)] bg-white pt-[62px]">
+    <aside className="flex w-[236px] flex-shrink-0 flex-col border-r border-[rgba(60,60,67,0.14)] bg-white pt-[32px]">
+      <div className="px-3.5 py-4 text-xl font-semibold text-[rgba(0,0,0,0.86)]">
+        Settings
+      </div>
       <nav
         onWheel={preventScrollBounce}
         className="flex-1 overflow-y-auto px-3.5 [overscroll-behavior:none]"

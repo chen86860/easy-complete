@@ -13,6 +13,7 @@ set -euo pipefail
 APP_NAME="easy-complete"          # binary / process name (no spaces)
 APP_DISPLAY="Easy Complete"       # human-readable / bundle directory name
 BUNDLE_ID="dev.emmmm.easy-complete"
+DEFAULT_SPARKLE_APPCAST_URL="https://github.com/chen86860/easy-complete/releases/latest/download/appcast.xml"
 
 REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 VERSION=$(cargo metadata --no-deps --format-version 1 | python3 -c "import sys,json; print(json.load(sys.stdin)['packages'][0]['version'])" 2>/dev/null || echo "dev")
@@ -20,6 +21,8 @@ VERSION=$(cargo metadata --no-deps --format-version 1 | python3 -c "import sys,j
 STAGING_BUNDLE="${REPO_DIR}/build/${APP_DISPLAY}.app"
 MACOS_DIR="${STAGING_BUNDLE}/Contents/MacOS"
 RESOURCES_DIR="${STAGING_BUNDLE}/Contents/Resources"
+FRAMEWORKS_DIR="${STAGING_BUNDLE}/Contents/Frameworks"
+SPARKLE_APPCAST_URL="${SPARKLE_APPCAST_URL:-$DEFAULT_SPARKLE_APPCAST_URL}"
 
 GREEN='\033[0;32m'; NC='\033[0m'
 info() { echo -e "${GREEN}==>${NC} $*"; }
@@ -41,6 +44,28 @@ mkdir -p "${RESOURCES_DIR}/autocomplete"
 mkdir -p "${RESOURCES_DIR}/dashboard"
 mkdir -p "${RESOURCES_DIR}/themes"
 
+if [ ! -f "${REPO_DIR}/bundle/specs/index.json" ]; then
+  info "Bundled specs are missing; syncing them now..."
+  node "${REPO_DIR}/scripts/sync-bundled-specs.mjs"
+fi
+
+SPARKLE_PLIST_ENTRIES=""
+if [ -n "${SPARKLE_PUBLIC_ED_KEY:-}" ]; then
+  info "Embedding Sparkle.framework..."
+  SPARKLE_FRAMEWORK="${SPARKLE_FRAMEWORK:-$("${REPO_DIR}/scripts/fetch-sparkle.sh")}"
+  [ -d "$SPARKLE_FRAMEWORK" ] || { echo "error: Sparkle framework not found: $SPARKLE_FRAMEWORK" >&2; exit 1; }
+  mkdir -p "$FRAMEWORKS_DIR"
+  cp -R "$SPARKLE_FRAMEWORK" "$FRAMEWORKS_DIR/"
+  read -r -d '' SPARKLE_PLIST_ENTRIES <<PLIST || true
+    <key>SUFeedURL</key>
+    <string>${SPARKLE_APPCAST_URL}</string>
+    <key>SUPublicEDKey</key>
+    <string>${SPARKLE_PUBLIC_ED_KEY}</string>
+    <key>SUEnableInstallerLauncherService</key>
+    <true/>
+PLIST
+fi
+
 cp "target/release/${APP_NAME}" "$MACOS_DIR/"
 cp "target/release/ec"          "$MACOS_DIR/"
 cp "target/release/ecterm"      "$MACOS_DIR/"
@@ -48,6 +73,7 @@ cp "target/release/ecterm"      "$MACOS_DIR/"
 cp -r packages/autocomplete-app/dist/* "${RESOURCES_DIR}/autocomplete/"
 cp -r packages/dashboard-app/dist/*    "${RESOURCES_DIR}/dashboard/"
 cp themes/*.json                       "${RESOURCES_DIR}/themes/"
+cp -R bundle/specs                     "${RESOURCES_DIR}/specs"
 
 # Input Method helper app
 IM_APP="${STAGING_BUNDLE}/Contents/Helpers/EasyCompleteInputMethod.app"
@@ -95,6 +121,7 @@ cat > "${STAGING_BUNDLE}/Contents/Info.plist" <<PLIST
             </array>
         </dict>
     </array>
+${SPARKLE_PLIST_ENTRIES}
 </dict>
 </plist>
 PLIST
@@ -103,11 +130,11 @@ PLIST
 cp "${REPO_DIR}/crates/fig_desktop/icons/icon.icns" "${RESOURCES_DIR}/icon.icns"
 
 # ── 3. Ad-hoc code sign ───────────────────────────────────────────────────────
-# No Apple Developer ID, so we sign ad-hoc (`-`). This lets the embedded input
-# method helper load and keeps the bundle internally consistent. Downloaded
-# builds are still quarantined by Gatekeeper — users clear it with:
-#   xattr -dr com.apple.quarantine "/Applications/Easy Complete.app"
+# Release builds replace this with Developer ID signing in CI.
 info "Ad-hoc code signing..."
+if [ -d "${FRAMEWORKS_DIR}/Sparkle.framework" ]; then
+  codesign --force --deep --sign - "${FRAMEWORKS_DIR}/Sparkle.framework" 2>/dev/null || true
+fi
 codesign --force --deep --sign - "${IM_APP}" 2>/dev/null || true
 codesign --force --deep --sign - "${STAGING_BUNDLE}" 2>/dev/null || true
 

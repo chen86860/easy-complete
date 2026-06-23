@@ -1,7 +1,5 @@
 use std::sync::Arc;
 
-#[cfg(not(target_os = "linux"))]
-use fig_install::check_for_updates;
 use fig_integrations::Integration;
 use fig_integrations::ssh::SshIntegration;
 use fig_os_shim::Context;
@@ -152,44 +150,7 @@ pub async fn run_install(ctx: Arc<Context>, ignore_immediate_update: bool, promp
         error!(%err, "Failed to set previous version");
     }
 
-    #[cfg(not(target_os = "linux"))]
-    {
-        // Update if there's a newer version
-        if !ignore_immediate_update && !is_cargo_debug_build() {
-            use std::time::Duration;
-
-            use tokio::time::timeout;
-            // Check for updates but timeout after 3 seconds to avoid making the user wait too long
-            // todo: don't download the index file twice
-            match timeout(Duration::from_secs(3), check_for_updates(true, true)).await {
-                Ok(Ok(Some(_))) => {
-                    crate::update::check_for_update(true, true).await;
-                },
-                Ok(Ok(None)) => error!("No update found"),
-                Ok(Err(err)) => error!(%err, "Failed to check for updates"),
-                Err(err) => error!(%err, "Update check timed out"),
-            }
-        }
-
-        tokio::spawn(async {
-            let seconds = fig_settings::settings::get_int_or("app.autoupdate.check-period", 60 * 60 * 3);
-            if seconds < 0 {
-                return;
-            }
-            let mut interval = tokio::time::interval(std::time::Duration::from_secs(seconds as u64));
-            interval.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Delay);
-            interval.tick().await;
-            loop {
-                interval.tick().await;
-                // TODO: we need to determine if the dashboard is open here and pass that as the second bool
-                crate::update::check_for_update(false, false).await;
-            }
-        });
-
-        // remove the updater if it exists
-        #[cfg(target_os = "windows")]
-        std::fs::remove_file(fig_util::directories::fig_dir().unwrap().join("fig_installer.exe")).ok();
-    }
+    // App updates are handled by Sparkle on macOS release builds.
 
     // update ssh integration
     if let Ok(ssh_integration) = SshIntegration::new() {

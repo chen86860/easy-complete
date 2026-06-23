@@ -64,7 +64,6 @@ BUILD_DIR = BUILD_DIR_RELATIVE.absolute()
 class NpmBuildOutput:
     dashboard_path: pathlib.Path
     autocomplete_path: pathlib.Path
-    vscode_path: pathlib.Path
 
 
 @dataclass
@@ -76,19 +75,9 @@ class MacOSBuildOutput:
 def build_npm_packages(run_test: bool = True) -> NpmBuildOutput:
     run_cmd(["pnpm", "install", "--frozen-lockfile"])
 
-    # set the version of extensions/vscode
-    package_json_path = pathlib.Path("extensions/vscode/package.json")
-    package_json_text = package_json_path.read_text()
-    package_json = json.loads(package_json_text)
-    package_json["version"] = version()
-    package_json_path.write_text(json.dumps(package_json, indent=2))
-
     run_cmd(["pnpm", "build"])
     if run_test:
         run_cmd(["pnpm", "test", "--", "--run"])
-
-    # revert the package.json
-    package_json_path.write_text(package_json_text)
 
     # copy to output
     dashboard_path = BUILD_DIR / "dashboard"
@@ -99,15 +88,7 @@ def build_npm_packages(run_test: bool = True) -> NpmBuildOutput:
     shutil.rmtree(autocomplete_path, ignore_errors=True)
     shutil.copytree("packages/autocomplete-app/dist", autocomplete_path)
 
-    vscode_path = BUILD_DIR / "vscode-plugin.vsix"
-    shutil.rmtree(vscode_path, ignore_errors=True)
-    shutil.copy2(f"extensions/vscode/codewhisperer-for-command-line-companion-{version()}.vsix", vscode_path)
-    shutil.copy2(
-        f"extensions/vscode/codewhisperer-for-command-line-companion-{version()}.vsix",
-        "crates/fig_integrations/src/vscode/vscode-plugin.vsix",
-    )
-
-    return NpmBuildOutput(dashboard_path=dashboard_path, autocomplete_path=autocomplete_path, vscode_path=vscode_path)
+    return NpmBuildOutput(dashboard_path=dashboard_path, autocomplete_path=autocomplete_path)
 
 
 def build_cargo_bin(
@@ -545,7 +526,6 @@ def linux_tauri_config(
     chat_path: pathlib.Path,
     dashboard_path: pathlib.Path,
     autocomplete_path: pathlib.Path,
-    vscode_path: pathlib.Path,
     themes_path: pathlib.Path,
     legacy_extension_dir_path: pathlib.Path,
     modern_extension_dir_path: pathlib.Path,
@@ -566,7 +546,6 @@ def linux_tauri_config(
                 "resources": {
                     dashboard_path.absolute().as_posix(): "dashboard",
                     autocomplete_path.absolute().as_posix(): "autocomplete",
-                    vscode_path.absolute().as_posix(): "vscode",
                     themes_path.absolute().as_posix(): "themes",
                     legacy_extension_dir_path.absolute().as_posix(): LINUX_LEGACY_GNOME_EXTENSION_UUID,
                     modern_extension_dir_path.absolute().as_posix(): LINUX_MODERN_GNOME_EXTENSION_UUID,
@@ -668,10 +647,6 @@ def build_linux_deb(
     shutil.copytree(resources.npm_packages.autocomplete_path, share_path / "autocomplete")
     shutil.copytree(resources.npm_packages.dashboard_path, share_path / "dashboard")
     shutil.copytree(resources.themes_path, share_path / "themes")
-    # TODO: Support vscode
-    # vscode_path = share_path / 'vscode/vscode-plugin.vsix'
-    # vscode_path.parent.mkdir(parents=True)
-    # shutil.copy(npm_packages.vscode_path, vscode_path)
 
     def replace_text(file: pathlib.Path, old: str, new: str):
         file.write_text(file.read_text().replace(old, new))
@@ -751,7 +726,6 @@ def build_linux_full(
             chat_path=chat_path,
             dashboard_path=npm_packages.dashboard_path,
             autocomplete_path=npm_packages.autocomplete_path,
-            vscode_path=npm_packages.vscode_path,
             themes_path=themes_path,
             legacy_extension_dir_path=legacy_extension_dir_path,
             modern_extension_dir_path=modern_extension_dir_path,

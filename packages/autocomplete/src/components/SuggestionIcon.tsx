@@ -27,9 +27,7 @@ const transformIconUri = (icon: URL): URL => {
     const type = icon.searchParams.get("type");
     if (type) {
       if (icons.includes(type)) {
-        return new URL(
-          `https://specs.q.us-east-1.amazonaws.com/icons/${type}.png`,
-        );
+        return new URL(`spec://localhost/icons/${type}.png`);
       }
     }
   }

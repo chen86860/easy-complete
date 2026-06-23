@@ -1,0 +1,2 @@
+var s={name:"login",description:"Begin session on the system",options:[{name:"-p",description:"Preserve environment"},{name:"-r",description:"Perform autologin protocol for rlogin"},{name:"-h",description:"Specify host",args:{name:"host"}},{name:"-f",description:"Don't authenticate user, user is preauthenticated"}],args:{name:"username",generators:{script:["cat","/etc/passwd"],postProcess:e=>e.split(`
+`).map(n=>{let[t]=n.split(":");return{name:t,icon:"\u{1F464}"}})}}},o=s;export{o as default};

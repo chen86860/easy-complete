@@ -11,6 +11,7 @@ permissions:
 
 env:
   CARGO_TERM_COLOR: always
+  SPARKLE_VERSION: 2.9.3
 
 jobs:
   build-arm-dmg:
@@ -51,33 +52,85 @@ jobs:
           HUSKY: 0
         run: pnpm install --frozen-lockfile
 
+      - name: Import Developer ID certificate
+        env:
+          APPLE_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          test -n "$APPLE_CERTIFICATE_P12_BASE64"
+          test -n "$APPLE_CERTIFICATE_PASSWORD"
+          KEYCHAIN_PASSWORD="${KEYCHAIN_PASSWORD:-$(uuidgen)}"
+          CERT_PATH="$RUNNER_TEMP/developer-id.p12"
+          KEYCHAIN_PATH="$RUNNER_TEMP/easy-complete-signing.keychain-db"
+
+          echo "$APPLE_CERTIFICATE_P12_BASE64" | base64 --decode > "$CERT_PATH"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$CERT_PATH" -P "$APPLE_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          mapfile -t EXISTING_KEYCHAINS < <(security list-keychain -d user | sed 's/[ "]//g')
+          security list-keychain -d user -s "$KEYCHAIN_PATH" "${EXISTING_KEYCHAINS[@]}"
+          security default-keychain -s "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+
       - name: Build app bundle
+        env:
+          SPARKLE_PUBLIC_ED_KEY: ${{ secrets.SPARKLE_PUBLIC_ED_KEY }}
+          SPARKLE_APPCAST_URL: https://github.com/${{ github.repository }}/releases/latest/download/appcast.xml
         run: ./scripts/build-app.sh
+
+      - name: Sign app bundle
+        env:
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+        run: ./scripts/sign-macos-app.sh
 
       - name: Package ARM DMG
         run: ./scripts/make-dmg.sh dist/Easy-Complete-arm64.dmg
+
+      - name: Notarize DMG
+        env:
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_NOTARY_KEY_BASE64: ${{ secrets.APPLE_NOTARY_KEY_BASE64 }}
+          APPLE_NOTARY_KEY: ${{ secrets.APPLE_NOTARY_KEY }}
+          APPLE_NOTARY_KEY_ID: ${{ secrets.APPLE_NOTARY_KEY_ID }}
+          APPLE_NOTARY_ISSUER_ID: ${{ secrets.APPLE_NOTARY_ISSUER_ID }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: ./scripts/notarize-dmg.sh dist/Easy-Complete-arm64.dmg
+
+      - name: Generate Sparkle appcast
+        env:
+          SPARKLE_PRIVATE_ED_KEY: ${{ secrets.SPARKLE_PRIVATE_ED_KEY }}
+          SPARKLE_DOWNLOAD_URL_PREFIX: https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/
+          SPARKLE_RELEASE_NOTES: ${{ github.ref_name }}
+        run: ./scripts/generate-sparkle-appcast.sh dist/Easy-Complete-arm64.dmg
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v6
         with:
           name: Easy-Complete-arm64
-          path: dist/Easy-Complete-arm64.dmg
+          path: |
+            dist/Easy-Complete-arm64.dmg
+            dist/sparkle/appcast.xml
 
       - name: Attach DMG to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/Easy-Complete-arm64.dmg
+          files: |
+            dist/Easy-Complete-arm64.dmg
+            dist/sparkle/appcast.xml
           fail_on_unmatched_files: true
           body: |
             ### Install
 
             1. Download `Easy-Complete-arm64.dmg`, open it, and drag **Easy Complete** to Applications.
-            2. The build is unsigned, so macOS Gatekeeper will quarantine it. Clear the quarantine flag once:
-               ```bash
-               xattr -dr com.apple.quarantine "/Applications/Easy Complete.app"
-               ```
-            3. Launch **Easy Complete**. On first launch, the app registers the bundled input
+            2. Launch **Easy Complete**. On first launch, the app registers the bundled input
                method and asks for **Accessibility** permission. Autocomplete will not appear
                until Accessibility is granted in System Settings -> Privacy & Security ->
                Accessibility.
-            4. Reload your shell: `exec $SHELL`
+            3. Reload your shell: `exec $SHELL`
+
+            This DMG is Developer ID signed, notarized, and published with a Sparkle appcast for future updates.

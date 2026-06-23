@@ -120,7 +120,6 @@ icons:
 	cargo tauri icon icons/icon.png
 	cargo tauri icon -o volume-icons icons/VolumeIcon.png
 	mv volume-icons/icon.icns $(MAKE_DIR)/../bundle/dmg/VolumeIcon.icns
-	mv icons/256x256.png $(MAKE_DIR)/../extensions/vscode/images/icon.png
 	# Clean up unused output from tauri icon cli.
 	rm icons/Square* icons/StoreLogo.png
 	rm -rf volume-icons
@@ -132,4 +131,3 @@ clean:
 	rm -rf $(BUILT_PRODUCTS_DIR)
 
 .PHONY: clean icons
-

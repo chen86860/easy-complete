@@ -1,6 +1,7 @@
 export type ThemeEntry = {
   id: string;
   label: string;
+  appearance: "system" | "light" | "dark";
   rootClassName: string;
   bgClassName: string;
   textClassName: string;
@@ -12,6 +13,7 @@ export const THEMES: ThemeEntry[] = [
   {
     id: "dark",
     label: "Dark",
+    appearance: "dark",
     rootClassName:
       "[--dashboard-accent-color:#1e5ac7] [--dashboard-accent-soft:#5f5938]",
     bgClassName: "bg-[#303030]",
@@ -22,6 +24,7 @@ export const THEMES: ThemeEntry[] = [
   {
     id: "light",
     label: "Light",
+    appearance: "light",
     rootClassName:
       "[--dashboard-accent-color:#2969da] [--dashboard-accent-soft:#fff899]",
     bgClassName: "bg-[#fefefe]",
@@ -32,6 +35,7 @@ export const THEMES: ThemeEntry[] = [
   {
     id: "system",
     label: "System",
+    appearance: "system",
     rootClassName:
       "[--dashboard-accent-color:#1e5ac7] [--dashboard-accent-soft:#5f5938]",
     bgClassName: "bg-[#1c1c1c]",
@@ -42,6 +46,7 @@ export const THEMES: ThemeEntry[] = [
   {
     id: "github-dark",
     label: "GitHub Dark",
+    appearance: "dark",
     rootClassName:
       "[--dashboard-accent-color:#1f6feb] [--dashboard-accent-soft:#388bfd]",
     bgClassName: "bg-[#0d1117]",
@@ -52,6 +57,7 @@ export const THEMES: ThemeEntry[] = [
   {
     id: "github-light",
     label: "GitHub Light",
+    appearance: "light",
     rootClassName:
       "[--dashboard-accent-color:#0969da] [--dashboard-accent-soft:#fff8c5]",
     bgClassName: "bg-white",
@@ -62,6 +68,7 @@ export const THEMES: ThemeEntry[] = [
   {
     id: "dracula",
     label: "Dracula",
+    appearance: "dark",
     rootClassName:
       "[--dashboard-accent-color:#6272a4] [--dashboard-accent-soft:#bd93f9]",
     bgClassName: "bg-[#282a36]",
@@ -72,6 +79,7 @@ export const THEMES: ThemeEntry[] = [
   {
     id: "nord",
     label: "Nord",
+    appearance: "dark",
     rootClassName:
       "[--dashboard-accent-color:#5e81ac] [--dashboard-accent-soft:#88c0d0]",
     bgClassName: "bg-[#2e3440]",
@@ -82,6 +90,7 @@ export const THEMES: ThemeEntry[] = [
   {
     id: "solarized-dark",
     label: "Solarized Dark",
+    appearance: "dark",
     rootClassName:
       "[--dashboard-accent-color:#268bd2] [--dashboard-accent-soft:#2aa198]",
     bgClassName: "bg-[#002b36]",
@@ -92,6 +101,7 @@ export const THEMES: ThemeEntry[] = [
   {
     id: "solarized-light",
     label: "Solarized Light",
+    appearance: "light",
     rootClassName:
       "[--dashboard-accent-color:#268bd2] [--dashboard-accent-soft:#2aa198]",
     bgClassName: "bg-[#fdf6e3]",
@@ -102,6 +112,7 @@ export const THEMES: ThemeEntry[] = [
   {
     id: "gruvbox-dark",
     label: "Gruvbox Dark",
+    appearance: "dark",
     rootClassName:
       "[--dashboard-accent-color:#458588] [--dashboard-accent-soft:#d79921]",
     bgClassName: "bg-[#282828]",
@@ -112,6 +123,7 @@ export const THEMES: ThemeEntry[] = [
   {
     id: "gruvbox-light",
     label: "Gruvbox Light",
+    appearance: "light",
     rootClassName:
       "[--dashboard-accent-color:#458588] [--dashboard-accent-soft:#d79921]",
     bgClassName: "bg-[#fbf1c7]",
@@ -122,6 +134,7 @@ export const THEMES: ThemeEntry[] = [
   {
     id: "one-dark",
     label: "One Dark",
+    appearance: "dark",
     rootClassName:
       "[--dashboard-accent-color:#528bff] [--dashboard-accent-soft:#98c379]",
     bgClassName: "bg-[#282c34]",
@@ -132,6 +145,7 @@ export const THEMES: ThemeEntry[] = [
   {
     id: "catppuccin-mocha",
     label: "Catppuccin Mocha",
+    appearance: "dark",
     rootClassName:
       "[--dashboard-accent-color:#89b4fa] [--dashboard-accent-soft:#cba6f7]",
     bgClassName: "bg-[#1e1e2e]",
@@ -142,6 +156,7 @@ export const THEMES: ThemeEntry[] = [
   {
     id: "catppuccin-latte",
     label: "Catppuccin Latte",
+    appearance: "light",
     rootClassName:
       "[--dashboard-accent-color:#1e66f5] [--dashboard-accent-soft:#8839ef]",
     bgClassName: "bg-[#eff1f5]",
@@ -152,6 +167,7 @@ export const THEMES: ThemeEntry[] = [
   {
     id: "tokyo-night",
     label: "Tokyo Night",
+    appearance: "dark",
     rootClassName:
       "[--dashboard-accent-color:#364a82] [--dashboard-accent-soft:#bb9af7]",
     bgClassName: "bg-[#1a1b26]",
@@ -162,6 +178,7 @@ export const THEMES: ThemeEntry[] = [
   {
     id: "monokai",
     label: "Monokai",
+    appearance: "dark",
     rootClassName:
       "[--dashboard-accent-color:#75715e] [--dashboard-accent-soft:#ae81ff]",
     bgClassName: "bg-[#272822]",
@@ -172,6 +189,7 @@ export const THEMES: ThemeEntry[] = [
   {
     id: "material-dark",
     label: "Material Dark",
+    appearance: "dark",
     rootClassName:
       "[--dashboard-accent-color:#546e7a] [--dashboard-accent-soft:#c792ea]",
     bgClassName: "bg-[#263238]",

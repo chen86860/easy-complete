@@ -1,0 +1,1 @@
+var e={name:"pwd",description:"Return working directory name",options:[{name:"-L",description:"Display the logical current working directory"},{name:"-P",description:"Display the physical current working directory"}]},i=e;export{i as default};

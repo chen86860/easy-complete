@@ -1,0 +1,1 @@
+var i={name:"lima",description:'Lima is an alias for "limactl shell $LIMA_INSTANCE"',args:{name:"COMMAND",isVariadic:!0,isOptional:!0,isCommand:!0},options:[{name:["-h","--help"],description:"Help for lima"}]},a=i;export{a as default};

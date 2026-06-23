@@ -169,6 +169,9 @@ async fn main() -> ExitCode {
         !fig_settings::settings::get_bool_or("autocomplete.disable", false) && accessibility_enabled;
 
     let mut webview_manager = WebviewManager::new(ctx, visible);
+    if !fig_settings::settings::get_bool_or("app.disableAutoupdates", false) {
+        update::start_automatic_checks();
+    }
     webview_manager
         .build_webview(
             DASHBOARD_ID,

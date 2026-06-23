@@ -1,19 +1,12 @@
 use std::borrow::Cow;
 
 use cfg_if::cfg_if;
-use fig_install::index::get_file_type;
-use fig_install::{
-    InstallComponents,
-    UpdateOptions,
-};
+use fig_install::InstallComponents;
 use fig_os_shim::Context;
 use fig_remote_ipc::figterm::FigtermState;
 use fig_util::consts::PRODUCT_NAME;
-use fig_util::manifest::{
-    FileType,
-    Variant,
-};
 use fig_util::url::USER_MANUAL;
+use muda::accelerator::Accelerator;
 use muda::{
     IconMenuItem,
     Menu,
@@ -21,14 +14,11 @@ use muda::{
     MenuId,
     PredefinedMenuItem,
     Submenu,
-    accelerator::Accelerator,
 };
 use tao::event_loop::ControlFlow;
 use tracing::{
-    debug,
     error,
     trace,
-    warn,
 };
 use tray_icon::{
     Icon,
@@ -70,161 +60,21 @@ use crate::{
 const LOGIN_MENU_ID: &str = "onboarding";
 
 fn tray_update(proxy: &EventLoopProxy) {
-    let proxy_a = proxy.clone();
-    let proxy_b = proxy.clone();
+    let proxy = proxy.clone();
     tokio::runtime::Handle::current().spawn(async move {
-        let ctx = Context::new();
-
-        if !should_continue_with_update(&ctx, &proxy_a).await {
-            return;
-        }
-
-        let res = fig_install::update(
-            ctx,
-            Some(Box::new(move |_| {
-                proxy_a
-                    .send_event(
-                        ShowMessageNotification {
-                            title: format!("{PRODUCT_NAME} is updating in the background").into(),
-                            body: format!("You can continue to use {PRODUCT_NAME} while it updates").into(),
-                            ..Default::default()
-                        }
-                        .into(),
-                    )
-                    .unwrap();
-            })),
-            UpdateOptions {
-                ignore_rollout: true,
-                interactive: true,
-                relaunch_dashboard: true,
-                is_auto_update: false,
-            },
-        )
-        .await;
-        match res {
-            Ok(true) => {},
-            Ok(false) => {
-                // Didn't update, show a notification
-                proxy_b
-                    .send_event(
-                        ShowMessageNotification {
-                            title: format!("{PRODUCT_NAME} is already up to date").into(),
-                            body: concat!("Version ", env!("CARGO_PKG_VERSION")).into(),
-                            ..Default::default()
-                        }
-                        .into(),
-                    )
-                    .unwrap();
-            },
-            Err(err) => {
-                // Error updating, show a notification
-                proxy_b
-                    .send_event(
-                        ShowMessageNotification {
-                            title: format!("Error Updating {PRODUCT_NAME}").into(),
-                            body: err.to_string().into(),
-                            ..Default::default()
-                        }
-                        .into(),
-                    )
-                    .unwrap();
-            },
+        if !crate::update::check_for_update(true, true).await {
+            proxy
+                .send_event(
+                    ShowMessageNotification {
+                        title: format!("{PRODUCT_NAME} updates are unavailable").into(),
+                        body: "Sparkle.framework is not bundled in this build.".into(),
+                        ..Default::default()
+                    }
+                    .into(),
+                )
+                .unwrap();
         }
     });
-}
-
-/// Checks if the app is able to update. If so, get permission from the user first before
-/// continuing.
-///
-/// Returns `true` if we should continue with updating, `false` otherwise.
-async fn should_continue_with_update(ctx: &Context, proxy: &EventLoopProxy) -> bool {
-    match fig_install::check_for_updates(true, false).await {
-        Ok(Some(pkg)) => {
-            let file_type = get_file_type(ctx, &Variant::Full)
-                .await
-                .map_err(|err| error!(?err, "Failed to get file type"))
-                .ok();
-            // Only AppImage and dmg is able to self-update.
-            if file_type == Some(FileType::AppImage) || file_type == Some(FileType::Dmg) {
-                let (tx, mut rx) = tokio::sync::mpsc::channel(1);
-                proxy
-                    .send_event(
-                        ShowMessageNotification {
-                            title: format!("A new version of {} is available", PRODUCT_NAME).into(),
-                            body: format!(
-                                "New Version: {}\nCurrent Version: {}\nWould you like to update now?",
-                                pkg.version,
-                                env!("CARGO_PKG_VERSION")
-                            )
-                            .into(),
-                            buttons: Some(rfd::MessageButtons::YesNo),
-                            buttons_result: Some(tx),
-                            ..Default::default()
-                        }
-                        .into(),
-                    )
-                    .unwrap();
-                match rx.recv().await {
-                    Some(rfd::MessageDialogResult::Yes) => true,
-                    Some(rfd::MessageDialogResult::No) => {
-                        debug!("User declined to update, returning");
-                        false
-                    },
-                    Some(res) => {
-                        warn!(?res, "Unexpected result from the dialog");
-                        false
-                    },
-                    None => {
-                        debug!("No result from the dialog received");
-                        false
-                    },
-                }
-            } else {
-                proxy
-                    .send_event(
-                        ShowMessageNotification {
-                            title: format!("A new version of {} is available", PRODUCT_NAME).into(),
-                            body: format!(
-                                "New Version: {}\nCurrent Version: {}",
-                                pkg.version,
-                                env!("CARGO_PKG_VERSION")
-                            )
-                            .into(),
-                            ..Default::default()
-                        }
-                        .into(),
-                    )
-                    .unwrap();
-                false
-            }
-        },
-        Ok(None) => {
-            proxy
-                .send_event(
-                    ShowMessageNotification {
-                        title: format!("{PRODUCT_NAME} is already up to date").into(),
-                        body: concat!("Version ", env!("CARGO_PKG_VERSION")).into(),
-                        ..Default::default()
-                    }
-                    .into(),
-                )
-                .unwrap();
-            false
-        },
-        Err(err) => {
-            proxy
-                .send_event(
-                    ShowMessageNotification {
-                        title: "An error occurred while checking for updates".into(),
-                        body: err.to_string().into(),
-                        ..Default::default()
-                    }
-                    .into(),
-                )
-                .unwrap();
-            false
-        },
-    }
 }
 
 pub fn handle_event(menu_event: &MenuEvent, proxy: &EventLoopProxy) {
@@ -437,7 +287,10 @@ impl MenuElement {
     }
 
     fn with_accelerator(mut self, accel: &str) -> Self {
-        if let Self::Entry { ref mut accelerator, .. } = self {
+        if let Self::Entry {
+            ref mut accelerator, ..
+        } = self
+        {
             *accelerator = accel.parse::<Accelerator>().ok();
         }
         self
@@ -472,13 +325,7 @@ impl MenuElement {
                     ("linux", Some(emoji_icon)) => format!("{emoji_icon} {text}"),
                     _ => text.to_string(),
                 };
-                let menu_item = IconMenuItem::with_id(
-                    MenuId::new(id),
-                    text,
-                    true,
-                    image_icon.clone(),
-                    accelerator.clone(),
-                );
+                let menu_item = IconMenuItem::with_id(MenuId::new(id), text, true, image_icon.clone(), *accelerator);
                 menu.append(&menu_item).unwrap();
             },
             MenuElement::Separator => {
@@ -508,18 +355,17 @@ impl MenuElement {
                 submenu.append(&menu_item).unwrap();
             },
             MenuElement::Entry {
-                emoji_icon, text, id, accelerator, ..
+                emoji_icon,
+                text,
+                id,
+                accelerator,
+                ..
             } => {
                 let text: String = match (std::env::consts::OS, emoji_icon) {
                     ("linux", Some(emoji_icon)) => format!("{emoji_icon} {text}"),
                     _ => text.to_string(),
                 };
-                let menu_item = muda::MenuItem::with_id(
-                    MenuId::new(id),
-                    text,
-                    true,
-                    accelerator.clone(),
-                );
+                let menu_item = muda::MenuItem::with_id(MenuId::new(id), text, true, *accelerator);
                 submenu.append(&menu_item).unwrap();
             },
             MenuElement::Separator => {

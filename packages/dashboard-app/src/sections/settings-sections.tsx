@@ -1,3 +1,4 @@
+import { Native } from "@easy-complete/api-bindings";
 import { SETTINGS } from "@easy-complete/api-bindings-wrappers";
 import type { SettingSetter, SettingsMap } from "../types";
 import { AppLogo } from "../components/app-logo";
@@ -9,6 +10,15 @@ import { ThemePicker } from "../components/theme-picker";
 const APP_VERSION = __APP_VERSION__;
 const REPO_URL =
   "https://github.com/chen86860/amazon-q-developer-cli-autocomplete";
+const UPSTREAM_REPO_URL = "https://github.com/aws/amazon-q-developer-cli";
+
+async function openExternalUrl(url: string) {
+  try {
+    await Native.open(url);
+  } catch {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+}
 
 export function AppearanceSection({
   settings,
@@ -391,7 +401,7 @@ export function AboutSection() {
             href={REPO_URL}
             onClick={(event) => {
               event.preventDefault();
-              window.open(REPO_URL, "_blank");
+              void openExternalUrl(REPO_URL);
             }}
             className="inline-flex items-center gap-[5px] rounded-[7px] bg-[color-mix(in_srgb,var(--dashboard-accent-color,AccentColor)_9%,transparent)] px-2.5 py-1 text-[13px] font-medium text-[var(--dashboard-accent-color,AccentColor)] no-underline"
           >
@@ -431,7 +441,15 @@ export function AboutSection() {
           description="Fork of the open-source Amazon Q Developer CLI autocomplete"
           last
         >
-          <IconExternalLink />
+          <a
+            href={UPSTREAM_REPO_URL}
+            onClick={(event) => {
+              event.preventDefault();
+              void openExternalUrl(UPSTREAM_REPO_URL);
+            }}
+          >
+            <IconExternalLink />
+          </a>
         </Row>
       </Card>
     </>

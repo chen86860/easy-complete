@@ -1,0 +1,1 @@
+var r={script:["heroku","apps","--all","--json"],cache:{strategy:"stale-while-revalidate"},scriptTimeout:15e3,postProcess:function(t){try{return JSON.parse(t).map(e=>({name:e.name,description:e.name,icon:"https://www.herokucdn.com/favicon.ico"}))}catch{return[]}}},o={};export{o as default,r as getAppGenerator};

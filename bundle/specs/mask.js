@@ -1,0 +1,1 @@
+var s={name:"mask",generateSpec:async(e,m)=>{var n=e.indexOf("--maskfile"),t;if(n<0||n+3>e.length){let{stdout:a}=await m({command:"cat",args:["maskfile.md"]});t=a}else{let{stdout:a}=await m({command:"cat",args:[e[n+1]]});t=a}return t===""?{name:"null"}:{name:"mask",subcommands:t.match(/##.*/g).map(a=>({name:a.slice(3)}))}}},c=s;export{c as default};

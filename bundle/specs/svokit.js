@@ -1,0 +1,1 @@
+var e={name:"svokit",description:"Runs built svokit project",subcommands:[{name:"setup",description:"Creates svokit config (experimental)"},{name:"run",description:"Runs build svokit project"}],options:[{name:["--help","-h"],description:"Show help for svokit"}]},o=e;export{o as default};

@@ -49,22 +49,26 @@ if [ ! -f "${REPO_DIR}/bundle/specs/index.json" ]; then
   node "${REPO_DIR}/scripts/sync-bundled-specs.mjs"
 fi
 
-SPARKLE_PLIST_ENTRIES=""
+info "Embedding Sparkle.framework..."
+SPARKLE_FRAMEWORK="${SPARKLE_FRAMEWORK:-$("${REPO_DIR}/scripts/fetch-sparkle.sh")}"
+[ -d "$SPARKLE_FRAMEWORK" ] || { echo "error: Sparkle framework not found: $SPARKLE_FRAMEWORK" >&2; exit 1; }
+mkdir -p "$FRAMEWORKS_DIR"
+cp -R "$SPARKLE_FRAMEWORK" "$FRAMEWORKS_DIR/"
+
+SPARKLE_PUBLIC_KEY_ENTRY=""
 if [ -n "${SPARKLE_PUBLIC_ED_KEY:-}" ]; then
-  info "Embedding Sparkle.framework..."
-  SPARKLE_FRAMEWORK="${SPARKLE_FRAMEWORK:-$("${REPO_DIR}/scripts/fetch-sparkle.sh")}"
-  [ -d "$SPARKLE_FRAMEWORK" ] || { echo "error: Sparkle framework not found: $SPARKLE_FRAMEWORK" >&2; exit 1; }
-  mkdir -p "$FRAMEWORKS_DIR"
-  cp -R "$SPARKLE_FRAMEWORK" "$FRAMEWORKS_DIR/"
-  read -r -d '' SPARKLE_PLIST_ENTRIES <<PLIST || true
-    <key>SUFeedURL</key>
-    <string>${SPARKLE_APPCAST_URL}</string>
+  read -r -d '' SPARKLE_PUBLIC_KEY_ENTRY <<PLIST || true
     <key>SUPublicEDKey</key>
     <string>${SPARKLE_PUBLIC_ED_KEY}</string>
-    <key>SUEnableInstallerLauncherService</key>
-    <true/>
 PLIST
 fi
+
+read -r -d '' SPARKLE_PLIST_ENTRIES <<PLIST || true
+    <key>SUFeedURL</key>
+    <string>${SPARKLE_APPCAST_URL}</string>
+${SPARKLE_PUBLIC_KEY_ENTRY}    <key>SUEnableInstallerLauncherService</key>
+    <true/>
+PLIST
 
 cp "target/release/${APP_NAME}" "$MACOS_DIR/"
 cp "target/release/ec"          "$MACOS_DIR/"
@@ -132,9 +136,7 @@ cp "${REPO_DIR}/crates/fig_desktop/icons/icon.icns" "${RESOURCES_DIR}/icon.icns"
 # ── 3. Ad-hoc code sign ───────────────────────────────────────────────────────
 # Release builds replace this with Developer ID signing in CI.
 info "Ad-hoc code signing..."
-if [ -d "${FRAMEWORKS_DIR}/Sparkle.framework" ]; then
-  codesign --force --deep --sign - "${FRAMEWORKS_DIR}/Sparkle.framework" 2>/dev/null || true
-fi
+codesign --force --deep --sign - "${FRAMEWORKS_DIR}/Sparkle.framework" 2>/dev/null || true
 codesign --force --deep --sign - "${IM_APP}" 2>/dev/null || true
 codesign --force --deep --sign - "${STAGING_BUNDLE}" 2>/dev/null || true
 

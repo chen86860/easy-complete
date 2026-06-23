@@ -63,8 +63,6 @@ where
                 uninstall,
             };
 
-            fig_util::open_url(fig_install::UNINSTALL_URL).ok();
-
             let result = match uninstall(InstallComponents::all(), ctx.context_arc()).await {
                 Ok(_) => RequestResult::success(),
                 Err(err) => RequestResult::error(err.to_string()),

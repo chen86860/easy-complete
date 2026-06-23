@@ -42,10 +42,6 @@ use crate::Error;
 
 const DEFAULT_RELEASE_URL: &str = "https://desktop-release.q.us-east-1.amazonaws.com";
 
-/// The url to check for updates from, tries the following order:
-/// - The env var `Q_DESKTOP_RELEASE_URL`
-/// - The setting `install.releaseUrl`
-/// - Falls back to the default or the build time env var `Q_BUILD_DESKTOP_RELEASE_URL`
 static RELEASE_URL: LazyLock<Url> = LazyLock::new(|| {
     match fig_os_shim::Env::new().q_desktop_release_url() {
         Ok(s) => Url::parse(&s),
@@ -411,41 +407,15 @@ impl PackageArchitecture {
     }
 }
 
-fn index_endpoint(_channel: &Channel) -> Url {
-    let mut url = RELEASE_URL.clone();
-    url.set_path("index.json");
-    url
-}
-
-pub async fn pull(channel: &Channel) -> Result<Index, Error> {
-    let response = reqwest::Client::new()
-        .get(index_endpoint(channel))
-        .send()
-        .await?;
-    let index = response.json().await?;
-    Ok(index)
-}
-
 pub async fn check_for_updates(
-    channel: Channel,
-    target_triple: &TargetTriple,
-    variant: &Variant,
-    file_type: Option<&FileType>,
-    ignore_rollout: bool,
-    is_auto_update: bool,
+    _channel: Channel,
+    _target_triple: &TargetTriple,
+    _variant: &Variant,
+    _file_type: Option<&FileType>,
+    _ignore_rollout: bool,
+    _is_auto_update: bool,
 ) -> Result<Option<UpdatePackage>, Error> {
-    const CURRENT_VERSION: &str = env!("CARGO_PKG_VERSION");
-    let product_name = ProductName::default();
-    pull(&channel).await?.find_next_version(FindNextVersionArgs {
-        target_triple,
-        variant,
-        file_type,
-        current_version: CURRENT_VERSION,
-        product_name: &product_name,
-        ignore_rollout,
-        is_auto_update,
-        threshold_override: None,
-    })
+    Ok(None)
 }
 
 pub async fn get_file_type(ctx: &Context, variant: &Variant) -> Result<FileType, Error> {
@@ -512,37 +482,6 @@ mod tests {
             serde_json::to_string(&ProductName::default()).unwrap(),
             format!("\"{}\"", PRODUCT_NAME)
         );
-    }
-
-    #[tokio::test]
-    #[cfg(target_os = "macos")]
-    async fn pull_test() {
-        let index = pull(&Channel::Stable).await.unwrap();
-        println!("{:#?}", index);
-        assert!(!index.supported.is_empty());
-        assert!(!index.versions.is_empty());
-    }
-
-    #[tokio::test]
-    #[cfg(target_os = "macos")]
-    #[ignore = "New index format not used yet"]
-    async fn check_test() {
-        check_for_updates(
-            Channel::Stable,
-            &TargetTriple::UniversalAppleDarwin,
-            &Variant::Full,
-            Some(FileType::Dmg).as_ref(),
-            false,
-            false,
-        )
-        .await
-        .unwrap();
-    }
-
-    #[test]
-    fn test_release_url() {
-        println!("{}", *RELEASE_URL);
-        println!("{:#?}", *RELEASE_URL);
     }
 
     #[test]

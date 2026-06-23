@@ -149,6 +149,26 @@ export function IconExternalLink() {
   );
 }
 
+export function IconUpdate({ size = 16 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M13.5 2.5A6.5 6.5 0 0 0 2.5 8" />
+      <path d="M2.5 13.5A6.5 6.5 0 0 0 13.5 8" />
+      <path d="M11 1l2.5 1.5L12 5" />
+      <path d="M5 15l-2.5-1.5L4 11" />
+    </svg>
+  );
+}
+
 export function IconGitHub() {
   return (
     <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">

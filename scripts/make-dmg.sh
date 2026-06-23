@@ -4,7 +4,12 @@ set -euo pipefail
 # ── Package Easy Complete.app into a distributable .dmg ──────────────────────
 #
 # Expects build/Easy Complete.app to already exist (run scripts/build-app.sh
-# first). Produces a compressed DMG with a drag-to-Applications layout.
+# first). Produces a drag-to-install DMG with a custom background image.
+#
+# Background images (committed to the repo):
+#   bundle/dmg/background.png    — 660×400, 1×
+#   bundle/dmg/background@2x.png — 1320×800, 2× (Retina)
+# To regenerate them: swift scripts/make-dmg-background.swift
 #
 # Usage: scripts/make-dmg.sh [output.dmg]
 #   Default output: dist/Easy-Complete.dmg
@@ -15,34 +20,37 @@ VOL_NAME="Easy Complete"
 REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 APP="${REPO_DIR}/build/${APP_DISPLAY}.app"
 OUT="${1:-${REPO_DIR}/dist/Easy-Complete.dmg}"
+BG="${REPO_DIR}/bundle/dmg/background.png"
 
 GREEN='\033[0;32m'; NC='\033[0m'
 info() { echo -e "${GREEN}==>${NC} $*"; }
 
 [ -d "$APP" ] || { echo "error: $APP not found — run scripts/build-app.sh first" >&2; exit 1; }
+[ -f "$BG" ]  || { echo "error: $BG not found — run: swift scripts/make-dmg-background.swift" >&2; exit 1; }
+
+command -v create-dmg >/dev/null 2>&1 \
+  || { echo "error: create-dmg not found — run: brew install create-dmg" >&2; exit 1; }
 
 mkdir -p "$(dirname "$OUT")"
 rm -f "$OUT"
 
-# Stage the DMG contents in a temp dir: the app + a symlink to /Applications.
-STAGE="$(mktemp -d)"
-trap 'rm -rf "$STAGE"' EXIT
-cp -R "$APP" "$STAGE/"
-ln -s /Applications "$STAGE/Applications"
-
-# Optional volume icon
-if [ -f "${REPO_DIR}/bundle/dmg/VolumeIcon.icns" ]; then
-  cp "${REPO_DIR}/bundle/dmg/VolumeIcon.icns" "$STAGE/.VolumeIcon.icns"
-  SetFile -a C "$STAGE" 2>/dev/null || true
-fi
-
 info "Creating DMG: $OUT"
-hdiutil create \
-  -volname "$VOL_NAME" \
-  -srcfolder "$STAGE" \
-  -fs HFS+ \
-  -format UDZO \
-  -ov \
-  "$OUT" >/dev/null
+
+# Icon layout (logical px, origin = top-left of window):
+#   App icon center  → (165, 255)
+#   Applications     → (495, 255)
+#   create-dmg picks up background@2x.png automatically when it sits next to background.png
+create-dmg \
+  --volname         "$VOL_NAME" \
+  --background      "$BG" \
+  --window-pos      200 120 \
+  --window-size     660 400 \
+  --icon-size       128 \
+  --icon            "${APP_DISPLAY}.app" 165 255 \
+  --hide-extension  "${APP_DISPLAY}.app" \
+  --app-drop-link   495 255 \
+  --no-internet-enable \
+  "$OUT" \
+  "$APP"
 
 info "Done: $OUT"

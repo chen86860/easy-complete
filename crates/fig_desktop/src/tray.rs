@@ -386,6 +386,7 @@ impl MenuElement {
 fn menu(is_logged_in: bool) -> Vec<MenuElement> {
     let quit = MenuElement::entry(None, None, "Quit", "quit").with_accelerator("super+KeyQ");
     let settings = MenuElement::entry(None, None, "Settings", "settings").with_accelerator("super+Comma");
+    let check_for_updates = MenuElement::entry(None, None, "Check for Updates…", "update");
 
     let onboarded_completed = fig_settings::state::get_bool_or("desktop.completedOnboarding", false);
     let yellow_circle_img = get_image_rgba(include_bytes!("../icons/yellow-circle.png"));
@@ -403,7 +404,7 @@ fn menu(is_logged_in: bool) -> Vec<MenuElement> {
             MenuElement::entry(None, None, "Log back in", LOGIN_MENU_ID),
         ]
     } else {
-        vec![settings]
+        vec![settings, check_for_updates]
     };
 
     menu.extend(vec![MenuElement::Separator, quit]);

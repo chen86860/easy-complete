@@ -51,15 +51,7 @@ pub async fn uninstall_command(no_confirm: bool) -> Result<ExitCode> {
 
 #[cfg(target_os = "macos")]
 async fn uninstall(ctx: std::sync::Arc<fig_os_shim::Context>) -> Result<()> {
-    use fig_install::UNINSTALL_URL;
-    use tracing::error;
-
-    if let Err(err) = fig_util::open_url_async(UNINSTALL_URL).await {
-        error!(%err, %UNINSTALL_URL, "Failed to open uninstall url");
-    }
-
     fig_install::uninstall(fig_install::InstallComponents::all(), ctx).await?;
-
     Ok(())
 }
 
@@ -97,14 +89,9 @@ async fn uninstall_linux_full(ctx: std::sync::Arc<fig_os_shim::Context>) -> Resu
     use eyre::bail;
     use fig_install::{
         InstallComponents,
-        UNINSTALL_URL,
         uninstall,
     };
-    use tracing::error;
 
-    // TODO: Add a better way to distinguish binaries distributed between AppImage and package
-    // managers.
-    // We want to support q uninstall for AppImage, but not for package managers.
     match ctx.process_info().current_pid().exe() {
         Some(exe) => {
             let Some(exe_parent) = exe.parent() else {
@@ -119,10 +106,6 @@ async fn uninstall_linux_full(ctx: std::sync::Arc<fig_os_shim::Context>) -> Resu
             }
         },
         None => bail!("Unable to determine the current process executable."),
-    }
-
-    if let Err(err) = fig_util::open_url_async(UNINSTALL_URL).await {
-        error!(%err, %UNINSTALL_URL, "Failed to open uninstall url");
     }
 
     uninstall(InstallComponents::all(), ctx).await?;

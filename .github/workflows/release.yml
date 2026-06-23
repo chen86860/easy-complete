@@ -32,13 +32,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/Library/Caches/Homebrew/downloads
-          key: brew-${{ runner.arch }}-bash-fish-jq-protobuf-shellcheck-zsh-v1
+          key: brew-${{ runner.arch }}-bash-create-dmg-fish-jq-protobuf-shellcheck-zsh-v1
 
       - name: Install build dependencies
         env:
           HOMEBREW_NO_REQUIRE_TAP_TRUST: 1
           HOMEBREW_NO_AUTO_UPDATE: 1
-        run: brew install bash fish jq protobuf shellcheck zsh
+        run: brew install bash create-dmg fish jq protobuf shellcheck zsh
 
       - name: Cache Sparkle framework
         uses: actions/cache@v4

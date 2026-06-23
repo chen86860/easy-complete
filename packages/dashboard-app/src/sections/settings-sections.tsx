@@ -3,9 +3,10 @@ import { SETTINGS } from "@easy-complete/api-bindings-wrappers";
 import type { SettingSetter, SettingsMap } from "../types";
 import { AppLogo } from "../components/app-logo";
 import { NumberInput, Select, TextInput, Toggle } from "../components/controls";
-import { IconExternalLink, IconGitHub } from "../components/icons";
+import { IconExternalLink, IconGitHub, IconUpdate } from "../components/icons";
 import { Card, Row } from "../components/settings-layout";
 import { ThemePicker } from "../components/theme-picker";
+import { useCheckForUpdates } from "../hooks/use-check-for-updates";
 
 const APP_VERSION = __APP_VERSION__;
 const REPO_URL =
@@ -374,7 +375,17 @@ export function AdvancedSection({
   );
 }
 
+const UPDATE_BUTTON_LABEL: Record<string, string> = {
+  idle: "Check for Updates",
+  checking: "Checking…",
+  "up-to-date": "Up to Date",
+  available: "Update Available",
+};
+
 export function AboutSection() {
+  const { status: updateStatus, check: checkForUpdates } =
+    useCheckForUpdates();
+
   return (
     <>
       <Card title="Application">
@@ -389,6 +400,23 @@ export function AboutSection() {
               v{APP_VERSION}
             </div>
           </div>
+          <button
+            onClick={() => void checkForUpdates()}
+            disabled={updateStatus === "checking"}
+            className="mt-1 inline-flex cursor-pointer items-center gap-[6px] rounded-[8px] border-0 bg-[rgba(60,60,67,0.08)] px-3 py-1.5 text-[13px] font-medium text-[rgba(0,0,0,0.7)] disabled:cursor-not-allowed disabled:opacity-60"
+            style={
+              updateStatus === "available"
+                ? {
+                    background:
+                      "color-mix(in srgb, var(--dashboard-accent-color, AccentColor) 12%, transparent)",
+                    color: "var(--dashboard-accent-color, AccentColor)",
+                  }
+                : undefined
+            }
+          >
+            <IconUpdate size={13} />
+            {UPDATE_BUTTON_LABEL[updateStatus] ?? "Check for Updates"}
+          </button>
         </div>
       </Card>
 

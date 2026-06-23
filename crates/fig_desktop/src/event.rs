@@ -138,6 +138,8 @@ pub enum WindowEvent {
 
     Drag,
     Batch(Vec<WindowEvent>),
+    /// Evaluate a JavaScript string in the webview.
+    EvalScript(String),
 }
 
 impl WindowEvent {

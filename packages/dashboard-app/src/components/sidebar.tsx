@@ -6,12 +6,9 @@ import {
   IconAdvanced,
   IconAppearance,
   IconBehavior,
-  IconCheck,
   IconHistory,
-  IconUpdate,
   IconWarning,
 } from "./icons";
-import { useCheckForUpdates } from "../hooks/use-check-for-updates";
 import { preventScrollBounce } from "../utils/prevent-scroll-bounce";
 
 type NavItem = { id: Section; label: string; icon: React.ReactNode };
@@ -24,13 +21,6 @@ const NAV: NavItem[] = [
   { id: "about", label: "About", icon: <IconAbout /> },
 ];
 
-const UPDATE_STATUS_LABEL: Record<string, string> = {
-  idle: "Check for Updates",
-  checking: "Checking…",
-  "up-to-date": "Up to Date",
-  available: "Update Available",
-};
-
 export function Sidebar({
   section,
   saving,
@@ -40,9 +30,6 @@ export function Sidebar({
   saving: string | null;
   onSectionChange: (section: Section) => void;
 }) {
-  const { status: updateStatus, check: checkForUpdates } =
-    useCheckForUpdates();
-
   return (
     <aside className="flex w-[236px] flex-shrink-0 flex-col border-r border-[rgba(60,60,67,0.14)] bg-white pt-[32px]">
       <div className="px-3.5 py-4 text-xl font-semibold text-[rgba(0,0,0,0.86)]">
@@ -74,45 +61,11 @@ export function Sidebar({
         })}
       </nav>
 
-      <div className="px-3.5 pb-2">
-        <button
-          onClick={() => void checkForUpdates()}
-          disabled={updateStatus === "checking"}
-          className={clsx(
-            "flex min-h-[30px] w-full items-center gap-2 rounded-lg border-0 p-1 text-left",
-            "font-sans text-[14px] font-medium",
-            "bg-transparent disabled:cursor-not-allowed",
-            updateStatus === "available"
-              ? "text-[var(--dashboard-accent-color,AccentColor)]"
-              : "text-[rgba(0,0,0,0.86)]",
-          )}
-        >
-          <span
-            className={clsx(
-              "flex h-[22px] w-[22px] flex-shrink-0 items-center justify-center rounded-md leading-none shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.04)]",
-              updateStatus === "available"
-                ? "bg-[color-mix(in_srgb,var(--dashboard-accent-color,AccentColor)_12%,transparent)] text-[var(--dashboard-accent-color,AccentColor)]"
-                : "bg-[rgba(255,255,255,0.62)] text-[#202124]",
-            )}
-          >
-            <IconUpdate />
-          </span>
-          {UPDATE_STATUS_LABEL[updateStatus] ?? "Check for Updates"}
-        </button>
-      </div>
-
       <div className="flex h-11 items-center px-[18px] py-3">
-        {saving ? (
-          <span
-            className={clsx(
-              "flex items-center gap-[5px] rounded-full px-[9px] py-1 text-[12px] font-semibold",
-              saving === "Saved"
-                ? "bg-[rgba(52,199,89,0.12)] text-[#34c759]"
-                : "bg-[rgba(255,59,48,0.12)] text-[#ff3b30]",
-            )}
-          >
-            {saving === "Saved" ? <IconCheck /> : <IconWarning />}
-            {saving === "Saved" ? "Saved" : "Error saving"}
+        {saving === "Error saving" ? (
+          <span className="flex items-center gap-[5px] rounded-full bg-[rgba(255,59,48,0.12)] px-[9px] py-1 text-[12px] font-semibold text-[#ff3b30]">
+            <IconWarning />
+            Error saving
           </span>
         ) : null}
       </div>

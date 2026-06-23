@@ -1,5 +1,6 @@
 import { Native } from "@easy-complete/api-bindings";
 import { SETTINGS } from "@easy-complete/api-bindings-wrappers";
+import clsx from "clsx";
 import type { SettingSetter, SettingsMap } from "../types";
 import { AppLogo } from "../components/app-logo";
 import { NumberInput, Select, TextInput, Toggle } from "../components/controls";
@@ -375,7 +376,7 @@ export function AdvancedSection({
   );
 }
 
-const UPDATE_BUTTON_LABEL: Record<string, string> = {
+const UPDATE_STATUS_LABEL: Record<string, string> = {
   idle: "Check for Updates",
   checking: "Checking…",
   "up-to-date": "Up to Date",
@@ -383,8 +384,7 @@ const UPDATE_BUTTON_LABEL: Record<string, string> = {
 };
 
 export function AboutSection() {
-  const { status: updateStatus, check: checkForUpdates } =
-    useCheckForUpdates();
+  const { status: updateStatus, check: checkForUpdates } = useCheckForUpdates();
 
   return (
     <>
@@ -403,19 +403,23 @@ export function AboutSection() {
           <button
             onClick={() => void checkForUpdates()}
             disabled={updateStatus === "checking"}
-            className="mt-1 inline-flex cursor-pointer items-center gap-[6px] rounded-[8px] border-0 bg-[rgba(60,60,67,0.08)] px-3 py-1.5 text-[13px] font-medium text-[rgba(0,0,0,0.7)] disabled:cursor-not-allowed disabled:opacity-60"
-            style={
+            className={clsx(
+              "mt-1 inline-flex cursor-pointer items-center gap-[6px] rounded-[8px] border-0 px-3 py-1.5",
+              "text-[13px] font-medium transition-colors",
+              "disabled:cursor-default disabled:opacity-60",
               updateStatus === "available"
-                ? {
-                    background:
-                      "color-mix(in srgb, var(--dashboard-accent-color, AccentColor) 12%, transparent)",
-                    color: "var(--dashboard-accent-color, AccentColor)",
-                  }
-                : undefined
-            }
+                ? "bg-[color-mix(in_srgb,var(--dashboard-accent-color,AccentColor)_12%,transparent)] text-[var(--dashboard-accent-color,AccentColor)]"
+                : updateStatus === "up-to-date"
+                  ? "bg-[rgba(52,199,89,0.1)] text-[#34c759]"
+                  : "bg-[rgba(60,60,67,0.08)] text-[rgba(0,0,0,0.65)] hover:bg-[rgba(60,60,67,0.12)]",
+            )}
           >
-            <IconUpdate size={13} />
-            {UPDATE_BUTTON_LABEL[updateStatus] ?? "Check for Updates"}
+            <span
+              className={clsx(updateStatus === "checking" && "animate-spin")}
+            >
+              <IconUpdate size={13} />
+            </span>
+            {UPDATE_STATUS_LABEL[updateStatus] ?? "Check for Updates"}
           </button>
         </div>
       </Card>

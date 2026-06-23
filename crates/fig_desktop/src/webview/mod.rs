@@ -1131,6 +1131,8 @@ async fn init_webview_notification_listeners(proxy: EventLoopProxy) {
     // });
 
     // Midway watcher
+    #[cfg(target_os = "macos")]
+    let accent_proxy = proxy.clone();
     tokio::spawn(async move {
         let mut res = NOTIFICATION_BUS.subscribe_midway();
 
@@ -1182,4 +1184,29 @@ async fn init_webview_notification_listeners(proxy: EventLoopProxy) {
             }
         }
     });
+
+    #[cfg(target_os = "macos")]
+    {
+        use macos_utils::NotificationCenter;
+        use objc2_foundation::{NSOperationQueue, ns_string};
+
+        let mut default_center = NotificationCenter::default_center();
+        let notification_name = ns_string!("NSSystemColorsDidChangeNotification");
+        let queue = unsafe { NSOperationQueue::new() };
+        default_center.subscribe(notification_name, Some(&queue), move |_| {
+            let color = system_accent_css_color();
+            let script = format!(
+                "document.documentElement.style.setProperty('--dashboard-accent-color','{color}');\
+                 document.documentElement.style.accentColor='{color}';"
+            );
+            accent_proxy
+                .send_event(Event::WindowEvent {
+                    window_id: DASHBOARD_ID,
+                    window_event: WindowEvent::EvalScript(script),
+                })
+                .ok();
+        });
+        // NSNotificationCenter retains both the observer block and the queue.
+        drop(queue);
+    }
 }

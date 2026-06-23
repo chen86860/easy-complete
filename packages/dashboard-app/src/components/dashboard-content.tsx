@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import {
   AboutSection,
   AdvancedSection,
@@ -25,8 +26,15 @@ export function DashboardContent({
   settings: SettingsMap;
   set: SettingSetter;
 }) {
+  const scrollRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: 0 });
+  }, [section]);
+
   return (
     <main
+      ref={scrollRef}
       onWheel={preventScrollBounce}
       className="flex-1 overflow-y-auto bg-[#fbfbfd] [overscroll-behavior:none]"
     >

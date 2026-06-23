@@ -66,17 +66,6 @@ export const THEMES: ThemeEntry[] = [
     accentClassName: "bg-[#fff8c5]",
   },
   {
-    id: "dracula",
-    label: "Dracula",
-    appearance: "dark",
-    rootClassName:
-      "[--dashboard-accent-color:#6272a4] [--dashboard-accent-soft:#bd93f9]",
-    bgClassName: "bg-[#282a36]",
-    textClassName: "bg-[#f8f8f2] text-[#f8f8f2]",
-    selectionClassName: "bg-[#6272a4]",
-    accentClassName: "bg-[#bd93f9]",
-  },
-  {
     id: "nord",
     label: "Nord",
     appearance: "dark",
@@ -86,28 +75,6 @@ export const THEMES: ThemeEntry[] = [
     textClassName: "bg-[#d8dee9] text-[#d8dee9]",
     selectionClassName: "bg-[#5e81ac]",
     accentClassName: "bg-[#88c0d0]",
-  },
-  {
-    id: "solarized-dark",
-    label: "Solarized Dark",
-    appearance: "dark",
-    rootClassName:
-      "[--dashboard-accent-color:#268bd2] [--dashboard-accent-soft:#2aa198]",
-    bgClassName: "bg-[#002b36]",
-    textClassName: "bg-[#839496] text-[#839496]",
-    selectionClassName: "bg-[#268bd2]",
-    accentClassName: "bg-[#2aa198]",
-  },
-  {
-    id: "solarized-light",
-    label: "Solarized Light",
-    appearance: "light",
-    rootClassName:
-      "[--dashboard-accent-color:#268bd2] [--dashboard-accent-soft:#2aa198]",
-    bgClassName: "bg-[#fdf6e3]",
-    textClassName: "bg-[#657b83] text-[#657b83]",
-    selectionClassName: "bg-[#268bd2]",
-    accentClassName: "bg-[#2aa198]",
   },
   {
     id: "gruvbox-dark",
@@ -121,17 +88,6 @@ export const THEMES: ThemeEntry[] = [
     accentClassName: "bg-[#d79921]",
   },
   {
-    id: "gruvbox-light",
-    label: "Gruvbox Light",
-    appearance: "light",
-    rootClassName:
-      "[--dashboard-accent-color:#458588] [--dashboard-accent-soft:#d79921]",
-    bgClassName: "bg-[#fbf1c7]",
-    textClassName: "bg-[#3c3836] text-[#3c3836]",
-    selectionClassName: "bg-[#458588]",
-    accentClassName: "bg-[#d79921]",
-  },
-  {
     id: "one-dark",
     label: "One Dark",
     appearance: "dark",
@@ -141,17 +97,6 @@ export const THEMES: ThemeEntry[] = [
     textClassName: "bg-[#abb2bf] text-[#abb2bf]",
     selectionClassName: "bg-[#528bff]",
     accentClassName: "bg-[#98c379]",
-  },
-  {
-    id: "catppuccin-mocha",
-    label: "Catppuccin Mocha",
-    appearance: "dark",
-    rootClassName:
-      "[--dashboard-accent-color:#89b4fa] [--dashboard-accent-soft:#cba6f7]",
-    bgClassName: "bg-[#1e1e2e]",
-    textClassName: "bg-[#cdd6f4] text-[#cdd6f4]",
-    selectionClassName: "bg-[#89b4fa]",
-    accentClassName: "bg-[#cba6f7]",
   },
   {
     id: "catppuccin-latte",
@@ -174,28 +119,6 @@ export const THEMES: ThemeEntry[] = [
     textClassName: "bg-[#a9b1d6] text-[#a9b1d6]",
     selectionClassName: "bg-[#364a82]",
     accentClassName: "bg-[#bb9af7]",
-  },
-  {
-    id: "monokai",
-    label: "Monokai",
-    appearance: "dark",
-    rootClassName:
-      "[--dashboard-accent-color:#75715e] [--dashboard-accent-soft:#ae81ff]",
-    bgClassName: "bg-[#272822]",
-    textClassName: "bg-[#f8f8f2] text-[#f8f8f2]",
-    selectionClassName: "bg-[#75715e]",
-    accentClassName: "bg-[#ae81ff]",
-  },
-  {
-    id: "material-dark",
-    label: "Material Dark",
-    appearance: "dark",
-    rootClassName:
-      "[--dashboard-accent-color:#546e7a] [--dashboard-accent-soft:#c792ea]",
-    bgClassName: "bg-[#263238]",
-    textClassName: "bg-[#eeffff] text-[#eeffff]",
-    selectionClassName: "bg-[#546e7a]",
-    accentClassName: "bg-[#c792ea]",
   },
 ];
 

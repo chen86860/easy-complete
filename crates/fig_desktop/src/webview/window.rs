@@ -514,6 +514,9 @@ impl WindowState {
                     );
                 }
             },
+            WindowEvent::EvalScript(script) => {
+                self.webview.evaluate_script(&script).unwrap();
+            },
         }
     }
 

@@ -37,18 +37,18 @@ rm -f "$OUT"
 info "Creating DMG: $OUT"
 
 # Icon layout (logical px, origin = top-left of window):
-#   App icon center  → (165, 255)
-#   Applications     → (495, 255)
+#   App icon center  → (165, 275)
+#   Applications     → (495, 275)
 #   create-dmg picks up background@2x.png automatically when it sits next to background.png
 create-dmg \
   --volname         "$VOL_NAME" \
   --background      "$BG" \
   --window-pos      200 120 \
-  --window-size     660 400 \
+  --window-size     660 460 \
   --icon-size       128 \
-  --icon            "${APP_DISPLAY}.app" 165 255 \
+  --icon            "${APP_DISPLAY}.app" 165 275 \
   --hide-extension  "${APP_DISPLAY}.app" \
-  --app-drop-link   495 255 \
+  --app-drop-link   495 275 \
   --no-internet-enable \
   "$OUT" \
   "$APP"

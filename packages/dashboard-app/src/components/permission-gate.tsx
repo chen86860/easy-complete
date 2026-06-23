@@ -98,7 +98,7 @@ export function PermissionGate({
   onRepair: (id: PermissionId) => void;
   onRepairAll: () => void;
 }) {
-  if (ready) return <>{children}</>;
+  if (ready || import.meta.env.DEV) return <>{children}</>;
 
   return (
     <main className="flex flex-1 items-center justify-center bg-[#fbfbfd] px-10">

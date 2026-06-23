@@ -119,18 +119,18 @@ mod macos {
             return false;
         };
 
-        // SAFETY: The controller is an SPUStandardUpdaterController. Its updater object implements
-        // Sparkle's public checkForUpdates: and checkForUpdatesInBackground selectors.
+        // SAFETY: SPUStandardUpdaterController exposes the checkForUpdates: action used by menu
+        // items, while its updater exposes checkForUpdatesInBackground for silent checks.
         unsafe {
-            let updater: id = msg_send![controller, updater];
-            if updater == nil {
-                error!("Sparkle updater instance is unavailable");
-                return false;
-            }
-
             if show_webview {
-                let _: () = msg_send![updater, checkForUpdates: nil];
+                let _: () = msg_send![controller, checkForUpdates: nil];
             } else {
+                let updater: id = msg_send![controller, updater];
+                if updater == nil {
+                    error!("Sparkle updater instance is unavailable");
+                    return false;
+                }
+
                 let _: () = msg_send![updater, checkForUpdatesInBackground];
             }
         }

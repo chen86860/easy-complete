@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.13
+
+- Fix check for updates button not working
+
 ## v2.0.12
 
 - Fix check for updates button not working

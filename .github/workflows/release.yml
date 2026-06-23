@@ -21,6 +21,10 @@ jobs:
     runs-on: macos-15
     timeout-minutes: 90
     steps:
+      - name: Record start time
+        id: start
+        run: echo "started_at=$(date +%s)" >> "$GITHUB_OUTPUT"
+
       - uses: actions/checkout@v6
 
       - name: Verify Apple Silicon runner
@@ -177,3 +181,48 @@ jobs:
             3. Reload your shell: `exec $SHELL`
 
             This DMG is Developer ID signed, notarized, and published with a Sparkle appcast for future updates.
+
+      - name: Send Telegram notification
+        if: always() && env.TELEGRAM_BOT_TOKEN != ''
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          BUILD_RESULT: ${{ job.status }}
+          GH_ACTOR: ${{ github.actor }}
+          GH_REF: ${{ github.ref_name }}
+          GH_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          STARTED_AT: ${{ steps.start.outputs.started_at }}
+        run: |
+          ELAPSED=$(( $(date +%s) - STARTED_AT ))
+          DURATION="$(( ELAPSED / 60 ))m $(( ELAPSED % 60 ))s"
+
+          case "$BUILD_RESULT" in
+            success)   OVERALL="✅ 构建成功" ;;
+            failure)   OVERALL="❌ 构建失败" ;;
+            cancelled) OVERALL="⚠️ 取消" ;;
+            *)         OVERALL="❓ 未知" ;;
+          esac
+
+          RAW_MSG=$(git log -1 --pretty=format:"%s" HEAD)
+          if [ ${#RAW_MSG} -gt 80 ]; then
+            COMMIT_MSG="${RAW_MSG:0:80}..."
+          else
+            COMMIT_MSG="$RAW_MSG"
+          fi
+
+          MESSAGE=$(cat <<EOF
+          ${OVERALL}
+
+          🏷️ 版本：\`${GH_REF}\`
+          👤 触发者：${GH_ACTOR}
+          📝 提交：\`${GITHUB_SHA:0:7}\` ${COMMIT_MSG}
+          ⏰ 时间：$(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M:%S CST')
+          ⏱️ 耗时：${DURATION}
+
+          🔗 查看详情：${GH_RUN_URL}
+          EOF
+          )
+
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "{\"chat_id\":\"${TELEGRAM_CHAT_ID}\",\"text\":$(echo "$MESSAGE" | jq -Rs .),\"disable_web_page_preview\":true}"

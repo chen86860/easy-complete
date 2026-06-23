@@ -60,7 +60,7 @@ dependencies = [
 
 [[package]]
 name = "alacritty_terminal"
-version = "2.0.11"
+version = "2.0.12"
 dependencies = [
  "bitflags 2.10.0",
  "camino",
@@ -159,7 +159,7 @@ checksum = "a23eb6b1614318a8071c9b2521f36b424b2c83db5eb3a0fead4a6c0809af6e61"
 
 [[package]]
 name = "appkit-nsworkspace-bindings"
-version = "2.0.11"
+version = "2.0.12"
 dependencies = [
  "bindgen 0.71.1",
  "objc",
@@ -1546,7 +1546,7 @@ checksum = "92773504d58c093f6de2459af4af33faa518c13451eb8f2b5698ed3d36e7c813"
 
 [[package]]
 name = "ec_cli"
-version = "2.0.11"
+version = "2.0.12"
 dependencies = [
  "anstream",
  "appkit-nsworkspace-bindings",
@@ -1814,7 +1814,7 @@ dependencies = [
 
 [[package]]
 name = "fig-api-mock"
-version = "2.0.11"
+version = "2.0.12"
 dependencies = [
  "async-trait",
  "clap",
@@ -1827,7 +1827,7 @@ dependencies = [
 
 [[package]]
 name = "fig_desktop"
-version = "2.0.11"
+version = "2.0.12"
 dependencies = [
  "accessibility-sys",
  "anyhow",
@@ -1912,7 +1912,7 @@ dependencies = [
 
 [[package]]
 name = "fig_desktop_api"
-version = "2.0.11"
+version = "2.0.12"
 dependencies = [
  "anstream",
  "async-trait",
@@ -1944,7 +1944,7 @@ dependencies = [
 
 [[package]]
 name = "fig_diagnostic"
-version = "2.0.11"
+version = "2.0.12"
 dependencies = [
  "cfg-if",
  "clap",
@@ -1963,7 +1963,7 @@ dependencies = [
 
 [[package]]
 name = "fig_input_method"
-version = "2.0.11"
+version = "2.0.12"
 dependencies = [
  "apple-bundle",
  "core-foundation 0.10.1",
@@ -1985,7 +1985,7 @@ dependencies = [
 
 [[package]]
 name = "fig_install"
-version = "2.0.11"
+version = "2.0.12"
 dependencies = [
  "bitflags 2.10.0",
  "bytes",
@@ -2019,7 +2019,7 @@ dependencies = [
 
 [[package]]
 name = "fig_integrations"
-version = "2.0.11"
+version = "2.0.12"
 dependencies = [
  "accessibility-sys",
  "async-trait",
@@ -2049,7 +2049,7 @@ dependencies = [
 
 [[package]]
 name = "fig_ipc"
-version = "2.0.11"
+version = "2.0.12"
 dependencies = [
  "async-trait",
  "base64",
@@ -2072,7 +2072,7 @@ dependencies = [
 
 [[package]]
 name = "fig_log"
-version = "2.0.11"
+version = "2.0.12"
 dependencies = [
  "fig_os_shim",
  "fig_util",
@@ -2086,7 +2086,7 @@ dependencies = [
 
 [[package]]
 name = "fig_os_shim"
-version = "2.0.11"
+version = "2.0.12"
 dependencies = [
  "cfg-if",
  "dirs 5.0.1",
@@ -2099,7 +2099,7 @@ dependencies = [
 
 [[package]]
 name = "fig_proto"
-version = "2.0.11"
+version = "2.0.12"
 dependencies = [
  "arbitrary",
  "bytes",
@@ -2122,7 +2122,7 @@ dependencies = [
 
 [[package]]
 name = "fig_remote_ipc"
-version = "2.0.11"
+version = "2.0.12"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2140,7 +2140,7 @@ dependencies = [
 
 [[package]]
 name = "fig_settings"
-version = "2.0.11"
+version = "2.0.12"
 dependencies = [
  "fd-lock",
  "fig_util",
@@ -2160,7 +2160,7 @@ dependencies = [
 
 [[package]]
 name = "fig_test_macro"
-version = "2.0.11"
+version = "2.0.12"
 dependencies = [
  "quote",
  "syn 2.0.108",
@@ -2168,7 +2168,7 @@ dependencies = [
 
 [[package]]
 name = "fig_test_utils"
-version = "2.0.11"
+version = "2.0.12"
 dependencies = [
  "bytes",
  "fig_os_shim",
@@ -2186,7 +2186,7 @@ dependencies = [
 
 [[package]]
 name = "fig_util"
-version = "2.0.11"
+version = "2.0.12"
 dependencies = [
  "appkit-nsworkspace-bindings",
  "bstr",
@@ -2225,7 +2225,7 @@ dependencies = [
 
 [[package]]
 name = "figterm"
-version = "2.0.11"
+version = "2.0.12"
 dependencies = [
  "alacritty_terminal",
  "anyhow",
@@ -2283,7 +2283,7 @@ dependencies = [
 
 [[package]]
 name = "figterm2"
-version = "2.0.11"
+version = "2.0.12"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3841,7 +3841,7 @@ dependencies = [
 
 [[package]]
 name = "macos-utils"
-version = "2.0.11"
+version = "2.0.12"
 dependencies = [
  "accessibility",
  "accessibility-sys",

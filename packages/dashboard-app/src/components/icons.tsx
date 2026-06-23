@@ -137,7 +137,7 @@ export function IconExternalLink() {
       height="14"
       viewBox="0 0 16 16"
       fill="none"
-      stroke="#8e8e93"
+      stroke="currentColor"
       strokeWidth="1.4"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -145,6 +145,24 @@ export function IconExternalLink() {
       <path d="M7 3H3a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V9" />
       <path d="M10 2h4v4" />
       <path d="M14 2L8 8" />
+    </svg>
+  );
+}
+
+export function IconCopy({ size = 14 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="5" y="3.5" width="7.5" height="9" rx="1.6" />
+      <path d="M3.5 10.5H3A1.5 1.5 0 0 1 1.5 9V4A1.5 1.5 0 0 1 3 2.5H8" />
     </svg>
   );
 }

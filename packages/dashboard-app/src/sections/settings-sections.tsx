@@ -1,10 +1,16 @@
+import { type ReactNode, useState } from "react";
 import { Native } from "@easy-complete/api-bindings";
 import { SETTINGS } from "@easy-complete/api-bindings-wrappers";
 import clsx from "clsx";
 import type { SettingSetter, SettingsMap } from "../types";
 import { AppLogo } from "../components/app-logo";
 import { NumberInput, Select, TextInput, Toggle } from "../components/controls";
-import { IconExternalLink, IconGitHub, IconUpdate } from "../components/icons";
+import {
+  IconCopy,
+  IconExternalLink,
+  IconGitHub,
+  IconUpdate,
+} from "../components/icons";
 import { Card, Row } from "../components/settings-layout";
 import { ThemePicker } from "../components/theme-picker";
 import { useCheckForUpdates } from "../hooks/use-check-for-updates";
@@ -12,6 +18,8 @@ import { useCheckForUpdates } from "../hooks/use-check-for-updates";
 const APP_VERSION = __APP_VERSION__;
 const REPO_URL =
   "https://github.com/chen86860/amazon-q-developer-cli-autocomplete";
+const RELEASES_URL = `${REPO_URL}/releases`;
+const ISSUES_URL = `${REPO_URL}/issues/new/choose`;
 const UPSTREAM_REPO_URL = "https://github.com/aws/amazon-q-developer-cli";
 
 async function openExternalUrl(url: string) {
@@ -20,6 +28,61 @@ async function openExternalUrl(url: string) {
   } catch {
     window.open(url, "_blank", "noopener,noreferrer");
   }
+}
+
+function AboutActionButton({
+  icon,
+  label,
+  onClick,
+  disabled,
+}: {
+  icon: ReactNode;
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={clsx(
+        "inline-flex cursor-pointer items-center gap-[6px] rounded-[9px] border border-[rgba(60,60,67,0.10)]",
+        "bg-[rgba(255,255,255,0.6)] px-3 py-1.5 text-[12px] font-medium text-[rgba(0,0,0,0.72)]",
+        "transition-colors hover:bg-[rgba(255,255,255,0.85)] disabled:cursor-default disabled:opacity-60",
+      )}
+    >
+      {icon}
+      {label}
+    </button>
+  );
+}
+
+function AboutLinkButton({
+  href,
+  label,
+  icon,
+}: {
+  href: string;
+  label: string;
+  icon?: ReactNode;
+}) {
+  return (
+    <a
+      href={href}
+      onClick={(event) => {
+        event.preventDefault();
+        void openExternalUrl(href);
+      }}
+      className={clsx(
+        "inline-flex items-center gap-[6px] rounded-[9px] border border-[rgba(60,60,67,0.10)]",
+        "bg-[rgba(255,255,255,0.6)] px-3 py-1.5 text-[12px] font-medium text-[rgba(0,0,0,0.72)] no-underline",
+        "transition-colors hover:bg-[rgba(255,255,255,0.85)]",
+      )}
+    >
+      {icon}
+      {label}
+    </a>
+  );
 }
 
 export function AppearanceSection({
@@ -96,30 +159,39 @@ export function BehaviorSection({
 }) {
   return (
     <>
-      <Card title="Application">
+      <Card title="Startup & Trigger">
         <Row
           label="Launch at Login"
           description="Start Easy Complete automatically when you sign in"
-          last
         >
           <Toggle
             checked={Boolean(settings[SETTINGS.LAUNCH_ON_STARTUP] ?? true)}
             onChange={(value) => set(SETTINGS.LAUNCH_ON_STARTUP, value)}
           />
         </Row>
+        <Row
+          label="Show Suggestions After Tab"
+          description="Wait until you press Tab before opening the suggestion popup"
+          last
+        >
+          <Toggle
+            checked={Boolean(settings[SETTINGS.ONLY_SHOW_ON_TAB])}
+            onChange={(value) => set(SETTINGS.ONLY_SHOW_ON_TAB, value)}
+          />
+        </Row>
       </Card>
 
-      <Card title="Filtering">
+      <Card title="Suggestions">
         <Row
-          label="Fuzzy Search"
-          description="Match suggestions by fuzzy character matching"
+          label="Fuzzy Matching"
+          description="Match close character sequences instead of exact prefixes"
         >
           <Toggle
             checked={Boolean(settings[SETTINGS.FUZZY_SEARCH])}
             onChange={(value) => set(SETTINGS.FUZZY_SEARCH, value)}
           />
         </Row>
-        <Row label="Sort Method" description="How to order suggestions">
+        <Row label="Sort Order" description="Choose how suggestions are ranked">
           <Select
             value={String(settings[SETTINGS.SORT_METHOD] ?? "default")}
             options={[
@@ -130,8 +202,8 @@ export function BehaviorSection({
           />
         </Row>
         <Row
-          label="Prefer Verbose Suggestions"
-          description="Show the longer form of suggestion names when available"
+          label="Show Descriptive Suggestions"
+          description="Use longer suggestion names when extra context is available"
         >
           <Toggle
             checked={Boolean(settings[SETTINGS.PREFER_VERBOSE_SUGGESTIONS])}
@@ -141,9 +213,8 @@ export function BehaviorSection({
           />
         </Row>
         <Row
-          label="Always Suggest Current Token"
-          description="Keep the current typed text as a suggestion"
-          last
+          label="Keep Typed Text in the List"
+          description="Keep your current input in the list even if nothing else matches"
         >
           <Toggle
             checked={Boolean(settings[SETTINGS.ALWAYS_SUGGEST_CURRENT_TOKEN])}
@@ -152,34 +223,51 @@ export function BehaviorSection({
             }
           />
         </Row>
-      </Card>
-
-      <Card title="Trigger">
         <Row
-          label="Only Show on Tab"
-          description="Suppress popup until Tab is pressed"
+          label="Use a Separate Description Window"
+          description="Keep the description panel visible in its own detached window"
         >
           <Toggle
-            checked={Boolean(settings[SETTINGS.ONLY_SHOW_ON_TAB])}
-            onChange={(value) => set(SETTINGS.ONLY_SHOW_ON_TAB, value)}
+            checked={Boolean(settings[SETTINGS.ALWAYS_SHOW_DESCRIPTION])}
+            onChange={(value) => set(SETTINGS.ALWAYS_SHOW_DESCRIPTION, value)}
           />
         </Row>
         <Row
-          label="Navigate to History with ↑"
-          description="Up-arrow enters shell history navigation mode"
+          label="Hide Auto-Run Suggestions"
+          description="Remove suggestions that would immediately execute a command"
           last
+        >
+          <Toggle
+            checked={Boolean(settings[SETTINGS.HIDE_AUTO_EXECUTE_SUGGESTION])}
+            onChange={(value) =>
+              set(SETTINGS.HIDE_AUTO_EXECUTE_SUGGESTION, value)
+            }
+          />
+        </Row>
+      </Card>
+
+      <Card title="Keyboard & Insertion">
+        <Row
+          label="Use Up Arrow for History"
+          description="Let Up Arrow switch from suggestions into shell history navigation"
         >
           <Toggle
             checked={Boolean(settings[SETTINGS.NAVIGATE_TO_HISTORY])}
             onChange={(value) => set(SETTINGS.NAVIGATE_TO_HISTORY, value)}
           />
         </Row>
-      </Card>
-
-      <Card title="Insertion">
         <Row
-          label="Insert Space Automatically"
-          description="Append a space after inserting a suggestion"
+          label="Wrap Around List"
+          description="Jump from the end of the suggestion list back to the beginning"
+        >
+          <Toggle
+            checked={Boolean(settings[SETTINGS.SCROLL_WRAP_AROUND])}
+            onChange={(value) => set(SETTINGS.SCROLL_WRAP_AROUND, value)}
+          />
+        </Row>
+        <Row
+          label="Insert Trailing Space"
+          description="Add a space after accepting a suggestion"
         >
           <Toggle
             checked={Boolean(settings[SETTINGS.INSERT_SPACE_AUTOMATICALLY])}
@@ -189,47 +277,14 @@ export function BehaviorSection({
           />
         </Row>
         <Row
-          label="Immediately Execute After Space"
-          description="Run command immediately when a space is inserted after a suggestion"
+          label="Run After Trailing Space"
+          description="Execute the command as soon as the accepted suggestion adds a space"
+          last
         >
           <Toggle
             checked={Boolean(settings[SETTINGS.IMMEDIATELY_EXEC_AFTER_SPACE])}
             onChange={(value) =>
               set(SETTINGS.IMMEDIATELY_EXEC_AFTER_SPACE, value)
-            }
-          />
-        </Row>
-        <Row
-          label="Scroll Wrap Around"
-          description="Wrap selection from bottom to top of the list"
-          last
-        >
-          <Toggle
-            checked={Boolean(settings[SETTINGS.SCROLL_WRAP_AROUND])}
-            onChange={(value) => set(SETTINGS.SCROLL_WRAP_AROUND, value)}
-          />
-        </Row>
-      </Card>
-
-      <Card title="Description Panel">
-        <Row
-          label="Always Show Description"
-          description="Display the description panel in a detached popout window"
-        >
-          <Toggle
-            checked={Boolean(settings[SETTINGS.ALWAYS_SHOW_DESCRIPTION])}
-            onChange={(value) => set(SETTINGS.ALWAYS_SHOW_DESCRIPTION, value)}
-          />
-        </Row>
-        <Row
-          label="Hide Auto-Execute Suggestion"
-          description="Hide suggestions that would auto-execute a command"
-          last
-        >
-          <Toggle
-            checked={Boolean(settings[SETTINGS.HIDE_AUTO_EXECUTE_SUGGESTION])}
-            onChange={(value) =>
-              set(SETTINGS.HIDE_AUTO_EXECUTE_SUGGESTION, value)
             }
           />
         </Row>
@@ -378,43 +433,59 @@ export function AdvancedSection({
 
 export function AboutSection() {
   const { isChecking, check: checkForUpdates } = useCheckForUpdates();
+  const [copyState, setCopyState] = useState<"idle" | "done" | "error">("idle");
+
+  const versionLabel = `Easy Complete ${APP_VERSION}`;
+
+  async function copyVersionInfo() {
+    try {
+      await navigator.clipboard.writeText(versionLabel);
+      setCopyState("done");
+      window.setTimeout(() => setCopyState("idle"), 1500);
+    } catch {
+      setCopyState("error");
+      window.setTimeout(() => setCopyState("idle"), 1500);
+    }
+  }
 
   return (
     <>
-      <Card title="Application">
-        <div className="flex flex-col items-center gap-2.5 px-4 pb-6 pt-6">
-          <AppLogo size={56} />
-          <div className="mt-1 text-center">
-            <div className="text-xl font-bold text-black">Easy Complete</div>
-            <div className="mt-1 text-[13px] text-[#8e8e93]">
-              macOS Terminal Autocomplete
+      <Card>
+        <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-5">
+          <div className="flex min-w-0 items-center gap-4">
+            <AppLogo size={52} />
+            <div className="min-w-0">
+              <div className="text-[21px] font-bold tracking-[-0.03em] text-black">
+                Easy Complete
+              </div>
+              <div className="mt-0.5 text-[13px] text-[rgba(60,60,67,0.68)]">
+                Terminal autocomplete for macOS
+              </div>
+              <div className="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-[rgba(60,60,67,0.68)]">
+                <span className="rounded-full bg-[rgba(60,60,67,0.08)] px-2 py-0.5 font-medium text-[rgba(0,0,0,0.72)]">
+                  Version {APP_VERSION}
+                </span>
+                {copyState === "done" ? <span>Copied</span> : null}
+                {copyState === "error" ? <span>Copy failed</span> : null}
+              </div>
             </div>
           </div>
-        </div>
-        <div className="flex items-center justify-between gap-[18px] border-t border-[rgba(60,60,67,0.10)] px-[18px] py-[13px]">
-          <div className="min-w-0 flex-1">
-            <div className="text-[14px] font-medium leading-5 text-[#050505]">
-              Version
-            </div>
-          </div>
-          <div className="flex items-center gap-2.5">
-            <span className="text-[13px] tabular-nums text-[#8e8e93]">
-              {APP_VERSION}
-            </span>
-            <button
+          <div className="flex flex-wrap items-center gap-2">
+            <AboutActionButton
+              icon={
+                <span className={clsx(isChecking && "animate-spin")}>
+                  <IconUpdate size={13} />
+                </span>
+              }
+              label="Check for Updates"
               onClick={() => void checkForUpdates()}
               disabled={isChecking}
-              className={clsx(
-                "inline-flex cursor-pointer items-center gap-[6px] rounded-[8px] border-0 px-3 py-1.5",
-                "bg-[rgba(60,60,67,0.08)] text-[13px] font-medium text-[rgba(0,0,0,0.65)] transition-colors hover:bg-[rgba(60,60,67,0.12)]",
-                "disabled:cursor-default disabled:opacity-60",
-              )}
-            >
-              <span className={clsx(isChecking && "animate-spin")}>
-                <IconUpdate size={13} />
-              </span>
-              Check for Updates
-            </button>
+            />
+            <AboutActionButton
+              icon={<IconCopy size={13} />}
+              label="Copy Version Info"
+              onClick={() => void copyVersionInfo()}
+            />
           </div>
         </div>
       </Card>
@@ -422,57 +493,63 @@ export function AboutSection() {
       <Card title="Project">
         <Row
           label="GitHub Repository"
-          description="Source code and issue tracker"
+          description="Browse the source code, releases, and issue tracker"
+        >
+          <AboutLinkButton
+            href={REPO_URL}
+            label="Open GitHub"
+            icon={<IconGitHub />}
+          />
+        </Row>
+        <Row
+          label="Release Notes"
+          description="See what changed in recent versions"
+        >
+          <AboutLinkButton
+            href={RELEASES_URL}
+            label="View Releases"
+            icon={<IconExternalLink />}
+          />
+        </Row>
+        <Row
+          label="Report an Issue"
+          description="Open a bug report or feature request"
           last
         >
-          <a
-            href={REPO_URL}
-            onClick={(event) => {
-              event.preventDefault();
-              void openExternalUrl(REPO_URL);
-            }}
-            className="inline-flex items-center gap-[5px] rounded-[7px] bg-[color-mix(in_srgb,var(--dashboard-accent-color,AccentColor)_9%,transparent)] px-2.5 py-1 text-[13px] font-medium text-[var(--dashboard-accent-color,AccentColor)] no-underline"
-          >
-            <IconGitHub />
-            View on GitHub
-          </a>
+          <AboutLinkButton
+            href={ISSUES_URL}
+            label="Open Issue"
+            icon={<IconExternalLink />}
+          />
         </Row>
       </Card>
 
-      <Card title="License">
+      <Card title="Credits">
         <Row
-          label="Open Source"
-          description="Licensed under MIT and Apache 2.0"
-          last
+          label="Open-Source License"
+          description="Easy Complete is available under the MIT and Apache 2.0 licenses"
         >
-          <div className="flex gap-1.5">
+          <div className="flex flex-wrap gap-1.5 text-[11px] font-semibold tracking-[0.02em] text-[rgba(0,0,0,0.56)]">
             {["MIT", "Apache 2.0"].map((license) => (
               <span
                 key={license}
-                className="rounded-[5px] bg-[rgba(52,199,89,0.1)] px-2 py-0.5 text-[11px] font-semibold tracking-[0.02em] text-[#34c759]"
+                className="rounded-full bg-[rgba(60,60,67,0.08)] px-2.5 py-1"
               >
                 {license}
               </span>
             ))}
           </div>
         </Row>
-      </Card>
-
-      <Card title="Based On">
         <Row
           label="Amazon Q Developer CLI"
-          description="Fork of the open-source Amazon Q Developer CLI autocomplete"
+          description="Built on top of the open-source Amazon Q Developer CLI autocomplete project"
           last
         >
-          <a
+          <AboutLinkButton
             href={UPSTREAM_REPO_URL}
-            onClick={(event) => {
-              event.preventDefault();
-              void openExternalUrl(UPSTREAM_REPO_URL);
-            }}
-          >
-            <IconExternalLink />
-          </a>
+            label="View Upstream"
+            icon={<IconExternalLink />}
+          />
         </Row>
       </Card>
     </>

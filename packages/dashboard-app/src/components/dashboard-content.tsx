@@ -9,12 +9,15 @@ import {
 import type { Section, SettingSetter, SettingsMap } from "../types";
 import { preventScrollBounce } from "../utils/prevent-scroll-bounce";
 
-const SECTION_TITLES: Record<Section, string> = {
-  appearance: "Appearance",
-  behavior: "Behavior",
-  history: "History",
-  advanced: "Advanced",
-  about: "About",
+const SECTION_META: Record<Section, { title: string; description?: string }> = {
+  appearance: { title: "Appearance" },
+  behavior: { title: "Behavior" },
+  history: { title: "History" },
+  advanced: { title: "Advanced" },
+  about: {
+    title: "About",
+    description: "App info, updates, and project links",
+  },
 };
 
 export function DashboardContent({
@@ -27,6 +30,7 @@ export function DashboardContent({
   set: SettingSetter;
 }) {
   const scrollRef = useRef<HTMLElement>(null);
+  const meta = SECTION_META[section];
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0 });
@@ -39,10 +43,17 @@ export function DashboardContent({
       className="relative flex-1 overflow-y-auto bg-[#fbfbfd] [overscroll-behavior:none]"
     >
       <div aria-hidden="true" className="dashboard-top-blur" />
-      <div className="box-border w-full px-7 pb-[42px] pt-[58px]">
-        <h2 className="mb-[22px] mt-0 text-[18px] font-[650] text-[#050505]">
-          {SECTION_TITLES[section]}
-        </h2>
+      <div className="box-border w-full px-7 pb-9 pt-[46px]">
+        <header className="mb-4">
+          <h2 className="m-0 text-[17px] font-[650] tracking-[-0.02em] text-[#050505]">
+            {meta.title}
+          </h2>
+          {meta.description ? (
+            <p className="mt-1 text-[12px] leading-[1.4] text-[rgba(60,60,67,0.68)]">
+              {meta.description}
+            </p>
+          ) : null}
+        </header>
 
         {section === "appearance" ? (
           <AppearanceSection settings={settings} set={set} />

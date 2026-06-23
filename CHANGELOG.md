@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.16
+
+- Enhance dashboard components with new features
+
 ## v2.0.15
 
 - Add "Check for Updates" functionality and improve UI elements

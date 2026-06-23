@@ -11,6 +11,7 @@ pub use fig_proto::fig::client_originated_message::Submessage as ClientOriginate
 pub use fig_proto::fig::server_originated_message::Submessage as ServerOriginatedSubMessage;
 use fig_proto::fig::{
     AggregateSessionMetricActionRequest,
+    CheckForUpdatesRequest,
     ClientOriginatedMessage,
     DragWindowRequest,
     InsertTextRequest,
@@ -94,6 +95,13 @@ pub trait EventHandler {
 
     async fn drag_window(&self, request: Wrapped<Self::Ctx, DragWindowRequest>) -> RequestResult {
         RequestResult::unimplemented(request.request)
+    }
+
+    async fn check_for_updates(
+        &self,
+        request: Wrapped<Self::Ctx, CheckForUpdatesRequest>,
+    ) -> RequestResult {
+        requests::update::check_for_updates(request.request).await
     }
 }
 
@@ -259,7 +267,7 @@ where
                 OpenInExternalApplicationRequest(request) => other::open_in_external_application(request).await,
                 PingRequest(request) => other::ping(request),
                 UpdateApplicationRequest(request) => update::update_application(request).await,
-                CheckForUpdatesRequest(request) => update::check_for_updates(request).await,
+                CheckForUpdatesRequest(request) => event_handler.check_for_updates(request!(request)).await,
                 GetPlatformInfoRequest(request) => platform::get_platform_info(request, &ctx).await,
                 UserLogoutRequest(request) => event_handler.user_logout(request!(request)).await,
                 ListAvailableProfilesRequest(_request) => RequestResult::deprecated(_request),

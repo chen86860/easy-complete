@@ -36,12 +36,11 @@ export const THEMES: ThemeEntry[] = [
     id: "system",
     label: "System",
     appearance: "system",
-    rootClassName:
-      "[--dashboard-accent-color:#1e5ac7] [--dashboard-accent-soft:#5f5938]",
+    rootClassName: "",
     bgClassName: "bg-[#1c1c1c]",
     textClassName: "bg-[#d0d0d0] text-[#d0d0d0]",
-    selectionClassName: "bg-[#1e5ac7]",
-    accentClassName: "bg-[#5f5938]",
+    selectionClassName: "bg-[AccentColor]",
+    accentClassName: "bg-[AccentColor]",
   },
   {
     id: "github-dark",

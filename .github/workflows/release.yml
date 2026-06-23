@@ -122,12 +122,27 @@ jobs:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: ./scripts/notarize-dmg.sh dist/Easy-Complete-arm64.dmg
 
+      - name: Extract release notes from CHANGELOG.md
+        if: startsWith(github.ref, 'refs/tags/')
+        id: changelog
+        run: |
+          VERSION="${{ github.ref_name }}"
+          NOTES=$(awk "/^## ${VERSION}$/{flag=1; next} /^## /{flag=0} flag" CHANGELOG.md | sed '/^[[:space:]]*$/d')
+          if [ -z "$NOTES" ]; then
+            NOTES="See the [GitHub release](https://github.com/${{ github.repository }}/releases/tag/${VERSION}) for details."
+          fi
+          echo "SPARKLE_RELEASE_NOTES<<EOF" >> "$GITHUB_ENV"
+          echo "$NOTES" >> "$GITHUB_ENV"
+          echo "EOF" >> "$GITHUB_ENV"
+          echo "notes<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$NOTES" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
       - name: Generate Sparkle appcast
         if: startsWith(github.ref, 'refs/tags/')
         env:
           SPARKLE_PRIVATE_ED_KEY: ${{ secrets.SPARKLE_PRIVATE_ED_KEY }}
           SPARKLE_DOWNLOAD_URL_PREFIX: https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/
-          SPARKLE_RELEASE_NOTES: ${{ github.ref_name }}
         run: ./scripts/generate-sparkle-appcast.sh dist/Easy-Complete-arm64.dmg
 
       - name: Upload build artifact
@@ -148,6 +163,10 @@ jobs:
             dist/sparkle/appcast.xml
           fail_on_unmatched_files: true
           body: |
+            ${{ steps.changelog.outputs.notes }}
+
+            ---
+
             ### Install
 
             1. Download `Easy-Complete-arm64.dmg`, open it, and drag **Easy Complete** to Applications.

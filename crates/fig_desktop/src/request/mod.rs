@@ -28,6 +28,8 @@ use fig_os_shim::{
 use fig_proto::fig::server_originated_message::Submessage as ServerOriginatedSubMessage;
 use fig_proto::fig::{
     AggregateSessionMetricActionRequest,
+    CheckForUpdatesRequest,
+    CheckForUpdatesResponse,
     ClientOriginatedMessage,
     DragWindowRequest,
     InsertTextRequest,
@@ -186,6 +188,19 @@ impl<'a> fig_desktop_api::handler::EventHandler for EventHandler<'a> {
             request.context.figterm_state,
             request.context.intercept_state,
         )
+    }
+
+    async fn check_for_updates(
+        &self,
+        _request: Wrapped<Self::Ctx, CheckForUpdatesRequest>,
+    ) -> RequestResult {
+        let triggered = crate::update::check_for_update(true, false).await;
+        Ok(Box::new(ServerOriginatedSubMessage::CheckForUpdatesResponse(
+            CheckForUpdatesResponse {
+                is_update_available: Some(triggered),
+                version: None,
+            },
+        )))
     }
 
     async fn user_logged_in_callback(&self, context: Self::Ctx) {

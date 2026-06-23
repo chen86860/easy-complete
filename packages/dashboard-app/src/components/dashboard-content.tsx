@@ -36,8 +36,9 @@ export function DashboardContent({
     <main
       ref={scrollRef}
       onWheel={preventScrollBounce}
-      className="flex-1 overflow-y-auto bg-[#fbfbfd] [overscroll-behavior:none]"
+      className="relative flex-1 overflow-y-auto bg-[#fbfbfd] [overscroll-behavior:none]"
     >
+      <div aria-hidden="true" className="dashboard-top-blur" />
       <div className="box-border w-full px-7 pb-[42px] pt-[58px]">
         <h2 className="mb-[22px] mt-0 text-[18px] font-[650] text-[#050505]">
           {SECTION_TITLES[section]}

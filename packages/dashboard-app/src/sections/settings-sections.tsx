@@ -376,51 +376,46 @@ export function AdvancedSection({
   );
 }
 
-const UPDATE_STATUS_LABEL: Record<string, string> = {
-  idle: "Check for Updates",
-  checking: "Checking…",
-  "up-to-date": "Up to Date",
-  available: "Update Available",
-};
-
 export function AboutSection() {
-  const { status: updateStatus, check: checkForUpdates } = useCheckForUpdates();
+  const { isChecking, check: checkForUpdates } = useCheckForUpdates();
 
   return (
     <>
       <Card title="Application">
-        <div className="flex flex-col items-center gap-3 px-4 pb-7 pt-8">
-          <AppLogo size={72} />
+        <div className="flex flex-col items-center gap-2.5 px-4 pb-6 pt-6">
+          <AppLogo size={56} />
           <div className="mt-1 text-center">
             <div className="text-xl font-bold text-black">Easy Complete</div>
             <div className="mt-1 text-[13px] text-[#8e8e93]">
               macOS Terminal Autocomplete
             </div>
-            <div className="mt-2.5 inline-block rounded-md bg-[color-mix(in_srgb,var(--dashboard-accent-color,AccentColor)_12%,transparent)] px-2.5 py-[3px] text-[12px] font-semibold tracking-[0.02em] text-[var(--dashboard-accent-color,AccentColor)]">
-              v{APP_VERSION}
+          </div>
+        </div>
+        <div className="flex items-center justify-between gap-[18px] border-t border-[rgba(60,60,67,0.10)] px-[18px] py-[13px]">
+          <div className="min-w-0 flex-1">
+            <div className="text-[14px] font-medium leading-5 text-[#050505]">
+              Version
             </div>
           </div>
-          <button
-            onClick={() => void checkForUpdates()}
-            disabled={updateStatus === "checking"}
-            className={clsx(
-              "mt-1 inline-flex cursor-pointer items-center gap-[6px] rounded-[8px] border-0 px-3 py-1.5",
-              "text-[13px] font-medium transition-colors",
-              "disabled:cursor-default disabled:opacity-60",
-              updateStatus === "available"
-                ? "bg-[color-mix(in_srgb,var(--dashboard-accent-color,AccentColor)_12%,transparent)] text-[var(--dashboard-accent-color,AccentColor)]"
-                : updateStatus === "up-to-date"
-                  ? "bg-[rgba(52,199,89,0.1)] text-[#34c759]"
-                  : "bg-[rgba(60,60,67,0.08)] text-[rgba(0,0,0,0.65)] hover:bg-[rgba(60,60,67,0.12)]",
-            )}
-          >
-            <span
-              className={clsx(updateStatus === "checking" && "animate-spin")}
-            >
-              <IconUpdate size={13} />
+          <div className="flex items-center gap-2.5">
+            <span className="text-[13px] tabular-nums text-[#8e8e93]">
+              {APP_VERSION}
             </span>
-            {UPDATE_STATUS_LABEL[updateStatus] ?? "Check for Updates"}
-          </button>
+            <button
+              onClick={() => void checkForUpdates()}
+              disabled={isChecking}
+              className={clsx(
+                "inline-flex cursor-pointer items-center gap-[6px] rounded-[8px] border-0 px-3 py-1.5",
+                "bg-[rgba(60,60,67,0.08)] text-[13px] font-medium text-[rgba(0,0,0,0.65)] transition-colors hover:bg-[rgba(60,60,67,0.12)]",
+                "disabled:cursor-default disabled:opacity-60",
+              )}
+            >
+              <span className={clsx(isChecking && "animate-spin")}>
+                <IconUpdate size={13} />
+              </span>
+              Check for Updates
+            </button>
+          </div>
         </div>
       </Card>
 
@@ -428,6 +423,7 @@ export function AboutSection() {
         <Row
           label="GitHub Repository"
           description="Source code and issue tracker"
+          last
         >
           <a
             href={REPO_URL}
@@ -440,11 +436,6 @@ export function AboutSection() {
             <IconGitHub />
             View on GitHub
           </a>
-        </Row>
-        <Row label="Version" description="Current application version" last>
-          <span className="text-[13px] tabular-nums text-[#8e8e93]">
-            {APP_VERSION}
-          </span>
         </Row>
       </Card>
 

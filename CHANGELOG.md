@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.14
+
+- Add "Check for Updates" functionality and improve UI elements
+
 ## v2.0.13
 
 - Fix check for updates button not working

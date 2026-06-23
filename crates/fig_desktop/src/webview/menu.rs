@@ -20,6 +20,7 @@ use crate::{
 const DASHBOARD_QUIT: &str = "dashboard-quit";
 const DASHBOARD_CLOSE: &str = "dashboard-close";
 const DASHBOARD_ABOUT: &str = "dashboard-about";
+const DASHBOARD_CHECK_FOR_UPDATES: &str = "dashboard-check-for-updates";
 
 #[cfg(target_os = "macos")]
 pub fn menu_bar() -> Menu {
@@ -37,6 +38,11 @@ pub fn menu_bar() -> Menu {
             &MenuItemBuilder::new()
                 .text("About Project")
                 .id(DASHBOARD_ABOUT.into())
+                .enabled(true)
+                .build(),
+            &MenuItemBuilder::new()
+                .text("Check for Updates…")
+                .id(DASHBOARD_CHECK_FOR_UPDATES.into())
                 .enabled(true)
                 .build(),
             &PredefinedMenuItem::separator(),
@@ -117,6 +123,11 @@ pub fn handle_event(menu_event: &MenuEvent, proxy: &EventLoopProxy) {
                 ]),
             })
             .unwrap(),
+        menu_id if menu_id == DASHBOARD_CHECK_FOR_UPDATES => {
+            tokio::runtime::Handle::current().spawn(async move {
+                let _ = crate::update::check_for_update(true, true).await;
+            });
+        },
         _ => (),
     }
 }

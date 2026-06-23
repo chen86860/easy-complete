@@ -1,21 +1,20 @@
 import { useState } from "react";
 import { Internal } from "@easy-complete/api-bindings";
 
-type UpdateStatus = "idle" | "checking" | "up-to-date" | "available";
-
 export function useCheckForUpdates() {
-  const [status, setStatus] = useState<UpdateStatus>("idle");
+  const [isChecking, setIsChecking] = useState(false);
 
   async function check() {
-    if (status === "checking") return;
-    setStatus("checking");
+    if (isChecking) return;
+    setIsChecking(true);
     try {
-      const response = await Internal.sendCheckForUpdatesRequest({});
-      setStatus(response.isUpdateAvailable ? "available" : "up-to-date");
+      await Internal.sendCheckForUpdatesRequest({});
     } catch {
-      setStatus("idle");
+      // Native side handles presenting the Sparkle panel when available.
+    } finally {
+      setIsChecking(false);
     }
   }
 
-  return { status, check };
+  return { isChecking, check };
 }

@@ -44,11 +44,11 @@ create-dmg \
   --volname         "$VOL_NAME" \
   --background      "$BG" \
   --window-pos      200 120 \
-  --window-size     660 460 \
+  --window-size     658 498 \
   --icon-size       128 \
-  --icon            "${APP_DISPLAY}.app" 165 275 \
+  --icon            "${APP_DISPLAY}.app" 165 236 \
   --hide-extension  "${APP_DISPLAY}.app" \
-  --app-drop-link   495 275 \
+  --app-drop-link   495 236 \
   --no-internet-enable \
   "$OUT" \
   "$APP"

@@ -55,7 +55,7 @@ textarea {
 
 @layer components {
   .dashboard-top-blur {
-    @apply pointer-events-none absolute inset-x-0 top-0 z-[8] h-[60px] backdrop-blur-[18px] backdrop-saturate-[1.35];
+    @apply pointer-events-none sticky inset-x-0 top-0 z-[8] -mb-[60px] h-[60px] backdrop-blur-[18px] backdrop-saturate-[1.35];
     background: linear-gradient(
       180deg,
       rgb(var(--dashboard-top-rgb) / 0.86) 0%,

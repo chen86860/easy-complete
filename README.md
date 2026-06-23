@@ -154,7 +154,7 @@ install.
 ## 🗑️ Uninstall
 
 ```bash
-./uninstall.sh
+./scripts/uninstall.sh
 ```
 
 This removes the app bundle, CLI symlinks, LaunchAgent, input method, shell

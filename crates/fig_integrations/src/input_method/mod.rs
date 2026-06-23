@@ -335,17 +335,20 @@ impl InputMethod {
     pub fn input_source(&self) -> Result<TISInputSource, InputMethodError> {
         let bundle_id_string: String = self.bundle_id()?;
 
-        let sources =
-            InputMethod::list_input_sources_for_bundle_id(&bundle_id_string).ok_or(InputMethodError::CouldNotListInputSources)?;
+        let sources = InputMethod::list_input_sources_for_bundle_id(&bundle_id_string)
+            .ok_or(InputMethodError::CouldNotListInputSources)?;
 
         let bundle_identifier = CFString::from(bundle_id_string.as_str());
         match sources.len() {
             0 => Err(InputMethodError::NoInputSourcesForBundleIdentifier {
                 identifier: bundle_identifier.to_string().into(),
             }),
-            _ => sources.into_iter().next().ok_or_else(|| InputMethodError::NoInputSourcesForBundleIdentifier {
-                identifier: bundle_identifier.to_string().into(),
-            }),
+            _ => sources
+                .into_iter()
+                .next()
+                .ok_or_else(|| InputMethodError::NoInputSourcesForBundleIdentifier {
+                    identifier: bundle_identifier.to_string().into(),
+                }),
         }
     }
 

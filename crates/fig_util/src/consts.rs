@@ -15,7 +15,7 @@ pub const CLI_BINARY_NAME_MINIMAL: &str = "ec-minimal";
 pub const CHAT_BINARY_NAME: &str = "ec-chat";
 pub const PTY_BINARY_NAME: &str = "ecterm";
 
-pub const CLI_CRATE_NAME: &str = "q_cli";
+pub const CLI_CRATE_NAME: &str = "ec_cli";
 
 pub const URL_SCHEMA: &str = "ec";
 
@@ -72,7 +72,6 @@ pub mod macos {
     pub const BUNDLE_CONTENTS_HELPERS_PATH: &str = "Contents/Helpers";
     pub const BUNDLE_CONTENTS_INFO_PLIST_PATH: &str = "Contents/Info.plist";
 }
-
 
 pub mod env_var {
     macro_rules! define_env_vars {

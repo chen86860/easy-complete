@@ -31,7 +31,7 @@ cd "$REPO_DIR"
 
 # ── 1. Build ──────────────────────────────────────────────────────────────────
 info "Building Rust binaries (release)..."
-cargo build --release -p fig_desktop -p figterm -p q_cli -p fig_input_method
+cargo build --release -p fig_desktop -p figterm -p ec_cli -p fig_input_method
 
 info "Building TypeScript frontend..."
 pnpm turbo build --filter="./packages/*"

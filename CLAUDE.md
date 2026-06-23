@@ -18,10 +18,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Build all release binaries
-cargo build --release -p fig_desktop -p figterm -p q_cli -p fig_input_method
+cargo build --release -p fig_desktop -p figterm -p ec_cli -p fig_input_method
 
 # Run a specific crate in dev mode
-cargo run --bin q_cli -- <subcommand>
+cargo run --bin ec_cli -- <subcommand>
 cargo run --bin easy-complete
 
 # Lint (CI enforces -D warnings)
@@ -58,8 +58,8 @@ pnpm test:ci   # with coverage
 ### Full Install (macOS)
 
 ```bash
-./install.sh    # builds Rust + TS, assembles .app, installs to /Applications
-./uninstall.sh  # complete removal
+./scripts/install.sh    # builds Rust + TS, assembles .app, installs to /Applications
+./scripts/uninstall.sh  # complete removal
 ```
 
 ## Architecture
@@ -72,7 +72,7 @@ Three cooperating native processes communicate via Unix domain sockets (protobuf
 
 2. **`ecterm`** (`figterm`) — Pseudoterminal that sits between the user's shell and their terminal emulator. Intercepts keystrokes and the shell edit buffer to drive autocomplete. Built on a vendored fork of `alacritty_terminal`.
 
-3. **`ec`** (`q_cli`) — CLI entry point. Subcommands include `setup`, `integrations`, `hook`, `settings`, `diagnostic`, `inline`, and more.
+3. **`ec`** (`ec_cli`) — CLI entry point. Subcommands include `setup`, `integrations`, `hook`, `settings`, `diagnostic`, `inline`, and more.
 
 ### IPC
 
@@ -98,29 +98,29 @@ The autocomplete overlay and dashboard are React + Tailwind apps in `packages/au
 
 ## Key Crates
 
-| Crate | Role |
-|---|---|
-| `fig_desktop` | Native app host: windowing (`tao`), WebView (`wry`), system tray |
-| `figterm` | PTY interceptor, shell edit buffer tracking |
-| `q_cli` | CLI binary, all `ec` subcommands |
-| `fig_input_method` | macOS IMKit input method helper |
-| `fig_integrations` | Shell/terminal/editor integration install logic |
-| `fig_desktop_api` | Request/response handlers for WebView↔native bridge |
-| `fig_ipc` | Unix socket IPC primitives |
-| `fig_proto` | Generated Protobuf message types |
-| `fig_settings` | Settings persistence (JSON) |
-| `fig_util` | Shared constants, directory paths, system info |
-| `macos-utils` | macOS Accessibility API, NSWorkspace, AppKit ObjC2 bindings |
+| Crate              | Role                                                             |
+| ------------------ | ---------------------------------------------------------------- |
+| `fig_desktop`      | Native app host: windowing (`tao`), WebView (`wry`), system tray |
+| `figterm`          | PTY interceptor, shell edit buffer tracking                      |
+| `ec_cli`           | CLI binary, all `ec` subcommands                                 |
+| `fig_input_method` | macOS IMKit input method helper                                  |
+| `fig_integrations` | Shell/terminal/editor integration install logic                  |
+| `fig_desktop_api`  | Request/response handlers for WebView↔native bridge             |
+| `fig_ipc`          | Unix socket IPC primitives                                       |
+| `fig_proto`        | Generated Protobuf message types                                 |
+| `fig_settings`     | Settings persistence (JSON)                                      |
+| `fig_util`         | Shared constants, directory paths, system info                   |
+| `macos-utils`      | macOS Accessibility API, NSWorkspace, AppKit ObjC2 bindings      |
 
 ## Key TypeScript Packages
 
-| Package | Role |
-|---|---|
-| `autocomplete-app` | Autocomplete overlay React UI |
-| `dashboard-app` | Settings/onboarding React UI |
-| `autocomplete-parser` | CLI spec parser, suggestion generation |
-| `shell-parser` | Shell command-line tokenizer |
-| `api-bindings` | Generated TS Protobuf IPC bindings |
+| Package                 | Role                                   |
+| ----------------------- | -------------------------------------- |
+| `autocomplete-app`      | Autocomplete overlay React UI          |
+| `dashboard-app`         | Settings/onboarding React UI           |
+| `autocomplete-parser`   | CLI spec parser, suggestion generation |
+| `shell-parser`          | Shell command-line tokenizer           |
+| `api-bindings`          | Generated TS Protobuf IPC bindings     |
 | `api-bindings-wrappers` | Ergonomic wrappers over `api-bindings` |
 
 ## Toolchain Versions

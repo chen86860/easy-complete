@@ -114,10 +114,8 @@ use crate::{
 };
 
 pub const DASHBOARD_SIZE: LogicalSize<f64> = LogicalSize::new(820.0, 640.0);
-pub const DASHBOARD_MINIMUM_SIZE: LogicalSize<f64> =
-    LogicalSize::new(DASHBOARD_SIZE.width, 520.0);
-pub const DASHBOARD_MAXIMUM_SIZE: LogicalSize<f64> =
-    LogicalSize::new(DASHBOARD_SIZE.width, 10_000.0);
+pub const DASHBOARD_MINIMUM_SIZE: LogicalSize<f64> = LogicalSize::new(DASHBOARD_SIZE.width, 520.0);
+pub const DASHBOARD_MAXIMUM_SIZE: LogicalSize<f64> = LogicalSize::new(DASHBOARD_SIZE.width, 10_000.0);
 
 pub const AUTOCOMPLETE_WINDOW_TITLE: &str = "Fig Autocomplete";
 
@@ -689,7 +687,10 @@ window.close = function() {{
 #[cfg(target_os = "macos")]
 fn system_accent_css_color() -> String {
     use objc2::rc::autoreleasepool;
-    use objc2_app_kit::{NSColor, NSColorSpace};
+    use objc2_app_kit::{
+        NSColor,
+        NSColorSpace,
+    };
 
     autoreleasepool(|_| unsafe {
         let accent = NSColor::controlAccentColor();
@@ -1188,7 +1189,10 @@ async fn init_webview_notification_listeners(proxy: EventLoopProxy) {
     #[cfg(target_os = "macos")]
     {
         use macos_utils::NotificationCenter;
-        use objc2_foundation::{NSOperationQueue, ns_string};
+        use objc2_foundation::{
+            NSOperationQueue,
+            ns_string,
+        };
 
         let mut default_center = NotificationCenter::default_center();
         let notification_name = ns_string!("NSSystemColorsDidChangeNotification");

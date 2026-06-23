@@ -292,16 +292,16 @@ pub async fn initialize_fig_dir(env: &fig_os_shim::Env) -> anyhow::Result<()> {
 
     // install the cli to ~/.local/bin
     match get_bundle_path_for_executable(CLI_BINARY_NAME) {
-        Some(q_cli_path) => {
+        Some(ec_cli_path) => {
             let dest = local_bin.join(CLI_BINARY_NAME);
-            if let Err(err) = symlink(&q_cli_path, dest).await {
+            if let Err(err) = symlink(&ec_cli_path, dest).await {
                 error!(%err, "Failed to symlink {CLI_BINARY_NAME}");
             }
 
             for old_cli_binary_name in OLD_CLI_BINARY_NAMES {
                 let old_cli_binary_path = local_bin.join(old_cli_binary_name);
                 if old_cli_binary_path.is_symlink() {
-                    if let Err(err) = symlink(&q_cli_path, &old_cli_binary_path).await {
+                    if let Err(err) = symlink(&ec_cli_path, &old_cli_binary_path).await {
                         warn!(%err, "Failed to symlink legacy CLI: {old_cli_binary_path:?}");
                     }
                 }

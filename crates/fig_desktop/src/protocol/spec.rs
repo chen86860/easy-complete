@@ -35,9 +35,7 @@ fn content_type(path: &Path, content: &[u8]) -> &'static str {
         Some("png") => mime::IMAGE_PNG.as_ref(),
         Some("svg") => mime::IMAGE_SVG.as_ref(),
         Some("txt" | "text") => mime::TEXT_PLAIN.as_ref(),
-        _ => infer::get(content).map_or(mime::APPLICATION_OCTET_STREAM.as_ref(), |mime| {
-            mime.mime_type()
-        }),
+        _ => infer::get(content).map_or(mime::APPLICATION_OCTET_STREAM.as_ref(), |mime| mime.mime_type()),
     }
 }
 

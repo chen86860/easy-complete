@@ -101,9 +101,7 @@ pub fn menu_bar() -> Menu {
 
 pub fn handle_event(menu_event: &MenuEvent, proxy: &EventLoopProxy) {
     match &menu_event.id().0 {
-        menu_id if menu_id == DASHBOARD_QUIT => proxy
-            .send_event(Event::ControlFlow(ControlFlow::Exit))
-            .unwrap(),
+        menu_id if menu_id == DASHBOARD_QUIT => proxy.send_event(Event::ControlFlow(ControlFlow::Exit)).unwrap(),
         menu_id if menu_id == DASHBOARD_CLOSE => proxy
             .send_event(Event::WindowEvent {
                 window_id: DASHBOARD_ID,
@@ -114,9 +112,7 @@ pub fn handle_event(menu_event: &MenuEvent, proxy: &EventLoopProxy) {
             .send_event(Event::WindowEvent {
                 window_id: DASHBOARD_ID,
                 window_event: WindowEvent::Batch(vec![
-                    WindowEvent::NavigateRelative {
-                        path: "/about".into(),
-                    },
+                    WindowEvent::NavigateRelative { path: "/about".into() },
                     WindowEvent::Show,
                 ]),
             })

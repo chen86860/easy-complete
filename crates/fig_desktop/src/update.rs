@@ -109,11 +109,12 @@ mod macos {
         Some(controller)
     }
 
-    pub fn start_automatic_checks() {
-        let _ = ensure_controller(true);
+    fn is_main_thread() -> bool {
+        // SAFETY: pthread_main_np is a macOS extension returning non-zero on the main thread
+        unsafe { libc::pthread_main_np() != 0 }
     }
 
-    pub fn check_for_update(show_webview: bool) -> bool {
+    fn check_for_update_on_main(show_webview: bool) -> bool {
         let Some(controller) = ensure_controller(false) else {
             return false;
         };
@@ -135,6 +136,23 @@ mod macos {
         }
 
         true
+    }
+
+    pub fn start_automatic_checks() {
+        let _ = ensure_controller(true);
+    }
+
+    pub fn check_for_update(show_webview: bool) -> bool {
+        // Sparkle's checkForUpdates: and checkForUpdatesInBackground must be called on the
+        // main thread. When invoked from a tokio worker thread (e.g. via the WebView API
+        // handler), calling these selectors directly causes an ObjC exception that propagates
+        // through Rust's panic machinery as a foreign exception and triggers abort(). Dispatch
+        // synchronously to the main queue to ensure the right thread context.
+        if is_main_thread() {
+            check_for_update_on_main(show_webview)
+        } else {
+            dispatch::Queue::main().exec_sync(move || check_for_update_on_main(show_webview))
+        }
     }
 }
 

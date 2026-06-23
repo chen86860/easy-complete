@@ -40,7 +40,6 @@ pub use common::{
     uninstall,
 };
 
-
 #[derive(Debug, Error)]
 pub enum Error {
     #[error(transparent)]

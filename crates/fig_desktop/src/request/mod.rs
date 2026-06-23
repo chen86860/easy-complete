@@ -190,10 +190,7 @@ impl<'a> fig_desktop_api::handler::EventHandler for EventHandler<'a> {
         )
     }
 
-    async fn check_for_updates(
-        &self,
-        _request: Wrapped<Self::Ctx, CheckForUpdatesRequest>,
-    ) -> RequestResult {
+    async fn check_for_updates(&self, _request: Wrapped<Self::Ctx, CheckForUpdatesRequest>) -> RequestResult {
         let triggered = crate::update::check_for_update(true, false).await;
         Ok(Box::new(ServerOriginatedSubMessage::CheckForUpdatesResponse(
             CheckForUpdatesResponse {

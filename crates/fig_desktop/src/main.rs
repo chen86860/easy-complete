@@ -145,7 +145,7 @@ async fn main() -> ExitCode {
     }
 
     let ctx = Context::new();
-    install::run_install(Arc::clone(&ctx), cli.ignore_immediate_update).await;
+    install::run_install(Arc::clone(&ctx), cli.ignore_immediate_update, !cli.no_dashboard).await;
 
     #[cfg(target_os = "linux")]
     {

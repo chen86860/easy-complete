@@ -68,9 +68,50 @@ fn run_input_method_migration() {
     }
 }
 
+#[cfg(target_os = "macos")]
+fn prompt_for_accessibility_permission() {
+    use macos_utils::accessibility::{
+        accessibility_is_enabled,
+        open_accessibility,
+        prompt_for_accessibility,
+    };
+    use tracing::warn;
+
+    if accessibility_is_enabled() {
+        return;
+    }
+
+    if !prompt_for_accessibility() && !open_accessibility() {
+        warn!("Failed to open Accessibility permission prompt");
+    }
+}
+
+#[cfg(target_os = "macos")]
+fn run_macos_post_install_permission_tasks(prompt_for_permissions: bool) {
+    use fig_integrations::Integration;
+    use fig_integrations::input_method::InputMethod;
+    use tracing::{
+        debug,
+        warn,
+    };
+
+    tokio::spawn(async {
+        let input_method = InputMethod::default();
+        if let Err(err) = input_method.install().await {
+            warn!(%err, "Failed to install input method during post-install permission setup");
+        }
+    });
+
+    if prompt_for_permissions {
+        prompt_for_accessibility_permission();
+    } else {
+        debug!("Skipping post-install Accessibility prompt for background launch");
+    }
+}
+
 /// Run items at launch
 #[allow(unused_variables)]
-pub async fn run_install(ctx: Arc<Context>, ignore_immediate_update: bool) {
+pub async fn run_install(ctx: Arc<Context>, ignore_immediate_update: bool, prompt_for_permissions: bool) {
     #[cfg(target_os = "macos")]
     {
         initialize_fig_dir(&fig_os_shim::Env::new()).await.ok();
@@ -86,9 +127,17 @@ pub async fn run_install(ctx: Arc<Context>, ignore_immediate_update: bool) {
     }
 
     #[cfg(target_os = "macos")]
+    let should_run_macos_install = should_run_install_script();
+
+    #[cfg(target_os = "macos")]
     // Add any items that are only once per version
-    if should_run_install_script() {
+    if should_run_macos_install {
         run_input_method_migration();
+    }
+
+    #[cfg(target_os = "macos")]
+    if should_run_macos_install {
+        run_macos_post_install_permission_tasks(prompt_for_permissions);
     }
 
     #[cfg(target_os = "linux")]

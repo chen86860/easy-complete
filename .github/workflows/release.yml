@@ -76,7 +76,8 @@ jobs:
                ```bash
                xattr -dr com.apple.quarantine "/Applications/Easy Complete.app"
                ```
-            3. Launch **Easy Complete**, then grant **Accessibility** permission when prompted
-               (System Settings -> Privacy & Security -> Accessibility). Autocomplete will not
-               appear until this is granted.
+            3. Launch **Easy Complete**. On first launch, the app registers the bundled input
+               method and asks for **Accessibility** permission. Autocomplete will not appear
+               until Accessibility is granted in System Settings -> Privacy & Security ->
+               Accessibility.
             4. Reload your shell: `exec $SHELL`

@@ -30,6 +30,7 @@ use fig_proto::fig::{
 use fig_settings::settings::SettingsProvider;
 use fig_settings::state::StateProvider;
 use fig_util::Shell;
+#[cfg(target_os = "linux")]
 use tracing::error;
 
 use super::RequestResult;
@@ -128,10 +129,11 @@ where
                 if #[cfg(target_os = "macos")] {
                     use macos_utils::accessibility::{
                         open_accessibility,
-                        accessibility_is_enabled
+                        accessibility_is_enabled,
+                        prompt_for_accessibility,
                     };
 
-                    if !accessibility_is_enabled() {
+                    if !accessibility_is_enabled() && !prompt_for_accessibility() {
                         open_accessibility();
                     }
 

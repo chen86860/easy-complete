@@ -33,7 +33,7 @@ export default function App() {
       <DashboardWindowChrome />
       <PermissionGate
         permissions={permissionCheck.permissions}
-        ready={!permissionCheck.ready}
+        ready={permissionCheck.ready}
         refreshing={permissionCheck.refreshing}
         repairing={permissionCheck.repairing}
         onRefresh={permissionCheck.refresh}

@@ -1,4 +1,3 @@
-import { SETTINGS } from "@easy-complete/api-bindings-wrappers";
 import {
   AboutSection,
   AdvancedSection,
@@ -6,7 +5,7 @@ import {
   BehaviorSection,
   HistorySection,
 } from "../sections/settings-sections";
-import type { Section, SettingsMap } from "../types";
+import type { Section, SettingSetter, SettingsMap } from "../types";
 import { preventScrollBounce } from "../utils/prevent-scroll-bounce";
 
 const SECTION_TITLES: Record<Section, string> = {
@@ -24,7 +23,7 @@ export function DashboardContent({
 }: {
   section: Section;
   settings: SettingsMap;
-  set: (key: SETTINGS, value: unknown) => void;
+  set: SettingSetter;
 }) {
   return (
     <main

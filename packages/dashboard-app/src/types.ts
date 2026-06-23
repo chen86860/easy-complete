@@ -8,4 +8,4 @@ export type Section =
   | "advanced"
   | "about";
 export type DashboardNavigatePayload = { path?: string };
-export type SettingSetter = (key: SETTINGS, value: unknown) => void;
+export type SettingSetter = (key: SETTINGS, value: unknown) => Promise<void>;

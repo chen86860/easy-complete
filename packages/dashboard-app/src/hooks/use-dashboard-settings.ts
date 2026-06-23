@@ -7,6 +7,7 @@ export function useDashboardSettings() {
   const [settings, setSettings] = useState<SettingsMap>({});
   const [saving, setSaving] = useState<string | null>(null);
   const savingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const writeVersion = useRef(0);
 
   useEffect(() => {
     Settings.current()
@@ -34,6 +35,9 @@ export function useDashboardSettings() {
   }, []);
 
   const set = async (key: SETTINGS, value: unknown) => {
+    const currentWrite = writeVersion.current + 1;
+    writeVersion.current = currentWrite;
+
     if (savingTimer.current) clearTimeout(savingTimer.current);
     setSettings((previous) => ({ ...previous, [key]: value }));
 
@@ -43,9 +47,29 @@ export function useDashboardSettings() {
       } else {
         await Settings.set(key, value);
       }
+      const nextSettings = (await Settings.current()) as SettingsMap;
+      if (currentWrite === writeVersion.current) {
+        setSettings(nextSettings);
+      }
+
+      if (
+        value !== null &&
+        value !== undefined &&
+        nextSettings[key] !== value
+      ) {
+        throw new Error(`Setting ${key} did not persist`);
+      }
+
       setSaving("Saved");
     } catch {
       setSaving("Error saving");
+      Settings.current()
+        .then((nextSettings: Record<string, unknown>) => {
+          if (currentWrite === writeVersion.current) {
+            setSettings(nextSettings as SettingsMap);
+          }
+        })
+        .catch(() => {});
     }
 
     savingTimer.current = setTimeout(() => setSaving(null), 1500);

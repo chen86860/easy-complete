@@ -677,6 +677,10 @@ fn dashboard_initialization_script() -> String {
     document.addEventListener("DOMContentLoaded", applyAccent, {{ once: true }});
   }}
 }})();
+
+window.close = function() {{
+  window.ipc?.postMessage("__ec_close_window__");
+}};
 "#
     ));
     script
@@ -767,12 +771,20 @@ pub fn build_dashboard(
     let webview_builder = WebViewBuilder::with_web_context(web_context)
         .with_url(url.as_str())
         .with_ipc_handler(move |payload| {
+            let body = payload.into_body();
+            if body == "__ec_close_window__" {
+                proxy
+                    .send_event(Event::WindowEvent {
+                        window_id: DASHBOARD_ID.clone(),
+                        window_event: WindowEvent::Hide,
+                    })
+                    .unwrap();
+                return;
+            }
             proxy
                 .send_event(Event::WindowEvent {
                     window_id: DASHBOARD_ID.clone(),
-                    window_event: WindowEvent::Api {
-                        payload: payload.into_body(),
-                    },
+                    window_event: WindowEvent::Api { payload: body },
                 })
                 .unwrap();
         })

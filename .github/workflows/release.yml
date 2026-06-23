@@ -5,6 +5,8 @@ on:
     tags:
       - "v*"
       - "*.*.*"
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -26,8 +28,23 @@ jobs:
           test "$(uname -m)" = "arm64"
           sw_vers
 
+      - name: Cache Homebrew packages
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/Homebrew/downloads
+          key: brew-${{ runner.arch }}-bash-fish-jq-protobuf-shellcheck-zsh-v1
+
       - name: Install build dependencies
+        env:
+          HOMEBREW_NO_REQUIRE_TAP_TRUST: 1
+          HOMEBREW_NO_AUTO_UPDATE: 1
         run: brew install bash fish jq protobuf shellcheck zsh
+
+      - name: Cache Sparkle framework
+        uses: actions/cache@v4
+        with:
+          path: build/sparkle
+          key: sparkle-${{ env.SPARKLE_VERSION }}
 
       - name: Set up Rust
         run: |
@@ -53,6 +70,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Import Developer ID certificate
+        if: startsWith(github.ref, 'refs/tags/')
         env:
           APPLE_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
@@ -82,14 +100,17 @@ jobs:
         run: ./scripts/build-app.sh
 
       - name: Sign app bundle
+        if: startsWith(github.ref, 'refs/tags/')
         env:
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
         run: ./scripts/sign-macos-app.sh
 
       - name: Package ARM DMG
+        if: startsWith(github.ref, 'refs/tags/')
         run: ./scripts/make-dmg.sh dist/Easy-Complete-arm64.dmg
 
       - name: Notarize DMG
+        if: startsWith(github.ref, 'refs/tags/')
         env:
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           APPLE_NOTARY_KEY_BASE64: ${{ secrets.APPLE_NOTARY_KEY_BASE64 }}
@@ -102,6 +123,7 @@ jobs:
         run: ./scripts/notarize-dmg.sh dist/Easy-Complete-arm64.dmg
 
       - name: Generate Sparkle appcast
+        if: startsWith(github.ref, 'refs/tags/')
         env:
           SPARKLE_PRIVATE_ED_KEY: ${{ secrets.SPARKLE_PRIVATE_ED_KEY }}
           SPARKLE_DOWNLOAD_URL_PREFIX: https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/
@@ -109,6 +131,7 @@ jobs:
         run: ./scripts/generate-sparkle-appcast.sh dist/Easy-Complete-arm64.dmg
 
       - name: Upload build artifact
+        if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v6
         with:
           name: Easy-Complete-arm64
@@ -117,7 +140,8 @@ jobs:
             dist/sparkle/appcast.xml
 
       - name: Attach DMG to GitHub Release
-        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             dist/Easy-Complete-arm64.dmg

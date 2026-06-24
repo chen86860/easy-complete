@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Install } from "@easy-complete/api-bindings";
 
-export type PermissionId = "accessibility" | "inputMethod";
+export type PermissionId = "accessibility" | "shellIntegration" | "inputMethod";
 export type PermissionState = "checking" | "ready" | "missing" | "error";
 
 export type PermissionRequirement = {
@@ -9,6 +9,8 @@ export type PermissionRequirement = {
   title: string;
   description: string;
   repairLabel: string;
+  /** When set, this permission can only be actioned after the listed ids are ready. */
+  requires?: PermissionId[];
 };
 
 export type PermissionStatus = PermissionRequirement & {
@@ -25,6 +27,14 @@ const REQUIREMENTS: PermissionRequirement[] = [
     repairLabel: "Grant Accessibility",
   },
   {
+    id: "shellIntegration",
+    title: "Shell Integration",
+    description:
+      "Injects hooks into .zshrc / .bashrc so Easy Complete can track your shell state.",
+    repairLabel: "Install Shell Hooks",
+    requires: ["accessibility"],
+  },
+  {
     id: "inputMethod",
     title: "Input Method Integration",
     description:
@@ -36,9 +46,15 @@ const REQUIREMENTS: PermissionRequirement[] = [
 const asMessage = (error: unknown) =>
   error instanceof Error ? error.message : "Unable to check this requirement.";
 
+function toInstallComponent(id: PermissionId): Install.Component {
+  if (id === "shellIntegration") return "dotfiles";
+  return id;
+}
+
 export function usePermissionCheck() {
   const [states, setStates] = useState<Record<PermissionId, PermissionState>>({
     accessibility: "checking",
+    shellIntegration: "checking",
     inputMethod: "checking",
   });
   const [details, setDetails] = useState<Partial<Record<PermissionId, string>>>(
@@ -51,7 +67,7 @@ export function usePermissionCheck() {
     setDetails((previous) => ({ ...previous, [id]: undefined }));
 
     try {
-      const installed = await Install.isInstalled(id);
+      const installed = await Install.isInstalled(toInstallComponent(id));
       setStates((previous) => ({
         ...previous,
         [id]: installed ? "ready" : "missing",
@@ -74,7 +90,7 @@ export function usePermissionCheck() {
       setDetails((previous) => ({ ...previous, [id]: undefined }));
 
       try {
-        await Install.install(id);
+        await Install.install(toInstallComponent(id));
       } catch (error) {
         setDetails((previous) => ({ ...previous, [id]: asMessage(error) }));
       } finally {

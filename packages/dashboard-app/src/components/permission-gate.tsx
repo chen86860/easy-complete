@@ -32,16 +32,22 @@ function StatusBadge({ state }: { state: PermissionState }) {
 
 function PermissionRow({
   permission,
+  allPermissions,
   repairing,
   onRepair,
 }: {
   permission: PermissionStatus;
+  allPermissions: PermissionStatus[];
   repairing: PermissionId | "all" | null;
   onRepair: (id: PermissionId) => void;
 }) {
   const busy = repairing === permission.id || repairing === "all";
   const canRepair =
     permission.state === "missing" || permission.state === "error";
+  const blockedBy = permission.requires?.find(
+    (reqId) => allPermissions.find((p) => p.id === reqId)?.state !== "ready",
+  );
+  const blocked = blockedBy !== undefined;
 
   return (
     <div className="flex min-h-[78px] items-center justify-between gap-5 border-b border-[rgba(60,60,67,0.10)] px-[18px] py-4 last:border-b-0">
@@ -55,7 +61,11 @@ function PermissionRow({
         <div className="mt-1 text-[12px] leading-[17px] text-[rgba(60,60,67,0.68)]">
           {permission.description}
         </div>
-        {permission.detail ? (
+        {blocked ? (
+          <div className="mt-1.5 text-[12px] leading-[17px] text-[rgba(60,60,67,0.45)]">
+            Grant Accessibility first to enable this step.
+          </div>
+        ) : permission.detail ? (
           <div className="mt-1.5 text-[12px] leading-[17px] text-[#c02b20]">
             {permission.detail}
           </div>
@@ -64,11 +74,11 @@ function PermissionRow({
 
       <button
         type="button"
-        disabled={!canRepair || busy}
+        disabled={!canRepair || busy || blocked}
         onClick={() => onRepair(permission.id)}
         className={clsx(
           "min-w-[130px] rounded-[9px] border-0 px-3 py-1.5 text-[13px] font-semibold outline-none",
-          canRepair && !busy
+          canRepair && !busy && !blocked
             ? "bg-[var(--dashboard-accent-color)] text-white"
             : "bg-[rgba(120,120,128,0.14)] text-[rgba(60,60,67,0.50)]",
         )}
@@ -83,6 +93,7 @@ export function PermissionGate({
   children,
   permissions,
   ready,
+  checking,
   refreshing,
   repairing,
   onRefresh,
@@ -92,6 +103,7 @@ export function PermissionGate({
   children: React.ReactNode;
   permissions: PermissionStatus[];
   ready: boolean;
+  checking: boolean;
   refreshing: boolean;
   repairing: PermissionId | "all" | null;
   onRefresh: () => void;
@@ -99,6 +111,14 @@ export function PermissionGate({
   onRepairAll: () => void;
 }) {
   if (ready || import.meta.env.DEV) return <>{children}</>;
+
+  if (checking) {
+    return (
+      <main className="flex flex-1 items-center justify-center bg-[#fbfbfd]">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-[rgba(60,60,67,0.15)] border-t-[var(--dashboard-accent-color,AccentColor)]" />
+      </main>
+    );
+  }
 
   return (
     <main className="flex flex-1 items-center justify-center bg-[#fbfbfd] px-10">
@@ -117,6 +137,7 @@ export function PermissionGate({
             <PermissionRow
               key={permission.id}
               permission={permission}
+              allPermissions={permissions}
               repairing={repairing}
               onRepair={onRepair}
             />

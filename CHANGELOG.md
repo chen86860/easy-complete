@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.0.18
+
+- fix: dashboard 启动时权限检查期间显示 loading，避免权限页面一闪而过
+- feat: 在权限 gate 中加入 Shell Integration 安装步骤，解决首次 DMG 安装后 .zshrc 无自动注入的问题；可访问性授权完成后方可操作
+- fix: ec doctor 警告信息（bash/zsh dotfile check）现在显示检查项名称，与错误格式一致
+- fix: ec doctor terminal 集成检查不再输出无意义的 `Q_TERM=` 空行，版本不匹配时改为显示具体版本号
+
 ## v2.0.17
 
 - feat: update version to 2.0.17 and add auto-update functionality

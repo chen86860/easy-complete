@@ -62,6 +62,18 @@ pnpm test:ci   # with coverage
 ./scripts/uninstall.sh  # complete removal
 ```
 
+### Release
+
+```bash
+# Bump version across Cargo.toml and TS packages, then follow the printed steps
+./scripts/bump-version.sh <version>   # e.g. ./scripts/bump-version.sh 2.0.18
+```
+
+The script outputs the exact next steps:
+1. Add a `## v<version>` entry to `CHANGELOG.md`
+2. `git add -A && git commit -m "chore: bump version to v<version>"`
+3. `git tag v<version> && git push origin main --tags`
+
 ## Architecture
 
 ### Multi-Process Design

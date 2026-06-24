@@ -34,6 +34,7 @@ export default function App() {
       <PermissionGate
         permissions={permissionCheck.permissions}
         ready={permissionCheck.ready}
+        checking={permissionCheck.checking}
         refreshing={permissionCheck.refreshing}
         repairing={permissionCheck.repairing}
         onRefresh={permissionCheck.refresh}

@@ -323,7 +323,7 @@ fn print_status_result(name: impl Display, status: &Result<(), DoctorError>, ver
             println!("{} {name}", CHECKMARK.green());
         },
         Err(DoctorError::Warning(msg)) => {
-            println!("{} {msg}", DOT.yellow());
+            println!("{} {name}: {msg}", DOT.yellow());
         },
         Err(DoctorError::Error {
             reason, info, error, ..
@@ -691,9 +691,12 @@ impl DoctorCheck for FigIntegrationsCheck {
             Ok(ver) if env!("CARGO_PKG_VERSION").ends_with("-dev") || ver.ends_with("-dev") => Err(doctor_warning!(
                 "{PTY_BINARY_NAME} is running with a different version than {PRODUCT_NAME} CLI, it looks like you are running a development version of {PRODUCT_NAME} however"
             )),
-            Ok(_) => Err(DoctorError::Error {
-                reason: "This terminal is not running with the latest integration, please restart your terminal".into(),
-                info: vec![format!("{Q_TERM}={}", fig_os_shim::Env::new().q_term().unwrap_or_default()).into()],
+            Ok(ver) => Err(DoctorError::Error {
+                reason: format!(
+                    "This terminal is running an outdated integration (v{ver}), please restart your terminal"
+                )
+                .into(),
+                info: vec![],
                 fix: None,
                 error: None,
             }),
@@ -702,7 +705,7 @@ impl DoctorCheck for FigIntegrationsCheck {
                     "{PTY_BINARY_NAME} is not running in this terminal, please try restarting your terminal"
                 )
                 .into(),
-                info: vec![format!("{Q_TERM}={}", fig_os_shim::Env::new().q_term().unwrap_or_default()).into()],
+                info: vec![],
                 fix: None,
                 error: None,
             }),

@@ -430,6 +430,56 @@ export function AdvancedSection({
   );
 }
 
+const DOCTOR_COMMAND = "ec doctor";
+
+function DiagnosticsCard() {
+  const [copyState, setCopyState] = useState<"idle" | "done" | "error">("idle");
+
+  async function copyCommand() {
+    try {
+      await navigator.clipboard.writeText(DOCTOR_COMMAND);
+      setCopyState("done");
+      window.setTimeout(() => setCopyState("idle"), 1500);
+    } catch {
+      setCopyState("error");
+      window.setTimeout(() => setCopyState("idle"), 1500);
+    }
+  }
+
+  return (
+    <Card title="Troubleshooting">
+      <div className="px-[18px] py-3.5">
+        <div className="text-[14px] font-medium leading-[1.35] text-[#050505]">
+          Something not working?
+        </div>
+        <div className="mt-1 max-w-[36rem] text-[12px] leading-[1.5] text-[rgba(60,60,67,0.68)]">
+          If autocomplete, shell integration, or automatic updates aren&apos;t
+          taking effect, run the built-in diagnostic in your terminal. It checks
+          your shell integration, permissions, and background processes, and
+          prints exactly what&apos;s wrong and how to fix it.
+        </div>
+        <div className="mt-3 flex items-center gap-2">
+          <code className="flex-1 select-text rounded-[9px] border border-[rgba(60,60,67,0.10)] bg-[rgba(0,0,0,0.04)] px-3 py-2 font-mono text-[12.5px] text-[rgba(0,0,0,0.82)]">
+            <span className="mr-1.5 text-[rgba(60,60,67,0.5)]">$</span>
+            {DOCTOR_COMMAND}
+          </code>
+          <AboutActionButton
+            icon={<IconCopy size={13} />}
+            label={
+              copyState === "done"
+                ? "Copied"
+                : copyState === "error"
+                  ? "Copy failed"
+                  : "Copy"
+            }
+            onClick={() => void copyCommand()}
+          />
+        </div>
+      </div>
+    </Card>
+  );
+}
+
 export function AboutSection({
   settings,
   set,
@@ -541,6 +591,8 @@ export function AboutSection({
           />
         </Row>
       </Card>
+
+      <DiagnosticsCard />
 
       <Card title="Privacy">
         <Row

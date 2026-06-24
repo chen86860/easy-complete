@@ -81,6 +81,10 @@ fi
 read -r -d '' SPARKLE_PLIST_ENTRIES <<PLIST || true
     <key>SUFeedURL</key>
     <string>${SPARKLE_APPCAST_URL}</string>
+    <key>SUEnableAutomaticChecks</key>
+    <true/>
+    <key>SUScheduledCheckInterval</key>
+    <integer>86400</integer>
 ${SPARKLE_PUBLIC_KEY_ENTRY}    <key>SUEnableInstallerLauncherService</key>
     ${SPARKLE_INSTALLER_LAUNCHER}
 PLIST

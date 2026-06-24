@@ -105,6 +105,22 @@ mod macos {
             return None;
         }
 
+        // Arm Sparkle's scheduled background checks explicitly. Without this, Sparkle defers
+        // automatic checks until the user answers a first-run "Check for updates automatically?"
+        // permission prompt. Easy Complete runs as an LSUIElement (menu-bar-only) agent with no
+        // foreground window, so that prompt cannot reliably surface — leaving auto-update silently
+        // disabled. Setting the choice programmatically suppresses the prompt and guarantees the
+        // scheduled checker is running.
+        // SAFETY: SPUUpdater exposes setAutomaticallyChecksForUpdates: as a settable property.
+        unsafe {
+            let updater: id = msg_send![controller, updater];
+            if updater != nil {
+                let _: () = msg_send![updater, setAutomaticallyChecksForUpdates: YES];
+            } else {
+                warn!("Sparkle updater instance is unavailable; cannot enable automatic checks");
+            }
+        }
+
         *slot = Some(controller as usize);
         Some(controller)
     }

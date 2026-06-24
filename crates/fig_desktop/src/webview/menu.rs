@@ -12,8 +12,6 @@ const DASHBOARD_QUIT: &str = "dashboard-quit";
 const DASHBOARD_CLOSE: &str = "dashboard-close";
 const DASHBOARD_ABOUT: &str = "dashboard-about";
 const DASHBOARD_CHECK_FOR_UPDATES: &str = "dashboard-check-for-updates";
-const DASHBOARD_RELOAD: &str = "dashboard-reload";
-const DASHBOARD_DEVTOOLS: &str = "dashboard-devtools";
 const DASHBOARD_OPEN_GITHUB: &str = "dashboard-open-github";
 const DASHBOARD_OPEN_RELEASE_NOTES: &str = "dashboard-open-release-notes";
 const DASHBOARD_REPORT_ISSUE: &str = "dashboard-report-issue";
@@ -79,30 +77,6 @@ pub fn menu_bar() -> Menu {
         .unwrap();
 
     menu_bar.append(&edit_submenu).unwrap();
-
-    let view_submenu = Submenu::new("View", true);
-    view_submenu
-        .append_items(&[
-            &MenuItemBuilder::new()
-                .text("Reload Dashboard")
-                .id(DASHBOARD_RELOAD.into())
-                .enabled(true)
-                .accelerator(Some("super+r"))
-                .unwrap()
-                .build(),
-            &MenuItemBuilder::new()
-                .text("Toggle Web Inspector")
-                .id(DASHBOARD_DEVTOOLS.into())
-                .enabled(true)
-                .accelerator(Some("alt+super+i"))
-                .unwrap()
-                .build(),
-            &PredefinedMenuItem::separator(),
-            &PredefinedMenuItem::fullscreen(None),
-        ])
-        .unwrap();
-
-    menu_bar.append(&view_submenu).unwrap();
 
     let window_submenu = Submenu::new("Window", true);
     window_submenu
@@ -201,18 +175,6 @@ pub fn handle_event(menu_event: &MenuEvent, proxy: &EventLoopProxy) {
                 let _ = crate::update::check_for_update(true, true).await;
             });
         },
-        menu_id if menu_id == DASHBOARD_RELOAD => proxy
-            .send_event(Event::WindowEvent {
-                window_id: DASHBOARD_ID,
-                window_event: WindowEvent::Batch(vec![WindowEvent::Reload, WindowEvent::Show]),
-            })
-            .unwrap(),
-        menu_id if menu_id == DASHBOARD_DEVTOOLS => proxy
-            .send_event(Event::WindowEvent {
-                window_id: DASHBOARD_ID,
-                window_event: WindowEvent::Devtools,
-            })
-            .unwrap(),
         menu_id if menu_id == DASHBOARD_OPEN_GITHUB => {
             if let Err(err) = fig_util::open_url(USER_MANUAL) {
                 tracing::error!(%err, "Failed to open project url");

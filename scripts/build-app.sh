@@ -63,11 +63,18 @@ if [ -n "${SPARKLE_PUBLIC_ED_KEY:-}" ]; then
 PLIST
 fi
 
+# InstallerLauncher XPC service requires Developer ID signing (a real TeamIdentifier).
+# Ad-hoc builds must disable it or Sparkle reports "connecting to the installer" errors.
+SPARKLE_INSTALLER_LAUNCHER="<false/>"
+if [ -n "${SIGNING_IDENTITY:-}" ]; then
+  SPARKLE_INSTALLER_LAUNCHER="<true/>"
+fi
+
 read -r -d '' SPARKLE_PLIST_ENTRIES <<PLIST || true
     <key>SUFeedURL</key>
     <string>${SPARKLE_APPCAST_URL}</string>
 ${SPARKLE_PUBLIC_KEY_ENTRY}    <key>SUEnableInstallerLauncherService</key>
-    <true/>
+    ${SPARKLE_INSTALLER_LAUNCHER}
 PLIST
 
 cp "target/release/${APP_NAME}" "$MACOS_DIR/"

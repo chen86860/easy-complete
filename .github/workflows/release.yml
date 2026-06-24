@@ -99,6 +99,8 @@ jobs:
         env:
           SPARKLE_PUBLIC_ED_KEY: ${{ secrets.SPARKLE_PUBLIC_ED_KEY }}
           SPARKLE_APPCAST_URL: https://github.com/${{ github.repository }}/releases/latest/download/appcast.xml
+          POSTHOG_ENDPOINT: ${{ secrets.POSTHOG_ENDPOINT }}
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
         run: ./scripts/build-app.sh
 
       - name: Sign app bundle

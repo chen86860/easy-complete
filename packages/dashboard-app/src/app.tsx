@@ -40,6 +40,10 @@ export default function App() {
         onRefresh={permissionCheck.refresh}
         onRepair={permissionCheck.repair}
         onRepairAll={permissionCheck.repairAll}
+        telemetryEnabled={
+          (settings[SETTINGS.TELEMETRY_ENABLED] as boolean | undefined) ?? true
+        }
+        onTelemetryChange={(value) => set(SETTINGS.TELEMETRY_ENABLED, value)}
       >
         <Sidebar
           section={section}

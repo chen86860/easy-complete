@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.0.19
+
+- feat: 新增 `fig_telemetry` crate，接入 PostHog 遥测（安装量、打开次数、版本分布），通过编译期环境变量 `POSTHOG_ENDPOINT` / `POSTHOG_API_KEY` 注入，未配置时静默禁用
+- feat: 上报事件附带 `app_name`、`app_version`、`os_version`、匿名 `device_id`，支持多客户端区分
+- feat: Onboarding 权限 gate 底部新增遥测告知区块与开关（默认开启）
+- feat: 设置面板 About → Privacy card 提供遥测开关入口
+- feat: GitHub Actions release workflow 支持通过 repository secrets 注入遥测配置
+- fix: 修复自动检查更新失效问题——`SPUStandardUpdaterController` 改为通过 `exec_async` 在主线程创建，启动时的后台检查延迟 5 秒执行以确保 event loop 已就绪
+
 ## v2.0.18
 
 - fix: dashboard 启动时权限检查期间显示 loading，避免权限页面一闪而过

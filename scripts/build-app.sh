@@ -31,6 +31,14 @@ cd "$REPO_DIR"
 
 # ── 1. Build ──────────────────────────────────────────────────────────────────
 info "Building Rust binaries (release)..."
+# POSTHOG_ENDPOINT and POSTHOG_API_KEY are baked in at compile time via option_env!().
+# Set both before running this script to enable telemetry, e.g.:
+#   POSTHOG_ENDPOINT=https://analytics.example.com/capture/ \
+#   POSTHOG_API_KEY=phc_xxx \
+#   ./scripts/build-app.sh
+# Either being unset disables telemetry silently.
+POSTHOG_ENDPOINT="${POSTHOG_ENDPOINT:-}" \
+POSTHOG_API_KEY="${POSTHOG_API_KEY:-}" \
 cargo build --release -p fig_desktop -p figterm -p ec_cli -p fig_input_method
 
 info "Building TypeScript frontend..."

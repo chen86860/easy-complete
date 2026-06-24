@@ -542,6 +542,22 @@ export function AboutSection({
         </Row>
       </Card>
 
+      <Card title="Privacy">
+        <Row
+          label="Share Anonymous Usage Data"
+          description="Sends install counts, app-open events, and macOS version to help prioritize fixes. No commands, file paths, or personal data are ever collected."
+          last
+        >
+          <Toggle
+            checked={
+              (settings[SETTINGS.TELEMETRY_ENABLED] as boolean | undefined) ??
+              true
+            }
+            onChange={(value) => set(SETTINGS.TELEMETRY_ENABLED, value)}
+          />
+        </Row>
+      </Card>
+
       <Card title="Credits">
         <Row
           label="Open-Source License"

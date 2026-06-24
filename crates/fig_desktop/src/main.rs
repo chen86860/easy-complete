@@ -99,7 +99,10 @@ async fn main() -> ExitCode {
     })
     .expect("Failed to init logging");
 
-    // fig_telemetry removed
+    fig_telemetry::init(
+        option_env!("POSTHOG_ENDPOINT").unwrap_or(""),
+        option_env!("POSTHOG_API_KEY").unwrap_or(""),
+    );
 
     #[cfg(target_os = "macos")]
     install::migrate_data_dir().await;
@@ -171,8 +174,13 @@ async fn main() -> ExitCode {
     let mut webview_manager = WebviewManager::new(ctx, visible);
     let auto_updates_enabled = !fig_settings::settings::get_bool_or("app.disableAutoupdates", false);
     if auto_updates_enabled {
+        // start_automatic_checks dispatches to the main thread asynchronously,
+        // so the controller is created once the event loop is running.
         update::start_automatic_checks();
+        // Delay the explicit background check so the event loop is already
+        // processing the main GCD queue before exec_sync is called.
         tokio::spawn(async {
+            tokio::time::sleep(std::time::Duration::from_secs(5)).await;
             let _ = update::check_for_update(false, false).await;
         });
     }

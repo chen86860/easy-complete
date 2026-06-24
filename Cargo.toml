@@ -21,7 +21,7 @@ authors = [
 edition = "2024"
 homepage = "https://easy-complete.emmmm.dev/"
 publish = false
-version = "2.0.18"
+version = "2.0.19"
 license = "MIT OR Apache-2.0"
 
 [workspace.dependencies]
@@ -59,6 +59,7 @@ dashmap = "6.0.1"
 dirs = "5.0.0"
 eyre = "0.6.8"
 fig_desktop_api = { path = "crates/fig_desktop_api" }
+fig_telemetry = { path = "crates/fig_telemetry" }
 fig_diagnostic = { path = "crates/fig_diagnostic" }
 fig_install = { path = "crates/fig_install" }
 fig_integrations = { path = "crates/fig_integrations" }

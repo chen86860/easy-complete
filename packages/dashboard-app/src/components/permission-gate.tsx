@@ -99,6 +99,8 @@ export function PermissionGate({
   onRefresh,
   onRepair,
   onRepairAll,
+  telemetryEnabled,
+  onTelemetryChange,
 }: {
   children: React.ReactNode;
   permissions: PermissionStatus[];
@@ -109,6 +111,8 @@ export function PermissionGate({
   onRefresh: () => void;
   onRepair: (id: PermissionId) => void;
   onRepairAll: () => void;
+  telemetryEnabled: boolean;
+  onTelemetryChange: (value: boolean) => void;
 }) {
   if (ready || import.meta.env.DEV) return <>{children}</>;
 
@@ -160,6 +164,41 @@ export function PermissionGate({
             className="rounded-[9px] border-0 bg-[var(--dashboard-accent-color)] px-3 py-1.5 text-[13px] font-semibold text-white outline-none disabled:bg-[rgba(120,120,128,0.20)] disabled:text-[rgba(60,60,67,0.42)]"
           >
             {repairing ? "Working..." : "Fix All"}
+          </button>
+        </div>
+
+        <div className="mt-5 flex items-start justify-between gap-4 rounded-[12px] bg-[rgba(120,120,128,0.08)] px-4 py-3">
+          <div>
+            <div className="text-[13px] font-medium text-[#050505]">
+              Share anonymous usage data
+            </div>
+            <div className="mt-0.5 text-[12px] leading-[1.5] text-[rgba(60,60,67,0.60)]">
+              Helps us understand install counts and which macOS versions are in
+              use. No commands, paths, or personal data are collected. You can
+              change this anytime in About → Privacy.
+            </div>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={telemetryEnabled}
+            onClick={() => onTelemetryChange(!telemetryEnabled)}
+            className={clsx(
+              "mt-0.5 h-5 w-11 flex-shrink-0 rounded-full border-0 p-0",
+              "shadow-[inset_0_0_0_0.5px_rgba(60,60,67,0.12)] transition-colors duration-150",
+              telemetryEnabled
+                ? "bg-[var(--dashboard-accent-color)]"
+                : "bg-[rgba(120,120,128,0.16)]",
+            )}
+          >
+            <span
+              className={clsx(
+                "block h-3.5 w-6 translate-x-[3px] rounded-full bg-white",
+                "shadow-[0_0_0_0.5px_rgba(0,0,0,0.04),0_0.5px_1px_rgba(0,0,0,0.08)]",
+                "transition-transform duration-150 ease-[cubic-bezier(0.28,0.11,0.32,1)]",
+                telemetryEnabled ? "translate-x-[17px]" : "translate-x-[3px]",
+              )}
+            />
           </button>
         </div>
       </div>

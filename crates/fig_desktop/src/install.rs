@@ -136,7 +136,20 @@ pub async fn run_install(ctx: Arc<Context>, ignore_immediate_update: bool, promp
     #[cfg(target_os = "macos")]
     if should_run_macos_install {
         run_macos_post_install_permission_tasks(prompt_for_permissions);
+        // First run (no previous_version) = fresh install; otherwise = update.
+        if previous_version().is_none() {
+            fig_telemetry::track("app_installed");
+        } else {
+            fig_telemetry::track_with_props(
+                "app_updated",
+                serde_json::json!({
+                    "previous_version": previous_version().map(|v| v.to_string()).unwrap_or_default(),
+                }),
+            );
+        }
     }
+
+    fig_telemetry::track("app_opened");
 
     #[cfg(target_os = "linux")]
     run_linux_install(

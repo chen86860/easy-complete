@@ -139,7 +139,16 @@ mod macos {
     }
 
     pub fn start_automatic_checks() {
-        let _ = ensure_controller(true);
+        // SPUStandardUpdaterController must be created on the main thread.
+        // Use exec_async so we never block the caller (event loop may not be
+        // running yet when this is called from the tokio async context).
+        if is_main_thread() {
+            let _ = ensure_controller(true);
+        } else {
+            dispatch::Queue::main().exec_async(|| {
+                let _ = ensure_controller(true);
+            });
+        }
     }
 
     pub fn check_for_update(show_webview: bool) -> bool {

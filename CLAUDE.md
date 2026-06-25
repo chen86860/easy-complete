@@ -110,7 +110,11 @@ The autocomplete overlay and dashboard are React + Tailwind apps in `packages/au
 
 ### Bundled Specs
 
-Completion specs are **bundled into the `.app` at build time**, not fetched at runtime. `scripts/sync-bundled-specs.mjs` downloads them from the upstream CDN (`https://specs.q.us-east-1.amazonaws.com/`) into `bundle/specs/`, which `build-app.sh` copies to `Contents/Resources/specs/`. At runtime the `spec://localhost/<name>.js` custom protocol (`fig_desktop/src/protocol/spec.rs`) reads these local files only — there is **no network fallback**, so a spec absent from the bundle simply has no completion.
+Completion specs are **bundled into the `.app` at build time**, not fetched at runtime. `scripts/sync-bundled-specs.mjs` assembles them into `bundle/specs/`, which `build-app.sh` copies to `Contents/Resources/specs/`. At runtime the `spec://localhost/<name>.js` custom protocol (`fig_desktop/src/protocol/spec.rs`) reads these local files only — there is **no network fallback**, so a spec absent from the bundle simply has no completion.
+
+**Source.** The default source is our own forked spec repo, [`chen86860/autocomplete-specs`](https://github.com/chen86860/autocomplete-specs) — a fork of `withfig/autocomplete` whose GitHub Actions "Build and release specs" workflow compiles `src/*.ts` and publishes a `specs.zip` release asset per `spec-build-number-*` tag. The sync script downloads that zip, unzips it, and **derives `index.json` from the file tree** (`diffVersionedCompletions` = dirs containing `index.js`; `completions` = every non-`index` `.js` stem plus the diff names).
+
+**Pinned for reproducibility.** `sync-bundled-specs.mjs` pins a specific release tag via the `SPECS_TAG` constant (currently `spec-build-number-0.1.0`) — **not `latest`** — so the bundle changes only when that constant changes, never silently. To adopt a newer fork build: bump `SPECS_TAG`, re-run the sync, and commit the regenerated `bundle/specs` alongside it (one reviewable change). Overrides: `BUNDLED_SPECS_TAG=<tag|latest>`, `BUNDLED_SPECS_RELEASE_ZIP=<full-url>`, or `BUNDLED_SPECS_RELEASE_ZIP=""` to fall back to the legacy per-file CDN sync (`https://specs.q.us-east-1.amazonaws.com/`, frozen 2025-05-05).
 
 To keep the bundle small, the sync script supports excluding whole namespaces via `BUNDLED_SPECS_EXCLUDE` (comma-separated; a namespace `ns` drops the top-level `ns` spec and everything under `ns/`). The filter is applied to **both** the downloaded files and the written `index.json`, so the runtime loader never references excluded specs.
 

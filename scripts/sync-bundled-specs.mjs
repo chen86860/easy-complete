@@ -1,9 +1,35 @@
 #!/usr/bin/env node
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+import { tmpdir } from "node:os";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+
+const execFileAsync = promisify(execFile);
 
 const SPEC_BASE_URL = "https://specs.q.us-east-1.amazonaws.com/";
+
+// Primary source: a specs.zip published by the forked spec repo
+// (chen86860/autocomplete-specs, GitHub Actions "Build and release specs").
+// The zip contains specs/<name>.js (+ nested + <name>/index.js for diff-versioned)
+// and specs/icons/<name>.png. We derive index.json ourselves from the file tree.
+//
+// PINNED to a specific release tag — NOT "latest" — so builds are reproducible: the
+// bundle changes only when SPECS_TAG below changes. To adopt a newer fork build:
+//   1. bump SPECS_TAG to the new spec-build-number-* tag
+//   2. re-run `node scripts/sync-bundled-specs.mjs`
+//   3. commit the regenerated bundle/specs together with this change
+// Overrides: BUNDLED_SPECS_TAG=<tag|latest>, or BUNDLED_SPECS_RELEASE_ZIP=<full-url>,
+// or BUNDLED_SPECS_RELEASE_ZIP="" to fall back to the legacy per-file CDN sync.
+const SPECS_REPO = "chen86860/autocomplete-specs";
+const SPECS_TAG = process.env.BUNDLED_SPECS_TAG || "spec-build-number-0.1.0";
+const releaseZipUrl =
+  process.env.BUNDLED_SPECS_RELEASE_ZIP ??
+  (SPECS_TAG === "latest"
+    ? `https://github.com/${SPECS_REPO}/releases/latest/download/specs.zip`
+    : `https://github.com/${SPECS_REPO}/releases/download/${SPECS_TAG}/specs.zip`);
+
 const repoDir = join(dirname(fileURLToPath(import.meta.url)), "..");
 const outDir =
   process.env.BUNDLED_SPECS_DIR || join(repoDir, "bundle", "specs");
@@ -43,21 +69,21 @@ function urlFor(path) {
   return new URL(encodedPath, SPEC_BASE_URL);
 }
 
-async function fetchBytes(path) {
+async function fetchBytes(url) {
   let lastError;
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     try {
-      const response = await fetch(urlFor(path));
+      const response = await fetch(url);
       if (response.ok) {
         return Buffer.from(await response.arrayBuffer());
       }
       if (response.status < 500 && response.status !== 429) {
         throw new Error(
-          `Failed to fetch ${path}: ${response.status} ${response.statusText}`,
+          `Failed to fetch ${url}: ${response.status} ${response.statusText}`,
         );
       }
       lastError = new Error(
-        `Failed to fetch ${path}: ${response.status} ${response.statusText}`,
+        `Failed to fetch ${url}: ${response.status} ${response.statusText}`,
       );
     } catch (err) {
       lastError = err;
@@ -74,10 +100,6 @@ async function writeAsset(path, bytes) {
   const destination = join(outDir, path);
   await mkdir(dirname(destination), { recursive: true });
   await writeFile(destination, bytes);
-}
-
-async function fetchJson(path) {
-  return JSON.parse((await fetchBytes(path)).toString("utf8"));
 }
 
 async function runPool(items, task) {
@@ -103,58 +125,175 @@ async function iconNames() {
   return [...match[1].matchAll(/"([^"]+)"/g)].map(([, name]) => name);
 }
 
-const index = await fetchJson("index.json");
-const allCompletions = Array.isArray(index.completions)
-  ? index.completions
-  : [];
-const allDiffVersioned = Array.isArray(index.diffVersionedCompletions)
-  ? index.diffVersionedCompletions
-  : [];
+// Recursively list every *.js file under `dir`, returning paths relative to `dir`
+// (POSIX separators), skipping the icons/ subtree.
+async function walkJs(dir, base = dir) {
+  const out = [];
+  for (const entry of await readdir(dir, { withFileTypes: true })) {
+    if (entry.name === "icons") continue;
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      out.push(...(await walkJs(full, base)));
+    } else if (entry.name.endsWith(".js")) {
+      out.push(relative(base, full).split("\\").join("/"));
+    }
+  }
+  return out;
+}
 
-const completions = allCompletions.filter((name) => !isExcluded(name));
-const diffVersioned = allDiffVersioned.filter((name) => !isExcluded(name));
-const excludedCount =
-  allCompletions.length -
-  completions.length +
-  (allDiffVersioned.length - diffVersioned.length);
-const diffVersionedSet = new Set(diffVersioned);
-const icons = await iconNames();
+// ── Mode A: download the forked repo's specs.zip and assemble bundle/specs ────
+async function syncFromReleaseZip() {
+  process.stdout.write(`Downloading specs.zip from ${releaseZipUrl}\n`);
+  const zipBytes = await fetchBytes(releaseZipUrl);
 
-// Write a filtered index.json so the runtime loader matches what's actually on disk.
-const filteredIndex = {
-  ...index,
-  completions,
-  diffVersionedCompletions: diffVersioned,
-};
+  const work = join(tmpdir(), `ec-specs-${process.pid}`);
+  await rm(work, { force: true, recursive: true });
+  await mkdir(work, { recursive: true });
+  const zipPath = join(work, "specs.zip");
+  await writeFile(zipPath, zipBytes);
+  await execFileAsync("unzip", ["-q", zipPath, "-d", work]);
 
-const files = [
-  ...completions
-    .filter((name) => !diffVersionedSet.has(name))
-    .map((name) => `${name}.js`),
-  ...diffVersioned.map((name) => `${name}/index.js`),
-  ...icons.map((name) => `icons/${name}.png`),
-];
+  // Archive layout is specs/<...>.js plus specs/icons/<name>.png.
+  const specsRoot = join(work, "specs");
+  const allJs = await walkJs(specsRoot); // relative paths, e.g. "aws/ec2.js", "az/index.js"
 
-await rm(outDir, { force: true, recursive: true });
-await mkdir(outDir, { recursive: true });
-await writeAsset("index.json", Buffer.from(JSON.stringify(filteredIndex)));
-if (exclude.length) {
+  // index.json derivation (validated against the upstream index format):
+  //   diffVersionedCompletions = directories that contain an `index.js`
+  //   completions = every .js stem whose basename != "index", plus the diff names
+  const diffVersioned = new Set();
+  for (const rel of allJs) {
+    if (rel.endsWith("/index.js")) diffVersioned.add(dirname(rel));
+  }
+  const completions = new Set(diffVersioned);
+  for (const rel of allJs) {
+    const stem = rel.slice(0, -3); // strip .js
+    if (stem.split("/").pop() !== "index") completions.add(stem);
+  }
+
+  // Apply the namespace exclusion to names and to the files we copy. Also drop the
+  // archive's root-level `index.js` (the compiler's aggregate barrel, not a real spec).
+  const keepJs = allJs.filter(
+    (rel) => rel !== "index.js" && !isExcluded(rel.slice(0, -3)),
+  );
+  const keptCompletions = [...completions].filter((n) => !isExcluded(n)).sort();
+  const keptDiff = [...diffVersioned].filter((n) => !isExcluded(n)).sort();
+  const excludedCount =
+    completions.size - keptCompletions.length;
+
+  await rm(outDir, { force: true, recursive: true });
+  await mkdir(outDir, { recursive: true });
+
+  // index.json
+  await writeAsset(
+    "index.json",
+    Buffer.from(
+      JSON.stringify({
+        completions: keptCompletions,
+        diffVersionedCompletions: keptDiff,
+      }),
+    ),
+  );
+
+  // spec files
+  let copied = 0;
+  await runPool(keepJs, async (rel) => {
+    const dest = join(outDir, rel);
+    await mkdir(dirname(dest), { recursive: true });
+    await cp(join(specsRoot, rel), dest);
+    copied += 1;
+    if (copied % 200 === 0 || copied === keepJs.length) {
+      process.stdout.write(`Copied ${copied}/${keepJs.length} spec files\n`);
+    }
+  });
+
+  // icons (only those the app references, if present in the archive)
+  const wantedIcons = new Set(await iconNames());
+  const iconsRoot = join(specsRoot, "icons");
+  let icons = 0;
+  try {
+    for (const entry of await readdir(iconsRoot, { withFileTypes: true })) {
+      if (!entry.isFile() || !entry.name.endsWith(".png")) continue;
+      if (wantedIcons.size && !wantedIcons.has(entry.name.replace(/\.png$/, "")))
+        continue;
+      await cp(join(iconsRoot, entry.name), join(outDir, "icons", entry.name));
+      icons += 1;
+    }
+  } catch {
+    process.stdout.write("warning: no icons/ in archive\n");
+  }
+
+  await rm(work, { force: true, recursive: true });
+
+  if (exclude.length) {
+    process.stdout.write(
+      `Excluding [${exclude.join(", ")}] — dropped ${excludedCount} spec entries\n`,
+    );
+  }
   process.stdout.write(
-    `Excluding [${exclude.join(", ")}] — dropped ${excludedCount} spec entries\n`,
+    `Bundled ${keptCompletions.length} specs, ${keptDiff.length} diff indexes, and ${icons} icons into ${outDir}\n`,
   );
 }
 
-let completed = 0;
-await runPool(files, async (path) => {
-  await writeAsset(path, await fetchBytes(path));
-  completed += 1;
-  if (completed % 100 === 0 || completed === files.length) {
+// ── Mode B (legacy): fetch index.json + each spec file from the per-file CDN ──
+async function syncFromCdn() {
+  const index = JSON.parse((await fetchBytes(urlFor("index.json"))).toString());
+  const allCompletions = Array.isArray(index.completions)
+    ? index.completions
+    : [];
+  const allDiffVersioned = Array.isArray(index.diffVersionedCompletions)
+    ? index.diffVersionedCompletions
+    : [];
+
+  const completions = allCompletions.filter((name) => !isExcluded(name));
+  const diffVersioned = allDiffVersioned.filter((name) => !isExcluded(name));
+  const excludedCount =
+    allCompletions.length -
+    completions.length +
+    (allDiffVersioned.length - diffVersioned.length);
+  const diffVersionedSet = new Set(diffVersioned);
+  const icons = await iconNames();
+
+  const filteredIndex = {
+    ...index,
+    completions,
+    diffVersionedCompletions: diffVersioned,
+  };
+
+  const files = [
+    ...completions
+      .filter((name) => !diffVersionedSet.has(name))
+      .map((name) => `${name}.js`),
+    ...diffVersioned.map((name) => `${name}/index.js`),
+    ...icons.map((name) => `icons/${name}.png`),
+  ];
+
+  await rm(outDir, { force: true, recursive: true });
+  await mkdir(outDir, { recursive: true });
+  await writeAsset("index.json", Buffer.from(JSON.stringify(filteredIndex)));
+  if (exclude.length) {
     process.stdout.write(
-      `Synced ${completed}/${files.length} bundled spec assets\n`,
+      `Excluding [${exclude.join(", ")}] — dropped ${excludedCount} spec entries\n`,
     );
   }
-});
 
-process.stdout.write(
-  `Bundled ${completions.length} specs, ${diffVersioned.length} diff indexes, and ${icons.length} icons into ${outDir}\n`,
-);
+  let completed = 0;
+  await runPool(files, async (path) => {
+    await writeAsset(path, await fetchBytes(urlFor(path)));
+    completed += 1;
+    if (completed % 100 === 0 || completed === files.length) {
+      process.stdout.write(
+        `Synced ${completed}/${files.length} bundled spec assets\n`,
+      );
+    }
+  });
+
+  process.stdout.write(
+    `Bundled ${completions.length} specs, ${diffVersioned.length} diff indexes, and ${icons.length} icons into ${outDir}\n`,
+  );
+}
+
+if (releaseZipUrl) {
+  await syncFromReleaseZip();
+} else {
+  await syncFromCdn();
+}

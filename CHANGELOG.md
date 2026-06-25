@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.0.22
+
+- feat: 补全 specs 改为从自维护的 fork [`chen86860/autocomplete-specs`](https://github.com/chen86860/autocomplete-specs) 的 Release 获取（其 CI 编译 `src/*.ts` 并发布 `specs.zip`），`sync-bundled-specs.mjs` 下载 zip 后自行按文件树推导 `index.json`；保留旧的逐文件 CDN 同步作为 fallback
+- feat: spec 来源**锁定到固定 release tag**（`SPECS_TAG`，默认 `spec-build-number-0.1.0`）而非 `latest`，构建可复现、不会静默变更；可经 `BUNDLED_SPECS_TAG` / `BUNDLED_SPECS_RELEASE_ZIP` 覆盖
+- docs: CLAUDE.md 更新 Bundled Specs，说明新来源与版本锁定机制
+
 ## v2.0.21
 
 - perf: 精简打包的补全 specs——`sync-bundled-specs.mjs` 新增 `BUNDLED_SPECS_EXCLUDE`（默认排除 `aws`），同时过滤磁盘文件与 `index.json`，bundle 体积从 ~76 MB 降至 ~40 MB（AWS CLI specs ~36 MB / 419 条，绝大多数用户从不触发）

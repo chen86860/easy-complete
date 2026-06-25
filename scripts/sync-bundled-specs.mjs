@@ -10,27 +10,34 @@ const execFileAsync = promisify(execFile);
 
 const SPEC_BASE_URL = "https://specs.q.us-east-1.amazonaws.com/";
 
-// Primary source: a specs.zip published by the forked spec repo
-// (chen86860/autocomplete-specs, GitHub Actions "Build and release specs").
-// The zip contains specs/<name>.js (+ nested + <name>/index.js for diff-versioned)
-// and specs/icons/<name>.png. We derive index.json ourselves from the file tree.
+const repoDir = join(dirname(fileURLToPath(import.meta.url)), "..");
+
+// All spec-source settings live in specs.config.json so they can be edited and reviewed
+// without touching this script. Env vars still override (handy for CI / one-off tries).
+//   { "repo": "owner/repo", "tag": "spec-build-number-X.Y.Z", "exclude": ["aws"] }
+const config = JSON.parse(
+  await readFile(join(repoDir, "specs.config.json"), "utf8"),
+);
+
+// Source: a specs.zip published by the forked spec repo's "Build and release specs"
+// workflow. The zip contains specs/<name>.js (+ nested + <name>/index.js for
+// diff-versioned) and specs/icons/<name>.png; we derive index.json from the file tree.
 //
-// PINNED to a specific release tag — NOT "latest" — so builds are reproducible: the
-// bundle changes only when SPECS_TAG below changes. To adopt a newer fork build:
-//   1. bump SPECS_TAG to the new spec-build-number-* tag
+// PINNED to config.tag — NOT "latest" — so builds are reproducible: the bundle changes
+// only when specs.config.json changes. To adopt a newer fork build:
+//   1. bump "tag" in specs.config.json to the new spec-build-number-* release
 //   2. re-run `node scripts/sync-bundled-specs.mjs`
-//   3. commit the regenerated bundle/specs together with this change
+//   3. commit the regenerated bundle/specs together with the config change
 // Overrides: BUNDLED_SPECS_TAG=<tag|latest>, or BUNDLED_SPECS_RELEASE_ZIP=<full-url>,
 // or BUNDLED_SPECS_RELEASE_ZIP="" to fall back to the legacy per-file CDN sync.
-const SPECS_REPO = "chen86860/autocomplete-specs";
-const SPECS_TAG = process.env.BUNDLED_SPECS_TAG || "spec-build-number-0.1.0";
+const SPECS_REPO = config.repo;
+const SPECS_TAG = process.env.BUNDLED_SPECS_TAG || config.tag;
 const releaseZipUrl =
   process.env.BUNDLED_SPECS_RELEASE_ZIP ??
   (SPECS_TAG === "latest"
     ? `https://github.com/${SPECS_REPO}/releases/latest/download/specs.zip`
     : `https://github.com/${SPECS_REPO}/releases/download/${SPECS_TAG}/specs.zip`);
 
-const repoDir = join(dirname(fileURLToPath(import.meta.url)), "..");
 const outDir =
   process.env.BUNDLED_SPECS_DIR || join(repoDir, "bundle", "specs");
 const iconListPath = join(
@@ -45,18 +52,20 @@ const iconListPath = join(
 const concurrency = Number(process.env.BUNDLED_SPECS_CONCURRENCY || 16);
 const maxAttempts = Number(process.env.BUNDLED_SPECS_FETCH_ATTEMPTS || 5);
 
-// Comma-separated spec namespaces to exclude from the bundle, e.g. "aws,gcloud,az".
+// Spec namespaces to exclude from the bundle (config.exclude, e.g. ["aws","gcloud","az"]).
 // A namespace `ns` drops the top-level `ns` spec and everything under `ns/`. Excluded
 // specs are absent from both the files on disk AND the written index.json, so the runtime
 // loader never references them (there is no network fallback — see protocol/spec.rs).
 //
-// Default: "aws" — the AWS CLI specs are ~36 MB / 419 entries and most users never trigger
-// them, so they are dropped to roughly halve the bundle (~76 MB -> ~40 MB).
-//   BUNDLED_SPECS_EXCLUDE=""            -> bundle every spec (restore aws)
-//   BUNDLED_SPECS_EXCLUDE="aws,gcloud,az" -> trim the three big cloud CLIs (~62 MB saved)
+// Default ["aws"]: the AWS CLI specs are ~36 MB / 419 entries and most users never trigger
+// them, so they are dropped to roughly halve the bundle. Edit specs.config.json to change.
+// Env override BUNDLED_SPECS_EXCLUDE is comma-separated ("" = exclude nothing) and wins.
 // Re-run this script after changing the list; build-app.sh reuses bundle/specs as-is.
-const exclude = (process.env.BUNDLED_SPECS_EXCLUDE ?? "aws")
-  .split(",")
+const exclude = (
+  process.env.BUNDLED_SPECS_EXCLUDE !== undefined
+    ? process.env.BUNDLED_SPECS_EXCLUDE.split(",")
+    : (config.exclude ?? [])
+)
   .map((s) => s.trim())
   .filter(Boolean);
 

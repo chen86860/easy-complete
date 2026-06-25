@@ -108,6 +108,18 @@ Three cooperating native processes communicate via Unix domain sockets (protobuf
 
 The autocomplete overlay and dashboard are React + Tailwind apps in `packages/autocomplete-app` and `packages/dashboard-app`. In production they are served from `Contents/Resources/{autocomplete,dashboard}/`. In dev, Vite serves them on localhost and `fig_desktop` connects to that instead.
 
+### Bundled Specs
+
+Completion specs are **bundled into the `.app` at build time**, not fetched at runtime. `scripts/sync-bundled-specs.mjs` downloads them from the upstream CDN (`https://specs.q.us-east-1.amazonaws.com/`) into `bundle/specs/`, which `build-app.sh` copies to `Contents/Resources/specs/`. At runtime the `spec://localhost/<name>.js` custom protocol (`fig_desktop/src/protocol/spec.rs`) reads these local files only — there is **no network fallback**, so a spec absent from the bundle simply has no completion.
+
+To keep the bundle small, the sync script supports excluding whole namespaces via `BUNDLED_SPECS_EXCLUDE` (comma-separated; a namespace `ns` drops the top-level `ns` spec and everything under `ns/`). The filter is applied to **both** the downloaded files and the written `index.json`, so the runtime loader never references excluded specs.
+
+- **Default**: `aws` is excluded (the AWS CLI specs are ~36 MB / 419 entries; bundle drops from ~76 MB to ~40 MB). This is intentional — see the `exclude` constant in `scripts/sync-bundled-specs.mjs`.
+- **Bundle everything**: `BUNDLED_SPECS_EXCLUDE="" node scripts/sync-bundled-specs.mjs`
+- **Trim more**: `BUNDLED_SPECS_EXCLUDE="aws,gcloud,az" node scripts/sync-bundled-specs.mjs` (saves another ~26 MB)
+
+`build-app.sh` only auto-syncs when `bundle/specs/index.json` is missing, so it reuses whatever filtered set is already on disk. Re-run the sync script after changing the exclusion list.
+
 ## Key Crates
 
 | Crate              | Role                                                             |

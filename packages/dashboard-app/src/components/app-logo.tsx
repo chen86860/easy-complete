@@ -1,4 +1,4 @@
-import appLogo from "../../../../crates/fig_desktop/icons/icon.png";
+import appLogo from "../../../../crates/fig_desktop/icons/128x128@2x.png";
 
 export function AppLogo({ size = 64 }: { size?: number }) {
   return (

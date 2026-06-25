@@ -116,7 +116,7 @@ icons:
 	for res in 16 22 24 32 48 64 128 256 512; do \
 		convert -resize "$${res}x$${res}" "icons/icon.png" "icons/$${res}x$${res}.png" ; \
 	done
-	convert -resize "32x32" "icons/icon.png" "icons/icon.ico"
+	convert -resize "32x32" "icons/icon.png"
 	cargo tauri icon icons/icon.png
 	cargo tauri icon -o volume-icons icons/VolumeIcon.png
 	mv volume-icons/icon.icns $(MAKE_DIR)/../bundle/dmg/VolumeIcon.icns

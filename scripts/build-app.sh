@@ -13,6 +13,8 @@ set -euo pipefail
 APP_NAME="easy-complete"          # binary / process name (no spaces)
 APP_DISPLAY="Easy Complete"       # human-readable / bundle directory name
 BUNDLE_ID="dev.emmmm.easy-complete"
+APP_CATEGORY="public.app-category.productivity"   # Finder / Launchpad "Developer Tools"
+COPYRIGHT="${COPYRIGHT:-© $(date +%Y) emmmm.dev. All rights reserved.}"
 DEFAULT_SPARKLE_APPCAST_URL="https://github.com/chen86860/easy-complete/releases/latest/download/appcast.xml"
 
 REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -125,6 +127,10 @@ cat > "${STAGING_BUNDLE}/Contents/Info.plist" <<PLIST
     <string>${VERSION}</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
+    <key>LSApplicationCategoryType</key>
+    <string>${APP_CATEGORY}</string>
+    <key>NSHumanReadableCopyright</key>
+    <string>${COPYRIGHT}</string>
     <key>NSHighResolutionCapable</key>
     <true/>
     <key>LSUIElement</key>

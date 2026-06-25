@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.0.21
+
+- perf: 精简打包的补全 specs——`sync-bundled-specs.mjs` 新增 `BUNDLED_SPECS_EXCLUDE`（默认排除 `aws`），同时过滤磁盘文件与 `index.json`，bundle 体积从 ~76 MB 降至 ~40 MB（AWS CLI specs ~36 MB / 419 条，绝大多数用户从不触发）
+- feat: 打包的 `Info.plist` 增加 `LSApplicationCategoryType`（应用分类）与 `NSHumanReadableCopyright`（版权信息），版权年份自动生成、可经 `COPYRIGHT` 环境变量覆盖
+- chore: 从源图 `icon.png` 重新生成 `icon.icns`、`AppIcon.iconset` 与各尺寸图标 PNG，三方保持一致
+- chore: 移除未被任何构建脚本引用的 `bundle/dmg/VolumeIcon.icns`
+- docs: CLAUDE.md 增加「Bundled Specs」小节，说明 specs 构建/排除机制及无网络回退的运行时行为
+
 ## v2.0.20
 
 - fix: 修复自动更新「不自动检测」的问题——作为 `LSUIElement` 后台 agent 无法弹出 Sparkle 首次授权对话框，导致计划检查被静默禁用；现在创建 updater 后主动 `setAutomaticallyChecksForUpdates: YES`，并在打包的 `Info.plist` 中声明 `SUEnableAutomaticChecks` 与 `SUScheduledCheckInterval`（1 天）

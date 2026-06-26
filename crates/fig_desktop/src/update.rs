@@ -30,8 +30,8 @@ mod macos {
         sel_impl,
     };
     use tracing::{
-        debug,
         error,
+        info,
         warn,
     };
 
@@ -70,7 +70,7 @@ mod macos {
             if handle.is_null() {
                 error!("Failed to load embedded Sparkle.framework");
             } else {
-                debug!("Loaded embedded Sparkle.framework");
+                info!("Loaded embedded Sparkle.framework");
             }
         });
 
@@ -108,6 +108,7 @@ mod macos {
                 if let Some(cls) = Class::get("NSApplication") {
                     let app: id = msg_send![cls, sharedApplication];
                     if app != nil {
+                        info!("Sparkle scheduled update found; activating app to show alert in front");
                         let _: () = msg_send![app, activateIgnoringOtherApps: YES];
                     }
                 }
@@ -198,6 +199,9 @@ mod macos {
             if updater != nil {
                 let _: () = msg_send![updater, setAutomaticallyChecksForUpdates: YES];
                 let _: () = msg_send![updater, setAutomaticallyDownloadsUpdates: NO];
+                info!(
+                    "Sparkle updater controller ready (automatic checks enabled, auto-download disabled to force a prompt)"
+                );
             } else {
                 warn!("Sparkle updater instance is unavailable; cannot enable automatic checks");
             }
@@ -221,6 +225,7 @@ mod macos {
         // items, while its updater exposes checkForUpdatesInBackground for silent checks.
         unsafe {
             if show_webview {
+                info!("Triggering user-initiated Sparkle update check");
                 let _: () = msg_send![controller, checkForUpdates: nil];
             } else {
                 let updater: id = msg_send![controller, updater];
@@ -229,6 +234,7 @@ mod macos {
                     return false;
                 }
 
+                info!("Triggering background Sparkle update check");
                 let _: () = msg_send![updater, checkForUpdatesInBackground];
             }
         }
@@ -240,6 +246,7 @@ mod macos {
         // SPUStandardUpdaterController must be created on the main thread.
         // Use exec_async so we never block the caller (event loop may not be
         // running yet when this is called from the tokio async context).
+        info!("Arming Sparkle scheduled update checks");
         if is_main_thread() {
             let _ = ensure_controller(true);
         } else {

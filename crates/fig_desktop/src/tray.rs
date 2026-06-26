@@ -67,7 +67,7 @@ fn tray_update(proxy: &EventLoopProxy) {
                 .send_event(
                     ShowMessageNotification {
                         title: format!("{PRODUCT_NAME} updates are unavailable").into(),
-                        body: "Sparkle.framework is not bundled in this build.".into(),
+                        body: "The Sparkle updater could not start — the framework may be missing from this build or failed to initialize. Check the logs for details.".into(),
                         ..Default::default()
                     }
                     .into(),

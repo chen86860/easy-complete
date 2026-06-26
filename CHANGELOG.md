@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.23
+
+- fix: 自动更新仍"用不了"的真正根因——后台检查到新版本时 Sparkle 因 `automaticallyDownloadsUpdates`(`SUAutomaticallyUpdate` 默认值残留为 YES）走**静默下载安装**,而本应用 ad-hoc 签名且 `SUEnableInstallerLauncherService` 关闭、特权安装无法完成,导致既不弹窗也装不上(仅手动检查可弹窗);现在创建 updater 后显式 `setAutomaticallyDownloadsUpdates: NO`,强制后台检查改为弹窗提示,并在每次启动把脏默认值写回自愈
+- fix: 新增 `ECSparkleUserDriverDelegate`(`SPUStandardUserDriverDelegate`),让 `LSUIElement` 菜单栏 agent 的计划检查弹窗立即出现在最前,而非被 Sparkle 的 gentle-reminder 推迟——`standardUserDriverShouldHandleShowingScheduledUpdate…` 返回 `YES`,并在 `willHandleShowingUpdate` 中 `activateIgnoringOtherApps:`
+
 ## v2.0.22
 
 - feat: 补全 specs 改为从自维护的 fork [`chen86860/autocomplete-specs`](https://github.com/chen86860/autocomplete-specs) 的 Release 获取（其 CI 编译 `src/*.ts` 并发布 `specs.zip`），`sync-bundled-specs.mjs` 下载 zip 后自行按文件树推导 `index.json`；保留旧的逐文件 CDN 同步作为 fallback

@@ -17,7 +17,13 @@ mod macos {
         id,
         nil,
     };
-    use objc::runtime::Class;
+    use objc::declare::ClassDecl;
+    use objc::runtime::{
+        BOOL,
+        Class,
+        Object,
+        Sel,
+    };
     use objc::{
         msg_send,
         sel,
@@ -71,6 +77,73 @@ mod macos {
         Class::get("SPUStandardUpdaterController").is_some()
     }
 
+    /// Returns a shared `SPUStandardUserDriverDelegate` instance that forces Sparkle's *scheduled*
+    /// (non-user-initiated) update checks to surface immediately, the same way a manual check does.
+    ///
+    /// Easy Complete runs as an `LSUIElement` menu-bar agent with no Dock icon and never becomes
+    /// the active app. Sparkle 2's default behavior for background-found updates is a "gentle
+    /// scheduled reminder" — it defers the update alert until the app is brought to the foreground,
+    /// which for an agent app effectively never happens, so the popup is never seen.
+    ///
+    /// `standardUserDriverShouldHandleShowingScheduledUpdate:andInImmediateFocus:` returning YES
+    /// tells Sparkle to present the regular alert right away, and
+    /// `standardUserDriverWillHandleShowingUpdate:forUpdate:state:` activates the process so the
+    /// window comes to the front instead of hiding behind other apps.
+    fn user_driver_delegate() -> id {
+        static DELEGATE: OnceLock<usize> = OnceLock::new();
+
+        extern "C" fn should_handle_scheduled(
+            _this: &Object,
+            _cmd: Sel,
+            _update: id,
+            _in_immediate_focus: BOOL,
+        ) -> BOOL {
+            YES
+        }
+
+        extern "C" fn will_handle_showing(_this: &Object, _cmd: Sel, _handle: BOOL, _update: id, _state: id) {
+            // SAFETY: NSApplication.sharedApplication is always valid once AppKit is initialized;
+            // activateIgnoringOtherApps: simply brings the agent process forward for the alert.
+            unsafe {
+                if let Some(cls) = Class::get("NSApplication") {
+                    let app: id = msg_send![cls, sharedApplication];
+                    if app != nil {
+                        let _: () = msg_send![app, activateIgnoringOtherApps: YES];
+                    }
+                }
+            }
+        }
+
+        let ptr = DELEGATE.get_or_init(|| {
+            let Some(superclass) = Class::get("NSObject") else {
+                return 0;
+            };
+            let Some(mut decl) = ClassDecl::new("ECSparkleUserDriverDelegate", superclass) else {
+                return 0;
+            };
+
+            // SAFETY: the method signatures match the SPUStandardUserDriverDelegate protocol.
+            unsafe {
+                decl.add_method(
+                    sel!(standardUserDriverShouldHandleShowingScheduledUpdate:andInImmediateFocus:),
+                    should_handle_scheduled as extern "C" fn(&Object, Sel, id, BOOL) -> BOOL,
+                );
+                decl.add_method(
+                    sel!(standardUserDriverWillHandleShowingUpdate:forUpdate:state:),
+                    will_handle_showing as extern "C" fn(&Object, Sel, BOOL, id, id),
+                );
+            }
+
+            let cls = decl.register();
+            // SAFETY: +[NSObject new] returns a retained instance we intentionally leak for the
+            // lifetime of the app (Sparkle holds the delegate weakly).
+            let obj: id = unsafe { msg_send![cls, new] };
+            obj as usize
+        });
+
+        *ptr as id
+    }
+
     fn ensure_controller(starts_updater: bool) -> Option<id> {
         let mut slot = controller_slot().lock().ok()?;
         if let Some(controller) = *slot {
@@ -96,7 +169,7 @@ mod macos {
                 allocated,
                 initWithStartingUpdater: starts_updater
                 updaterDelegate: nil
-                userDriverDelegate: nil
+                userDriverDelegate: user_driver_delegate()
             ]
         };
 
@@ -111,11 +184,20 @@ mod macos {
         // foreground window, so that prompt cannot reliably surface — leaving auto-update silently
         // disabled. Setting the choice programmatically suppresses the prompt and guarantees the
         // scheduled checker is running.
-        // SAFETY: SPUUpdater exposes setAutomaticallyChecksForUpdates: as a settable property.
+        //
+        // We also force setAutomaticallyDownloadsUpdates: NO. Otherwise Sparkle's
+        // `automaticallyDownloadsUpdates` (persisted as the SUAutomaticallyUpdate user default,
+        // which can be left at YES from a prior install) makes background checks *silently
+        // download and install* without ever showing the update alert. Easy Complete ships
+        // ad-hoc signed with SUEnableInstallerLauncherService disabled, so that silent install
+        // path cannot complete — the net effect is "no popup ever appears" for auto-updates even
+        // though manual checks work. Disabling auto-download forces the background check to prompt.
+        // SAFETY: SPUUpdater exposes both selectors as settable properties.
         unsafe {
             let updater: id = msg_send![controller, updater];
             if updater != nil {
                 let _: () = msg_send![updater, setAutomaticallyChecksForUpdates: YES];
+                let _: () = msg_send![updater, setAutomaticallyDownloadsUpdates: NO];
             } else {
                 warn!("Sparkle updater instance is unavailable; cannot enable automatic checks");
             }

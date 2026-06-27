@@ -1,6 +1,8 @@
 # Release Signing and Sparkle Updates
 
-GitHub tag releases build a Developer ID signed, notarized ARM64 DMG and attach a Sparkle appcast.
+GitHub tag releases build a Developer ID signed, notarized ARM64 DMG, attach a
+Sparkle appcast, and upload Sparkle delta updates when previous release assets
+are available.
 
 ## Required GitHub Secrets
 
@@ -14,7 +16,8 @@ Code signing:
 Sparkle:
 
 - `SPARKLE_PUBLIC_ED_KEY`: Sparkle EdDSA public key, embedded in `Info.plist`
-- `SPARKLE_PRIVATE_ED_KEY`: Sparkle EdDSA private key, used only in CI to sign `appcast.xml`
+- `SPARKLE_PRIVATE_ED_KEY`: Sparkle EdDSA private key, used only in CI to sign
+  `appcast.xml` and generated `.delta` update entries
 
 Notarization, choose one:
 
@@ -35,11 +38,23 @@ The app embeds this feed URL at build time:
 https://github.com/<owner>/<repo>/releases/latest/download/appcast.xml
 ```
 
-Each release's generated `appcast.xml` points its enclosure at that tag's DMG:
+Each release uploads two DMG names:
+
+- `Easy-Complete-arm64.dmg`: stable website/manual-download asset
+- `Easy-Complete-<version>-arm64.dmg`: versioned Sparkle full-update asset
+
+The generated `appcast.xml` points its full-update enclosure at that tag's
+versioned DMG:
 
 ```text
-https://github.com/<owner>/<repo>/releases/download/<tag>/Easy-Complete-arm64.dmg
+https://github.com/<owner>/<repo>/releases/download/<tag>/Easy-Complete-<version>-arm64.dmg
 ```
+
+When a previous `appcast.xml` and previous DMG assets exist, CI downloads the
+recent history into `dist/sparkle`, then Sparkle's `generate_appcast` creates
+signed `.delta` files for the latest update. Sparkle clients use a matching
+delta when possible and fall back to the versioned full DMG when no delta is
+available or applying the delta fails.
 
 ## Local Commands
 
@@ -70,7 +85,35 @@ APPLE_NOTARY_ISSUER_ID="..." \
 Generate appcast locally:
 
 ```bash
+cp dist/Easy-Complete-arm64.dmg dist/Easy-Complete-2.0.6-arm64.dmg
+
 SPARKLE_PRIVATE_ED_KEY="..." \
 SPARKLE_DOWNLOAD_URL_PREFIX="https://github.com/chen86860/easy-complete/releases/download/v2.0.6/" \
-./scripts/generate-sparkle-appcast.sh dist/Easy-Complete-arm64.dmg
+SPARKLE_BUNDLE_VERSION="2.0.6" \
+./scripts/generate-sparkle-appcast.sh dist/Easy-Complete-2.0.6-arm64.dmg
+```
+
+Generate local delta updates:
+
+```bash
+mkdir -p dist/sparkle
+cp path/to/previous/appcast.xml dist/sparkle/appcast.xml
+cp path/to/Easy-Complete-2.0.5-arm64.dmg dist/sparkle/
+cp dist/Easy-Complete-arm64.dmg dist/Easy-Complete-2.0.6-arm64.dmg
+
+SPARKLE_PRIVATE_ED_KEY="..." \
+SPARKLE_DOWNLOAD_URL_PREFIX="https://github.com/chen86860/easy-complete/releases/download/v2.0.6/" \
+SPARKLE_BUNDLE_VERSION="2.0.6" \
+SPARKLE_MAXIMUM_VERSIONS=3 \
+SPARKLE_MAXIMUM_DELTAS=5 \
+./scripts/generate-sparkle-appcast.sh dist/Easy-Complete-2.0.6-arm64.dmg
+```
+
+Upload all generated Sparkle assets with the release:
+
+```text
+dist/Easy-Complete-arm64.dmg
+dist/Easy-Complete-<version>-arm64.dmg
+dist/sparkle/appcast.xml
+dist/sparkle/*.delta
 ```

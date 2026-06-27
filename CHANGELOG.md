@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.26
+
+- feat: Sparkle 发布链路支持 delta update：release CI 会保留稳定 DMG 下载入口，同时生成版本化 Sparkle full-update DMG，拉取最近历史 release 作为 archives 输入，并上传 `appcast.xml` 与 `.delta` 更新包
+- docs: 更新 Sparkle release 文档，补充 delta update 的 CI 行为、本地生成命令和需要上传的发布资产
+
 ## v2.0.25
 
 - feat: 更新 bundled completion specs 至 `chen86860/autocomplete-specs` 的 `spec-build-number-0.2.0` release，并重新生成随包内置的 `bundle/specs`

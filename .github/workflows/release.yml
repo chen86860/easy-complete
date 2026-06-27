@@ -126,6 +126,76 @@ jobs:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: ./scripts/notarize-dmg.sh dist/Easy-Complete-arm64.dmg
 
+      - name: Prepare Sparkle archives
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CURRENT_TAG: ${{ github.ref_name }}
+          HISTORY_LIMIT: 5
+          APPCAST_DIR: dist/sparkle
+        run: |
+          set -euo pipefail
+
+          APP_VERSION="${CURRENT_TAG#v}"
+          VERSIONED_DMG="dist/Easy-Complete-${APP_VERSION}-arm64.dmg"
+          VERSIONED_NAME="$(basename "$VERSIONED_DMG")"
+
+          rm -rf "$APPCAST_DIR"
+          mkdir -p "$APPCAST_DIR"
+
+          cp dist/Easy-Complete-arm64.dmg "$VERSIONED_DMG"
+          cp "$VERSIONED_DMG" "$APPCAST_DIR/$VERSIONED_NAME"
+
+          RELEASES_JSON="$RUNNER_TEMP/releases.json"
+          gh api "repos/${GITHUB_REPOSITORY}/releases?per_page=20" > "$RELEASES_JSON"
+          mapfile -t PREVIOUS_TAGS < <(
+            jq -r --arg current "$CURRENT_TAG" --argjson limit "$HISTORY_LIMIT" \
+              '[.[] | select(.draft == false) | select(.tag_name != $current)] | .[:$limit][] | .tag_name' \
+              "$RELEASES_JSON"
+          )
+
+          if [ "${#PREVIOUS_TAGS[@]}" -eq 0 ]; then
+            echo "No previous releases found; generating a full-update-only appcast."
+            exit 0
+          fi
+
+          PREVIOUS_APPCAST_DIR="$RUNNER_TEMP/previous-appcast"
+          mkdir -p "$PREVIOUS_APPCAST_DIR"
+          if gh release download "${PREVIOUS_TAGS[0]}" \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern "appcast.xml" \
+            --dir "$PREVIOUS_APPCAST_DIR" \
+            --clobber; then
+            mv "$PREVIOUS_APPCAST_DIR/appcast.xml" "$APPCAST_DIR/appcast.xml"
+          else
+            echo "Previous appcast.xml not found; generating a full-update-only appcast."
+            exit 0
+          fi
+
+          for tag in "${PREVIOUS_TAGS[@]}"; do
+            version="${tag#v}"
+            dest="$APPCAST_DIR/Easy-Complete-${version}-arm64.dmg"
+            tmp="$RUNNER_TEMP/sparkle-${tag//[^A-Za-z0-9._-]/_}"
+            rm -rf "$tmp"
+            mkdir -p "$tmp"
+
+            if gh release download "$tag" \
+              --repo "$GITHUB_REPOSITORY" \
+              --pattern "Easy-Complete-${version}-arm64.dmg" \
+              --dir "$tmp" \
+              --clobber; then
+              mv "$tmp/Easy-Complete-${version}-arm64.dmg" "$dest"
+            elif gh release download "$tag" \
+              --repo "$GITHUB_REPOSITORY" \
+              --pattern "Easy-Complete-arm64.dmg" \
+              --dir "$tmp" \
+              --clobber; then
+              mv "$tmp/Easy-Complete-arm64.dmg" "$dest"
+            else
+              echo "Skipping $tag: no compatible ARM64 DMG asset found."
+            fi
+          done
+
       - name: Extract release notes from CHANGELOG.md
         if: startsWith(github.ref, 'refs/tags/')
         id: changelog
@@ -147,7 +217,21 @@ jobs:
         env:
           SPARKLE_PRIVATE_ED_KEY: ${{ secrets.SPARKLE_PRIVATE_ED_KEY }}
           SPARKLE_DOWNLOAD_URL_PREFIX: https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/
-        run: ./scripts/generate-sparkle-appcast.sh dist/Easy-Complete-arm64.dmg
+          SPARKLE_BUNDLE_VERSION: ${{ github.ref_name }}
+        run: |
+          APP_VERSION="${SPARKLE_BUNDLE_VERSION#v}"
+          SPARKLE_BUNDLE_VERSION="$APP_VERSION" \
+          ./scripts/generate-sparkle-appcast.sh "dist/Easy-Complete-${APP_VERSION}-arm64.dmg"
+
+      - name: Verify release assets
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          set -euo pipefail
+          APP_VERSION="${GITHUB_REF_NAME#v}"
+          test -f dist/Easy-Complete-arm64.dmg
+          test -f "dist/Easy-Complete-${APP_VERSION}-arm64.dmg"
+          test -f dist/sparkle/appcast.xml
+          find dist/sparkle -maxdepth 1 -name '*.delta' -print
 
       - name: Upload build artifact
         if: startsWith(github.ref, 'refs/tags/')
@@ -156,7 +240,9 @@ jobs:
           name: Easy-Complete-arm64
           path: |
             dist/Easy-Complete-arm64.dmg
+            dist/Easy-Complete-*-arm64.dmg
             dist/sparkle/appcast.xml
+            dist/sparkle/*.delta
 
       - name: Attach DMG to GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
@@ -164,8 +250,10 @@ jobs:
         with:
           files: |
             dist/Easy-Complete-arm64.dmg
+            dist/Easy-Complete-*-arm64.dmg
             dist/sparkle/appcast.xml
-          fail_on_unmatched_files: true
+            dist/sparkle/*.delta
+          fail_on_unmatched_files: false
           body: |
             ${{ steps.changelog.outputs.notes }}
 

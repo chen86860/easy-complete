@@ -57,7 +57,7 @@ delta when possible and fall back to the versioned full DMG when no delta is
 available or applying the delta fails.
 
 The published appcast keeps only the latest update item, but it may include up
-to five deltas from recent previous versions. Older DMGs are inputs for delta
+to eight deltas from recent previous versions. Older DMGs are inputs for delta
 generation; they are not re-published in the latest release.
 
 ## Local Commands
@@ -109,7 +109,7 @@ SPARKLE_PRIVATE_ED_KEY="..." \
 SPARKLE_DOWNLOAD_URL_PREFIX="https://github.com/chen86860/easy-complete/releases/download/v2.0.6/" \
 SPARKLE_BUNDLE_VERSION="2.0.6" \
 SPARKLE_MAXIMUM_VERSIONS=1 \
-SPARKLE_MAXIMUM_DELTAS=5 \
+SPARKLE_MAXIMUM_DELTAS=8 \
 ./scripts/generate-sparkle-appcast.sh dist/Easy-Complete-2.0.6-arm64.dmg
 ```
 

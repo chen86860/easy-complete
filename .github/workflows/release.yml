@@ -131,7 +131,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           CURRENT_TAG: ${{ github.ref_name }}
-          HISTORY_LIMIT: 5
+          HISTORY_LIMIT: 8
           APPCAST_DIR: dist/sparkle
         run: |
           set -euo pipefail

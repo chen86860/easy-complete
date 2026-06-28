@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.30
+
+- fix: release appcast 默认生成最多 8 个 delta，并拉取最近 8 个正式 release 作为 Sparkle archives 输入，覆盖更多旧版本到最新版的增量更新路径
+- fix: 保持 appcast delta URL 与 GitHub release asset 文件名一致，避免 Sparkle 因 delta 404 回退到完整 DMG
+
 ## v2.0.29
 
 - fix: dashboard 从菜单栏/二次启动打开时显式激活 macOS App，避免偶发触发“点击桌面/显示桌面”导致窗口被挤到角落

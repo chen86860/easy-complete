@@ -517,29 +517,3 @@ pub fn install(src: impl AsRef<CStr>, dst: impl AsRef<CStr>, same_bundle_name: b
 
     Ok(())
 }
-
-#[cfg(test)]
-mod test {
-    use fig_util::manifest::Channel;
-    use tempfile::TempDir;
-
-    use super::*;
-
-    #[ignore]
-    #[tokio::test]
-    async fn test_download_dmg() -> Result<(), Error> {
-        let index = crate::index::pull(&Channel::Stable).await.unwrap();
-        let version = index.latest().unwrap();
-        let dmg_pkg = version.packages.first().unwrap();
-
-        let temp_dir = TempDir::new().unwrap();
-        let dmg_path = temp_dir.path().join("CodeWhisperer.dmg");
-        let real_hash = download_file(dmg_pkg.download.clone(), dmg_path, 0, None)
-            .await
-            .unwrap();
-        println!("{real_hash}");
-
-        assert_eq!(dmg_pkg.sha256, real_hash);
-        Ok(())
-    }
-}

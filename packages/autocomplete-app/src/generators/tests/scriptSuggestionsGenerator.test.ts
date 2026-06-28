@@ -14,12 +14,8 @@ import * as helpers from "../helpers";
 import { GeneratorContext } from "../helpers";
 import { getScriptSuggestions } from "../scriptSuggestionsGenerator";
 
-vi.mock(
-  "@easy-complete/api-bindings-wrappers/src/executeCommand",
-  async () =>
-    vi.importActual(
-      "@easy-complete/api-bindings-wrappers/src/executeCommand",
-    ),
+vi.mock("@easy-complete/api-bindings-wrappers/src/executeCommand", async () =>
+  vi.importActual("@easy-complete/api-bindings-wrappers/src/executeCommand"),
 );
 
 const context: GeneratorContext = {

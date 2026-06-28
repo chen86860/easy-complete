@@ -7,10 +7,7 @@ import {
   splitPath,
   ensureTrailingSlash,
 } from "@easy-complete/shared/utils";
-import {
-  Subcommand,
-  SpecLocation,
-} from "@easy-complete/shared/internal";
+import { Subcommand, SpecLocation } from "@easy-complete/shared/internal";
 import {
   SETTINGS,
   getSetting,

@@ -1,5 +1,6 @@
 ---
-source: q_cli/tests/init.rs
+source: crates/ec_cli/tests/init.rs
+assertion_line: 104
 expression: init
 ---
 Q_SHELL="/bin/zsh"
@@ -18,7 +19,7 @@ export TTY
 export SHELL_PID="$$"
 
 if [[ -z "${Q_SHELL:-}" ]]; then
-  Q_SHELL=$(q _ get-shell)
+  Q_SHELL=$(ec _ get-shell)
 fi
 
 # shellcheck disable=SC2059
@@ -170,8 +171,8 @@ fig_precmd() {
 
   Q_HAS_SET_PROMPT=1
 
-  if command -v q >/dev/null 2>&1; then
-    (command q _ pre-cmd --alias "$(\alias)" > /dev/null 2>&1 &) >/dev/null 2>&1
+  if command -v ec >/dev/null 2>&1; then
+    (command ec _ pre-cmd --alias "$(\alias)" > /dev/null 2>&1 &) >/dev/null 2>&1
   fi
 }
 
@@ -195,4 +196,4 @@ fi
 
 fi
 
-(command q _ pre-cmd --alias "$(\alias)" > /dev/null 2>&1 &) >/dev/null 2>&1
+(command ec _ pre-cmd --alias "$(\alias)" > /dev/null 2>&1 &) >/dev/null 2>&1

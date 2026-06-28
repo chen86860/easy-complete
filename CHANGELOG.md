@@ -1,5 +1,17 @@
 # Changelog
 
+## v2.0.27
+
+- feat: 发布仓库清理与 CI 质量门禁正式版，包含重复 autocomplete package 移除、Easy Complete 品牌/发布元数据清理、PR CI gate 与 Rust/JS 测试修正
+- fix: release workflow 对 `alpha` / `beta` / `rc` SemVer tag 使用更严格的 prerelease 判断，避免正式 Sparkle appcast 混入预发布版本
+
+## v2.0.27-beta.1
+
+- prerelease: 先在 beta tag 发布大规模仓库清理与 CI 质量门禁，避免直接进入正式用户的 Sparkle latest 更新通道
+- chore: 删除重复的 autocomplete package，统一使用 `packages/autocomplete-app`
+- chore: 清理 Easy Complete fork 的包元数据、发布文案、产品路径和测试快照中的旧上游品牌残留
+- ci: 新增 PR/主分支质量门禁，覆盖 JS build/lint/test、website build、Rust fmt/clippy/test
+
 ## v2.0.26
 
 - feat: Sparkle 发布链路支持 delta update：release CI 会保留稳定 DMG 下载入口，同时生成版本化 Sparkle full-update DMG，拉取最近历史 release 作为 archives 输入，并上传 `appcast.xml` 与 `.delta` 更新包

@@ -627,8 +627,8 @@ export function AboutSection({
           </div>
         </Row>
         <Row
-          label="Amazon Q Developer CLI"
-          description="Built on top of the open-source Amazon Q Developer CLI autocomplete project"
+          label="Upstream Project"
+          description="Easy Complete is maintained as an open-source terminal autocomplete fork"
           last
         >
           <AboutLinkButton

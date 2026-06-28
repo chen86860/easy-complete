@@ -1,7 +1,4 @@
-import {
-  WindowPosition,
-  Settings,
-} from "@easy-complete/api-bindings";
+import { WindowPosition, Settings } from "@easy-complete/api-bindings";
 import { SETTINGS } from "@easy-complete/api-bindings-wrappers";
 import React, {
   useState,

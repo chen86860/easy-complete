@@ -1,10 +1,7 @@
 import { SettingsMap } from "@easy-complete/api-bindings-wrappers";
 import * as app from "./fig.json";
 import { create } from "@bufbuild/protobuf";
-import {
-  ActionAvailability,
-  ActionSchema,
-} from "@easy-complete/proto/fig";
+import { ActionAvailability, ActionSchema } from "@easy-complete/proto/fig";
 
 const SELECT_SUGGESTION_ACTION_PREFIX = "selectSuggestion";
 

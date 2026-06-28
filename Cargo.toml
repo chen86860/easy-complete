@@ -12,16 +12,11 @@ members = [
 default-members = ["crates/ec_cli"]
 
 [workspace.package]
-authors = [
-    "Chay Nabors (nabochay@amazon.com)",
-    "Brandon Kiser (bskiser@amazon.com)",
-    "Jack (jack@example.com)",
-    "Easy Complete Contributors",
-]
+authors = ["Easy Complete Contributors"]
 edition = "2024"
 homepage = "https://easy-complete.emmmm.dev/"
 publish = false
-version = "2.0.26"
+version = "2.0.27"
 license = "MIT OR Apache-2.0"
 
 [workspace.dependencies]

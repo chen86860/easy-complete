@@ -1,7 +1,4 @@
-import {
-  getSetting,
-  SETTINGS,
-} from "@easy-complete/api-bindings-wrappers";
+import { getSetting, SETTINGS } from "@easy-complete/api-bindings-wrappers";
 
 // Default settings values.
 export const MAX_WIDTH = 320;

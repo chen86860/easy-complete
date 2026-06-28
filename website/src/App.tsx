@@ -424,8 +424,8 @@ export function App() {
           </div>
           <p className="m-0 font-mono text-[13px] leading-[1.7] text-[#5d6773]">
             Requires macOS 12+ · Apple Silicon (ARM64) · MIT / Apache-2.0
-            <br />A focused fork of the Amazon Q Developer CLI, stripped down to
-            pure terminal completion.
+            <br />A focused local completion engine built for fast terminal
+            autocomplete.
           </p>
         </Reveal>
         <div className="relative mx-auto mt-16 flex max-w-[1180px] flex-wrap items-center justify-between gap-4 border-t border-[#161d25] pt-[26px] text-[13px] text-[#5d6773]">

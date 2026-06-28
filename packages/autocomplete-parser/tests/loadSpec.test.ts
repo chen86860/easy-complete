@@ -1,8 +1,5 @@
 import logger from "loglevel";
-import {
-  SETTINGS,
-  updateSettings,
-} from "@easy-complete/api-bindings-wrappers";
+import { SETTINGS, updateSettings } from "@easy-complete/api-bindings-wrappers";
 import { SpecLocationSource } from "@easy-complete/shared/utils";
 import {
   getSpecPath,
@@ -32,9 +29,7 @@ vi.mock("../src/loadHelpers", () => ({
 }));
 
 vi.mock("@easy-complete/api-bindings-wrappers", async () => ({
-  ...(await vi.importActual(
-    "@easy-complete/api-bindings-wrappers",
-  )),
+  ...(await vi.importActual("@easy-complete/api-bindings-wrappers")),
   executeCommand: vi.fn(),
 }));
 

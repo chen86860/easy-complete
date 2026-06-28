@@ -57,8 +57,6 @@ use serde::Serialize;
 use tracing::{
     Level,
     debug,
-    error,
-    warn,
 };
 
 use self::integrations::IntegrationsSubcommands;
@@ -159,31 +157,6 @@ pub enum CliRootCommands {
     Integrations(IntegrationsSubcommands),
     /// Show version information
     Version,
-}
-
-impl CliRootCommands {
-    fn name(&self) -> &'static str {
-        match self {
-            CliRootCommands::Hook(_) => "hook",
-            CliRootCommands::Debug(_) => "debug",
-            CliRootCommands::Settings(_) => "settings",
-            CliRootCommands::Setup(_) => "setup",
-            CliRootCommands::Uninstall { .. } => "uninstall",
-            CliRootCommands::Update(_) => "update",
-            CliRootCommands::Diagnostic(_) => "diagnostics",
-            CliRootCommands::Init(_) => "init",
-            CliRootCommands::Theme(_) => "theme",
-            CliRootCommands::Issue(_) => "issue",
-            CliRootCommands::Doctor(_) => "doctor",
-            CliRootCommands::Completion(_) => "completion",
-            CliRootCommands::Internal(_) => "internal",
-            CliRootCommands::Launch => "launch",
-            CliRootCommands::Quit => "quit",
-            CliRootCommands::Restart { .. } => "restart",
-            CliRootCommands::Integrations(_) => "integrations",
-            CliRootCommands::Version => "version",
-        }
-    }
 }
 
 const HELP_TEXT: &str = color_print::cstr! {"
@@ -432,5 +405,4 @@ mod test {
             })
         );
     }
-
 }

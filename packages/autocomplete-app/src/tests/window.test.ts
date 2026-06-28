@@ -1,7 +1,4 @@
-import {
-  SETTINGS,
-  updateSettings,
-} from "@easy-complete/api-bindings-wrappers";
+import { SETTINGS, updateSettings } from "@easy-complete/api-bindings-wrappers";
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   getMaxWidth,

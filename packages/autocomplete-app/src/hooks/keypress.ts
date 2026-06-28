@@ -1,10 +1,7 @@
 import { useCallback } from "react";
 import logger from "loglevel";
 import { Keybindings, Shell } from "@easy-complete/api-bindings";
-import {
-  SETTINGS,
-  getSetting,
-} from "@easy-complete/api-bindings-wrappers";
+import { SETTINGS, getSetting } from "@easy-complete/api-bindings-wrappers";
 import { ACTIONS, AutocompleteAction } from "../actions";
 import { useAutocompleteStore } from "../state";
 import { Visibility } from "../state/types";

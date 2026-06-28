@@ -23,7 +23,7 @@ jobs:
         id: start
         run: echo "started_at=$(date +%s)" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Verify Apple Silicon runner
         run: |
@@ -150,7 +150,7 @@ jobs:
           gh api "repos/${GITHUB_REPOSITORY}/releases?per_page=20" > "$RELEASES_JSON"
           mapfile -t PREVIOUS_TAGS < <(
             jq -r --arg current "$CURRENT_TAG" --argjson limit "$HISTORY_LIMIT" \
-              '[.[] | select(.draft == false) | select(.tag_name != $current)] | .[:$limit][] | .tag_name' \
+              '[.[] | select(.draft == false) | select(.prerelease == false) | select(.tag_name != $current)] | .[:$limit][] | .tag_name' \
               "$RELEASES_JSON"
           )
 
@@ -233,6 +233,17 @@ jobs:
           test -f dist/sparkle/appcast.xml
           find dist/sparkle -maxdepth 1 -name '*.delta' -print
 
+      - name: Classify release channel
+        if: startsWith(github.ref, 'refs/tags/')
+        id: release_channel
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF_NAME" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+-(alpha|beta|rc)(\.[0-9A-Za-z-]+)*$ ]]; then
+            echo "is_prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Upload build artifact
         if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v6
@@ -254,6 +265,7 @@ jobs:
             dist/sparkle/appcast.xml
             dist/sparkle/*.delta
           fail_on_unmatched_files: false
+          prerelease: ${{ steps.release_channel.outputs.is_prerelease == 'true' }}
           body: |
             ${{ steps.changelog.outputs.notes }}
 

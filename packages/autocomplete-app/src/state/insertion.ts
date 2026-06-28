@@ -2,10 +2,7 @@ import logger from "loglevel";
 import { StoreApi } from "zustand";
 import { Shell } from "@easy-complete/api-bindings";
 import { SpecLocationSource } from "@fig/autocomplete-shared";
-import {
-  SpecLocation,
-  Suggestion,
-} from "@easy-complete/shared/internal";
+import { SpecLocation, Suggestion } from "@easy-complete/shared/internal";
 import {
   makeArray,
   longestCommonPrefix,

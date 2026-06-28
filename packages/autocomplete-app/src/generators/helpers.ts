@@ -1,10 +1,7 @@
 import { Annotation } from "@easy-complete/autocomplete-parser";
 import { Suggestion } from "@easy-complete/shared/internal";
 import { getCWDForFilesAndFolders } from "@easy-complete/shared/utils";
-import {
-  getSetting,
-  SETTINGS,
-} from "@easy-complete/api-bindings-wrappers";
+import { getSetting, SETTINGS } from "@easy-complete/api-bindings-wrappers";
 import { Cache } from "./cache";
 
 export type GeneratorContext = Fig.ShellContext & {

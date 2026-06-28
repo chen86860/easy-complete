@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  javascript:
+    name: JavaScript
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            website/pnpm-lock.yaml
+
+      - name: Install dependencies
+        env:
+          HUSKY: 0
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm build
+
+      - name: Lint packages
+        run: pnpm lint
+
+      - name: Test packages
+        run: pnpm test:ci
+
+      - name: Install website dependencies
+        env:
+          HUSKY: 0
+        run: pnpm -C website install --frozen-lockfile
+
+      - name: Build website
+        run: pnpm -C website build
+
+  rust:
+    name: Rust
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install build dependencies
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: 1
+        run: brew install fish protobuf shellcheck
+
+      - name: Set up Rust
+        run: rustup show
+
+      - name: Set up nightly rustfmt
+        run: rustup toolchain install nightly --profile minimal --component rustfmt
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ci
+
+      - name: Check formatting
+        run: cargo +nightly fmt --check
+
+      - name: Clippy
+        run: cargo clippy --locked --workspace --color always -- -D warnings
+
+      - name: Test
+        run: cargo test --workspace --locked

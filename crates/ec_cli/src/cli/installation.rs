@@ -16,11 +16,7 @@ use fig_install::{
     install,
 };
 use fig_os_shim::Env;
-use fig_util::system_info::in_cloudshell;
-use fig_util::{
-    CLI_BINARY_NAME,
-    PRODUCT_NAME,
-};
+use fig_util::CLI_BINARY_NAME;
 use tracing::warn;
 
 use crate::util::choose;

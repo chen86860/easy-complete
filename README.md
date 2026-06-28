@@ -23,8 +23,8 @@
 
 **Easy Complete** is a macOS terminal autocomplete app — IDE-style inline completions
 for your shell, rendered in a native overlay window that follows your cursor. It is a
-fork of the Amazon Q Developer CLI, stripped down to focus purely on terminal
-autocompletion — a lightweight, fully local, open-source alternative to Fig.
+local-first terminal completion engine focused purely on autocomplete —
+a lightweight, fully local alternative to Fig.
 
 You get fish-shell-style suggestions for hundreds of CLIs (`git`, `npm`, `docker`,
 `cargo`, …): flags, subcommands, file paths, and arguments, completed as you type.

@@ -10,10 +10,13 @@ use anstream::println;
 #[cfg(not(windows))]
 use assert_cmd::prelude::*;
 use eyre::Context;
-use fig_util::consts::CLI_CRATE_NAME;
 use fig_util::consts::build::{
     SKIP_FISH_TESTS,
     SKIP_SHELLCHECK_TESTS,
+};
+use fig_util::consts::{
+    CLI_BINARY_NAME,
+    CLI_CRATE_NAME,
 };
 use paste::paste;
 
@@ -22,7 +25,7 @@ macro_rules! init_test {
         paste! {
             #[cfg(not(windows))]
             fn [<init_output_ $shell _ $stage _ $file>]() -> Result<String, Box<dyn std::error::Error>> {
-                let mut cmd = Command::cargo_bin(CLI_CRATE_NAME).unwrap();
+                let mut cmd = Command::cargo_bin(CLI_BINARY_NAME).unwrap();
                 cmd.arg("init").arg($shell).arg($stage).arg("--rcfile").arg($file);
                 cmd.env("Q_INIT_SNAPSHOT_TEST", "1");
                 let out = cmd.assert().success().get_output().stdout.clone();

@@ -17,10 +17,7 @@ import {
   isInDevMode,
   SETTINGS,
 } from "@easy-complete/api-bindings-wrappers";
-import {
-  Command,
-  substituteAlias,
-} from "@easy-complete/shell-parser";
+import { Command, substituteAlias } from "@easy-complete/shell-parser";
 import {
   getSpecPath,
   loadSubcommandCached,

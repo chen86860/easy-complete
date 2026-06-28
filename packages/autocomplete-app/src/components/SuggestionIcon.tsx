@@ -1,8 +1,5 @@
 import React from "react";
-import {
-  Suggestion,
-  SuggestionType,
-} from "@easy-complete/shared/internal";
+import { Suggestion, SuggestionType } from "@easy-complete/shared/internal";
 import { localProtocol } from "@easy-complete/shared/utils";
 import { icons } from "../fig/icons";
 

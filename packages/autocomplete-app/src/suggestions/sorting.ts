@@ -1,9 +1,6 @@
 import { makeArray } from "@easy-complete/shared/utils";
 import { Suggestion } from "@easy-complete/shared/internal";
-import {
-  SETTINGS,
-  getSetting,
-} from "@easy-complete/api-bindings-wrappers";
+import { SETTINGS, getSetting } from "@easy-complete/api-bindings-wrappers";
 
 // { command: { commandParam: count/lastUsedDate } }
 // e.g. git: { add: 2, push: 4 }

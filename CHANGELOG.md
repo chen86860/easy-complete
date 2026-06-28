@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.27
+
+- feat: 发布仓库清理与 CI 质量门禁正式版，包含重复 autocomplete package 移除、Easy Complete 品牌/发布元数据清理、PR CI gate 与 Rust/JS 测试修正
+- fix: release workflow 对 `alpha` / `beta` / `rc` SemVer tag 使用更严格的 prerelease 判断，避免正式 Sparkle appcast 混入预发布版本
+
 ## v2.0.27-beta.1
 
 - prerelease: 先在 beta tag 发布大规模仓库清理与 CI 质量门禁，避免直接进入正式用户的 Sparkle latest 更新通道

@@ -1,7 +1,4 @@
-import {
-  Annotation,
-  TokenType,
-} from "@easy-complete/autocomplete-parser";
+import { Annotation, TokenType } from "@easy-complete/autocomplete-parser";
 import { Subcommand } from "@easy-complete/shared/internal";
 import { describe, expect, it } from "vitest";
 import { getTemplateSuggestions } from "../templateSuggestionsGenerator";

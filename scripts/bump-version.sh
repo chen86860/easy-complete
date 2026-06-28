@@ -21,7 +21,7 @@ echo "Bumping version to $VERSION"
 sed -i '' "s/^version = \".*\"$/version = \"$VERSION\"/" "$REPO_DIR/Cargo.toml"
 
 # App-facing TS packages (version shown in Dashboard About section)
-for pkg in dashboard-app autocomplete-app autocomplete; do
+for pkg in dashboard-app autocomplete-app; do
   PKG_JSON="$REPO_DIR/packages/$pkg/package.json"
   sed -i '' "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" "$PKG_JSON"
 done

@@ -2,10 +2,7 @@ import logger from "loglevel";
 import { StoreApi } from "zustand";
 import { sleep } from "@easy-complete/shared/utils";
 import { ArgumentParserResult } from "@easy-complete/autocomplete-parser";
-import {
-  SETTINGS,
-  getSetting,
-} from "@easy-complete/api-bindings-wrappers";
+import { SETTINGS, getSetting } from "@easy-complete/api-bindings-wrappers";
 import { runPipingConsoleMethods } from "../utils";
 import { getTemplateSuggestions } from "../generators/templateSuggestionsGenerator";
 import { getScriptSuggestions } from "../generators/scriptSuggestionsGenerator";

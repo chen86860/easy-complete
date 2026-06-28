@@ -2,8 +2,8 @@
   "name": "@easy-complete/api-bindings",
   "version": "0.2.0",
   "license": "MIT OR Apache-2.0",
-  "author": "Amazon Web Services",
-  "repository": "https://github.com/aws/amazon-q-developer-cli",
+  "author": "Easy Complete Contributors",
+  "repository": "https://github.com/chen86860/easy-complete",
   "type": "module",
   "exports": "./dist/index.js",
   "files": [

@@ -32,7 +32,6 @@ use dialoguer::theme::ColorfulTheme;
 use eyre::{
     Context,
     ContextCompat,
-    Error,
     Result,
     bail,
 };

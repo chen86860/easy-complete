@@ -79,7 +79,7 @@ export const reasons: Reason[] = [
   {
     num: "04",
     title: "Open source",
-    desc: "A focused fork of the Amazon Q Developer CLI, stripped down to pure terminal completion.",
+    desc: "A focused local completion engine built for fast terminal autocomplete.",
   },
 ];
 

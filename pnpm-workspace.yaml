@@ -2,3 +2,7 @@ packages:
   - proto
   - tests/fig-api
   - packages/*
+allowBuilds:
+  '@bufbuild/buf': true
+  core-js: true
+  esbuild: true

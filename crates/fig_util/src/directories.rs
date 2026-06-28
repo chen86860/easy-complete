@@ -233,8 +233,8 @@ pub fn runtime_dir() -> Result<PathBuf> {
 
 /// The q sockets directory of the local q installation
 ///
-/// - Linux: $XDG_RUNTIME_DIR/cwrun
-/// - MacOS: $TMPDIR/cwrun
+/// - Linux: $XDG_RUNTIME_DIR/ecrun
+/// - MacOS: $TMPDIR/ecrun
 /// - Windows: %TEMP%\{data_dir}\sockets
 pub fn sockets_dir() -> Result<PathBuf> {
     cfg_if::cfg_if! {
@@ -251,8 +251,8 @@ pub fn sockets_dir() -> Result<PathBuf> {
 /// In WSL, this will correctly return the host machine socket path.
 /// In other remote environments, it returns the same as `sockets_dir`
 ///
-/// - Linux: $XDG_RUNTIME_DIR/cwrun
-/// - MacOS: $TMPDIR/cwrun
+/// - Linux: $XDG_RUNTIME_DIR/ecrun
+/// - MacOS: $TMPDIR/ecrun
 /// - Windows: %TEMP%\sockets
 pub fn host_sockets_dir() -> Result<PathBuf> {
     // TODO: make this work again
@@ -338,8 +338,8 @@ pub fn chat_profiles_dir<Ctx: FsProvider + EnvProvider>(ctx: &Ctx) -> Result<Pat
 
 /// The desktop app socket path
 ///
-/// - MacOS: `$TMPDIR/cwrun/desktop.sock`
-/// - Linux: `$XDG_RUNTIME_DIR/cwrun/desktop.sock`
+/// - MacOS: `$TMPDIR/ecrun/desktop.sock`
+/// - Linux: `$XDG_RUNTIME_DIR/ecrun/desktop.sock`
 /// - Windows: `%TEMP%\sockets\desktop.sock`
 pub fn desktop_socket_path() -> Result<PathBuf> {
     Ok(host_sockets_dir()?.join("desktop.sock"))
@@ -348,8 +348,8 @@ pub fn desktop_socket_path() -> Result<PathBuf> {
 /// The path to remote socket
 // - Linux/MacOS on ssh: At the value of `Q_PARENT`
 // - Linux/MacOS not on ssh:
-/// - MacOS: `$TMPDIR/cwrun/remote.sock`
-/// - Linux: `$XDG_RUNTIME_DIR/cwrun/remote.sock`
+/// - MacOS: `$TMPDIR/ecrun/remote.sock`
+/// - Linux: `$XDG_RUNTIME_DIR/ecrun/remote.sock`
 /// - Windows: `%TEMP%\sockets\remote.sock`
 pub fn remote_socket_path() -> Result<PathBuf> {
     // Normal implementation for non-test code
@@ -367,8 +367,8 @@ pub fn remote_socket_path() -> Result<PathBuf> {
 
 /// The path to local remote socket
 ///
-/// - MacOS: `$TMPDIR/cwrun/remote.sock`
-/// - Linux: `$XDG_RUNTIME_DIR/cwrun/remote.sock`
+/// - MacOS: `$TMPDIR/ecrun/remote.sock`
+/// - Linux: `$XDG_RUNTIME_DIR/ecrun/remote.sock`
 /// - Windows: `%TEMP%\sockets\remote.sock`
 pub fn local_remote_socket_path() -> Result<PathBuf> {
     Ok(host_sockets_dir()?.join("remote.sock"))
@@ -377,8 +377,8 @@ pub fn local_remote_socket_path() -> Result<PathBuf> {
 /// Get path to a figterm socket
 ///
 /// - Linux/Macos: `/var/tmp/fig/%USERNAME%/figterm/$SESSION_ID.sock`
-/// - MacOS: `$TMPDIR/cwrun/t/$SESSION_ID.sock`
-/// - Linux: `$XDG_RUNTIME_DIR/cwrun/t/$SESSION_ID.sock`
+/// - MacOS: `$TMPDIR/ecrun/t/$SESSION_ID.sock`
+/// - Linux: `$XDG_RUNTIME_DIR/ecrun/t/$SESSION_ID.sock`
 /// - Windows: `%TEMP%\sockets\t\$SESSION_ID.sock`
 pub fn figterm_socket_path(session_id: impl Display) -> Result<PathBuf> {
     Ok(sockets_dir()?.join("t").join(format!("{session_id}.sock")))
@@ -588,7 +588,7 @@ mod tests {
         #[cfg(unix)]
         assert_eq!(
             host_sockets_dir().unwrap().file_name().unwrap().to_str().unwrap(),
-            format!("cwrun")
+            format!("ecrun")
         );
 
         #[cfg(windows)]
@@ -689,15 +689,15 @@ mod tests {
 
     #[test]
     fn snapshot_fig_data_dir() {
-        linux!(fig_data_dir(), @"$HOME/.local/share/amazon-q");
-        macos!(fig_data_dir(), @"$HOME/Library/Application Support/amazon-q");
+        linux!(fig_data_dir(), @"$HOME/.local/share/easy-complete");
+        macos!(fig_data_dir(), @"$HOME/Library/Application Support/easy-complete");
         windows!(fig_data_dir(), @r"C:\Users\$USER\AppData\Local\AmazonQ");
     }
 
     #[test]
     fn snapshot_sockets_dir() {
-        linux!(sockets_dir(), @"$XDG_RUNTIME_DIR/cwrun");
-        macos!(sockets_dir(), @"$TMPDIR/cwrun");
+        linux!(sockets_dir(), @"$XDG_RUNTIME_DIR/ecrun");
+        macos!(sockets_dir(), @"$TMPDIR/ecrun");
         windows!(sockets_dir(), @r"C:\Users\$USER\AppData\Local\Temp\AmazonQ\sockets");
     }
 
@@ -710,51 +710,51 @@ mod tests {
 
     #[test]
     fn snapshot_backups_dir() {
-        linux!(backups_dir(), @"$HOME/.amazon-q.dotfiles.bak");
-        macos!(backups_dir(), @"$HOME/.amazon-q.dotfiles.bak");
-        windows!(backups_dir(), @r"C:\Users\$USER\.amazon-q.dotfiles.bak");
+        linux!(backups_dir(), @"$HOME/.easy-complete.dotfiles.bak");
+        macos!(backups_dir(), @"$HOME/.easy-complete.dotfiles.bak");
+        windows!(backups_dir(), @r"C:\Users\$USER\.easy-complete.dotfiles.bak");
     }
 
     #[test]
     fn snapshot_fig_socket_path() {
-        linux!(desktop_socket_path(), @"$XDG_RUNTIME_DIR/cwrun/desktop.sock");
-        macos!(desktop_socket_path(), @"$TMPDIR/cwrun/desktop.sock");
+        linux!(desktop_socket_path(), @"$XDG_RUNTIME_DIR/ecrun/desktop.sock");
+        macos!(desktop_socket_path(), @"$TMPDIR/ecrun/desktop.sock");
         windows!(desktop_socket_path(), @r"C:\Users\$USER\AppData\Local\Temp\AmazonQ\sockets\desktop.sock");
     }
 
     #[test]
     fn snapshot_remote_socket_path() {
-        linux!(remote_socket_path(), @"$XDG_RUNTIME_DIR/cwrun/remote.sock");
-        macos!(remote_socket_path(), @"$TMPDIR/cwrun/remote.sock");
+        linux!(remote_socket_path(), @"$XDG_RUNTIME_DIR/ecrun/remote.sock");
+        macos!(remote_socket_path(), @"$TMPDIR/ecrun/remote.sock");
         windows!(remote_socket_path(), @r"C:\Users\$USER\AppData\Local\Temp\AmazonQ\sockets\remote.sock");
     }
 
     #[test]
     fn snapshot_local_remote_socket_path() {
-        linux!(local_remote_socket_path(), @"$XDG_RUNTIME_DIR/cwrun/remote.sock");
-        macos!(local_remote_socket_path(), @"$TMPDIR/cwrun/remote.sock");
+        linux!(local_remote_socket_path(), @"$XDG_RUNTIME_DIR/ecrun/remote.sock");
+        macos!(local_remote_socket_path(), @"$TMPDIR/ecrun/remote.sock");
         windows!(local_remote_socket_path(), @r"C:\Users\$USER\AppData\Local\Temp\AmazonQ\sockets\remote.sock");
     }
 
     #[test]
     fn snapshot_figterm_socket_path() {
-        linux!(figterm_socket_path("$SESSION_ID"), @"$XDG_RUNTIME_DIR/cwrun/t/$SESSION_ID.sock");
-        macos!(figterm_socket_path("$SESSION_ID"), @"$TMPDIR/cwrun/t/$SESSION_ID.sock");
+        linux!(figterm_socket_path("$SESSION_ID"), @"$XDG_RUNTIME_DIR/ecrun/t/$SESSION_ID.sock");
+        macos!(figterm_socket_path("$SESSION_ID"), @"$TMPDIR/ecrun/t/$SESSION_ID.sock");
         windows!(figterm_socket_path("$SESSION_ID"), @r"C:\Users\$USER\AppData\Local\Temp\AmazonQ\sockets\t\$SESSION_ID.sock");
     }
 
     #[test]
     fn snapshot_settings_path() {
-        linux!(settings_path(), @"$HOME/.local/share/amazon-q/settings.json");
-        macos!(settings_path(), @"$HOME/Library/Application Support/amazon-q/settings.json");
+        linux!(settings_path(), @"$HOME/.local/share/easy-complete/settings.json");
+        macos!(settings_path(), @"$HOME/Library/Application Support/easy-complete/settings.json");
         windows!(settings_path(), @r"C:\Users\$USER\AppData\Local\AmazonQ\settings.json");
     }
 
     #[test]
     fn snapshot_update_lock_path() {
         let ctx = Context::new();
-        linux!(update_lock_path(&ctx), @"$HOME/.local/share/amazon-q/update.lock");
-        macos!(update_lock_path(&ctx), @"$HOME/Library/Application Support/amazon-q/update.lock");
+        linux!(update_lock_path(&ctx), @"$HOME/.local/share/easy-complete/update.lock");
+        macos!(update_lock_path(&ctx), @"$HOME/Library/Application Support/easy-complete/update.lock");
         windows!(update_lock_path(&ctx), @r"C:\Users\$USER\AppData\Local\AmazonQ\update.lock");
     }
 

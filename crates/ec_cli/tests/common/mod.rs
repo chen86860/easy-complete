@@ -3,14 +3,14 @@
 use std::process::Command;
 
 pub use assert_cmd::prelude::*;
-use fig_util::CLI_CRATE_NAME;
+use fig_util::CLI_BINARY_NAME;
 use predicates::function::FnPredicate;
 pub use predicates::prelude::*;
 
 pub type Result<T, E = Box<dyn std::error::Error>> = std::result::Result<T, E>;
 
 pub fn cli() -> Command {
-    Command::cargo_bin(CLI_CRATE_NAME).unwrap()
+    Command::cargo_bin(CLI_BINARY_NAME).unwrap()
 }
 
 pub fn is_json() -> FnPredicate<impl Fn(&str) -> bool, str> {

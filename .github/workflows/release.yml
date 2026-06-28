@@ -23,7 +23,7 @@ jobs:
         id: start
         run: echo "started_at=$(date +%s)" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Verify Apple Silicon runner
         run: |
@@ -150,7 +150,7 @@ jobs:
           gh api "repos/${GITHUB_REPOSITORY}/releases?per_page=20" > "$RELEASES_JSON"
           mapfile -t PREVIOUS_TAGS < <(
             jq -r --arg current "$CURRENT_TAG" --argjson limit "$HISTORY_LIMIT" \
-              '[.[] | select(.draft == false) | select(.tag_name != $current)] | .[:$limit][] | .tag_name' \
+              '[.[] | select(.draft == false) | select(.prerelease == false) | select(.tag_name != $current)] | .[:$limit][] | .tag_name' \
               "$RELEASES_JSON"
           )
 
@@ -254,6 +254,7 @@ jobs:
             dist/sparkle/appcast.xml
             dist/sparkle/*.delta
           fail_on_unmatched_files: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
           body: |
             ${{ steps.changelog.outputs.notes }}
 

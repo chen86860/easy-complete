@@ -1,12 +1,26 @@
 #[allow(unused_imports)]
 use fig_util::consts::PRODUCT_NAME;
-use fig_util::consts::url::{ISSUE_TRACKER, RELEASE_NOTES, USER_MANUAL};
+use fig_util::consts::url::{
+    ISSUE_TRACKER,
+    RELEASE_NOTES,
+    USER_MANUAL,
+};
 #[allow(unused_imports)]
-use muda::{Menu, MenuEvent, Submenu};
+use muda::{
+    Menu,
+    MenuEvent,
+    Submenu,
+};
 use tao::event_loop::ControlFlow;
 
-use crate::event::{Event, WindowEvent};
-use crate::{DASHBOARD_ID, EventLoopProxy};
+use crate::event::{
+    Event,
+    WindowEvent,
+};
+use crate::{
+    DASHBOARD_ID,
+    EventLoopProxy,
+};
 
 const DASHBOARD_QUIT: &str = "dashboard-quit";
 const DASHBOARD_CLOSE: &str = "dashboard-close";
@@ -18,7 +32,11 @@ const DASHBOARD_REPORT_ISSUE: &str = "dashboard-report-issue";
 
 #[cfg(target_os = "macos")]
 pub fn menu_bar() -> Menu {
-    use muda::{MenuItemBuilder, PredefinedMenuItem, Submenu};
+    use muda::{
+        MenuItemBuilder,
+        PredefinedMenuItem,
+        Submenu,
+    };
 
     let menu_bar = Menu::new();
 
@@ -50,15 +68,13 @@ pub fn menu_bar() -> Menu {
 
     let file_submenu = Submenu::new("File", true);
     file_submenu
-        .append_items(&[
-            &MenuItemBuilder::new()
-                .text("Close Window")
-                .id(DASHBOARD_CLOSE.into())
-                .enabled(true)
-                .accelerator(Some("super+w"))
-                .unwrap()
-                .build(),
-        ])
+        .append_items(&[&MenuItemBuilder::new()
+            .text("Close Window")
+            .id(DASHBOARD_CLOSE.into())
+            .enabled(true)
+            .accelerator(Some("super+w"))
+            .unwrap()
+            .build()])
         .unwrap();
 
     menu_bar.append(&file_submenu).unwrap();

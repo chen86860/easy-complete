@@ -1,5 +1,5 @@
 // @ts-check
-import react from "@autocomplete-v5/eslint-config/react";
+import react from "@easy-complete/eslint-config/react";
 export default react({
   tsconfigPath: "./tsconfig.json",
 });

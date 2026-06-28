@@ -1,8 +1,5 @@
 import logger from "loglevel";
-import {
-  Annotation,
-  TokenType,
-} from "@easy-complete/autocomplete-parser";
+import { Annotation, TokenType } from "@easy-complete/autocomplete-parser";
 import { makeArray, findLast } from "@easy-complete/shared/utils";
 import { GeneratorContext } from "./helpers";
 import { getHistoryArgSuggestions } from "../history";

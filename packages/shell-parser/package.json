@@ -2,8 +2,8 @@
   "name": "@easy-complete/shell-parser",
   "version": "0.1.0",
   "license": "MIT OR Apache-2.0",
-  "author": "Amazon Web Services",
-  "repository": "https://github.com/aws/amazon-q-developer-cli",
+  "author": "Easy Complete Contributors",
+  "repository": "https://github.com/chen86860/easy-complete",
   "type": "module",
   "exports": "./dist/index.js",
   "files": [

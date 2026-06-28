@@ -1,4 +1,7 @@
-use serde_json::{Value, json};
+use serde_json::{
+    Value,
+    json,
+};
 use tracing::warn;
 use uuid::Uuid;
 
@@ -41,9 +44,7 @@ fn app_version() -> &'static str {
 }
 
 fn os_version_string() -> String {
-    fig_util::system_info::os_version()
-        .map(|v| v.to_string())
-        .unwrap_or_else(|| "unknown".into())
+    fig_util::system_info::os_version().map_or_else(|| "unknown".into(), |v| v.to_string())
 }
 
 /// Fire-and-forget: sends a single event to PostHog.

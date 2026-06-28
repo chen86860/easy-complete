@@ -291,6 +291,8 @@ pub enum UpdateCondition {
 
 #[derive(Debug, Clone, PartialEq, Eq, EnumString, Display)]
 pub enum ProductName {
+    #[strum(serialize = "Easy Complete")]
+    EasyComplete,
     #[strum(serialize = "Amazon Q")]
     AmazonQ,
     #[strum(default)]
@@ -303,6 +305,7 @@ impl Serialize for ProductName {
         S: Serializer,
     {
         match self {
+            ProductName::EasyComplete => serializer.serialize_str("Easy Complete"),
             ProductName::AmazonQ => serializer.serialize_str("Amazon Q"),
             ProductName::Unknown(s) => serializer.serialize_str(s),
         }
@@ -316,6 +319,7 @@ impl<'de> Deserialize<'de> for ProductName {
     {
         let s = String::deserialize(deserializer)?;
         match s.as_str() {
+            "Easy Complete" => Ok(ProductName::EasyComplete),
             "Amazon Q" => Ok(ProductName::AmazonQ),
             _ => Ok(ProductName::Unknown(s)),
         }
@@ -324,7 +328,7 @@ impl<'de> Deserialize<'de> for ProductName {
 
 impl Default for ProductName {
     fn default() -> Self {
-        Self::AmazonQ
+        Self::EasyComplete
     }
 }
 
@@ -472,6 +476,7 @@ mod tests {
 
     #[test]
     fn test_product_name_ser_deser() {
+        test_ser_deser!(ProductName, ProductName::EasyComplete, "Easy Complete");
         test_ser_deser!(ProductName, ProductName::AmazonQ, "Amazon Q");
         test_ser_deser!(ProductName, ProductName::Unknown("other".to_string()), "other");
     }

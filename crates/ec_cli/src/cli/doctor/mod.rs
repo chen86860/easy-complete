@@ -75,7 +75,6 @@ use fig_util::directories::{
 use fig_util::env_var::{
     PROCESS_LAUNCHED_BY_Q,
     Q_PARENT,
-    Q_TERM,
     QTERM_SESSION_ID,
 };
 use fig_util::macos::BUNDLE_CONTENTS_INFO_PLIST_PATH;

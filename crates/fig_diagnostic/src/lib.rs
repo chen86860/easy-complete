@@ -25,14 +25,6 @@ use sysinfo::{
 use time::OffsetDateTime;
 use time::format_description::well_known::Rfc3339;
 
-fn serialize_display<D, S>(display: D, serializer: S) -> Result<S::Ok, S::Error>
-where
-    D: std::fmt::Display,
-    S: serde::Serializer,
-{
-    serializer.serialize_str(&display.to_string())
-}
-
 fn serialize_display_option<D, S>(display: &Option<D>, serializer: S) -> Result<S::Ok, S::Error>
 where
     D: std::fmt::Display,

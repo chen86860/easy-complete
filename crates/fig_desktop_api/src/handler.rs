@@ -1,13 +1,28 @@
 use std::time::Duration;
 
 use base64::prelude::*;
-use fig_os_shim::{ContextArcProvider, ContextProvider, EnvProvider, FsProvider};
+use fig_os_shim::{
+    ContextArcProvider,
+    ContextProvider,
+    EnvProvider,
+    FsProvider,
+};
 pub use fig_proto::fig::client_originated_message::Submessage as ClientOriginatedSubMessage;
 pub use fig_proto::fig::server_originated_message::Submessage as ServerOriginatedSubMessage;
 use fig_proto::fig::{
-    AggregateSessionMetricActionRequest, CheckForUpdatesRequest, ClientOriginatedMessage, DragWindowRequest,
-    InsertTextRequest, NotificationRequest, OnboardingRequest, PositionWindowRequest, RunProcessRequest,
-    ServerOriginatedMessage, UpdateApplicationPropertiesRequest, UserLogoutRequest, WindowFocusRequest,
+    AggregateSessionMetricActionRequest,
+    CheckForUpdatesRequest,
+    ClientOriginatedMessage,
+    DragWindowRequest,
+    InsertTextRequest,
+    NotificationRequest,
+    OnboardingRequest,
+    PositionWindowRequest,
+    RunProcessRequest,
+    ServerOriginatedMessage,
+    UpdateApplicationPropertiesRequest,
+    UserLogoutRequest,
+    WindowFocusRequest,
 };
 use fig_proto::prost::Message;
 use fig_settings::settings::SettingsProvider;
@@ -16,7 +31,11 @@ use tracing::warn;
 
 use crate::error::Result;
 use crate::kv::KVStore;
-use crate::requests::{self, RequestResult, RequestResultImpl};
+use crate::requests::{
+    self,
+    RequestResult,
+    RequestResultImpl,
+};
 
 pub struct Wrapped<Ctx, Req> {
     pub message_id: i64,
@@ -148,17 +167,44 @@ where
     match message.submessage {
         Some(submessage) => {
             use ClientOriginatedSubMessage::{
-                AggregateSessionMetricActionRequest, AppendToFileRequest, AuthBuilderIdPollCreateTokenRequest,
-                AuthBuilderIdStartDeviceAuthorizationRequest, AuthCancelPkceAuthorizationRequest,
-                AuthFinishPkceAuthorizationRequest, AuthStartPkceAuthorizationRequest, AuthStatusRequest,
-                CheckForUpdatesRequest, CodewhispererListCustomizationRequest, ContentsOfDirectoryRequest,
-                CreateDirectoryRequest, DestinationOfSymbolicLinkRequest, DragWindowRequest, GetLocalStateRequest,
-                GetPlatformInfoRequest, GetSettingsPropertyRequest, HistoryQueryRequest, InsertTextRequest,
-                InstallRequest, ListAvailableProfilesRequest, NotificationRequest, OnboardingRequest,
-                OpenInExternalApplicationRequest, PingRequest, PositionWindowRequest, ReadFileRequest,
-                RunProcessRequest, SetProfileRequest, TelemetryPageRequest, TelemetryTrackRequest,
-                UpdateApplicationPropertiesRequest, UpdateApplicationRequest, UpdateLocalStateRequest,
-                UpdateSettingsPropertyRequest, UserLogoutRequest, WindowFocusRequest, WriteFileRequest,
+                AggregateSessionMetricActionRequest,
+                AppendToFileRequest,
+                AuthBuilderIdPollCreateTokenRequest,
+                AuthBuilderIdStartDeviceAuthorizationRequest,
+                AuthCancelPkceAuthorizationRequest,
+                AuthFinishPkceAuthorizationRequest,
+                AuthStartPkceAuthorizationRequest,
+                AuthStatusRequest,
+                CheckForUpdatesRequest,
+                CodewhispererListCustomizationRequest,
+                ContentsOfDirectoryRequest,
+                CreateDirectoryRequest,
+                DestinationOfSymbolicLinkRequest,
+                DragWindowRequest,
+                GetLocalStateRequest,
+                GetPlatformInfoRequest,
+                GetSettingsPropertyRequest,
+                HistoryQueryRequest,
+                InsertTextRequest,
+                InstallRequest,
+                ListAvailableProfilesRequest,
+                NotificationRequest,
+                OnboardingRequest,
+                OpenInExternalApplicationRequest,
+                PingRequest,
+                PositionWindowRequest,
+                ReadFileRequest,
+                RunProcessRequest,
+                SetProfileRequest,
+                TelemetryPageRequest,
+                TelemetryTrackRequest,
+                UpdateApplicationPropertiesRequest,
+                UpdateApplicationRequest,
+                UpdateLocalStateRequest,
+                UpdateSettingsPropertyRequest,
+                UserLogoutRequest,
+                WindowFocusRequest,
+                WriteFileRequest,
             };
             #[allow(unused_imports)]
             use requests::*;

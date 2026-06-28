@@ -12,9 +12,7 @@ members = [
 default-members = ["crates/ec_cli"]
 
 [workspace.package]
-authors = [
-    "Easy Complete Contributors",
-]
+authors = ["Easy Complete Contributors"]
 edition = "2024"
 homepage = "https://easy-complete.emmmm.dev/"
 publish = false

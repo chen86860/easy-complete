@@ -408,6 +408,10 @@ impl WindowState {
                     }
 
                     self.window.set_visible(true);
+                    #[cfg(target_os = "macos")]
+                    if self.window_id == DASHBOARD_ID {
+                        platform::activate_app();
+                    }
                     self.window.set_focus();
                 }
             },

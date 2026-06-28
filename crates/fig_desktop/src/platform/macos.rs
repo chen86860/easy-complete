@@ -143,6 +143,19 @@ static MACOS_VERSION: LazyLock<semver::Version> = LazyLock::new(|| {
 
 pub static ACTIVATION_POLICY: Mutex<ActivationPolicy> = Mutex::new(ActivationPolicy::Regular);
 
+pub fn activate_app() {
+    // LSUIElement/menu-bar apps can switch back from Accessory to Regular without
+    // AppKit automatically bringing the process forward. Explicit activation keeps
+    // dashboard opens from being treated like a wallpaper/desktop click on macOS.
+    unsafe {
+        let Some(application) = Class::get("NSApplication") else {
+            return;
+        };
+        let app: id = msg_send![application, sharedApplication];
+        let _: () = msg_send![app, activateIgnoringOtherApps: YES];
+    }
+}
+
 #[allow(dead_code)]
 pub fn is_ventura() -> bool {
     MACOS_VERSION.major >= 13

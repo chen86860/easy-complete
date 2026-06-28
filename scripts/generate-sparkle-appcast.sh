@@ -5,7 +5,7 @@ REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 DMG_PATH="${1:-${REPO_DIR}/dist/Easy-Complete-arm64.dmg}"
 APPCAST_DIR="${APPCAST_DIR:-${REPO_DIR}/dist/sparkle}"
 SPARKLE_VERSION="${SPARKLE_VERSION:-2.9.3}"
-SPARKLE_MAXIMUM_VERSIONS="${SPARKLE_MAXIMUM_VERSIONS:-3}"
+SPARKLE_MAXIMUM_VERSIONS="${SPARKLE_MAXIMUM_VERSIONS:-1}"
 SPARKLE_MAXIMUM_DELTAS="${SPARKLE_MAXIMUM_DELTAS:-5}"
 DOWNLOAD_URL_PREFIX="${SPARKLE_DOWNLOAD_URL_PREFIX:-}"
 
@@ -58,4 +58,20 @@ printf '%s' "$SPARKLE_PRIVATE_ED_KEY" | \
     "$APPCAST_DIR"
 
 [ -f "$APPCAST_DIR/appcast.xml" ] || { echo "error: appcast.xml was not generated" >&2; exit 1; }
+
+# Sparkle derives delta names from the app bundle display name ("Easy Complete"),
+# but the generated delta files use dots on disk ("Easy.Complete...delta").
+# GitHub release assets are uploaded from disk, so keep appcast URLs aligned with
+# the real asset names or Sparkle will fall back to the full DMG after a 404.
+python3 - "$APPCAST_DIR/appcast.xml" <<'PY'
+import pathlib
+import re
+import sys
+
+appcast_path = pathlib.Path(sys.argv[1])
+appcast = appcast_path.read_text()
+appcast = re.sub(r'(?<=/)[^"/]+(?=\.delta")', lambda m: m.group(0).replace("%20", "."), appcast)
+appcast_path.write_text(appcast)
+PY
+
 printf '%s\n' "$APPCAST_DIR/appcast.xml"

@@ -56,6 +56,10 @@ signed `.delta` files for the latest update. Sparkle clients use a matching
 delta when possible and fall back to the versioned full DMG when no delta is
 available or applying the delta fails.
 
+The published appcast keeps only the latest update item, but it may include up
+to five deltas from recent previous versions. Older DMGs are inputs for delta
+generation; they are not re-published in the latest release.
+
 ## Local Commands
 
 Generate a Sparkle key pair:
@@ -104,7 +108,7 @@ cp dist/Easy-Complete-arm64.dmg dist/Easy-Complete-2.0.6-arm64.dmg
 SPARKLE_PRIVATE_ED_KEY="..." \
 SPARKLE_DOWNLOAD_URL_PREFIX="https://github.com/chen86860/easy-complete/releases/download/v2.0.6/" \
 SPARKLE_BUNDLE_VERSION="2.0.6" \
-SPARKLE_MAXIMUM_VERSIONS=3 \
+SPARKLE_MAXIMUM_VERSIONS=1 \
 SPARKLE_MAXIMUM_DELTAS=5 \
 ./scripts/generate-sparkle-appcast.sh dist/Easy-Complete-2.0.6-arm64.dmg
 ```

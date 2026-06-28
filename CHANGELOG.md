@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.32
+
+- feat: 更新 bundled completion specs 至 `chen86860/autocomplete-specs` 的 `spec-build-number-0.3.0` release，新增 `claude`、`codex`、`gemini`、`uvx` 等标准库 specs
+- fix: 对命令面板不受内置资源支持的命名 Fig icon 增加 fallback，修复 `pnpm dev` 等 package.json scripts 建议显示空白文档图标的问题
+
 ## v2.0.31
 
 - fix: 修复命令面板中 `fig://icon?...` 命名图标被错误改写为无效静态资源路径，导致部分命令前只保留空白占位、不显示图标的问题

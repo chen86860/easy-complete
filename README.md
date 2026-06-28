@@ -28,12 +28,14 @@ a lightweight, fully local alternative to Fig.
 
 You get fish-shell-style suggestions for hundreds of CLIs (`git`, `npm`, `docker`,
 `cargo`, …): flags, subcommands, file paths, and arguments, completed as you type.
+Easy Complete runs on-device and does not require an account, telemetry, cloud calls,
+or AI requests for autocomplete.
 
 <p align="center">
-  <img src="./.github/media/screnshoot.png" alt="Easy Complete autocomplete in action">
+  <img src="./.github/media/screenshot.png" alt="Easy Complete autocomplete in action">
 </p>
 
-> **Platform:** macOS only (Apple Silicon / ARM64).
+> **Platform:** macOS only. The published DMG is Apple Silicon / ARM64 only.
 
 ## Contents
 
@@ -50,30 +52,29 @@ You get fish-shell-style suggestions for hundreds of CLIs (`git`, `npm`, `docker
 
 ### Download the DMG
 
-Open the GitHub Releases page and download the latest Apple Silicon DMG:
+Download the latest Apple Silicon DMG:
 
-[Go to Releases](https://github.com/chen86860/easy-complete/releases)
+[Download latest DMG](https://github.com/chen86860/easy-complete/releases/latest/download/Easy-Complete-arm64.dmg) ·
+[All releases](https://github.com/chen86860/easy-complete/releases)
 
 Then:
 
 1. Open `Easy-Complete-arm64.dmg`.
 2. Drag **Easy Complete.app** into `/Applications`.
-3. The build is unsigned, so macOS may quarantine it. Clear the quarantine flag once:
-
-   ```bash
-   xattr -dr com.apple.quarantine "/Applications/Easy Complete.app"
-   ```
-
-4. Launch **Easy Complete** from `/Applications`.
-5. Grant **Accessibility** permission when prompted.
-6. Reload your shell:
+3. Launch **Easy Complete** from `/Applications`.
+4. Grant **Accessibility** permission when prompted.
+5. Reload your shell:
 
    ```bash
    exec $SHELL
    ```
 
 On first launch, Easy Complete sets up the bundled CLI binaries, shell integration,
-input method, and login startup entries.
+input method, and login startup entries. To verify the installation, run:
+
+```bash
+ec doctor
+```
 
 ### Build from source
 

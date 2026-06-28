@@ -13,7 +13,7 @@
   <a href="https://github.com/chen86860/easy-complete/releases"><img alt="Release" src="https://img.shields.io/github/v/release/chen86860/easy-complete?color=brightgreen"></a>
   <img alt="Platform" src="https://img.shields.io/badge/platform-macOS-lightgrey">
   <img alt="Built with Rust" src="https://img.shields.io/badge/built%20with-Rust-orange">
-  <img alt="License" src="https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue">
+  <a href="#-许可证"><img alt="License" src="https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue"></a>
   <a href="https://github.com/chen86860/easy-complete/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/chen86860/easy-complete?style=social"></a>
 </p>
 
@@ -27,12 +27,22 @@
 
 你会在输入 `git`、`npm`、`docker`、`cargo` 等数百种命令行工具时，获得类似 fish shell 的
 建议：参数、子命令、文件路径、选项，边打边补。
+Easy Complete 在本机运行，自动补全不需要账号、遥测、云端调用或 AI 请求。
 
 <p align="center">
-  <img src="./.github/media/screnshoot.png" alt="Easy Complete 自动补全效果">
+  <img src="./.github/media/screenshot.png" alt="Easy Complete 自动补全效果">
 </p>
 
-> **平台：** 仅支持 macOS（Apple Silicon / ARM64）。
+> **平台：** 仅支持 macOS。当前发布的 DMG 仅支持 Apple Silicon / ARM64。
+
+## 目录
+
+- [安装](#-安装)
+- [使用](#-使用)
+- [卸载](#-卸载)
+- [工作原理](#-工作原理)
+- [开发](#-开发)
+- [许可证](#-许可证)
 
 ---
 
@@ -40,29 +50,29 @@
 
 ### 下载 DMG
 
-打开 GitHub Releases 页面，下载最新的 Apple Silicon DMG：
+下载最新的 Apple Silicon DMG：
 
-[前往 Releases 页面](https://github.com/chen86860/easy-complete/releases)
+[下载最新版 DMG](https://github.com/chen86860/easy-complete/releases/latest/download/Easy-Complete-arm64.dmg) ·
+[所有 Releases](https://github.com/chen86860/easy-complete/releases)
 
 然后：
 
 1. 打开 `Easy-Complete-arm64.dmg`。
 2. 把 **Easy Complete.app** 拖到 `/Applications`。
-3. 这个构建未签名，macOS 可能会加上 quarantine 标记。首次安装后执行一次：
-
-   ```bash
-   xattr -dr com.apple.quarantine "/Applications/Easy Complete.app"
-   ```
-
-4. 从 `/Applications` 启动 **Easy Complete**。
-5. 按提示授予**辅助功能**权限。
-6. 重新加载你的 shell：
+3. 从 `/Applications` 启动 **Easy Complete**。
+4. 按提示授予**辅助功能**权限。
+5. 重新加载你的 shell：
 
    ```bash
    exec $SHELL
    ```
 
-首次启动时，Easy Complete 会设置随附的 CLI 二进制、shell 集成、输入法和登录启动项。
+首次启动时，Easy Complete 会设置随附的 CLI 二进制、shell 集成、输入法和登录启动项。可以
+运行下面的命令确认安装状态：
+
+```bash
+ec doctor
+```
 
 ### 从源码构建
 

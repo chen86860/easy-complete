@@ -54,7 +54,7 @@ const initialState: Partial<AutocompleteState> = {
 
   historyModeEnabled: false,
   fuzzySearchEnabled: false,
-  userFuzzySearchEnabled: getSetting(SETTINGS.FUZZY_SEARCH, false) as boolean,
+  userFuzzySearchEnabled: getSetting(SETTINGS.FUZZY_SEARCH),
   settings: {} as SettingsMap,
 };
 
@@ -361,7 +361,7 @@ export const useAutocompleteStore = createWithEqualityFn<AutocompleteState>(
             }
 
             const userFuzzySearchEnabled = hasNewArg
-              ? getSetting<boolean>(SETTINGS.FUZZY_SEARCH, false)
+              ? getSetting<boolean>(SETTINGS.FUZZY_SEARCH)
               : state.userFuzzySearchEnabled;
 
             const isFuzzySearchEnabled = () => {

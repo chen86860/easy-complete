@@ -1,6 +1,9 @@
 import { type ReactNode, useState } from "react";
 import { Native } from "@easy-complete/api-bindings";
-import { SETTINGS } from "@easy-complete/api-bindings-wrappers";
+import {
+  getDefaultSetting,
+  SETTINGS,
+} from "@easy-complete/api-bindings-wrappers";
 import clsx from "clsx";
 import type { SettingSetter, SettingsMap } from "../types";
 import { AppLogo } from "../components/app-logo";
@@ -186,7 +189,10 @@ export function BehaviorSection({
           description="Match close character sequences instead of exact prefixes"
         >
           <Toggle
-            checked={Boolean(settings[SETTINGS.FUZZY_SEARCH])}
+            checked={Boolean(
+              settings[SETTINGS.FUZZY_SEARCH] ??
+                getDefaultSetting(SETTINGS.FUZZY_SEARCH),
+            )}
             onChange={(value) => set(SETTINGS.FUZZY_SEARCH, value)}
           />
         </Row>

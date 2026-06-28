@@ -55,6 +55,11 @@ export enum SETTINGS {
 }
 
 export type SettingsMap = { [key in SETTINGS]?: unknown };
+
+export const DEFAULT_SETTINGS: SettingsMap = {
+  [SETTINGS.FUZZY_SEARCH]: true,
+};
+
 let settings: SettingsMap = {};
 
 export const updateSettings = (newSettings: SettingsMap) => {
@@ -62,8 +67,13 @@ export const updateSettings = (newSettings: SettingsMap) => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getSetting = <T = unknown>(key: SETTINGS, defaultValue?: any): T =>
-  settings[key] ?? defaultValue;
+export const getDefaultSetting = <T = unknown>(key: SETTINGS): T | undefined =>
+  DEFAULT_SETTINGS[key] as T | undefined;
+
+export const getSetting = <T = unknown>(
+  key: SETTINGS,
+  defaultValue: unknown = getDefaultSetting(key),
+): T => (settings[key] ?? defaultValue) as T;
 
 export const getSettings = () => settings;
 

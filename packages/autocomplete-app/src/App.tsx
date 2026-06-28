@@ -1,5 +1,8 @@
 import { WindowPosition, Settings } from "@easy-complete/api-bindings";
-import { SETTINGS } from "@easy-complete/api-bindings-wrappers";
+import {
+  getDefaultSetting,
+  SETTINGS,
+} from "@easy-complete/api-bindings-wrappers";
 import React, {
   useState,
   useEffect,
@@ -251,7 +254,9 @@ function App() {
     setFontSize(size.fontSize);
   }, [size.fontSize]);
   useEffect(() => {
-    setUserFuzzySearchEnabled((userFuzzySearch ?? false) as boolean);
+    setUserFuzzySearchEnabled(
+      Boolean(userFuzzySearch ?? getDefaultSetting(SETTINGS.FUZZY_SEARCH)),
+    );
   }, [setUserFuzzySearchEnabled, userFuzzySearch]);
   useEffect(() => {
     setFontFamily(fontFamily as string);

@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.28
+
+- feat: 将设置里的 Fuzzy Matching 设为默认开启，未写入用户配置时设置页和补全运行时都会默认启用模糊搜索
+- chore: 新增共享默认设置入口，避免设置页显示状态和 autocomplete 实际行为不一致
+
 ## v2.0.27
 
 - feat: 发布仓库清理与 CI 质量门禁正式版，包含重复 autocomplete package 移除、Easy Complete 品牌/发布元数据清理、PR CI gate 与 Rust/JS 测试修正

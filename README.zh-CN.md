@@ -29,7 +29,7 @@
 建议：参数、子命令、文件路径、选项，边打边补。
 
 <p align="center">
-  <img src="./.github/media/screnshoot.jpeg" alt="Easy Complete 自动补全效果">
+  <img src="./.github/media/screnshoot.png" alt="Easy Complete 自动补全效果">
 </p>
 
 > **平台：** 仅支持 macOS（Apple Silicon / ARM64）。

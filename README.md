@@ -30,7 +30,7 @@ You get fish-shell-style suggestions for hundreds of CLIs (`git`, `npm`, `docker
 `cargo`, …): flags, subcommands, file paths, and arguments, completed as you type.
 
 <p align="center">
-  <img src="./.github/media/screnshoot.jpeg" alt="Easy Complete autocomplete in action">
+  <img src="./.github/media/screnshoot.png" alt="Easy Complete autocomplete in action">
 </p>
 
 > **Platform:** macOS only (Apple Silicon / ARM64).

@@ -1,31 +1,12 @@
 import React from "react";
 import { Suggestion, SuggestionType } from "@easy-complete/shared/internal";
 import { localProtocol } from "@easy-complete/shared/utils";
+import { transformIconUri } from "./SuggestionIcon.helpers";
 
 type SuggestionIconProps = {
   suggestion: Suggestion;
   iconPath: string;
   style: React.CSSProperties;
-};
-
-export const transformIconUri = (icon: URL): URL => {
-  let { host } = icon;
-
-  if (icon.protocol !== "fig:") {
-    return icon;
-  }
-
-  if (host === "" && window.fig?.constants?.newUriFormat) {
-    host = "path";
-  }
-
-  if (window.fig?.constants?.os === "windows") {
-    return new URL(
-      `https://fig.${host}${icon.pathname}${icon.search}${icon.hash}`,
-    );
-  }
-
-  return new URL(`fig://${host}${icon.pathname}${icon.search}${icon.hash}`);
 };
 
 function renderIcon(icon: URL, height: string | number) {

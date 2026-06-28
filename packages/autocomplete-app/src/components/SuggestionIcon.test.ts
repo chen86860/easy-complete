@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { transformIconUri } from "./SuggestionIcon";
+import { transformIconUri } from "./SuggestionIcon.helpers";
 
 describe("transformIconUri", () => {
   it("keeps named Fig icons on the Fig protocol", () => {

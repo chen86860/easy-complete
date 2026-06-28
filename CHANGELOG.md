@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.31
+
+- fix: 修复命令面板中 `fig://icon?...` 命名图标被错误改写为无效静态资源路径，导致部分命令前只保留空白占位、不显示图标的问题
+- test: 为命令面板图标 URL 转换增加回归测试，确保命名 Fig icon 和外部 URL 不再被错误处理
+
 ## v2.0.30
 
 - fix: release appcast 默认生成最多 8 个 delta，并拉取最近 8 个正式 release 作为 Sparkle archives 输入，覆盖更多旧版本到最新版的增量更新路径

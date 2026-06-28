@@ -1,7 +1,6 @@
 import React from "react";
 import { Suggestion, SuggestionType } from "@easy-complete/shared/internal";
 import { localProtocol } from "@easy-complete/shared/utils";
-import { icons } from "../fig/icons";
 
 type SuggestionIconProps = {
   suggestion: Suggestion;
@@ -9,27 +8,18 @@ type SuggestionIconProps = {
   style: React.CSSProperties;
 };
 
-const transformIconUri = (icon: URL): URL => {
+export const transformIconUri = (icon: URL): URL => {
   let { host } = icon;
 
   if (icon.protocol !== "fig:") {
     return icon;
   }
 
-  if (host === "" && fig.constants?.newUriFormat) {
+  if (host === "" && window.fig?.constants?.newUriFormat) {
     host = "path";
   }
 
-  if (icon.hostname === "icon") {
-    const type = icon.searchParams.get("type");
-    if (type) {
-      if (icons.includes(type)) {
-        return new URL(`spec://localhost/icons/${type}.png`);
-      }
-    }
-  }
-
-  if (window.fig.constants?.os === "windows") {
+  if (window.fig?.constants?.os === "windows") {
     return new URL(
       `https://fig.${host}${icon.pathname}${icon.search}${icon.hash}`,
     );

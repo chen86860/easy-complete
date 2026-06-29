@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.0.35
+
+- perf: 新增 `dist` 发布构建 profile（thin LTO + `codegen-units=1` + `strip` + `panic=abort`），分发二进制体积大幅下降（如 `ec` 18.9MB → 8.6MB），且不影响本地 `cargo run --release` 迭代速度
+- perf: 移除 autocomplete overlay 主 bundle 中的死代码/仅调试用 polyfill（`@juggle/resize-observer`、`util`、`deep-object-diff` 改为按需动态加载或内联实现），主 chunk 从 632KB 降至 545KB
+- ci: 新增 `dist` profile 冒烟构建，提前暴露发布构建专属问题（`panic=abort`/LTO/strip）
+
 ## v2.0.34
 
 - feat: bundled completion specs 改为从 npm 包 `@chen86860/autocomplete-specs` 同步，替代旧的 GitHub release zip 更新方式

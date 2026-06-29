@@ -1,6 +1,6 @@
 {
   "$comment": "Source config for bundled completion specs. Edit here, then run `node scripts/sync-bundled-specs.mjs` and commit the regenerated bundle/specs. Env vars BUNDLED_SPECS_PACKAGE / BUNDLED_SPECS_VERSION / BUNDLED_SPECS_EXCLUDE override these. See CLAUDE.md > Bundled Specs.",
   "package": "@chen86860/autocomplete-specs",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "exclude": ["aws"]
 }

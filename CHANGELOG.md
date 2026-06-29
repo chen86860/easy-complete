@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.36
+
+- feat: 更新 bundled completion specs 至 `@chen86860/autocomplete-specs@3.0.4`，刷新 `claude`、`dynamic`、`gemini`、`pnpm` specs
+
 ## v2.0.35
 
 - perf: 新增 `dist` 发布构建 profile（thin LTO + `codegen-units=1` + `strip` + `panic=abort`），分发二进制体积大幅下降（如 `ec` 18.9MB → 8.6MB），且不影响本地 `cargo run --release` 迭代速度

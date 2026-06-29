@@ -26,7 +26,14 @@ for pkg in dashboard-app autocomplete-app; do
   sed -i '' "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" "$PKG_JSON"
 done
 
+# Refresh Cargo.lock so the bumped workspace versions are reflected there too.
+# Without this the release commit ships a stale lock and CI's
+# `cargo clippy/test --locked` fails. --workspace only touches our own crates
+# (no external dependency bumps); --offline because a version bump needs no fetch.
+echo "Refreshing Cargo.lock..."
+(cd "$REPO_DIR" && cargo update --workspace --offline)
+
 echo "Done. Next steps:"
 echo "  1. Add a ## v${VERSION} entry to CHANGELOG.md"
-echo "  2. git add -A && git commit -m \"chore: bump version to v${VERSION}\""
+echo "  2. git add -A && git commit -m \"chore: bump version to v${VERSION}\"  # includes Cargo.lock"
 echo "  3. git tag v${VERSION} && git push origin main --tags"

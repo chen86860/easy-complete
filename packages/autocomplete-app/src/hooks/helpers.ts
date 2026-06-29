@@ -1,12 +1,16 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { ResizeObserver } from "@juggle/resize-observer";
 
 import useResizeObserver from "use-resize-observer";
 
+// Modern WebViews (macOS WKWebView, Safari 13.1+) ship ResizeObserver natively.
+// Only pull in the polyfill on the rare host that lacks it, keeping its ~43 KB
+// out of the main bundle as a never-loaded async chunk.
 if ("ResizeObserver" in window === false) {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  window.ResizeObserver = ResizeObserver;
+  void import("@juggle/resize-observer").then(({ ResizeObserver }) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    window.ResizeObserver = ResizeObserver;
+  });
 }
 
 type Dimensions = {

@@ -20,7 +20,6 @@ import {
   SettingsMap,
 } from "@easy-complete/api-bindings-wrappers";
 import { type Types } from "@easy-complete/api-bindings";
-import { detailedDiff } from "deep-object-diff";
 import { trackEvent } from "../telemetry.js";
 import { FigState, initialFigState } from "../fig/hooks";
 import { AutocompleteState, NamedSetState, Visibility } from "./types";
@@ -196,7 +195,11 @@ const updateSuggestions =
         const updatedState = { ...state, ...update };
 
         if (logger.getLevel() <= logger.levels.DEBUG) {
-          logger.debug({ diff: detailedDiff(state, updatedState) });
+          // Load the diff helper lazily so it stays out of the main bundle and
+          // only loads when debug logging is actually enabled.
+          void import("deep-object-diff").then(({ detailedDiff }) =>
+            logger.debug({ diff: detailedDiff(state, updatedState) }),
+          );
         }
 
         logger.debug({ state, updatedState });

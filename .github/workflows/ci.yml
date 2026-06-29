@@ -81,3 +81,9 @@ jobs:
 
       - name: Test
         run: cargo test --workspace --locked
+
+      # Smoke-build the shipped binaries with the distribution profile so that
+      # profile-specific breakage (panic = "abort", LTO, strip) is caught in CI
+      # rather than only surfacing during a release. Mirrors scripts/build-app.sh.
+      - name: Build release binaries (dist profile)
+        run: cargo build --locked --profile dist -p fig_desktop -p figterm -p ec_cli -p fig_input_method

@@ -234,10 +234,24 @@ useless_transmute = "warn"
 verbose_file_reads = "warn"
 zero_sized_map_values = "warn"
 
+# Tuned for fast local iteration (`cargo build --release`, `cargo run --release`).
 [profile.release]
 debug = 1
 incremental = true
 lto = "off"
+
+# Distribution profile used by scripts/build-app.sh and the release CI job.
+# Optimizes for binary size and runtime over compile speed. `panic = "abort"`
+# is safe here: no crate uses catch_unwind or a panic hook, and fuzz/tests run
+# under their own profiles.
+[profile.dist]
+inherits = "release"
+debug = false
+incremental = false
+lto = "thin"
+codegen-units = 1
+strip = "symbols"
+panic = "abort"
 
 [profile.dev.package.insta]
 opt-level = 3

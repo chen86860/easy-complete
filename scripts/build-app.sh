@@ -32,7 +32,17 @@ info() { echo -e "${GREEN}==>${NC} $*"; }
 cd "$REPO_DIR"
 
 # ── 1. Build ──────────────────────────────────────────────────────────────────
-info "Building Rust binaries (release)..."
+# Distribution build profile (size/perf-optimized). Override with CARGO_PROFILE=release
+# for a faster local iteration build. cargo writes `dist` output to target/dist/ and
+# `release` to target/release/.
+CARGO_PROFILE="${CARGO_PROFILE:-dist}"
+if [ "$CARGO_PROFILE" = "dev" ]; then
+  TARGET_DIR="target/debug"
+else
+  TARGET_DIR="target/${CARGO_PROFILE}"
+fi
+
+info "Building Rust binaries (profile: ${CARGO_PROFILE})..."
 # POSTHOG_ENDPOINT and POSTHOG_API_KEY are baked in at compile time via option_env!().
 # Set both before running this script to enable telemetry, e.g.:
 #   POSTHOG_ENDPOINT=https://analytics.example.com/capture/ \
@@ -41,7 +51,7 @@ info "Building Rust binaries (release)..."
 # Either being unset disables telemetry silently.
 POSTHOG_ENDPOINT="${POSTHOG_ENDPOINT:-}" \
 POSTHOG_API_KEY="${POSTHOG_API_KEY:-}" \
-cargo build --release -p fig_desktop -p figterm -p ec_cli -p fig_input_method
+cargo build --profile "$CARGO_PROFILE" -p fig_desktop -p figterm -p ec_cli -p fig_input_method
 
 info "Building TypeScript frontend..."
 pnpm turbo build --filter="./packages/*"
@@ -91,9 +101,9 @@ ${SPARKLE_PUBLIC_KEY_ENTRY}    <key>SUEnableInstallerLauncherService</key>
     ${SPARKLE_INSTALLER_LAUNCHER}
 PLIST
 
-cp "target/release/${APP_NAME}" "$MACOS_DIR/"
-cp "target/release/ec"          "$MACOS_DIR/"
-cp "target/release/ecterm"      "$MACOS_DIR/"
+cp "${TARGET_DIR}/${APP_NAME}" "$MACOS_DIR/"
+cp "${TARGET_DIR}/ec"          "$MACOS_DIR/"
+cp "${TARGET_DIR}/ecterm"      "$MACOS_DIR/"
 
 cp -r packages/autocomplete-app/dist/* "${RESOURCES_DIR}/autocomplete/"
 cp -r packages/dashboard-app/dist/*    "${RESOURCES_DIR}/dashboard/"
@@ -104,7 +114,7 @@ cp -R bundle/specs                     "${RESOURCES_DIR}/specs"
 IM_APP="${STAGING_BUNDLE}/Contents/Helpers/EasyCompleteInputMethod.app"
 mkdir -p "${IM_APP}/Contents/MacOS"
 mkdir -p "${IM_APP}/Contents/Resources"
-cp "target/release/fig_input_method"   "${IM_APP}/Contents/MacOS/"
+cp "${TARGET_DIR}/fig_input_method"   "${IM_APP}/Contents/MacOS/"
 cp "crates/fig_input_method/Info.plist" "${IM_APP}/Contents/"
 cp crates/fig_input_method/resources/*  "${IM_APP}/Contents/Resources/" 2>/dev/null || true
 

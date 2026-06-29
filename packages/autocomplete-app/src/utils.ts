@@ -1,6 +1,4 @@
 import { fs } from "@easy-complete/api-bindings";
-// eslint-disable-next-line unicorn/prefer-node-protocol
-import util from "util";
 import { isInDevMode } from "@easy-complete/api-bindings-wrappers";
 
 // Logging functions
@@ -12,11 +10,26 @@ const DEFAULT_CONSOLE = {
 
 export const LOG_DIR = window.fig?.constants?.logsDir;
 
+// Lightweight stand-in for Node's util.format for the dev-only spec log.
+// Avoids pulling the `util` browser polyfill (and its transitive deps) into the
+// bundle; printf-style `%s`/`%d` substitution is not needed for these logs.
+const formatLog = (...content: unknown[]): string =>
+  content
+    .map((c) => {
+      if (typeof c === "string") return c;
+      if (c instanceof Error) return c.stack ?? c.message;
+      try {
+        return JSON.stringify(c);
+      } catch {
+        return String(c);
+      }
+    })
+    .join(" ");
+
 const NEW_LOG_FN = (...content: unknown[]) => {
-  fs.append(
-    `${LOG_DIR}/logs/specs.log`,
-    `\n${util.format(...content)}`,
-  ).finally(() => DEFAULT_CONSOLE.warn("SPEC LOG:", util.format(...content)));
+  fs.append(`${LOG_DIR}/logs/specs.log`, `\n${formatLog(...content)}`).finally(
+    () => DEFAULT_CONSOLE.warn("SPEC LOG:", formatLog(...content)),
+  );
 };
 
 export function runPipingConsoleMethods<T>(fn: () => T) {

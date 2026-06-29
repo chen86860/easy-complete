@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.34
+
+- feat: bundled completion specs 改为从 npm 包 `@chen86860/autocomplete-specs` 同步，替代旧的 GitHub release zip 更新方式
+- feat: 更新 bundled completion specs 至 `@chen86860/autocomplete-specs@3.0.3`，并继续从实际文件树生成 `index.json` 以保留 `dynamic` 等 diff-versioned specs
+
 ## v2.0.33
 
 - feat: 更新 bundled completion specs 至 `chen86860/autocomplete-specs` 的 `spec-build-number-0.4.0` release，刷新 `claude`、`codex`、`gemini`、`dynamic` 等标准库 specs

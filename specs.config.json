@@ -1,8 +1,6 @@
 {
-  "$comment": "Source config for bundled completion specs. Edit here, then run `node scripts/sync-bundled-specs.mjs` and commit the regenerated bundle/specs. Env vars BUNDLED_SPECS_TAG / BUNDLED_SPECS_EXCLUDE / BUNDLED_SPECS_RELEASE_ZIP override these. See CLAUDE.md > Bundled Specs.",
-  "repo": "chen86860/autocomplete-specs",
-  "tag": "spec-build-number-0.4.0",
-  "exclude": [
-    "aws"
-  ]
+  "$comment": "Source config for bundled completion specs. Edit here, then run `node scripts/sync-bundled-specs.mjs` and commit the regenerated bundle/specs. Env vars BUNDLED_SPECS_PACKAGE / BUNDLED_SPECS_VERSION / BUNDLED_SPECS_EXCLUDE override these. See CLAUDE.md > Bundled Specs.",
+  "package": "@chen86860/autocomplete-specs",
+  "version": "3.0.3",
+  "exclude": ["aws"]
 }

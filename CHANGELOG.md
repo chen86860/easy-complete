@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.33
+
+- feat: 更新 bundled completion specs 至 `chen86860/autocomplete-specs` 的 `spec-build-number-0.4.0` release，刷新 `claude`、`codex`、`gemini`、`dynamic` 等标准库 specs
+
 ## v2.0.32
 
 - feat: 更新 bundled completion specs 至 `chen86860/autocomplete-specs` 的 `spec-build-number-0.3.0` release，新增 `claude`、`codex`、`gemini`、`uvx` 等标准库 specs

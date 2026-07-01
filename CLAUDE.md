@@ -70,7 +70,7 @@ pnpm test:ci   # with coverage
 ```
 
 The script outputs the exact next steps:
-1. Add a `## v<version>` entry to `CHANGELOG.md`
+1. Add a `## v<version>` entry to both `CHANGELOG.md` (English) and `CHANGELOG.zh-CN.md` (Chinese) — keep them in sync, one entry each
 2. `git add -A && git commit -m "chore: bump version to v<version>"`
 3. `git tag v<version> && git push origin main --tags`
 

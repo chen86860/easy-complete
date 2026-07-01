@@ -34,6 +34,6 @@ echo "Refreshing Cargo.lock..."
 (cd "$REPO_DIR" && cargo update --workspace --offline)
 
 echo "Done. Next steps:"
-echo "  1. Add a ## v${VERSION} entry to CHANGELOG.md"
+echo "  1. Add a ## v${VERSION} entry to both CHANGELOG.md (English) and CHANGELOG.zh-CN.md (Chinese)"
 echo "  2. git add -A && git commit -m \"chore: bump version to v${VERSION}\"  # includes Cargo.lock"
 echo "  3. git tag v${VERSION} && git push origin main --tags"

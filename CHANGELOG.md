@@ -1,117 +1,122 @@
 # Changelog
 
+## v2.0.38
+
+- perf: excluded the `az` (Azure CLI) namespace from bundled completion specs alongside the existing `aws` exclusion, shrinking `bundle/specs` from ~40MB to ~31MB (most users never touch either cloud CLI)
+- docs: split the changelog into an English `CHANGELOG.md` and a Chinese `CHANGELOG.zh-CN.md`, matching the existing `README.md` / `README.zh-CN.md` convention; `scripts/bump-version.sh` and `CLAUDE.md` now remind you to add an entry to both files on every release
+
 ## v2.0.37
 
-- feat: 更新 bundled completion specs 至 `@chen86860/autocomplete-specs@3.0.5`，新增 `bash`、`corepack`、`pbcopy`、`sha256sum`、`sleep`、`xattr` 等内置 specs，并刷新 `brew`、`bun`、`copilot`、`gh` 等标准库 specs
+- feat: updated bundled completion specs to `@chen86860/autocomplete-specs@3.0.5`, adding built-in specs for `bash`, `corepack`, `pbcopy`, `sha256sum`, `sleep`, `xattr`, and refreshing standard-library specs such as `brew`, `bun`, `copilot`, `gh`
 
 ## v2.0.36
 
-- feat: 更新 bundled completion specs 至 `@chen86860/autocomplete-specs@3.0.4`，刷新 `claude`、`dynamic`、`gemini`、`pnpm` specs
+- feat: updated bundled completion specs to `@chen86860/autocomplete-specs@3.0.4`, refreshing `claude`, `dynamic`, `gemini`, `pnpm` specs
 
 ## v2.0.35
 
-- perf: 新增 `dist` 发布构建 profile（thin LTO + `codegen-units=1` + `strip` + `panic=abort`），分发二进制体积大幅下降（如 `ec` 18.9MB → 8.6MB），且不影响本地 `cargo run --release` 迭代速度
-- perf: 移除 autocomplete overlay 主 bundle 中的死代码/仅调试用 polyfill（`@juggle/resize-observer`、`util`、`deep-object-diff` 改为按需动态加载或内联实现），主 chunk 从 632KB 降至 545KB
-- ci: 新增 `dist` profile 冒烟构建，提前暴露发布构建专属问题（`panic=abort`/LTO/strip）
+- perf: added a `dist` release build profile (thin LTO + `codegen-units=1` + `strip` + `panic=abort`), substantially shrinking distributed binaries (e.g. `ec` 18.9MB → 8.6MB) without slowing down local `cargo run --release` iteration
+- perf: removed dead code / debug-only polyfills from the autocomplete overlay's main bundle (`@juggle/resize-observer`, `util`, `deep-object-diff` are now dynamically loaded on demand or inlined), shrinking the main chunk from 632KB to 545KB
+- ci: added a smoke build for the `dist` profile to surface release-build-specific issues (`panic=abort`/LTO/strip) earlier
 
 ## v2.0.34
 
-- feat: bundled completion specs 改为从 npm 包 `@chen86860/autocomplete-specs` 同步，替代旧的 GitHub release zip 更新方式
-- feat: 更新 bundled completion specs 至 `@chen86860/autocomplete-specs@3.0.3`，并继续从实际文件树生成 `index.json` 以保留 `dynamic` 等 diff-versioned specs
+- feat: bundled completion specs now sync from the npm package `@chen86860/autocomplete-specs`, replacing the old GitHub release zip update flow
+- feat: updated bundled completion specs to `@chen86860/autocomplete-specs@3.0.3`, continuing to derive `index.json` from the actual file tree to preserve diff-versioned specs such as `dynamic`
 
 ## v2.0.33
 
-- feat: 更新 bundled completion specs 至 `chen86860/autocomplete-specs` 的 `spec-build-number-0.4.0` release，刷新 `claude`、`codex`、`gemini`、`dynamic` 等标准库 specs
+- feat: updated bundled completion specs to the `spec-build-number-0.4.0` release of `chen86860/autocomplete-specs`, refreshing standard-library specs such as `claude`, `codex`, `gemini`, `dynamic`
 
 ## v2.0.32
 
-- feat: 更新 bundled completion specs 至 `chen86860/autocomplete-specs` 的 `spec-build-number-0.3.0` release，新增 `claude`、`codex`、`gemini`、`uvx` 等标准库 specs
-- fix: 对命令面板不受内置资源支持的命名 Fig icon 增加 fallback，修复 `pnpm dev` 等 package.json scripts 建议显示空白文档图标的问题
+- feat: updated bundled completion specs to the `spec-build-number-0.3.0` release of `chen86860/autocomplete-specs`, adding standard-library specs such as `claude`, `codex`, `gemini`, `uvx`
+- fix: added a fallback for named Fig icons in the command palette that aren't covered by bundled resources, fixing blank document icons for suggestions like `pnpm dev` package.json scripts
 
 ## v2.0.31
 
-- fix: 修复命令面板中 `fig://icon?...` 命名图标被错误改写为无效静态资源路径，导致部分命令前只保留空白占位、不显示图标的问题
-- test: 为命令面板图标 URL 转换增加回归测试，确保命名 Fig icon 和外部 URL 不再被错误处理
+- fix: fixed named `fig://icon?...` icons in the command palette being incorrectly rewritten into invalid static asset paths, which left some commands with a blank placeholder instead of an icon
+- test: added regression tests for command palette icon URL conversion to ensure named Fig icons and external URLs are no longer mishandled
 
 ## v2.0.30
 
-- fix: release appcast 默认生成最多 8 个 delta，并拉取最近 8 个正式 release 作为 Sparkle archives 输入，覆盖更多旧版本到最新版的增量更新路径
-- fix: 保持 appcast delta URL 与 GitHub release asset 文件名一致，避免 Sparkle 因 delta 404 回退到完整 DMG
+- fix: the release appcast now generates up to 8 deltas by default and pulls the 8 most recent stable releases as Sparkle archive input, covering more upgrade paths from older versions to the latest
+- fix: kept appcast delta URLs consistent with GitHub release asset filenames, preventing Sparkle from falling back to the full DMG due to delta 404s
 
 ## v2.0.29
 
-- fix: dashboard 从菜单栏/二次启动打开时显式激活 macOS App，避免偶发触发“点击桌面/显示桌面”导致窗口被挤到角落
+- fix: the dashboard now explicitly activates the macOS app when opened from the menu bar or a second launch, avoiding an occasional issue where "show desktop" was triggered and pushed the window into a corner
 
 ## v2.0.28
 
-- feat: 将设置里的 Fuzzy Matching 设为默认开启，未写入用户配置时设置页和补全运行时都会默认启用模糊搜索
-- chore: 新增共享默认设置入口，避免设置页显示状态和 autocomplete 实际行为不一致
+- feat: Fuzzy Matching in settings now defaults to on; both the settings page and the autocomplete runtime default to fuzzy search enabled when the user hasn't written a value to config
+- chore: added a shared default-settings entry point to prevent the settings page's displayed state from diverging from actual autocomplete behavior
 
 ## v2.0.27
 
-- feat: 发布仓库清理与 CI 质量门禁正式版，包含重复 autocomplete package 移除、Easy Complete 品牌/发布元数据清理、PR CI gate 与 Rust/JS 测试修正
-- fix: release workflow 对 `alpha` / `beta` / `rc` SemVer tag 使用更严格的 prerelease 判断，避免正式 Sparkle appcast 混入预发布版本
+- feat: shipped the repo cleanup and CI quality gate as a stable release, including removal of a duplicate autocomplete package, Easy Complete branding/release metadata cleanup, and PR CI gate plus Rust/JS test fixes
+- fix: the release workflow now applies stricter SemVer prerelease detection for `alpha` / `beta` / `rc` tags, preventing prerelease versions from leaking into the stable Sparkle appcast
 
 ## v2.0.27-beta.1
 
-- prerelease: 先在 beta tag 发布大规模仓库清理与 CI 质量门禁，避免直接进入正式用户的 Sparkle latest 更新通道
-- chore: 删除重复的 autocomplete package，统一使用 `packages/autocomplete-app`
-- chore: 清理 Easy Complete fork 的包元数据、发布文案、产品路径和测试快照中的旧上游品牌残留
-- ci: 新增 PR/主分支质量门禁，覆盖 JS build/lint/test、website build、Rust fmt/clippy/test
+- prerelease: shipped the large-scale repo cleanup and CI quality gate on a beta tag first, to avoid pushing it directly into stable users' Sparkle latest update channel
+- chore: removed the duplicate autocomplete package, standardizing on `packages/autocomplete-app`
+- chore: cleaned up leftover upstream branding in the Easy Complete fork's package metadata, release copy, product paths, and test snapshots
+- ci: added PR/main-branch quality gates covering JS build/lint/test, website build, and Rust fmt/clippy/test
 
 ## v2.0.26
 
-- feat: Sparkle 发布链路支持 delta update：release CI 会保留稳定 DMG 下载入口，同时生成版本化 Sparkle full-update DMG，拉取最近历史 release 作为 archives 输入，并上传 `appcast.xml` 与 `.delta` 更新包
-- docs: 更新 Sparkle release 文档，补充 delta update 的 CI 行为、本地生成命令和需要上传的发布资产
+- feat: the Sparkle release pipeline now supports delta updates: release CI keeps the stable DMG download entry point while also generating a versioned Sparkle full-update DMG, pulling recent historical releases as archive input, and uploading `appcast.xml` plus `.delta` update packages
+- docs: updated the Sparkle release documentation with delta update CI behavior, local generation commands, and the release assets that need to be uploaded
 
 ## v2.0.25
 
-- feat: 更新 bundled completion specs 至 `chen86860/autocomplete-specs` 的 `spec-build-number-0.2.0` release，并重新生成随包内置的 `bundle/specs`
+- feat: updated bundled completion specs to the `spec-build-number-0.2.0` release of `chen86860/autocomplete-specs`, and regenerated the bundled `bundle/specs`
 
 ## v2.0.24
 
-- feat: 自动更新路径补充 `info!` 级日志(arming 计划检查、Sparkle framework 加载、updater 就绪并关闭自动下载、手动/后台检查触发、计划更新弹窗前激活 app)——此前全程仅 `debug!` 且 `fig_log` 默认 ERROR 级,排查时日志空白;现可在 `Q_LOG_LEVEL=info` 下观察完整自动更新时间线
-- fix: 托盘"更新不可用"提示由误导性的 *"Sparkle.framework is not bundled in this build"* 改为准确描述(更新器无法启动:framework 缺失或初始化失败,详见日志)
+- feat: added `info!`-level logging to the auto-update path (scheduled-check arming, Sparkle framework loading, updater ready and disabling auto-download, manual/background check triggers, activating the app before the scheduled update prompt) — previously everything was logged only at `debug!` while `fig_log` defaulted to ERROR, leaving no logs to diagnose with; the full auto-update timeline can now be observed with `Q_LOG_LEVEL=info`
+- fix: changed the tray's "update unavailable" message from the misleading *"Sparkle.framework is not bundled in this build"* to an accurate description (the updater failed to start: framework missing or initialization failed, see logs for detail)
 
 ## v2.0.23
 
-- fix: 自动更新仍"用不了"的真正根因——后台检查到新版本时 Sparkle 因 `automaticallyDownloadsUpdates`(`SUAutomaticallyUpdate` 默认值残留为 YES）走**静默下载安装**,而本应用 ad-hoc 签名且 `SUEnableInstallerLauncherService` 关闭、特权安装无法完成,导致既不弹窗也装不上(仅手动检查可弹窗);现在创建 updater 后显式 `setAutomaticallyDownloadsUpdates: NO`,强制后台检查改为弹窗提示,并在每次启动把脏默认值写回自愈
-- fix: 新增 `ECSparkleUserDriverDelegate`(`SPUStandardUserDriverDelegate`),让 `LSUIElement` 菜单栏 agent 的计划检查弹窗立即出现在最前,而非被 Sparkle 的 gentle-reminder 推迟——`standardUserDriverShouldHandleShowingScheduledUpdate…` 返回 `YES`,并在 `willHandleShowingUpdate` 中 `activateIgnoringOtherApps:`
+- fix: found the real root cause of auto-update still "not working" — when a background check found a new version, Sparkle's `automaticallyDownloadsUpdates` (leftover `SUAutomaticallyUpdate` default of YES) triggered a **silent download and install**, but this app is ad-hoc signed with `SUEnableInstallerLauncherService` disabled, so the privileged install could never complete — resulting in neither a prompt nor a successful install (only manual checks could prompt). Now `setAutomaticallyDownloadsUpdates: NO` is explicitly set after creating the updater, forcing background checks to show a prompt, and the dirty default is self-healed by rewriting it on every launch
+- fix: added `ECSparkleUserDriverDelegate` (`SPUStandardUserDriverDelegate`) so that scheduled-check prompts for the `LSUIElement` menu-bar agent appear immediately in front, instead of being deferred by Sparkle's gentle-reminder behavior — `standardUserDriverShouldHandleShowingScheduledUpdate…` returns `YES`, and `willHandleShowingUpdate` calls `activateIgnoringOtherApps:`
 
 ## v2.0.22
 
-- feat: 补全 specs 改为从自维护的 fork [`chen86860/autocomplete-specs`](https://github.com/chen86860/autocomplete-specs) 的 Release 获取（其 CI 编译 `src/*.ts` 并发布 `specs.zip`），`sync-bundled-specs.mjs` 下载 zip 后自行按文件树推导 `index.json`；保留旧的逐文件 CDN 同步作为 fallback
-- feat: spec 来源**锁定到固定 release tag**（`SPECS_TAG`，默认 `spec-build-number-0.1.0`）而非 `latest`，构建可复现、不会静默变更；可经 `BUNDLED_SPECS_TAG` / `BUNDLED_SPECS_RELEASE_ZIP` 覆盖
-- docs: CLAUDE.md 更新 Bundled Specs，说明新来源与版本锁定机制
+- feat: completion specs are now fetched from Releases on the self-maintained fork [`chen86860/autocomplete-specs`](https://github.com/chen86860/autocomplete-specs) (its CI compiles `src/*.ts` and publishes `specs.zip`); `sync-bundled-specs.mjs` downloads the zip and derives `index.json` from the file tree itself; the old per-file CDN sync is kept as a fallback
+- feat: the spec source is now **pinned to a fixed release tag** (`SPECS_TAG`, defaulting to `spec-build-number-0.1.0`) rather than `latest`, so builds are reproducible and never change silently; overridable via `BUNDLED_SPECS_TAG` / `BUNDLED_SPECS_RELEASE_ZIP`
+- docs: updated the Bundled Specs section in CLAUDE.md to describe the new source and version-pinning mechanism
 
 ## v2.0.21
 
-- perf: 精简打包的补全 specs——`sync-bundled-specs.mjs` 新增 `BUNDLED_SPECS_EXCLUDE`（默认排除 `aws`），同时过滤磁盘文件与 `index.json`，bundle 体积从 ~76 MB 降至 ~40 MB（AWS CLI specs ~36 MB / 419 条，绝大多数用户从不触发）
-- feat: 打包的 `Info.plist` 增加 `LSApplicationCategoryType`（应用分类）与 `NSHumanReadableCopyright`（版权信息），版权年份自动生成、可经 `COPYRIGHT` 环境变量覆盖
-- chore: 从源图 `icon.png` 重新生成 `icon.icns`、`AppIcon.iconset` 与各尺寸图标 PNG，三方保持一致
-- chore: 移除未被任何构建脚本引用的 `bundle/dmg/VolumeIcon.icns`
-- docs: CLAUDE.md 增加「Bundled Specs」小节，说明 specs 构建/排除机制及无网络回退的运行时行为
+- perf: trimmed the bundled completion specs — `sync-bundled-specs.mjs` added `BUNDLED_SPECS_EXCLUDE` (defaulting to excluding `aws`), filtering both the on-disk files and `index.json`; bundle size dropped from ~76 MB to ~40 MB (AWS CLI specs are ~36 MB / 419 entries and most users never trigger them)
+- feat: the bundled `Info.plist` now includes `LSApplicationCategoryType` (app category) and `NSHumanReadableCopyright` (copyright notice), with the copyright year auto-generated and overridable via the `COPYRIGHT` environment variable
+- chore: regenerated `icon.icns`, `AppIcon.iconset`, and per-size icon PNGs from the source `icon.png` so all three stay in sync
+- chore: removed `bundle/dmg/VolumeIcon.icns`, which wasn't referenced by any build script
+- docs: added a "Bundled Specs" section to CLAUDE.md describing the specs build/exclusion mechanism and the no-network-fallback runtime behavior
 
 ## v2.0.20
 
-- fix: 修复自动更新「不自动检测」的问题——作为 `LSUIElement` 后台 agent 无法弹出 Sparkle 首次授权对话框，导致计划检查被静默禁用；现在创建 updater 后主动 `setAutomaticallyChecksForUpdates: YES`，并在打包的 `Info.plist` 中声明 `SUEnableAutomaticChecks` 与 `SUScheduledCheckInterval`（1 天）
-- feat: 设置面板 About 页新增 Troubleshooting 卡片，指引用户在终端运行 `ec doctor` 进行诊断（命令可一键复制）
+- fix: fixed auto-update "not detecting automatically" — as an `LSUIElement` background agent, the app couldn't show Sparkle's first-run authorization dialog, which silently disabled scheduled checks; the updater now explicitly sets `setAutomaticallyChecksForUpdates: YES` after creation, and the bundled `Info.plist` declares `SUEnableAutomaticChecks` and `SUScheduledCheckInterval` (1 day)
+- feat: added a Troubleshooting card to the settings panel's About page, guiding users to run `ec doctor` in the terminal for diagnostics (the command can be copied with one click)
 
 ## v2.0.19
 
-- feat: 新增 `fig_telemetry` crate，接入 PostHog 遥测（安装量、打开次数、版本分布），通过编译期环境变量 `POSTHOG_ENDPOINT` / `POSTHOG_API_KEY` 注入，未配置时静默禁用
-- feat: 上报事件附带 `app_name`、`app_version`、`os_version`、匿名 `device_id`，支持多客户端区分
-- feat: Onboarding 权限 gate 底部新增遥测告知区块与开关（默认开启）
-- feat: 设置面板 About → Privacy card 提供遥测开关入口
-- feat: GitHub Actions release workflow 支持通过 repository secrets 注入遥测配置
-- fix: 修复自动检查更新失效问题——`SPUStandardUpdaterController` 改为通过 `exec_async` 在主线程创建，启动时的后台检查延迟 5 秒执行以确保 event loop 已就绪
+- feat: added the `fig_telemetry` crate, wiring up PostHog telemetry (install count, open count, version distribution), injected via compile-time environment variables `POSTHOG_ENDPOINT` / `POSTHOG_API_KEY`, silently disabled when unconfigured
+- feat: reported events now include `app_name`, `app_version`, `os_version`, and an anonymous `device_id` to distinguish clients
+- feat: added a telemetry notice section and toggle at the bottom of the onboarding permission gate (enabled by default)
+- feat: added a telemetry toggle entry point in the settings panel's About → Privacy card
+- feat: the GitHub Actions release workflow now supports injecting telemetry configuration via repository secrets
+- fix: fixed auto-update-check failures — `SPUStandardUpdaterController` is now created via `exec_async` on the main thread, and the background check on startup is delayed 5 seconds to ensure the event loop is ready
 
 ## v2.0.18
 
-- fix: dashboard 启动时权限检查期间显示 loading，避免权限页面一闪而过
-- feat: 在权限 gate 中加入 Shell Integration 安装步骤，解决首次 DMG 安装后 .zshrc 无自动注入的问题；可访问性授权完成后方可操作
-- fix: ec doctor 警告信息（bash/zsh dotfile check）现在显示检查项名称，与错误格式一致
-- fix: ec doctor terminal 集成检查不再输出无意义的 `Q_TERM=` 空行，版本不匹配时改为显示具体版本号
+- fix: the dashboard now shows a loading state during the permission check on startup, avoiding a flash of the permissions page
+- feat: added a Shell Integration install step to the permission gate, fixing the issue where `.zshrc` wasn't auto-injected after a fresh DMG install; only actionable once accessibility permission is granted
+- fix: `ec doctor` warning messages (bash/zsh dotfile check) now show the check item name, matching the error format
+- fix: the `ec doctor` terminal integration check no longer prints a meaningless empty `Q_TERM=` line, showing the specific version number instead when there's a version mismatch
 
 ## v2.0.17
 

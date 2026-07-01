@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.37
+
+- feat: 更新 bundled completion specs 至 `@chen86860/autocomplete-specs@3.0.5`，新增 `bash`、`corepack`、`pbcopy`、`sha256sum`、`sleep`、`xattr` 等内置 specs，并刷新 `brew`、`bun`、`copilot`、`gh` 等标准库 specs
+
 ## v2.0.36
 
 - feat: 更新 bundled completion specs 至 `@chen86860/autocomplete-specs@3.0.4`，刷新 `claude`、`dynamic`、`gemini`、`pnpm` specs

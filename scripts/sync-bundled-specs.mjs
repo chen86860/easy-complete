@@ -4,42 +4,49 @@ import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { tmpdir } from "node:os";
 import { execFile } from "node:child_process";
+import { createRequire } from "node:module";
 import { promisify } from "node:util";
 import { createHash } from "node:crypto";
 
 const execFileAsync = promisify(execFile);
+const require = createRequire(import.meta.url);
 
 const SPEC_BASE_URL = "https://specs.q.us-east-1.amazonaws.com/";
 
 const repoDir = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-// All spec-source settings live in specs.config.json so they can be edited and reviewed
-// without touching this script. Env vars still override (handy for CI / one-off tries).
-//   { "package": "@scope/name", "version": "X.Y.Z", "exclude": ["aws"] }
+// Spec filtering settings live in specs.config.json so they can be edited and reviewed
+// without touching this script. The package version is pinned by package.json/pnpm-lock.
+// Env vars still override source settings for CI / one-off tries.
+//   { "exclude": ["aws"] }
 const config = JSON.parse(
   await readFile(join(repoDir, "specs.config.json"), "utf8"),
 );
 
 // Source: an npm package published from the forked spec repo. The package contains
 // build/<name>.js (+ nested + <name>/index.js for diff-versioned), build/index.json,
-// and icons/<name>.png. We pin a concrete package version so builds are reproducible.
+// and icons/<name>.png. We install it as a normal devDependency so package.json and
+// pnpm-lock.yaml are the source of truth for the pinned version.
 //
-// PINNED to config.version — NOT "latest" — so builds are reproducible: the bundle changes
-// only when specs.config.json changes. To adopt a newer fork build:
-//   1. bump "version" in specs.config.json to the new npm package version
+// PINNED by the lockfile — NOT "latest" — so builds are reproducible: the bundle changes
+// only when the dependency changes. To adopt a newer fork build:
+//   1. bump @chen86860/autocomplete-specs in package.json/pnpm-lock.yaml
 //   2. re-run `node scripts/sync-bundled-specs.mjs`
-//   3. commit the regenerated bundle/specs together with the config change
+//   3. commit the regenerated bundle/specs together with the dependency update
 // Overrides: BUNDLED_SPECS_PACKAGE=<pkg>, BUNDLED_SPECS_VERSION=<version|latest>,
 // BUNDLED_SPECS_PACKAGE_TARBALL=<full-url>, BUNDLED_SPECS_NPM_REGISTRY=<registry>,
 // or BUNDLED_SPECS_SOURCE=cdn to fall back to the legacy per-file CDN sync.
-const SPECS_PACKAGE = process.env.BUNDLED_SPECS_PACKAGE || config.package;
+const SPECS_PACKAGE =
+  process.env.BUNDLED_SPECS_PACKAGE ||
+  config.package ||
+  "@chen86860/autocomplete-specs";
 const SPECS_VERSION = process.env.BUNDLED_SPECS_VERSION || config.version;
 const SPECS_NPM_REGISTRY =
   process.env.BUNDLED_SPECS_NPM_REGISTRY ||
   config.registry ||
   "https://registry.npmjs.org/";
 const packageTarballUrl = process.env.BUNDLED_SPECS_PACKAGE_TARBALL;
-const sourceMode = process.env.BUNDLED_SPECS_SOURCE || "npm";
+const sourceMode = process.env.BUNDLED_SPECS_SOURCE || "dependency";
 
 const outDir =
   process.env.BUNDLED_SPECS_DIR || join(repoDir, "bundle", "specs");
@@ -60,8 +67,8 @@ const maxAttempts = Number(process.env.BUNDLED_SPECS_FETCH_ATTEMPTS || 5);
 // specs are absent from both the files on disk AND the written index.json, so the runtime
 // loader never references them (there is no network fallback — see protocol/spec.rs).
 //
-// Default ["aws"]: the AWS CLI specs are ~36 MB / 419 entries and most users never trigger
-// them, so they are dropped to roughly halve the bundle. Edit specs.config.json to change.
+// Current repo default ["aws", "az"]: the AWS and Azure CLI specs are large and
+// most users never trigger them. Edit specs.config.json to change.
 // Env override BUNDLED_SPECS_EXCLUDE is comma-separated ("" = exclude nothing) and wins.
 // Re-run this script after changing the list; build-app.sh reuses bundle/specs as-is.
 const exclude = (
@@ -171,6 +178,40 @@ function registryPackageUrl(registry, packageName) {
   return new URL(encodeURIComponent(packageName), base);
 }
 
+async function findPackageRoot(entryPath) {
+  let current = dirname(entryPath);
+  while (current !== dirname(current)) {
+    try {
+      const pkg = JSON.parse(
+        await readFile(join(current, "package.json"), "utf8"),
+      );
+      if (pkg.name === SPECS_PACKAGE) {
+        return { packageRoot: current, version: pkg.version };
+      }
+    } catch {
+      // Keep walking up until we find the package root.
+    }
+    current = dirname(current);
+  }
+
+  throw new Error(`Unable to locate package root for ${SPECS_PACKAGE}`);
+}
+
+async function resolveInstalledPackage() {
+  let entryPath;
+  try {
+    entryPath = require.resolve(SPECS_PACKAGE, { paths: [repoDir] });
+  } catch (err) {
+    throw new Error(
+      `Unable to resolve ${SPECS_PACKAGE}. Run \`pnpm install\` or add it to devDependencies.`,
+      { cause: err },
+    );
+  }
+
+  const resolved = await findPackageRoot(entryPath);
+  return { ...resolved, entryPath };
+}
+
 async function resolveNpmPackage() {
   if (packageTarballUrl) {
     return {
@@ -181,10 +222,12 @@ async function resolveNpmPackage() {
   }
 
   if (!SPECS_PACKAGE) {
-    throw new Error("Missing specs package in specs.config.json");
+    throw new Error("Missing specs package name");
   }
   if (!SPECS_VERSION) {
-    throw new Error("Missing specs package version in specs.config.json");
+    throw new Error(
+      "Missing specs package version. Set BUNDLED_SPECS_VERSION or use the default dependency source.",
+    );
   }
 
   const metadata = JSON.parse(
@@ -206,31 +249,10 @@ async function resolveNpmPackage() {
   };
 }
 
-// ── Mode A: download the npm package and assemble bundle/specs ───────────────
-async function syncFromNpmPackage() {
-  const resolved = await resolveNpmPackage();
-  process.stdout.write(
-    `Downloading ${SPECS_PACKAGE}@${resolved.version} from ${resolved.tarball}\n`,
-  );
-  const packageBytes = await fetchBytes(resolved.tarball);
-  if (resolved.shasum) {
-    const actual = createHash("sha1").update(packageBytes).digest("hex");
-    if (actual !== resolved.shasum) {
-      throw new Error(
-        `Integrity check failed for ${SPECS_PACKAGE}@${resolved.version}: expected ${resolved.shasum}, got ${actual}`,
-      );
-    }
-  }
+async function syncFromPackageRoot(packageRoot, label) {
+  process.stdout.write(`Bundling ${label}\n`);
 
-  const work = join(tmpdir(), `ec-specs-${process.pid}`);
-  await rm(work, { force: true, recursive: true });
-  await mkdir(work, { recursive: true });
-  const tarPath = join(work, "package.tgz");
-  await writeFile(tarPath, packageBytes);
-  await execFileAsync("tar", ["-xzf", tarPath, "-C", work]);
-
-  // npm package layout is package/build/<...>.js plus package/icons/<name>.png.
-  const packageRoot = join(work, "package");
+  // npm package layout is build/<...>.js plus icons/<name>.png.
   const specsRoot = join(packageRoot, "build");
   const allJs = await walkJs(specsRoot); // relative paths, e.g. "aws/ec2.js", "az/index.js"
 
@@ -293,8 +315,6 @@ async function syncFromNpmPackage() {
     process.stdout.write("warning: no icons/ in package\n");
   }
 
-  await rm(work, { force: true, recursive: true });
-
   if (exclude.length) {
     process.stdout.write(
       `Excluding [${exclude.join(", ")}] — dropped ${excludedCount} spec entries\n`,
@@ -305,7 +325,49 @@ async function syncFromNpmPackage() {
   );
 }
 
-// ── Mode B (legacy): fetch index.json + each spec file from the per-file CDN ──
+// ── Mode A: read the installed npm dependency and assemble bundle/specs ───────
+async function syncFromInstalledDependency() {
+  const resolved = await resolveInstalledPackage();
+  await syncFromPackageRoot(
+    resolved.packageRoot,
+    `${SPECS_PACKAGE}@${resolved.version} from ${resolved.packageRoot}`,
+  );
+}
+
+// ── Mode B (legacy): download the npm package tarball explicitly ──────────────
+async function syncFromNpmPackage() {
+  const resolved = await resolveNpmPackage();
+  process.stdout.write(
+    `Downloading ${SPECS_PACKAGE}@${resolved.version} from ${resolved.tarball}\n`,
+  );
+  const packageBytes = await fetchBytes(resolved.tarball);
+  if (resolved.shasum) {
+    const actual = createHash("sha1").update(packageBytes).digest("hex");
+    if (actual !== resolved.shasum) {
+      throw new Error(
+        `Integrity check failed for ${SPECS_PACKAGE}@${resolved.version}: expected ${resolved.shasum}, got ${actual}`,
+      );
+    }
+  }
+
+  const work = join(tmpdir(), `ec-specs-${process.pid}`);
+  await rm(work, { force: true, recursive: true });
+  await mkdir(work, { recursive: true });
+  const tarPath = join(work, "package.tgz");
+  await writeFile(tarPath, packageBytes);
+  await execFileAsync("tar", ["-xzf", tarPath, "-C", work]);
+
+  try {
+    await syncFromPackageRoot(
+      join(work, "package"),
+      `${SPECS_PACKAGE}@${resolved.version} from ${resolved.tarball}`,
+    );
+  } finally {
+    await rm(work, { force: true, recursive: true });
+  }
+}
+
+// ── Mode C (legacy): fetch index.json + each spec file from the per-file CDN ──
 async function syncFromCdn() {
   const index = JSON.parse((await fetchBytes(urlFor("index.json"))).toString());
   const allCompletions = Array.isArray(index.completions)
@@ -363,7 +425,9 @@ async function syncFromCdn() {
   );
 }
 
-if (sourceMode === "npm") {
+if (sourceMode === "dependency") {
+  await syncFromInstalledDependency();
+} else if (sourceMode === "npm") {
   await syncFromNpmPackage();
 } else if (sourceMode === "cdn") {
   await syncFromCdn();

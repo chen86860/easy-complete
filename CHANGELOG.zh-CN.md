@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.39
+
+- feat: 更新 bundled completion specs 至 `@chen86860/autocomplete-specs@3.0.6`，刷新 `bun`、`npm`、`pnpm`、`rush`、`yarn` 等标准库 specs，并保留现有 `aws` / `az` 排除策略
+- chore: 将 `@chen86860/autocomplete-specs` 作为 root npm devDependency 管理，由 `package.json` 与 `pnpm-lock.yaml` 固定版本；`sync-bundled-specs.mjs` 默认从 `node_modules` 读取已安装包，不再直接从 npm registry 下载 tarball
+
 ## v2.0.38
 
 - perf: bundled completion specs 在原有排除 `aws` 的基础上新增排除 `az`（Azure CLI）命名空间，`bundle/specs` 体积从 ~40MB 降至 ~31MB（绝大多数用户不会用到这两个云厂商 CLI）
@@ -76,7 +81,7 @@
 ## v2.0.24
 
 - feat: 自动更新路径补充 `info!` 级日志(arming 计划检查、Sparkle framework 加载、updater 就绪并关闭自动下载、手动/后台检查触发、计划更新弹窗前激活 app)——此前全程仅 `debug!` 且 `fig_log` 默认 ERROR 级,排查时日志空白;现可在 `Q_LOG_LEVEL=info` 下观察完整自动更新时间线
-- fix: 托盘"更新不可用"提示由误导性的 *"Sparkle.framework is not bundled in this build"* 改为准确描述(更新器无法启动:framework 缺失或初始化失败,详见日志)
+- fix: 托盘"更新不可用"提示由误导性的 _"Sparkle.framework is not bundled in this build"_ 改为准确描述(更新器无法启动:framework 缺失或初始化失败,详见日志)
 
 ## v2.0.23
 

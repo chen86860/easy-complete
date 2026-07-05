@@ -1,6 +1,4 @@
 {
-  "$comment": "Source config for bundled completion specs. Edit here, then run `node scripts/sync-bundled-specs.mjs` and commit the regenerated bundle/specs. Env vars BUNDLED_SPECS_PACKAGE / BUNDLED_SPECS_VERSION / BUNDLED_SPECS_EXCLUDE override these. See CLAUDE.md > Bundled Specs.",
-  "package": "@chen86860/autocomplete-specs",
-  "version": "3.0.5",
+  "$comment": "Filter config for bundled completion specs. The source package/version is pinned in package.json and pnpm-lock.yaml. Edit exclude here, then run `node scripts/sync-bundled-specs.mjs` and commit the regenerated bundle/specs. Env vars BUNDLED_SPECS_EXCLUDE / BUNDLED_SPECS_PACKAGE / BUNDLED_SPECS_SOURCE still override one-off runs. See CLAUDE.md > Bundled Specs.",
   "exclude": ["aws", "az"]
 }

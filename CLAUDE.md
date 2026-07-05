@@ -70,6 +70,7 @@ pnpm test:ci   # with coverage
 ```
 
 The script outputs the exact next steps:
+
 1. Add a `## v<version>` entry to both `CHANGELOG.md` (English) and `CHANGELOG.zh-CN.md` (Chinese) — keep them in sync, one entry each
 2. `git add -A && git commit -m "chore: bump version to v<version>"`
 3. `git tag v<version> && git push origin main --tags`
@@ -112,13 +113,13 @@ The autocomplete overlay and dashboard are React + Tailwind apps in `packages/au
 
 Completion specs are **bundled into the `.app` at build time**, not fetched at runtime. `scripts/sync-bundled-specs.mjs` assembles them into `bundle/specs/`, which `build-app.sh` copies to `Contents/Resources/specs/`. At runtime the `spec://localhost/<name>.js` custom protocol (`fig_desktop/src/protocol/spec.rs`) reads these local files only — there is **no network fallback**, so a spec absent from the bundle simply has no completion.
 
-**Source.** The default source is the npm package [`@chen86860/autocomplete-specs`](https://www.npmjs.com/package/@chen86860/autocomplete-specs), published from our forked spec repo [`chen86860/autocomplete-specs`](https://github.com/chen86860/autocomplete-specs). The sync script resolves the pinned package version from the npm registry, downloads the package tarball, verifies the npm shasum when available, copies `build/*.js` and `icons/*.png` into `bundle/specs`, then derives `index.json` from the bundled file tree.
+**Source.** The default source is the installed npm dependency [`@chen86860/autocomplete-specs`](https://www.npmjs.com/package/@chen86860/autocomplete-specs), published from our forked spec repo [`chen86860/autocomplete-specs`](https://github.com/chen86860/autocomplete-specs). The version is pinned by root `package.json` plus `pnpm-lock.yaml`. The sync script reads the package from `node_modules`, copies `build/*.js` and `icons/*.png` into `bundle/specs`, then derives `index.json` from the bundled file tree.
 
-**Config + pinning.** All spec-source settings live in `specs.config.json` at the repo root — `package`, `version`, and `exclude` — so they are edited and reviewed without touching the script. The `version` is pinned to a specific npm package version, **not `latest`**, so the bundle changes only when the config changes, never silently. To adopt a newer fork build: bump `version` in `specs.config.json`, re-run the sync, and commit the regenerated `bundle/specs` alongside it (one reviewable change). Env overrides still win: `BUNDLED_SPECS_PACKAGE=<pkg>`, `BUNDLED_SPECS_VERSION=<version|latest>`, `BUNDLED_SPECS_PACKAGE_TARBALL=<full-url>`, `BUNDLED_SPECS_NPM_REGISTRY=<registry>`, `BUNDLED_SPECS_EXCLUDE=<csv>`, or `BUNDLED_SPECS_SOURCE=cdn` to fall back to the legacy per-file CDN sync (`https://specs.q.us-east-1.amazonaws.com/`, frozen 2025-05-05).
+**Config + pinning.** `specs.config.json` only stores bundle filtering such as `exclude`. Package pinning lives in the normal JS dependency files, **not `latest`**, so the bundle changes only when the dependency changes, never silently. To adopt a newer fork build: run `corepack pnpm add -D @chen86860/autocomplete-specs@<version> -w`, re-run the sync, and commit `package.json`, `pnpm-lock.yaml`, and the regenerated `bundle/specs` together. Env overrides still win for one-off runs: `BUNDLED_SPECS_EXCLUDE=<csv>`, `BUNDLED_SPECS_PACKAGE=<pkg>`, `BUNDLED_SPECS_SOURCE=npm` with `BUNDLED_SPECS_VERSION=<version|latest>` / `BUNDLED_SPECS_PACKAGE_TARBALL=<full-url>` / `BUNDLED_SPECS_NPM_REGISTRY=<registry>`, or `BUNDLED_SPECS_SOURCE=cdn` to fall back to the legacy per-file CDN sync (`https://specs.q.us-east-1.amazonaws.com/`, frozen 2025-05-05).
 
 To keep the bundle small, the sync script supports excluding whole namespaces via `BUNDLED_SPECS_EXCLUDE` (comma-separated; a namespace `ns` drops the top-level `ns` spec and everything under `ns/`). The filter is applied to **both** the downloaded files and the written `index.json`, so the runtime loader never references excluded specs.
 
-- **Default**: `aws` is excluded (the AWS CLI specs are ~36 MB / 419 entries; bundle drops from ~76 MB to ~40 MB). This is intentional — see the `exclude` constant in `scripts/sync-bundled-specs.mjs`.
+- **Default**: `aws` and `az` are excluded (the AWS and Azure CLI specs are large and most users never trigger them). This is intentional — see `specs.config.json`.
 - **Bundle everything**: `BUNDLED_SPECS_EXCLUDE="" node scripts/sync-bundled-specs.mjs`
 - **Trim more**: `BUNDLED_SPECS_EXCLUDE="aws,gcloud,az" node scripts/sync-bundled-specs.mjs` (saves another ~26 MB)
 

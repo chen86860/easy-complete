@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.39
+
+- feat: updated bundled completion specs to `@chen86860/autocomplete-specs@3.0.6`, refreshing standard-library specs such as `bun`, `npm`, `pnpm`, `rush`, `yarn`, and keeping the existing `aws` / `az` exclusions
+- chore: manage `@chen86860/autocomplete-specs` as a root npm devDependency pinned by `package.json` and `pnpm-lock.yaml`; `sync-bundled-specs.mjs` now reads the installed package from `node_modules` by default instead of downloading a tarball from the npm registry
+
 ## v2.0.38
 
 - perf: excluded the `az` (Azure CLI) namespace from bundled completion specs alongside the existing `aws` exclusion, shrinking `bundle/specs` from ~40MB to ~31MB (most users never touch either cloud CLI)
@@ -76,7 +81,7 @@
 ## v2.0.24
 
 - feat: added `info!`-level logging to the auto-update path (scheduled-check arming, Sparkle framework loading, updater ready and disabling auto-download, manual/background check triggers, activating the app before the scheduled update prompt) — previously everything was logged only at `debug!` while `fig_log` defaulted to ERROR, leaving no logs to diagnose with; the full auto-update timeline can now be observed with `Q_LOG_LEVEL=info`
-- fix: changed the tray's "update unavailable" message from the misleading *"Sparkle.framework is not bundled in this build"* to an accurate description (the updater failed to start: framework missing or initialization failed, see logs for detail)
+- fix: changed the tray's "update unavailable" message from the misleading _"Sparkle.framework is not bundled in this build"_ to an accurate description (the updater failed to start: framework missing or initialization failed, see logs for detail)
 
 ## v2.0.23
 

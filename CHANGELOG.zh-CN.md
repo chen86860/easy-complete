@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.40
+
+- fix: 更新 bundled completion specs 至 `@chen86860/autocomplete-specs@3.0.7`，修复 `pnpm` spec 运行时 import 崩溃导致 `pnpm` 无法打开补全面板的问题
+- test: upstream specs 包现在会在编译后 smoke import 生成的 spec 文件，避免顶层运行时错误进入下游发布
+
 ## v2.0.39
 
 - feat: 更新 bundled completion specs 至 `@chen86860/autocomplete-specs@3.0.6`，刷新 `bun`、`npm`、`pnpm`、`rush`、`yarn` 等标准库 specs，并保留现有 `aws` / `az` 排除策略

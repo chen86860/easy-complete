@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.40
+
+- fix: updated bundled completion specs to `@chen86860/autocomplete-specs@3.0.7`, fixing the `pnpm` spec runtime import crash that prevented the autocomplete dropdown from opening for `pnpm`
+- test: the upstream specs package now smoke-imports built spec files after compilation, so top-level runtime errors in generated specs fail before they can ship downstream
+
 ## v2.0.39
 
 - feat: updated bundled completion specs to `@chen86860/autocomplete-specs@3.0.6`, refreshing standard-library specs such as `bun`, `npm`, `pnpm`, `rush`, `yarn`, and keeping the existing `aws` / `az` exclusions

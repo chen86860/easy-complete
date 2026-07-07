@@ -212,8 +212,11 @@ async fn install(integration: Integration, silent: bool) -> Result<()> {
     };
 
     if installed && result.is_ok() {
-        fig_telemetry::track_blocking("integration_installed", json!({ "integration": integration_name(integration) }))
-            .await;
+        fig_telemetry::track_blocking(
+            "integration_installed",
+            json!({ "integration": integration_name(integration) }),
+        )
+        .await;
     }
 
     if installed && result.is_ok() && !silent {

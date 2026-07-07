@@ -95,7 +95,9 @@ fn terminal_name() -> String {
 }
 
 fn queue_path() -> Option<PathBuf> {
-    fig_util::directories::fig_data_dir().ok().map(|d| d.join(QUEUE_FILE_NAME))
+    fig_util::directories::fig_data_dir()
+        .ok()
+        .map(|d| d.join(QUEUE_FILE_NAME))
 }
 
 fn http_client() -> Option<reqwest::Client> {
@@ -223,10 +225,7 @@ pub async fn flush_queue() {
     let Ok(existing) = tokio::fs::read_to_string(&path).await else {
         return;
     };
-    let events: Vec<Value> = existing
-        .lines()
-        .filter_map(|l| serde_json::from_str(l).ok())
-        .collect();
+    let events: Vec<Value> = existing.lines().filter_map(|l| serde_json::from_str(l).ok()).collect();
     if events.is_empty() {
         let _ = tokio::fs::remove_file(&path).await;
         return;

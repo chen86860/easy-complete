@@ -148,7 +148,13 @@ async fn main() -> ExitCode {
     }
 
     let ctx = Context::new();
-    install::run_install(Arc::clone(&ctx), cli.ignore_immediate_update, !cli.no_dashboard, cli.is_startup).await;
+    install::run_install(
+        Arc::clone(&ctx),
+        cli.ignore_immediate_update,
+        !cli.no_dashboard,
+        cli.is_startup,
+    )
+    .await;
 
     // Daily active-device heartbeat; also flushes locally aggregated counters
     // (autocomplete_shown/accepted etc.) as properties of the heartbeat event.

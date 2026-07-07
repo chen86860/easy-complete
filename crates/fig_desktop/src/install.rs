@@ -109,7 +109,12 @@ fn run_macos_post_install_permission_tasks(prompt_for_permissions: bool) {
 
 /// Run items at launch
 #[allow(unused_variables)]
-pub async fn run_install(ctx: Arc<Context>, ignore_immediate_update: bool, prompt_for_permissions: bool, is_startup: bool) {
+pub async fn run_install(
+    ctx: Arc<Context>,
+    ignore_immediate_update: bool,
+    prompt_for_permissions: bool,
+    is_startup: bool,
+) {
     #[cfg(target_os = "macos")]
     {
         initialize_fig_dir(&fig_os_shim::Env::new()).await.ok();

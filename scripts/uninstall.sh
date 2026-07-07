@@ -38,6 +38,11 @@ if [[ "${1:-}" != "--yes" ]]; then
   [[ "${confirm}" =~ ^[Yy]$ ]] || { echo "Aborted."; exit 0; }
 fi
 
+# ── 0. Telemetry (best-effort, respects `ec telemetry disable`) ───────────────
+if command -v ec &>/dev/null; then
+  ec telemetry track app_uninstalled 2>/dev/null || true
+fi
+
 # ── 1. Uninstall integrations via CLI (must run before binary is removed) ─────
 info "Uninstalling input method integration..."
 if command -v ec &>/dev/null; then

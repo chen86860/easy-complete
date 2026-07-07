@@ -374,6 +374,10 @@ impl WindowState {
             WindowEvent::Show => {
                 if self.window_id == AUTOCOMPLETE_ID {
                     if platform::autocomplete_active() {
+                        // Count hidden→visible transitions only, not every reposition.
+                        if !self.window.is_visible() {
+                            fig_telemetry::count("autocomplete_shown");
+                        }
                         for session in figterm_state.inner.lock().linked_sessions.values_mut() {
                             let _ = session
                                 .sender

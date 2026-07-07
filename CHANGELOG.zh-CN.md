@@ -1,5 +1,15 @@
 # Changelog
 
+## v2.0.41
+
+- feat: 扩充匿名统计事件 —— 新增 `daily_heartbeat`（活跃设备统计，24 小时最多一次）、`integration_installed`（带 `integration` 属性）、`app_uninstalled`（由 `uninstall.sh` 上报），`app_opened` 增加 `is_startup` 属性以区分开机自启与手动打开
+- feat: 高频补全事件（`autocomplete_shown` / `autocomplete_accepted`）改为本地 SQLite 聚合计数，随每日心跳以 `count_*` 属性批量上报 —— 每天一个请求，而不是每次按键一个
+- feat: 统计事件新增 `shell`（登录 shell）与 `terminal`（终端模拟器 best-effort 检测）公共属性
+- fix: 发送失败的统计事件会持久化到离线队列（`telemetry_queue.jsonl`，上限 200 条，保留原始时间戳），在下次启动或下次发送成功时补发，不再静默丢失
+- fix: 统计上报的 HTTP 客户端现在携带 `easy-complete/<version>` User-Agent —— 无 UA 的请求会被分析代理前面的 Cloudflare Bot 防护直接拦截
+- fix: 注册之前未挂载的 `ec telemetry` 子命令（`enable` / `disable` / `status`，及供安装/卸载脚本使用的隐藏 `track`）；CLI 来源的事件在进程退出前会等待发送完成
+- fix: 设置页「反馈问题」链接改为指向仓库 issues 列表，不再跳转模板选择页
+
 ## v2.0.40
 
 - fix: 更新 bundled completion specs 至 `@chen86860/autocomplete-specs@3.0.7`，修复 `pnpm` spec 运行时 import 崩溃导致 `pnpm` 无法打开补全面板的问题

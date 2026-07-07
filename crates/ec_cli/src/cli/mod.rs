@@ -12,6 +12,7 @@ mod integrations;
 pub mod internal;
 mod issue;
 mod settings;
+mod telemetry;
 mod theme;
 mod uninstall;
 mod update;
@@ -155,6 +156,9 @@ pub enum CliRootCommands {
     /// Manage system integrations
     #[command(subcommand, alias("integration"))]
     Integrations(IntegrationsSubcommands),
+    /// Enable/disable anonymous usage statistics
+    #[command(subcommand)]
+    Telemetry(telemetry::TelemetrySubcommand),
     /// Show version information
     Version,
 }
@@ -214,6 +218,11 @@ impl Cli {
 
         debug!(command =? std::env::args().collect::<Vec<_>>(), "Command ran");
 
+        fig_telemetry::init(
+            option_env!("POSTHOG_ENDPOINT").unwrap_or(""),
+            option_env!("POSTHOG_API_KEY").unwrap_or(""),
+        );
+
         if self.help_all {
             return self.print_help_all();
         }
@@ -247,6 +256,7 @@ impl Cli {
                     launch_dashboard(false).await
                 },
                 CliRootCommands::Integrations(subcommand) => subcommand.execute().await,
+                CliRootCommands::Telemetry(subcommand) => subcommand.execute().await,
                 CliRootCommands::Version => Self::print_version(),
             },
             // Root command - show help

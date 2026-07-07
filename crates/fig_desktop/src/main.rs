@@ -148,7 +148,16 @@ async fn main() -> ExitCode {
     }
 
     let ctx = Context::new();
-    install::run_install(Arc::clone(&ctx), cli.ignore_immediate_update, !cli.no_dashboard).await;
+    install::run_install(Arc::clone(&ctx), cli.ignore_immediate_update, !cli.no_dashboard, cli.is_startup).await;
+
+    // Daily active-device heartbeat; also flushes locally aggregated counters
+    // (autocomplete_shown/accepted etc.) as properties of the heartbeat event.
+    tokio::spawn(async {
+        loop {
+            fig_telemetry::maybe_send_daily_heartbeat().await;
+            tokio::time::sleep(std::time::Duration::from_secs(60 * 60)).await;
+        }
+    });
 
     #[cfg(target_os = "linux")]
     {

@@ -18,6 +18,12 @@ pub enum TelemetrySubcommand {
         #[arg(long, short, value_enum, default_value_t)]
         format: OutputFormat,
     },
+    /// Send a single telemetry event (used by install/uninstall scripts)
+    #[command(hide = true)]
+    Track {
+        /// Event name
+        event: String,
+    },
 }
 
 impl TelemetrySubcommand {
@@ -46,6 +52,10 @@ impl TelemetrySubcommand {
                         })
                     },
                 );
+                Ok(ExitCode::SUCCESS)
+            },
+            TelemetrySubcommand::Track { event } => {
+                fig_telemetry::track_blocking(event, json!({})).await;
                 Ok(ExitCode::SUCCESS)
             },
         }

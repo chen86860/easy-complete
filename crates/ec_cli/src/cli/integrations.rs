@@ -115,6 +115,17 @@ impl IntegrationsSubcommands {
     }
 }
 
+fn integration_name(integration: Integration) -> &'static str {
+    match integration {
+        Integration::Dotfiles { .. } => "dotfiles",
+        Integration::Ssh => "ssh",
+        Integration::InputMethod => "input-method",
+        Integration::AutostartEntry => "autostart-entry",
+        Integration::GnomeShellExtension => "gnome-shell-extension",
+        Integration::All => "all",
+    }
+}
+
 #[allow(unused_mut)]
 async fn install(integration: Integration, silent: bool) -> Result<()> {
     let mut installed = false;
@@ -199,6 +210,11 @@ async fn install(integration: Integration, silent: bool) -> Result<()> {
             ))
         },
     };
+
+    if installed && result.is_ok() {
+        fig_telemetry::track_blocking("integration_installed", json!({ "integration": integration_name(integration) }))
+            .await;
+    }
 
     if installed && result.is_ok() && !silent {
         println!("Installed!");

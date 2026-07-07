@@ -109,7 +109,7 @@ fn run_macos_post_install_permission_tasks(prompt_for_permissions: bool) {
 
 /// Run items at launch
 #[allow(unused_variables)]
-pub async fn run_install(ctx: Arc<Context>, ignore_immediate_update: bool, prompt_for_permissions: bool) {
+pub async fn run_install(ctx: Arc<Context>, ignore_immediate_update: bool, prompt_for_permissions: bool, is_startup: bool) {
     #[cfg(target_os = "macos")]
     {
         initialize_fig_dir(&fig_os_shim::Env::new()).await.ok();
@@ -149,7 +149,9 @@ pub async fn run_install(ctx: Arc<Context>, ignore_immediate_update: bool, promp
         }
     }
 
-    fig_telemetry::track("app_opened");
+    // is_startup distinguishes login-item/LaunchAgent launches from manual opens,
+    // so crash-loop restarts don't inflate "user opened the app" numbers.
+    fig_telemetry::track_with_props("app_opened", serde_json::json!({ "is_startup": is_startup }));
 
     #[cfg(target_os = "linux")]
     run_linux_install(

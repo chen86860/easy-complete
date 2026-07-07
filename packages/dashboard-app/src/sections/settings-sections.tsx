@@ -21,7 +21,7 @@ import { useCheckForUpdates } from "../hooks/use-check-for-updates";
 const APP_VERSION = __APP_VERSION__;
 const REPO_URL = "https://github.com/chen86860/easy-complete";
 const RELEASES_URL = `${REPO_URL}/releases`;
-const ISSUES_URL = `${REPO_URL}/issues/new/choose`;
+const ISSUES_URL = `${REPO_URL}/issues`;
 const UPSTREAM_REPO_URL = "https://github.com/aws/amazon-q-developer-cli";
 
 async function openExternalUrl(url: string) {

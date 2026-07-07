@@ -1,5 +1,15 @@
 # Changelog
 
+## v2.0.41
+
+- feat: expanded the anonymous telemetry event set — `daily_heartbeat` (active-device tracking, sent at most once per 24h), `integration_installed` (with an `integration` property), `app_uninstalled` (reported by `uninstall.sh`), and an `is_startup` property on `app_opened` to distinguish login-item launches from manual opens
+- feat: high-frequency autocomplete events (`autocomplete_shown` / `autocomplete_accepted`) are now aggregated locally in SQLite and reported in bulk as `count_*` properties of the daily heartbeat — one request per day instead of one per keystroke
+- feat: telemetry events now carry `shell` (login shell) and `terminal` (best-effort emulator detection) as common properties
+- fix: telemetry events that fail to send are persisted to an offline queue (`telemetry_queue.jsonl`, capped at 200 events, original timestamps preserved) and retried on the next launch or next successful send, instead of being silently dropped
+- fix: the telemetry HTTP client now sends an `easy-complete/<version>` User-Agent — UA-less requests were blocked outright by Cloudflare bot protection in front of the analytics proxy
+- fix: registered the previously dangling `ec telemetry` subcommand (`enable` / `disable` / `status`, plus a hidden `track` used by install/uninstall scripts); CLI-origin events now await delivery before the process exits
+- fix: the dashboard "Report an issue" link now points to the repository issues list instead of the template chooser
+
 ## v2.0.40
 
 - fix: updated bundled completion specs to `@chen86860/autocomplete-specs@3.0.7`, fixing the `pnpm` spec runtime import crash that prevented the autocomplete dropdown from opening for `pnpm`

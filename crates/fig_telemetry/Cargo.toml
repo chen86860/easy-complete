@@ -11,6 +11,8 @@ license.workspace = true
 workspace = true
 
 [dependencies]
+chrono.workspace = true
+fig_os_shim.workspace = true
 fig_settings.workspace = true
 fig_util.workspace = true
 reqwest.workspace = true

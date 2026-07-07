@@ -70,7 +70,15 @@ function seoSchema(origin: string) {
             name: "Does Easy Complete run locally?",
             acceptedAnswer: {
               "@type": "Answer",
-              text: "Yes. Easy Complete runs on-device and does not require an account, telemetry, cloud calls, or AI requests for autocomplete.",
+              text: "Yes. Autocomplete runs fully on-device — no account, no cloud calls, no AI requests, and your commands never leave your Mac.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "What data does Easy Complete collect?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Only anonymous usage statistics: app opens, install/update events, and daily completion counts, tied to a random device ID. Command content, completion text, and file paths are never collected, and telemetry can be disabled with a single command.",
             },
           },
           {

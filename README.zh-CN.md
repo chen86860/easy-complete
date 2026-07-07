@@ -27,7 +27,9 @@
 
 你会在输入 `git`、`npm`、`docker`、`cargo` 等数百种命令行工具时，获得类似 fish shell 的
 建议：参数、子命令、文件路径、选项，边打边补。
-Easy Complete 在本机运行，自动补全不需要账号、遥测、云端调用或 AI 请求。
+自动补全完全在本机运行——无需账号、无云端调用、无 AI 请求，你的命令内容永远不会离开你的
+Mac。应用会收集匿名使用统计（打开次数、每日补全次数——绝不包含命令内容），可随时通过
+`ec telemetry disable` 关闭。完整的采集清单见[隐私页面](https://easy-complete.emmmm.dev/privacy)。
 
 <p align="center">
   <img src="./.github/media/screenshot.png" alt="Easy Complete 自动补全效果">

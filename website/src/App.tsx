@@ -229,7 +229,7 @@ export function App() {
             Everything you need to complete a command. Nothing you don't.
           </h2>
           <p className="m-0 mb-10 max-w-[560px] text-[16px] text-[#8b95a1]">
-            One job, done well — no chat, no AI calls, no telemetry.
+            One job, done well — no chat, no AI calls, no cloud completions.
           </p>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((f) => (
@@ -433,7 +433,15 @@ export function App() {
             <img src={logoUrl} alt="" className="h-5 w-5 rounded-[6px]" />
             easy-complete
           </span>
-          <span>cli · terminal · macOS</span>
+          <span className="inline-flex items-center gap-4">
+            <a
+              href="/privacy"
+              className="transition-colors hover:text-[#e6edf3]"
+            >
+              Privacy
+            </a>
+            <span>cli · terminal · macOS</span>
+          </span>
         </div>
       </section>
     </div>

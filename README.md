@@ -28,8 +28,11 @@ a lightweight, fully local alternative to Fig.
 
 You get fish-shell-style suggestions for hundreds of CLIs (`git`, `npm`, `docker`,
 `cargo`, …): flags, subcommands, file paths, and arguments, completed as you type.
-Easy Complete runs on-device and does not require an account, telemetry, cloud calls,
-or AI requests for autocomplete.
+Autocomplete runs fully on-device — no account, no cloud calls, no AI requests, and
+your commands never leave your Mac. The app collects anonymous usage statistics
+(app opens, daily completion counts — never command content), which you can disable
+any time with `ec telemetry disable`. See the [Privacy page](https://easy-complete.emmmm.dev/privacy)
+for the full list of what is and isn't collected.
 
 <p align="center">
   <img src="./.github/media/screenshot.png" alt="Easy Complete autocomplete in action">

@@ -64,7 +64,7 @@ export const reasons: Reason[] = [
   {
     num: "01",
     title: "Just autocomplete — nothing else",
-    desc: "No chat, no AI assistant, no telemetry. One job, done well.",
+    desc: "No chat, no AI assistant, no cloud completions. One job, done well.",
   },
   {
     num: "02",
@@ -74,7 +74,7 @@ export const reasons: Reason[] = [
   {
     num: "03",
     title: "Privacy by default",
-    desc: "Everything runs on-device. Your commands stay yours.",
+    desc: "Completions run entirely on-device — your commands never leave your Mac. Only anonymous usage counts are collected, and one command turns them off.",
   },
   {
     num: "04",
@@ -109,7 +109,12 @@ export const faqs: Faq[] = [
   {
     question: "Does Easy Complete run locally?",
     answer:
-      "Yes. Easy Complete runs on-device and does not require an account, telemetry, cloud calls, or AI requests for autocomplete.",
+      "Yes. Autocomplete runs fully on-device — no account, no cloud calls, no AI requests, and your commands never leave your Mac.",
+  },
+  {
+    question: "What data does Easy Complete collect?",
+    answer:
+      "Only anonymous usage statistics: app opens, install/update events, and daily completion counts, tied to a random device ID. Command content, completion text, and file paths are never collected. Disable it any time with `ec telemetry disable` — see the Privacy page for the full list.",
   },
   {
     question: "Which terminals does Easy Complete support?",

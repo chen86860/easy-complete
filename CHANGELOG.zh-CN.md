@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.0.43
+
+- fix: autocomplete 窗口处于 disabled 状态时仍允许向 webview 发送 emit 事件，使 Dashboard 聚焦期间修改的补全主题等设置可以立即生效，不再需要重启才能刷新
+- fix: 切换主题时保持 Dashboard 使用 macOS 原生主色调；主题设置现在只影响命令补全下拉框
+- chore: 删除本 fork 未接入 CI 或 workspace 的上游 `figterm` / `fig-api` 测试脚手架、独立 shell 启动性能分析脚本，以及过时的模型 ZIP Git LFS 规则
+
 ## v2.0.42
 
 - feat: 设置面板从五个分区精简为三个（Appearance / Behavior / About）—— History 设置合并为 Behavior 内的卡片，Advanced 分区移除

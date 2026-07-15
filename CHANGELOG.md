@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.0.43
+
+- fix: deliver webview emit events even while the autocomplete window is disabled, so settings changes such as the autocomplete theme take effect immediately while the dashboard is focused instead of remaining stale until restart
+- fix: keep the Dashboard on its native macOS accent color when switching themes; the theme setting now affects only the autocomplete dropdown
+- chore: remove unused upstream `figterm` / `fig-api` test harnesses, the standalone shell-startup profiler, and the stale model ZIP Git LFS rule; none were wired into this fork's CI or workspace
+
 ## v2.0.42
 
 - feat: simplified the settings panel from five sections to three (Appearance, Behavior, About) — History settings now live in a card inside Behavior, and the Advanced tab is gone

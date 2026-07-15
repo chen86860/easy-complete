@@ -148,15 +148,18 @@ impl WindowEvent {
             self,
             WindowEvent::Hide
                 | WindowEvent::SetEnabled(_)
-                // TODO: we really shouldnt need to allow these to be called when disabled, 
+                // TODO: we really shouldnt need to allow these to be called when disabled,
                 // however we allow them at the moment because notification listeners are
                 // initialized early on and we dont have a way to delay them until the window
                 // is enabled
                 | WindowEvent::Api { .. }
-                | WindowEvent::Emit {
-                    event_name: EmitEventName::GlobalErrorOccurred | EmitEventName::ProtoMessageReceived,
-                    ..
-                }
+                // Emit only delivers a payload to the webview's JS context and can never
+                // show the window, so it is safe while disabled. Notification emits in
+                // particular must go through: settings changes (e.g. the autocomplete
+                // theme) are broadcast while the dashboard is focused, which is exactly
+                // when the autocomplete window is disabled — dropping them left the
+                // webview with stale settings until restart.
+                | WindowEvent::Emit { .. }
         )
     }
 }

@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.0.42
+
+- feat: 设置面板从五个分区精简为三个（Appearance / Behavior / About）—— History 设置合并为 Behavior 内的卡片，Advanced 分区移除
+- feat: 从设置界面移除低频且危险的选项（自动执行危险命令 / git 别名、接受建议后立即执行、脚本超时等冷门开关）；这些设置仍可通过 `ec settings` 命令修改
+- feat: 重构 About 页 —— 反馈问题入口移入 Troubleshooting 卡片、与 `ec doctor` 诊断相邻，GitHub / Release Notes 移至版权声明上方的页脚区，版本徽章点击即可复制版本信息，并全面精简了描述文案
+- feat: 设置窗口启用 macOS 原生毛玻璃效果，并随窗口焦点状态联动样式
+- change: 默认主题改为 `github-dark`，开机自启默认关闭
+
 ## v2.0.41
 
 - feat: 扩充匿名统计事件 —— 新增 `daily_heartbeat`（活跃设备统计，24 小时最多一次）、`integration_installed`（带 `integration` 属性）、`app_uninstalled`（由 `uninstall.sh` 上报），`app_opened` 增加 `is_startup` 属性以区分开机自启与手动打开

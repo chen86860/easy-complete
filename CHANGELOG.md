@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.0.42
+
+- feat: simplified the settings panel from five sections to three (Appearance, Behavior, About) — History settings now live in a card inside Behavior, and the Advanced tab is gone
+- feat: removed rarely-used and dangerous options from the settings UI (auto-executing dangerous commands / git aliases, run-after-space, script timeout, and other niche toggles); all of them remain configurable via `ec settings`
+- feat: restructured the About page — issue reporting now sits inside Troubleshooting next to the `ec doctor` diagnostic, GitHub / Release Notes moved to a footer above the license line, the version badge copies version info on click, and descriptions were tightened throughout
+- feat: the dashboard window now uses native macOS vibrancy with window-focus-aware styling
+- change: the default theme is now `github-dark`, and Launch at Login defaults to off
+
 ## v2.0.41
 
 - feat: expanded the anonymous telemetry event set — `daily_heartbeat` (active-device tracking, sent at most once per 24h), `integration_installed` (with an `integration` property), `app_uninstalled` (reported by `uninstall.sh`), and an `is_startup` property on `app_opened` to distinguish login-item launches from manual opens

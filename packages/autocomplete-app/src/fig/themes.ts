@@ -279,23 +279,32 @@ function setCSSProperties(
   root.style.setProperty("--accent7-color", accent7);
 }
 
+export const DEFAULT_THEME = "github-dark";
+
+// Guards against out-of-order async theme loads: only the most recent
+// setTheme call is allowed to touch the CSS properties.
+let latestSetThemeCallId = 0;
+
 export async function setTheme(
   currentSystemTheme: SystemTheme,
   newTheme?: string,
 ) {
+  const callId = ++latestSetThemeCallId;
+  const themeName = newTheme || DEFAULT_THEME;
   try {
-    if (!newTheme) throw new MissingThemeError();
-    if (newTheme === "system") {
+    if (themeName === "system") {
       setCSSProperties(builtInThemes[currentSystemTheme], currentSystemTheme);
       return;
     }
-    if (isBuiltInTheme(newTheme)) {
-      setCSSProperties(builtInThemes[newTheme], newTheme);
+    if (isBuiltInTheme(themeName)) {
+      setCSSProperties(builtInThemes[themeName], themeName);
       return;
     }
     const theme: string | undefined = fig.constants?.themesFolder
-      ? await fread(`${fig.constants.themesFolder}/${newTheme}.json`)
+      ? await fread(`${fig.constants.themesFolder}/${themeName}.json`)
       : undefined;
+
+    if (callId !== latestSetThemeCallId) return;
 
     if (!theme) {
       throw new MissingThemeError(
@@ -308,6 +317,7 @@ export async function setTheme(
     // All themes fallback to the dark theme if values are missing
     setCSSProperties({ ...builtInThemes.dark, ...parsedTheme }, "dark");
   } catch (err) {
+    if (callId !== latestSetThemeCallId) return;
     logger.info(
       "There was an error parsing the theme. Using default dark theme",
       err,

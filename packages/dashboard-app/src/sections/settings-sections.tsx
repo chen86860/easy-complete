@@ -22,6 +22,7 @@ const APP_VERSION = __APP_VERSION__;
 const REPO_URL = "https://github.com/chen86860/easy-complete";
 const RELEASES_URL = `${REPO_URL}/releases`;
 const ISSUES_URL = `${REPO_URL}/issues`;
+const PRIVACY_URL = "https://easy-complete.emmmm.dev/privacy";
 const UPSTREAM_REPO_URL = "https://github.com/aws/amazon-q-developer-cli";
 
 async function openExternalUrl(url: string) {
@@ -37,20 +38,23 @@ function AboutActionButton({
   label,
   onClick,
   disabled,
+  className,
 }: {
   icon: ReactNode;
   label: string;
   onClick: () => void;
   disabled?: boolean;
+  className?: string;
 }) {
   return (
     <button
       onClick={onClick}
       disabled={disabled}
       className={clsx(
-        "inline-flex cursor-pointer items-center gap-[6px] rounded-[9px] border border-[rgba(60,60,67,0.10)]",
+        "inline-flex cursor-pointer items-center gap-[6px] whitespace-nowrap rounded-[9px] border border-[rgba(60,60,67,0.10)]",
         "bg-[rgba(255,255,255,0.6)] px-3 py-1.5 text-[12px] font-medium text-[rgba(0,0,0,0.72)]",
         "transition-colors hover:bg-[rgba(255,255,255,0.85)] disabled:cursor-default disabled:opacity-60",
+        className,
       )}
     >
       {icon}
@@ -76,7 +80,7 @@ function AboutLinkButton({
         void openExternalUrl(href);
       }}
       className={clsx(
-        "inline-flex items-center gap-[6px] rounded-[9px] border border-[rgba(60,60,67,0.10)]",
+        "inline-flex shrink-0 items-center gap-[6px] whitespace-nowrap rounded-[9px] border border-[rgba(60,60,67,0.10)]",
         "bg-[rgba(255,255,255,0.6)] px-3 py-1.5 text-[12px] font-medium text-[rgba(0,0,0,0.72)] no-underline",
         "transition-colors hover:bg-[rgba(255,255,255,0.85)]",
       )}
@@ -98,7 +102,7 @@ export function AppearanceSection({
     <>
       <Card title="Theme">
         <ThemePicker
-          value={String(settings[SETTINGS.THEME] ?? "dark")}
+          value={String(settings[SETTINGS.THEME] ?? "github-dark")}
           onChange={(value) => set(SETTINGS.THEME, value)}
         />
       </Card>
@@ -167,7 +171,7 @@ export function BehaviorSection({
           description="Start Easy Complete automatically when you sign in"
         >
           <Toggle
-            checked={Boolean(settings[SETTINGS.LAUNCH_ON_STARTUP] ?? true)}
+            checked={Boolean(settings[SETTINGS.LAUNCH_ON_STARTUP] ?? false)}
             onChange={(value) => set(SETTINGS.LAUNCH_ON_STARTUP, value)}
           />
         </Row>
@@ -196,7 +200,11 @@ export function BehaviorSection({
             onChange={(value) => set(SETTINGS.FUZZY_SEARCH, value)}
           />
         </Row>
-        <Row label="Sort Order" description="Choose how suggestions are ranked">
+        <Row
+          label="Sort Order"
+          description="Choose how suggestions are ranked"
+          last
+        >
           <Select
             value={String(settings[SETTINGS.SORT_METHOD] ?? "default")}
             options={[
@@ -204,49 +212,6 @@ export function BehaviorSection({
               { value: "alphabetical", label: "Alphabetical" },
             ]}
             onChange={(value) => set(SETTINGS.SORT_METHOD, value)}
-          />
-        </Row>
-        <Row
-          label="Show Descriptive Suggestions"
-          description="Use longer suggestion names when extra context is available"
-        >
-          <Toggle
-            checked={Boolean(settings[SETTINGS.PREFER_VERBOSE_SUGGESTIONS])}
-            onChange={(value) =>
-              set(SETTINGS.PREFER_VERBOSE_SUGGESTIONS, value)
-            }
-          />
-        </Row>
-        <Row
-          label="Keep Typed Text in the List"
-          description="Keep your current input in the list even if nothing else matches"
-        >
-          <Toggle
-            checked={Boolean(settings[SETTINGS.ALWAYS_SUGGEST_CURRENT_TOKEN])}
-            onChange={(value) =>
-              set(SETTINGS.ALWAYS_SUGGEST_CURRENT_TOKEN, value)
-            }
-          />
-        </Row>
-        <Row
-          label="Use a Separate Description Window"
-          description="Keep the description panel visible in its own detached window"
-        >
-          <Toggle
-            checked={Boolean(settings[SETTINGS.ALWAYS_SHOW_DESCRIPTION])}
-            onChange={(value) => set(SETTINGS.ALWAYS_SHOW_DESCRIPTION, value)}
-          />
-        </Row>
-        <Row
-          label="Hide Auto-Run Suggestions"
-          description="Remove suggestions that would immediately execute a command"
-          last
-        >
-          <Toggle
-            checked={Boolean(settings[SETTINGS.HIDE_AUTO_EXECUTE_SUGGESTION])}
-            onChange={(value) =>
-              set(SETTINGS.HIDE_AUTO_EXECUTE_SUGGESTION, value)
-            }
           />
         </Row>
       </Card>
@@ -262,17 +227,9 @@ export function BehaviorSection({
           />
         </Row>
         <Row
-          label="Wrap Around List"
-          description="Jump from the end of the suggestion list back to the beginning"
-        >
-          <Toggle
-            checked={Boolean(settings[SETTINGS.SCROLL_WRAP_AROUND])}
-            onChange={(value) => set(SETTINGS.SCROLL_WRAP_AROUND, value)}
-          />
-        </Row>
-        <Row
           label="Insert Trailing Space"
           description="Add a space after accepting a suggestion"
+          last
         >
           <Toggle
             checked={Boolean(settings[SETTINGS.INSERT_SPACE_AUTOMATICALLY])}
@@ -281,33 +238,9 @@ export function BehaviorSection({
             }
           />
         </Row>
-        <Row
-          label="Run After Trailing Space"
-          description="Execute the command as soon as the accepted suggestion adds a space"
-          last
-        >
-          <Toggle
-            checked={Boolean(settings[SETTINGS.IMMEDIATELY_EXEC_AFTER_SPACE])}
-            onChange={(value) =>
-              set(SETTINGS.IMMEDIATELY_EXEC_AFTER_SPACE, value)
-            }
-          />
-        </Row>
       </Card>
-    </>
-  );
-}
 
-export function HistorySection({
-  settings,
-  set,
-}: {
-  settings: SettingsMap;
-  set: SettingSetter;
-}) {
-  return (
-    <>
-      <Card title="History Suggestions">
+      <Card title="History">
         <Row
           label="History Mode"
           description="How shell history is blended with completions"
@@ -332,28 +265,6 @@ export function HistorySection({
           />
         </Row>
         <Row
-          label="Ctrl-R Toggle"
-          description="Use Ctrl-R to toggle history-only mode"
-        >
-          <Toggle
-            checked={Boolean(settings[SETTINGS.HISTORY_CTRL_R_TOGGLE])}
-            onChange={(value) => set(SETTINGS.HISTORY_CTRL_R_TOGGLE, value)}
-          />
-        </Row>
-        <Row
-          label="Disable History Loading"
-          description="Skip loading shell history on startup (faster launch)"
-          last
-        >
-          <Toggle
-            checked={Boolean(settings[SETTINGS.DISABLE_HISTORY_LOADING])}
-            onChange={(value) => set(SETTINGS.DISABLE_HISTORY_LOADING, value)}
-          />
-        </Row>
-      </Card>
-
-      <Card title="Custom History Command">
-        <Row
           label="History Command"
           description="Shell command to use as the history source (leave empty for default)"
           last
@@ -362,73 +273,6 @@ export function HistorySection({
             value={String(settings[SETTINGS.HISTORY_COMMAND] ?? "")}
             placeholder="e.g. atuin search"
             onChange={(value) => set(SETTINGS.HISTORY_COMMAND, value || null)}
-          />
-        </Row>
-      </Card>
-    </>
-  );
-}
-
-export function AdvancedSection({
-  settings,
-  set,
-}: {
-  settings: SettingsMap;
-  set: SettingSetter;
-}) {
-  return (
-    <>
-      <Card title="Performance">
-        <Row
-          label="Script Timeout"
-          description="Max milliseconds to wait for a completion generator to run"
-          last
-        >
-          <NumberInput
-            value={Number(settings[SETTINGS.SCRIPT_TIMEOUT] ?? 5000)}
-            min={500}
-            max={30000}
-            step={500}
-            onChange={(value) => set(SETTINGS.SCRIPT_TIMEOUT, value)}
-          />
-        </Row>
-      </Card>
-
-      <Card title="Dangerous Commands">
-        <Row
-          label="Immediately Run Dangerous Commands"
-          description="Auto-execute suggestions marked as dangerous without confirmation"
-        >
-          <Toggle
-            checked={Boolean(
-              settings[SETTINGS.IMMEDIATELY_RUN_DANGEROUS_COMMANDS],
-            )}
-            onChange={(value) =>
-              set(SETTINGS.IMMEDIATELY_RUN_DANGEROUS_COMMANDS, value)
-            }
-          />
-        </Row>
-        <Row
-          label="Immediately Run Git Aliases"
-          description="Auto-execute git alias suggestions"
-          last
-        >
-          <Toggle
-            checked={Boolean(settings[SETTINGS.IMMEDIATELY_RUN_GIT_ALIAS])}
-            onChange={(value) => set(SETTINGS.IMMEDIATELY_RUN_GIT_ALIAS, value)}
-          />
-        </Row>
-      </Card>
-
-      <Card title="Developer">
-        <Row
-          label="Developer Mode"
-          description="Enable additional debug logging and dev tools"
-          last
-        >
-          <Toggle
-            checked={Boolean(settings[SETTINGS.DEV_MODE])}
-            onChange={(value) => set(SETTINGS.DEV_MODE, value)}
           />
         </Row>
       </Card>
@@ -459,10 +303,9 @@ function DiagnosticsCard() {
           Something not working?
         </div>
         <div className="mt-1 max-w-[36rem] text-[12px] leading-[1.5] text-[rgba(60,60,67,0.68)]">
-          If autocomplete, shell integration, or automatic updates aren&apos;t
-          taking effect, run the built-in diagnostic in your terminal. It checks
-          your shell integration, permissions, and background processes, and
-          prints exactly what&apos;s wrong and how to fix it.
+          Run the built-in diagnostic in your terminal — it checks your shell
+          integration, permissions, and background processes, and tells you how
+          to fix any issues.
         </div>
         <div className="mt-3 flex items-center gap-2">
           <code className="flex-1 select-text rounded-[9px] border border-[rgba(60,60,67,0.10)] bg-[rgba(0,0,0,0.04)] px-3 py-2 font-mono text-[12.5px] text-[rgba(0,0,0,0.82)]">
@@ -470,15 +313,26 @@ function DiagnosticsCard() {
             {DOCTOR_COMMAND}
           </code>
           <AboutActionButton
-            icon={<IconCopy size={13} />}
+            className="w-[92px] justify-center"
+            icon={copyState === "done" ? null : <IconCopy size={13} />}
             label={
               copyState === "done"
-                ? "Copied"
+                ? "Copied!"
                 : copyState === "error"
-                  ? "Copy failed"
+                  ? "Failed"
                   : "Copy"
             }
             onClick={() => void copyCommand()}
+          />
+        </div>
+        <div className="mt-3.5 flex items-center justify-between gap-3 border-t border-[rgba(60,60,67,0.08)] pt-3.5">
+          <div className="min-w-0 flex-1 text-[12px] leading-[1.5] text-[rgba(60,60,67,0.68)]">
+            Still stuck? Include the diagnostic output in your report.
+          </div>
+          <AboutLinkButton
+            href={ISSUES_URL}
+            label="Report an Issue"
+            icon={<IconExternalLink />}
           />
         </div>
       </div>
@@ -523,11 +377,17 @@ export function AboutSection({
                 Terminal autocomplete for macOS
               </div>
               <div className="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-[rgba(60,60,67,0.68)]">
-                <span className="rounded-full bg-[rgba(60,60,67,0.08)] px-2 py-0.5 font-medium text-[rgba(0,0,0,0.72)]">
-                  Version {APP_VERSION}
-                </span>
-                {copyState === "done" ? <span>Copied</span> : null}
-                {copyState === "error" ? <span>Copy failed</span> : null}
+                <button
+                  onClick={() => void copyVersionInfo()}
+                  title="Copy version info"
+                  className="cursor-pointer rounded-full border-0 bg-[rgba(60,60,67,0.08)] px-2 py-0.5 font-sans text-[12px] font-medium text-[rgba(0,0,0,0.72)] transition-colors hover:bg-[rgba(60,60,67,0.14)]"
+                >
+                  {copyState === "done"
+                    ? "Copied"
+                    : copyState === "error"
+                      ? "Copy failed"
+                      : `Version ${APP_VERSION}`}
+                </button>
               </div>
             </div>
           </div>
@@ -542,53 +402,14 @@ export function AboutSection({
               onClick={() => void checkForUpdates()}
               disabled={isChecking}
             />
-            <AboutActionButton
-              icon={<IconCopy size={13} />}
-              label="Copy Version Info"
-              onClick={() => void copyVersionInfo()}
-            />
           </div>
         </div>
-      </Card>
-
-      <Card title="Project">
-        <Row
-          label="GitHub Repository"
-          description="Browse the source code, releases, and issue tracker"
-        >
-          <AboutLinkButton
-            href={REPO_URL}
-            label="Open GitHub"
-            icon={<IconGitHub />}
-          />
-        </Row>
-        <Row
-          label="Release Notes"
-          description="See what changed in recent versions"
-        >
-          <AboutLinkButton
-            href={RELEASES_URL}
-            label="View Releases"
-            icon={<IconExternalLink />}
-          />
-        </Row>
-        <Row
-          label="Report an Issue"
-          description="Open a bug report or feature request"
-          last
-        >
-          <AboutLinkButton
-            href={ISSUES_URL}
-            label="Open Issue"
-            icon={<IconExternalLink />}
-          />
-        </Row>
       </Card>
 
       <Card title="Updates">
         <Row
           label="Check for Updates Automatically"
-          description="When Easy Complete opens, Sparkle checks in the background and shows the update window when a new version is available"
+          description="Notify when a new version is available"
           last
         >
           <Toggle
@@ -603,8 +424,7 @@ export function AboutSection({
       <Card title="Privacy">
         <Row
           label="Share Anonymous Usage Data"
-          description="Sends install counts, app-open events, and macOS version to help prioritize fixes. No commands, file paths, or personal data are ever collected."
-          last
+          description="Anonymous statistics only, never commands or personal data"
         >
           <Toggle
             checked={
@@ -614,36 +434,40 @@ export function AboutSection({
             onChange={(value) => set(SETTINGS.TELEMETRY_ENABLED, value)}
           />
         </Row>
-      </Card>
-
-      <Card title="Credits">
         <Row
-          label="Open-Source License"
-          description="Easy Complete is available under the MIT and Apache 2.0 licenses"
-        >
-          <div className="flex flex-wrap gap-1.5 text-[11px] font-semibold tracking-[0.02em] text-[rgba(0,0,0,0.56)]">
-            {["MIT", "Apache 2.0"].map((license) => (
-              <span
-                key={license}
-                className="rounded-full bg-[rgba(60,60,67,0.08)] px-2.5 py-1"
-              >
-                {license}
-              </span>
-            ))}
-          </div>
-        </Row>
-        <Row
-          label="Upstream Project"
-          description="Easy Complete is maintained as an open-source terminal autocomplete fork"
+          label="Privacy Policy"
+          description="See what's collected and how to opt out"
           last
         >
           <AboutLinkButton
-            href={UPSTREAM_REPO_URL}
-            label="View Upstream"
+            href={PRIVACY_URL}
+            label="View Policy"
             icon={<IconExternalLink />}
           />
         </Row>
       </Card>
+
+      <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+        <AboutLinkButton href={REPO_URL} label="GitHub" icon={<IconGitHub />} />
+        <AboutLinkButton
+          href={RELEASES_URL}
+          label="Release Notes"
+          icon={<IconExternalLink />}
+        />
+      </div>
+      <p className="mt-3 text-center text-[11px] leading-[1.5] text-[rgba(60,60,67,0.55)]">
+        Open source under the MIT and Apache 2.0 licenses · Based on the{" "}
+        <a
+          href={UPSTREAM_REPO_URL}
+          onClick={(event) => {
+            event.preventDefault();
+            void openExternalUrl(UPSTREAM_REPO_URL);
+          }}
+          className="text-[rgba(60,60,67,0.55)] underline"
+        >
+          Amazon Q Developer CLI
+        </a>
+      </p>
     </>
   );
 }

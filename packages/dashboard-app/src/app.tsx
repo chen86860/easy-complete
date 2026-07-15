@@ -9,6 +9,7 @@ import { useDashboardNavigation } from "./hooks/use-dashboard-navigation";
 import { useDashboardSettings } from "./hooks/use-dashboard-settings";
 import { useDashboardShortcuts } from "./hooks/use-dashboard-shortcuts";
 import { usePermissionCheck } from "./hooks/use-permission-check";
+import { useWindowFocus } from "./hooks/use-window-focus";
 import { getTheme } from "./theme-catalog";
 import type { Section } from "./types";
 
@@ -16,15 +17,16 @@ export default function App() {
   const { settings, saving, set } = useDashboardSettings();
   const permissionCheck = usePermissionCheck();
   const [section, setSection] = useState<Section>("appearance");
-  const dashboardTheme = getTheme(settings[SETTINGS.THEME] ?? "dark");
+  const dashboardTheme = getTheme(settings[SETTINGS.THEME]);
 
   useDashboardShortcuts();
   useDashboardNavigation(setSection);
+  useWindowFocus();
 
   return (
     <div
       className={clsx(
-        "relative flex h-screen overflow-hidden bg-[#fbfbfd] font-sans text-black antialiased",
+        "relative flex h-screen overflow-hidden bg-transparent font-sans text-black antialiased",
         "select-none [accent-color:var(--dashboard-accent-color,AccentColor)] [overscroll-behavior:none]",
         "[-webkit-touch-callout:none] [--dashboard-top-rgb:251_251_253]",
         dashboardTheme.rootClassName,

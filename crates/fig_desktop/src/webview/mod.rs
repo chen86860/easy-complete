@@ -430,6 +430,18 @@ impl WebviewManager {
                                 _ => None,
                             }),
                             WryWindowEvent::Focused(focused) => {
+                                if window_state.window_id == DASHBOARD_ID {
+                                    // Mirror native focus so the sidebar can dim its selection
+                                    // like System Settings when the window resigns key.
+                                    window_state
+                                        .webview
+                                        .evaluate_script(&format!(
+                                            "document.documentElement.classList.toggle('dashboard-window-blurred', {});",
+                                            !focused
+                                        ))
+                                        .ok();
+                                }
+
                                 if focused && window_state.window_id != AUTOCOMPLETE_ID {
                                     proxy
                                         .send_event(Event::WindowEvent {
@@ -658,6 +670,12 @@ pub struct DashboardOptions {
 
 fn dashboard_initialization_script() -> String {
     let mut script = javascript_init(true);
+
+    // Tell the web UI that a native NSVisualEffectView sits behind the sidebar,
+    // so it should leave that region transparent instead of painting a fallback.
+    #[cfg(target_os = "macos")]
+    script.push_str("\ndocument.documentElement.classList.add('dashboard-native-vibrancy');\n");
+
     let accent = system_accent_css_color();
     let accent_json = serde_json::to_string(&accent).unwrap_or_else(|_| "\"AccentColor\"".to_string());
 
@@ -707,6 +725,58 @@ fn system_accent_css_color() -> String {
 #[cfg(not(target_os = "macos"))]
 fn system_accent_css_color() -> String {
     "AccentColor".to_string()
+}
+
+/// Must match the sidebar width in `packages/dashboard-app` (`w-[228px]`).
+#[cfg(target_os = "macos")]
+const DASHBOARD_SIDEBAR_WIDTH: f64 = 228.0;
+
+/// Installs an `NSVisualEffectView` (sidebar material) beneath the dashboard webview so the
+/// sidebar region shows the native macOS translucent material — blurred while the window is
+/// key, solid when it isn't — exactly like System Settings. The webview is transparent and the
+/// web UI leaves the sidebar unpainted so the material shows through.
+#[cfg(target_os = "macos")]
+fn install_dashboard_sidebar_vibrancy(window: &Window) {
+    use objc2_app_kit::{
+        NSAutoresizingMaskOptions,
+        NSVisualEffectBlendingMode,
+        NSVisualEffectMaterial,
+        NSVisualEffectState,
+        NSVisualEffectView,
+        NSWindow,
+        NSWindowOrderingMode,
+    };
+    use objc2_foundation::{
+        CGPoint,
+        CGRect,
+        CGSize,
+        MainThreadMarker,
+    };
+    use tao::platform::macos::WindowExtMacOS;
+
+    let Some(mtm) = MainThreadMarker::new() else {
+        warn!("Cannot install dashboard sidebar vibrancy: not on the main thread");
+        return;
+    };
+
+    unsafe {
+        let ns_window = &*window.ns_window().cast::<NSWindow>();
+        let Some(content_view) = ns_window.contentView() else {
+            warn!("Cannot install dashboard sidebar vibrancy: no content view");
+            return;
+        };
+
+        let height = content_view.bounds().size.height;
+        let frame = CGRect::new(CGPoint::ZERO, CGSize::new(DASHBOARD_SIDEBAR_WIDTH, height));
+        let effect_view = NSVisualEffectView::initWithFrame(mtm.alloc(), frame);
+        effect_view.setMaterial(NSVisualEffectMaterial::Sidebar);
+        effect_view.setBlendingMode(NSVisualEffectBlendingMode::BehindWindow);
+        effect_view.setState(NSVisualEffectState::FollowsWindowActiveState);
+        effect_view.setAutoresizingMask(
+            NSAutoresizingMaskOptions::NSViewHeightSizable | NSAutoresizingMaskOptions::NSViewMaxXMargin,
+        );
+        content_view.addSubview_positioned_relativeTo(&effect_view, NSWindowOrderingMode::NSWindowBelow, None);
+    }
 }
 
 pub fn build_dashboard(
@@ -808,6 +878,10 @@ pub fn build_dashboard(
         .with_clipboard(true)
         .with_hotkeys_zoom(true);
 
+    // The sidebar region is left transparent so the NSVisualEffectView below shows through.
+    #[cfg(target_os = "macos")]
+    let webview_builder = webview_builder.with_transparent(true);
+
     cfg_if! {
         if #[cfg(target_os = "linux")] {
             use tao::platform::unix::WindowExtUnix;
@@ -818,6 +892,9 @@ pub fn build_dashboard(
             let webview = webview_builder.build(&window)?;
         }
     };
+
+    #[cfg(target_os = "macos")]
+    install_dashboard_sidebar_vibrancy(&window);
 
     Ok((window, webview))
 }
@@ -992,7 +1069,7 @@ async fn init_webview_notification_listeners(proxy: EventLoopProxy) {
             settings,
             "app.launchOnStartup",
             |notification: JsonNotification, _proxy: &EventLoopProxy| {
-                let enabled = !notification.as_bool().unwrap_or(true);
+                let enabled = notification.as_bool().unwrap_or(false);
                 debug!(%enabled, "app.launchOnStartup");
                 tokio::spawn(async move {
                     let ctx = Context::new();

@@ -111,7 +111,7 @@ async fn main() -> ExitCode {
         error!(%err, "failed to init global settings");
     }
 
-    if cli.is_startup && !fig_settings::settings::get_bool_or("app.launchOnStartup", true) {
+    if cli.is_startup && !fig_settings::settings::get_bool_or("app.launchOnStartup", false) {
         return ExitCode::SUCCESS;
     }
 

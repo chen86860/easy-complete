@@ -22,7 +22,7 @@ use serde_json::json;
 
 // var BuiltinThemes []string = []string{"dark", "light", "system"}
 const BUILT_IN_THEMES: [&str; 3] = ["dark", "light", "system"];
-const DEFAULT_THEME: &str = "dark";
+const DEFAULT_THEME: &str = "github-dark";
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 struct Author {

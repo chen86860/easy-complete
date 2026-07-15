@@ -22,6 +22,44 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* On macOS an NSVisualEffectView (sidebar material) sits behind the webview;
+   leave the page transparent so it shows through under the sidebar. */
+html.dashboard-native-vibrancy,
+html.dashboard-native-vibrancy body {
+  background: transparent;
+}
+
+/* Fallback surface for dev browsers / platforms without the native material. */
+.dashboard-sidebar {
+  background: #f5f5f7;
+}
+
+html.dashboard-native-vibrancy .dashboard-sidebar {
+  background: transparent;
+}
+
+.dashboard-sidebar-item-active {
+  background: var(--dashboard-accent-color, #0a60ff);
+  color: #fff;
+}
+
+.dashboard-sidebar-item-active .dashboard-sidebar-icon {
+  color: #fff;
+}
+
+/* Like System Settings: the selection falls back to gray and the material
+   turns solid while the window is unfocused. */
+html.dashboard-window-blurred .dashboard-sidebar-item-active {
+  background: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.85);
+}
+
+html.dashboard-window-blurred
+  .dashboard-sidebar-item-active
+  .dashboard-sidebar-icon {
+  color: rgba(32, 33, 36, 0.92);
+}
+
 button,
 select,
 a {

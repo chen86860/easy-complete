@@ -1,10 +1,8 @@
 import { useEffect, useRef } from "react";
 import {
   AboutSection,
-  AdvancedSection,
   AppearanceSection,
   BehaviorSection,
-  HistorySection,
 } from "../sections/settings-sections";
 import type { Section, SettingSetter, SettingsMap } from "../types";
 import { preventScrollBounce } from "../utils/prevent-scroll-bounce";
@@ -12,8 +10,6 @@ import { preventScrollBounce } from "../utils/prevent-scroll-bounce";
 const SECTION_META: Record<Section, { title: string; description?: string }> = {
   appearance: { title: "Appearance" },
   behavior: { title: "Behavior" },
-  history: { title: "History" },
-  advanced: { title: "Advanced" },
   about: {
     title: "About",
     description: "App info, updates, and project links",
@@ -60,12 +56,6 @@ export function DashboardContent({
         ) : null}
         {section === "behavior" ? (
           <BehaviorSection settings={settings} set={set} />
-        ) : null}
-        {section === "history" ? (
-          <HistorySection settings={settings} set={set} />
-        ) : null}
-        {section === "advanced" ? (
-          <AdvancedSection settings={settings} set={set} />
         ) : null}
         {section === "about" ? (
           <AboutSection settings={settings} set={set} />

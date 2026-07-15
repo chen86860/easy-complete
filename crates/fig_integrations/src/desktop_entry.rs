@@ -378,7 +378,7 @@ pub fn should_install_autostart_entry<Ctx: EnvProvider>(env: &Ctx, settings: &Se
     if env.env().in_appimage() && !state.get_bool_or("appimage.manageDesktopEntry", false) {
         return false;
     }
-    settings.get_bool_or("app.launchOnStartup", true)
+    settings.get_bool_or("app.launchOnStartup", false)
 }
 
 #[cfg(test)]
@@ -542,7 +542,7 @@ Type=Application"#;
     fn test_should_install_autostart_entry() {
         // Test structure: (env, settings, state, expected_result, test_name)
         let testcases = &[
-            (vec![], vec![], vec![], true, "Default should install"),
+            (vec![], vec![], vec![], false, "Default should not install"),
             (
                 vec![],
                 vec![("app.launchOnStartup", true.into())],
@@ -568,8 +568,8 @@ Type=Application"#;
                 vec![("APPIMAGE", "/app.appimage")],
                 vec![],
                 vec![("appimage.manageDesktopEntry", true.into())],
-                true,
-                "AppImage should install by default if user has granted permission",
+                false,
+                "AppImage should not install by default even if user has granted desktop entry permission",
             ),
             (
                 vec![("APPIMAGE", "/app.appimage")],

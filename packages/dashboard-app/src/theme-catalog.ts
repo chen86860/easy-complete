@@ -121,7 +121,8 @@ export const THEMES: ThemeEntry[] = [
   },
 ];
 
-export const DEFAULT_THEME = THEMES[0];
+export const DEFAULT_THEME =
+  THEMES.find((theme) => theme.id === "github-dark") ?? THEMES[0];
 
 export function getTheme(id: unknown) {
   return THEMES.find((theme) => theme.id === id) ?? DEFAULT_THEME;

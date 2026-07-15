@@ -1816,19 +1816,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "fig-api-mock"
-version = "2.0.42"
-dependencies = [
- "async-trait",
- "clap",
- "fig_desktop_api",
- "fig_os_shim",
- "fig_proto",
- "fig_settings",
- "tokio",
-]
-
-[[package]]
 name = "fig_desktop"
 version = "2.0.42"
 dependencies = [

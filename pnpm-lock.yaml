@@ -498,27 +498,6 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
-  tests/fig-api:
-    devDependencies:
-      '@easy-complete/api-bindings':
-        specifier: workspace:^
-        version: link:../../packages/api-bindings
-      '@easy-complete/tsconfig':
-        specifier: workspace:^
-        version: link:../../packages/tsconfig
-      '@easy-complete/types':
-        specifier: workspace:^
-        version: link:../../packages/types
-      '@types/node':
-        specifier: ^22.15.20
-        version: 22.15.20
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-      vitest:
-        specifier: ^3.0.8
-        version: 3.0.8(@types/debug@4.1.12)(@types/node@22.15.20)(@vitest/ui@3.0.8)(jiti@1.21.7)(jsdom@24.1.0)(terser@5.39.0)(tsx@4.19.4)(yaml@2.9.0)
-
 packages:
 
   '@alloc/quick-lru@5.2.0':

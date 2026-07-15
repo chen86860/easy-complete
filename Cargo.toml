@@ -6,7 +6,6 @@ members = [
     "crates/macos-utils/accessibility-master/accessibility",
     "crates/macos-utils/accessibility-master/accessibility-sys",
     "crates/macos-utils/appkit-nsworkspace-bindings",
-    "tests/fig-api/fig-api-mock",
     "tests/figterm2",
 ]
 default-members = ["crates/ec_cli"]

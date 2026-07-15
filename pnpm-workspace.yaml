@@ -1,6 +1,5 @@
 packages:
   - proto
-  - tests/fig-api
   - packages/*
 allowBuilds:
   '@bufbuild/buf': true

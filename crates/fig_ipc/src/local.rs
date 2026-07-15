@@ -2,40 +2,15 @@ use std::time::Duration;
 
 use async_trait::async_trait;
 use fig_proto::local::{
-    self,
-    BundleMetadataCommand,
-    BundleMetadataResponse,
-    CommandResponse,
-    DebugModeCommand,
-    DevtoolsCommand,
-    DumpStateCommand,
-    DumpStateResponse,
-    InputMethodAction,
-    InputMethodCommand,
-    LogLevelCommand,
-    LogLevelResponse,
-    LoginCommand,
-    LogoutCommand,
-    OpenUiElementCommand,
-    PromptAccessibilityCommand,
-    QuitCommand,
-    RestartCommand,
-    RestartSettingsListenerCommand,
-    UiElement,
-    UpdateCommand,
-    command,
-    command_response,
-    devtools_command,
+    self, BundleMetadataCommand, BundleMetadataResponse, CommandResponse, DebugModeCommand, DevtoolsCommand,
+    DumpStateCommand, DumpStateResponse, InputMethodAction, InputMethodCommand, LogLevelCommand, LogLevelResponse,
+    LoginCommand, LogoutCommand, OpenUiElementCommand, PromptAccessibilityCommand, QuitCommand, RestartCommand,
+    RestartSettingsListenerCommand, UiElement, UpdateCommand, command, command_response, devtools_command,
     dump_state_command,
 };
 use fig_util::directories;
 
-use crate::{
-    BufferedUnixStream,
-    Error,
-    RecvError,
-    SendRecvMessage,
-};
+use crate::{BufferedUnixStream, Error, RecvError, SendRecvMessage};
 
 type Result<T, E = crate::Error> = std::result::Result<T, E>;
 

@@ -1,21 +1,11 @@
-use accessibility_sys::{
-    AXIsProcessTrusted,
-    AXIsProcessTrustedWithOptions,
-    kAXTrustedCheckOptionPrompt,
-};
+use accessibility_sys::{AXIsProcessTrusted, AXIsProcessTrustedWithOptions, kAXTrustedCheckOptionPrompt};
 use core_foundation::base::TCFType;
-use core_foundation::boolean::{
-    CFBoolean,
-    kCFBooleanTrue,
-};
+use core_foundation::boolean::{CFBoolean, kCFBooleanTrue};
 use core_foundation::dictionary::CFDictionary;
 use core_foundation::string::CFString;
 use objc2::ClassType;
 use objc2_app_kit::NSWorkspace;
-use objc2_foundation::{
-    NSURL,
-    ns_string,
-};
+use objc2_foundation::{NSURL, ns_string};
 
 static ACCESSIBILITY_SETTINGS_URL: &str =
     "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility";

@@ -27,8 +27,8 @@ cargo run --bin easy-complete
 # Lint (CI enforces -D warnings)
 cargo clippy --locked --workspace --color always -- -D warnings
 
-# Format (requires nightly)
-cargo +nightly fmt
+# Format
+cargo fmt
 
 # Test a specific crate
 cargo test -p <crate_name>
@@ -162,7 +162,7 @@ To keep the bundle small, the sync script supports excluding whole namespaces vi
 ## macOS-Specific Notes
 
 - The `.app` bundle lives at `/Applications/easy-complete.app`
-- LaunchAgent plist: `~/Library/LaunchAgents/dev.emmmm.easy-complete.plist`
+- Launch at login: `SMAppService.mainAppService` on macOS 13+; `~/Library/LaunchAgents/dev.emmmm.easy-complete.plist` fallback on macOS 12
 - IME symlink target: `~/Library/Input Methods/EasyCompleteInputMethod.app`
 - HIToolbox prefs (`com.apple.HIToolbox`) must include the IME bundle ID for Ghostty/Kitty cursor following to work
 - `TISCreateInputSourceList` returns NULL when called without NSApplication; always call TIS APIs via `run_on_main` or from within the IME process itself

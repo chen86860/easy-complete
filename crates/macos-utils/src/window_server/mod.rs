@@ -8,66 +8,28 @@ use std::hash::Hash;
 use std::pin::Pin;
 
 use accessibility_sys::{
-    AXError,
-    AXIsProcessTrusted,
-    AXObserverRef,
-    AXUIElementCreateApplication,
-    AXUIElementRef,
-    kAXApplicationActivatedNotification,
-    kAXApplicationShownNotification,
-    kAXFocusedWindowChangedNotification,
-    kAXMainWindowChangedNotification,
-    kAXUIElementDestroyedNotification,
-    kAXWindowCreatedNotification,
-    kAXWindowMovedNotification,
-    kAXWindowResizedNotification,
-    pid_t,
+    AXError, AXIsProcessTrusted, AXObserverRef, AXUIElementCreateApplication, AXUIElementRef,
+    kAXApplicationActivatedNotification, kAXApplicationShownNotification, kAXFocusedWindowChangedNotification,
+    kAXMainWindowChangedNotification, kAXUIElementDestroyedNotification, kAXWindowCreatedNotification,
+    kAXWindowMovedNotification, kAXWindowResizedNotification, pid_t,
 };
 use ax_observer::AXObserver;
 use core_foundation::base::TCFType;
-use core_foundation::string::{
-    CFString,
-    CFStringRef,
-};
+use core_foundation::string::{CFString, CFStringRef};
 use dashmap::DashMap;
 use flume::Sender;
 use objc2::mutability::InteriorMutable;
-use objc2::rc::{
-    Allocated,
-    Retained,
-};
+use objc2::rc::{Allocated, Retained};
 use objc2::runtime::AnyObject;
-use objc2::{
-    ClassType,
-    DeclaredClass,
-    declare_class,
-    msg_send_id,
-    sel,
-};
+use objc2::{ClassType, DeclaredClass, declare_class, msg_send_id, sel};
 use objc2_app_kit::{
-    NSApplicationActivationPolicy,
-    NSRunningApplication,
-    NSWorkspace,
-    NSWorkspaceActiveSpaceDidChangeNotification,
-    NSWorkspaceDidActivateApplicationNotification,
-    NSWorkspaceDidLaunchApplicationNotification,
+    NSApplicationActivationPolicy, NSRunningApplication, NSWorkspace, NSWorkspaceActiveSpaceDidChangeNotification,
+    NSWorkspaceDidActivateApplicationNotification, NSWorkspaceDidLaunchApplicationNotification,
     NSWorkspaceDidTerminateApplicationNotification,
 };
-use objc2_foundation::{
-    NSNotification,
-    NSObject,
-};
-use tracing::{
-    debug,
-    error,
-    info,
-    trace,
-    warn,
-};
-pub use ui_element::{
-    CGWindowLevelForKey,
-    UIElement,
-};
+use objc2_foundation::{NSNotification, NSObject};
+use tracing::{debug, error, info, trace, warn};
+pub use ui_element::{CGWindowLevelForKey, UIElement};
 
 use crate::util::NotificationCenter;
 use crate::util::notification_center::get_app_from_notification;

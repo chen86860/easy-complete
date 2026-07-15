@@ -1,20 +1,10 @@
-use std::io::{
-    Write,
-    stdout,
-};
-use std::sync::mpsc::{
-    Sender,
-    TryRecvError,
-    channel,
-};
+use std::io::{Write, stdout};
+use std::sync::mpsc::{Sender, TryRecvError, channel};
 use std::thread;
 use std::thread::JoinHandle;
 use std::time::Duration;
 
-use anstream::{
-    print,
-    println,
-};
+use anstream::{print, println};
 use crossterm::ExecutableCommand;
 
 const FRAMES: &[&str] = &[

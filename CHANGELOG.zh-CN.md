@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.0.44
+
+- feat: 移除无条件安装的 macOS LaunchAgent，改为由用户控制的登录启动集成；macOS 13+ 使用 `SMAppService.mainAppService`，macOS 12 回退到不启用 `KeepAlive` 的 LaunchAgent
+- fix: 登录启动设置现在与系统真实注册状态同步；升级时迁移并清理两种历史 LaunchAgent，登录启动保持静默，卸载时完整注销所有启动项
+- change: 在 Rust 构建参数和应用包元数据中明确将 macOS 12 设为最低支持版本
+- chore: 将 nightly 专属 rustfmt 配置迁移到仓库固定的 stable 工具链，同步更新 CI、安装环境和文档，并对 Rust workspace 完成一次机械格式化
+
 ## v2.0.43
 
 - fix: autocomplete 窗口处于 disabled 状态时仍允许向 webview 发送 emit 事件，使 Dashboard 聚焦期间修改的补全主题等设置可以立即生效，不再需要重启才能刷新

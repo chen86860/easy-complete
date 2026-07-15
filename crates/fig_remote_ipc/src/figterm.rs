@@ -4,26 +4,13 @@ use std::sync::atomic::AtomicU64;
 use std::time::Duration;
 
 use fig_proto::fig::EnvironmentVariable;
-use fig_proto::local::{
-    ShellContext,
-    TerminalCursorCoordinates,
-};
-use fig_proto::remote::{
-    Clientbound,
-    hostbound,
-};
+use fig_proto::local::{ShellContext, TerminalCursorCoordinates};
+use fig_proto::remote::{Clientbound, hostbound};
 use parking_lot::lock_api::MutexGuard;
-use parking_lot::{
-    FairMutex,
-    MappedFairMutexGuard,
-    RawFairMutex,
-};
+use parking_lot::{FairMutex, MappedFairMutexGuard, RawFairMutex};
 use serde::Serialize;
 use time::OffsetDateTime;
-use tokio::sync::{
-    broadcast,
-    oneshot,
-};
+use tokio::sync::{broadcast, oneshot};
 use tokio::time::Instant;
 use uuid::Uuid;
 

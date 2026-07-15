@@ -1,20 +1,10 @@
 use fig_proto::fig::UpdateApplicationPropertiesRequest;
-use fig_remote_ipc::figterm::{
-    FigtermCommand,
-    FigtermState,
-    InterceptMode,
-};
-use fig_settings::keybindings::{
-    KeyBinding,
-    KeyBindings,
-};
+use fig_remote_ipc::figterm::{FigtermCommand, FigtermState, InterceptMode};
+use fig_settings::keybindings::{KeyBinding, KeyBindings};
 use tracing::error;
 use uuid::Uuid;
 
-use super::{
-    RequestResult,
-    RequestResultImpl,
-};
+use super::{RequestResult, RequestResultImpl};
 use crate::InterceptState;
 
 pub fn update(

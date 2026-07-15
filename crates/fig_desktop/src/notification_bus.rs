@@ -3,11 +3,7 @@ use std::sync::LazyLock;
 use dashmap::DashMap;
 use fnv::FnvBuildHasher;
 use serde_json::Value;
-use tokio::sync::broadcast::{
-    self,
-    Receiver,
-    Sender,
-};
+use tokio::sync::broadcast::{self, Receiver, Sender};
 
 const CHANNEL_SIZE: usize = 8;
 

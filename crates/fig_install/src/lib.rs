@@ -14,10 +14,7 @@ use std::sync::Arc;
 use std::time::SystemTimeError;
 
 use fig_os_shim::Context;
-use fig_util::manifest::{
-    Channel,
-    manifest,
-};
+use fig_util::manifest::{Channel, manifest};
 #[cfg(target_os = "freebsd")]
 use freebsd as os;
 use index::UpdatePackage;
@@ -34,11 +31,7 @@ use tracing::error;
 use windows as os;
 
 mod common;
-pub use common::{
-    InstallComponents,
-    install,
-    uninstall,
-};
+pub use common::{InstallComponents, install, uninstall};
 
 #[derive(Debug, Error)]
 pub enum Error {

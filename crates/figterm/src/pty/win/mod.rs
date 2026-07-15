@@ -1,42 +1,14 @@
-use std::io::{
-    self,
-    Read,
-    Write,
-};
-use std::os::windows::io::{
-    AsRawHandle,
-    RawHandle,
-};
+use std::io::{self, Read, Write};
+use std::os::windows::io::{AsRawHandle, RawHandle};
 use std::pin::Pin;
-use std::sync::{
-    Arc,
-    Mutex,
-};
-use std::task::{
-    Context,
-    Poll,
-};
+use std::sync::{Arc, Mutex};
+use std::task::{Context, Poll};
 
-use anyhow::{
-    Context as _,
-    Result,
-};
+use anyhow::{Context as _, Result};
 use async_trait::async_trait;
-use filedescriptor::{
-    FileDescriptor,
-    OwnedHandle,
-    Pipe,
-};
-use flume::{
-    Receiver,
-    Sender,
-    unbounded,
-};
-use portable_pty::{
-    Child,
-    ChildKiller,
-    ExitStatus,
-};
+use filedescriptor::{FileDescriptor, OwnedHandle, Pipe};
+use flume::{Receiver, Sender, unbounded};
+use portable_pty::{Child, ChildKiller, ExitStatus};
 use tracing::error;
 use winapi::shared::minwindef::DWORD;
 use winapi::um::minwinbase::STILL_ACTIVE;
@@ -46,14 +18,7 @@ use winapi::um::winbase::INFINITE;
 use winapi::um::wincon::COORD;
 
 use crate::pty::win::pseudocon::PseudoCon;
-use crate::pty::{
-    AsyncMasterPty,
-    CommandBuilder,
-    MasterPty,
-    PtyPair,
-    PtySize,
-    SlavePty,
-};
+use crate::pty::{AsyncMasterPty, CommandBuilder, MasterPty, PtyPair, PtySize, SlavePty};
 
 mod procthreadattr;
 mod pseudocon;

@@ -3,34 +3,17 @@ use std::fmt::Display;
 use std::path::PathBuf;
 
 use camino::Utf8PathBuf;
-use fig_os_shim::{
-    Context,
-    EnvProvider,
-    FsProvider,
-    Os,
-    PlatformProvider,
-    Shim,
-};
+use fig_os_shim::{Context, EnvProvider, FsProvider, Os, PlatformProvider, Shim};
 use thiserror::Error;
 use time::OffsetDateTime;
 
 #[cfg(unix)]
 use crate::RUNTIME_DIR_NAME;
-use crate::env_var::{
-    Q_BUNDLE_METADATA_PATH,
-    Q_PARENT,
-};
+use crate::env_var::{Q_BUNDLE_METADATA_PATH, Q_PARENT};
 #[cfg(target_os = "linux")]
 use crate::linux::PACKAGE_NAME;
-use crate::system_info::{
-    in_cloudshell,
-    is_remote,
-};
-use crate::{
-    BACKUP_DIR_NAME,
-    DATA_DIR_NAME,
-    TAURI_PRODUCT_NAME,
-};
+use crate::system_info::{in_cloudshell, is_remote};
+use crate::{BACKUP_DIR_NAME, DATA_DIR_NAME, TAURI_PRODUCT_NAME};
 
 macro_rules! utf8_dir {
     ($name:ident, $($arg:ident: $type:ty),*) => {

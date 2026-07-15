@@ -11,8 +11,6 @@ REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
 STAGING_BUNDLE="${REPO_DIR}/build/${APP_DISPLAY}.app"
 APP_BUNDLE="/Applications/${APP_DISPLAY}.app"
 LOCAL_BIN="${HOME}/.local/bin"
-LAUNCH_AGENTS="${HOME}/Library/LaunchAgents"
-PLIST_PATH="${LAUNCH_AGENTS}/${BUNDLE_ID}.plist"
 
 GREEN='\033[0;32m'; YELLOW='\033[0;33m'; RED='\033[0;31m'; NC='\033[0m'
 info()  { echo -e "${GREEN}==>${NC} $*"; }
@@ -29,9 +27,6 @@ info "Installing to /Applications/..."
 # If already running, quit first
 pkill -x "${APP_NAME}" 2>/dev/null || true
 sleep 0.5
-
-# Remove old launchd job if loaded
-launchctl unload "$PLIST_PATH" 2>/dev/null || true
 
 rm -rf "$APP_BUNDLE"
 cp -r "$STAGING_BUNDLE" /Applications/
@@ -51,34 +46,6 @@ mkdir -p "$LOCAL_BIN"
 ln -sf "/Applications/${APP_DISPLAY}.app/Contents/MacOS/ec"     "${LOCAL_BIN}/ec"
 ln -sf "/Applications/${APP_DISPLAY}.app/Contents/MacOS/ecterm" "${LOCAL_BIN}/ecterm"
 
-
-# ── 5. LaunchAgent (autostart on login) ───────────────────────────────────────
-info "Installing LaunchAgent for autostart..."
-mkdir -p "$LAUNCH_AGENTS"
-cat > "$PLIST_PATH" <<PLIST
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>Label</key>
-    <string>${BUNDLE_ID}</string>
-    <key>Program</key>
-    <string>/Applications/${APP_DISPLAY}.app/Contents/MacOS/${APP_NAME}</string>
-    <key>RunAtLoad</key>
-    <true/>
-    <key>KeepAlive</key>
-    <false/>
-    <key>ThrottleInterval</key>
-    <integer>10</integer>
-    <key>StandardOutPath</key>
-    <string>${HOME}/.local/share/${APP_NAME}/launch.log</string>
-    <key>StandardErrorPath</key>
-    <string>${HOME}/.local/share/${APP_NAME}/launch.log</string>
-</dict>
-</plist>
-PLIST
-
-launchctl load "$PLIST_PATH"
 
 # ── 6. Shell integration ───────────────────────────────────────────────────────
 info "Installing shell integration..."
@@ -105,8 +72,9 @@ info "Requesting Accessibility permission..."
 # The autocomplete popup positions itself relative to the focused terminal window,
 # which requires Accessibility (AXIsProcessTrusted). After a reinstall the grant was
 # just reset in step 3, so trigger the system prompt now. `ec debug prompt-accessibility`
-# talks to the running desktop process over its local socket, so retry briefly while
-# the app (launched by `launchctl load` above) finishes coming up.
+# talks to the running desktop process over its local socket, so launch the app and
+# retry briefly while it finishes coming up.
+open "$APP_BUNDLE"
 prompted=false
 for _ in 1 2 3 4 5; do
   if ec debug prompt-accessibility 2>/dev/null; then prompted=true; break; fi

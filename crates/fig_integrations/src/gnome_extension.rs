@@ -1,25 +1,11 @@
-use std::path::{
-    Path,
-    PathBuf,
-};
+use std::path::{Path, PathBuf};
 
 use async_trait::async_trait;
-use dbus::gnome_shell::{
-    ExtensionInstallationStatus,
-    ShellExtensions,
-    get_extension_status,
-};
-use fig_os_shim::{
-    EnvProvider,
-    FsProvider,
-    SysInfoProvider,
-};
+use dbus::gnome_shell::{ExtensionInstallationStatus, ShellExtensions, get_extension_status};
+use fig_os_shim::{EnvProvider, FsProvider, SysInfoProvider};
 
 use crate::Integration;
-use crate::error::{
-    Error,
-    Result,
-};
+use crate::error::{Error, Result};
 
 #[derive(Debug, Clone)]
 pub struct GnomeExtensionIntegration<'a, Ctx, ExtensionsCtx> {

@@ -1,8 +1,5 @@
 use std::path::PathBuf;
-use std::{
-    fmt,
-    str,
-};
+use std::{fmt, str};
 
 use cfg_if::cfg_if;
 

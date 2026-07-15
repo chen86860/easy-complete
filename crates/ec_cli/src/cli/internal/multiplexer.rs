@@ -1,93 +1,31 @@
-use std::net::{
-    Ipv4Addr,
-    SocketAddr,
-};
+use std::net::{Ipv4Addr, SocketAddr};
 use std::ops::ControlFlow;
 use std::sync::Arc;
 use std::time::Duration;
 
-use bytes::{
-    Bytes,
-    BytesMut,
-};
+use bytes::{Bytes, BytesMut};
 use clap::Args;
-use eyre::{
-    Context,
-    ContextCompat,
-    Result,
-    bail,
-};
+use eyre::{Context, ContextCompat, Result, bail};
 use fig_ipc::Base64LineCodec;
-use fig_proto::figterm::intercept_request::{
-    InterceptCommand,
-    SetFigjsIntercepts,
-    SetFigjsVisible,
-};
-use fig_proto::figterm::{
-    InsertTextRequest,
-    InterceptRequest,
-    SetBufferRequest,
-};
-use fig_proto::local::{
-    EditBufferHook,
-    InterceptedKeyHook,
-    PostExecHook,
-    PreExecHook,
-    PromptHook,
-};
-use fig_proto::mux::{
-    self,
-    Packet,
-    PacketOptions,
-    Ping,
-    message_to_packet,
-    packet_to_message,
-};
+use fig_proto::figterm::intercept_request::{InterceptCommand, SetFigjsIntercepts, SetFigjsVisible};
+use fig_proto::figterm::{InsertTextRequest, InterceptRequest, SetBufferRequest};
+use fig_proto::local::{EditBufferHook, InterceptedKeyHook, PostExecHook, PreExecHook, PromptHook};
+use fig_proto::mux::{self, Packet, PacketOptions, Ping, message_to_packet, packet_to_message};
 use fig_proto::remote;
 use fig_proto::remote::RunProcessRequest;
-use fig_remote_ipc::figterm::{
-    FigtermCommand,
-    FigtermState,
-};
+use fig_remote_ipc::figterm::{FigtermCommand, FigtermState};
 use fig_remote_ipc::remote::handle_remote_ipc;
-use fig_util::{
-    PTY_BINARY_NAME,
-    directories,
-};
-use futures::{
-    SinkExt,
-    StreamExt,
-};
-use tokio::io::{
-    AsyncRead,
-    AsyncReadExt,
-    AsyncWrite,
-    AsyncWriteExt,
-};
-use tokio::net::{
-    TcpListener,
-    TcpStream,
-    UnixListener,
-};
+use fig_util::{PTY_BINARY_NAME, directories};
+use futures::{SinkExt, StreamExt};
+use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
+use tokio::net::{TcpListener, TcpStream, UnixListener};
 use tokio::select;
 use tokio::sync::broadcast;
-use tokio::sync::mpsc::{
-    self,
-    UnboundedSender,
-};
+use tokio::sync::mpsc::{self, UnboundedSender};
 use tokio::task::JoinHandle;
 use tokio_tungstenite::tungstenite::Message;
-use tokio_util::codec::{
-    FramedRead,
-    FramedWrite,
-};
-use tracing::{
-    debug,
-    error,
-    info,
-    trace,
-    warn,
-};
+use tokio_util::codec::{FramedRead, FramedWrite};
+use tracing::{debug, error, info, trace, warn};
 use uuid::Uuid;
 
 use crate::util::pid_file::PidLock;

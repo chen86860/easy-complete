@@ -3,42 +3,20 @@ use std::process::Command;
 use std::sync::Arc;
 
 use async_trait::async_trait;
-use dbus::gnome_shell::{
-    ExtensionInstallationStatus,
-    ShellExtensions,
-    get_extension_status,
-};
+use dbus::gnome_shell::{ExtensionInstallationStatus, ShellExtensions, get_extension_status};
 use fig_ipc::local::send_recv_command_to_socket;
 use fig_os_shim::Context;
 use fig_proto::local::command::Command as IpcCommand;
 use fig_proto::local::command_response::Response;
-use fig_proto::local::{
-    CommandResponse,
-    ConnectToIBusCommand,
-};
+use fig_proto::local::{CommandResponse, ConnectToIBusCommand};
 use fig_util::Terminal;
-use fig_util::consts::{
-    CLI_BINARY_NAME,
-    PRODUCT_NAME,
-};
-use fig_util::system_info::linux::{
-    DesktopEnvironment,
-    DisplayServer,
-    get_desktop_environment,
-    get_display_server,
-};
+use fig_util::consts::{CLI_BINARY_NAME, PRODUCT_NAME};
+use fig_util::system_info::linux::{DesktopEnvironment, DisplayServer, get_desktop_environment, get_display_server};
 use futures::FutureExt;
 use owo_colors::OwoColorize;
 
 use crate::cli::doctor::{
-    DoctorCheck,
-    DoctorCheckType,
-    DoctorError,
-    DoctorFix,
-    Platform,
-    doctor_error,
-    doctor_fix,
-    doctor_warning,
+    DoctorCheck, DoctorCheckType, DoctorError, DoctorFix, Platform, doctor_error, doctor_fix, doctor_warning,
 };
 
 #[derive(Debug)]
@@ -301,10 +279,7 @@ impl DoctorCheck<LinuxContext> for IBusRunningCheck {
     async fn check(&self, _: &LinuxContext) -> Result<(), DoctorError> {
         use std::ffi::OsString;
 
-        use sysinfo::{
-            ProcessRefreshKind,
-            RefreshKind,
-        };
+        use sysinfo::{ProcessRefreshKind, RefreshKind};
 
         let system =
             sysinfo::System::new_with_specifics(RefreshKind::nothing().with_processes(ProcessRefreshKind::nothing()));
@@ -403,14 +378,8 @@ impl DoctorCheck<LinuxContext> for SandboxCheck {
 
 #[cfg(test)]
 mod tests {
-    use dbus::gnome_shell::{
-        ExtensionState,
-        GNOME_SHELL_PROCESS_NAME,
-    };
-    use fig_os_shim::{
-        Env,
-        ProcessInfo,
-    };
+    use dbus::gnome_shell::{ExtensionState, GNOME_SHELL_PROCESS_NAME};
+    use fig_os_shim::{Env, ProcessInfo};
 
     use super::*;
 

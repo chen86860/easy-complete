@@ -6,11 +6,7 @@ use crossterm::style::Stylize;
 use eyre::Result;
 use fig_diagnostic::Diagnostics;
 use fig_util::system_info::is_remote;
-use fig_util::{
-    CLI_BINARY_NAME,
-    GITHUB_REPO_NAME,
-    PRODUCT_NAME,
-};
+use fig_util::{CLI_BINARY_NAME, GITHUB_REPO_NAME, PRODUCT_NAME};
 
 const TEMPLATE_NAME: &str = "1_bug_report_template.yml";
 

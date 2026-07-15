@@ -49,7 +49,6 @@ install_rust() {
   esac
 
   rustup default stable
-  rustup toolchain install nightly
   cargo install typos-cli
 
   if [[ "$OS" == "Darwin" ]]; then

@@ -1,68 +1,27 @@
 use std::fs::OpenOptions;
-use std::io::{
-    Error as IoError,
-    Write,
-    stdin,
-    stdout,
-};
+use std::io::{Error as IoError, Write, stdin, stdout};
 use std::mem;
 use std::os::fd::BorrowedFd;
 use std::os::unix::io::AsRawFd;
-use std::sync::atomic::{
-    AtomicBool,
-    Ordering,
-};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
 
-use anyhow::{
-    Context,
-    Result,
-    bail,
-};
+use anyhow::{Context, Result, bail};
 use bytes::BytesMut;
 use filedescriptor::FileDescriptor;
-use flume::{
-    Receiver,
-    bounded,
-};
-use nix::libc::{
-    self,
-    winsize,
-};
-use nix::sys::termios::{
-    FlushArg,
-    SetArg,
-    Termios,
-    cfmakeraw,
-    tcdrain,
-    tcflush,
-    tcgetattr,
-    tcsetattr,
-};
-use tokio::io::{
-    self,
-    AsyncReadExt,
-};
+use flume::{Receiver, bounded};
+use nix::libc::{self, winsize};
+use nix::sys::termios::{FlushArg, SetArg, Termios, cfmakeraw, tcdrain, tcflush, tcgetattr, tcsetattr};
+use tokio::io::{self, AsyncReadExt};
 use tokio::select;
 use tokio::signal::unix::SignalKind;
 use tokio::time::MissedTickBehavior;
-use tracing::{
-    error,
-    trace,
-    warn,
-};
+use tracing::{error, trace, warn};
 
 use super::InputEventResult;
-use crate::input::{
-    InputEvent,
-    InputParser,
-};
+use crate::input::{InputEvent, InputParser};
 use crate::term::istty::IsTty;
-use crate::term::{
-    ScreenSize,
-    Terminal,
-    cast,
-};
+use crate::term::{ScreenSize, Terminal, cast};
 
 const BUF_SIZE: usize = 4096;
 

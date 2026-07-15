@@ -7,16 +7,9 @@ use fig_os_shim::Context;
 use percent_encoding::percent_decode_str;
 use tracing::info;
 use wry::http::header::CONTENT_TYPE;
-use wry::http::{
-    Request,
-    Response,
-};
+use wry::http::{Request, Response};
 
-use super::util::{
-    res_400,
-    res_404,
-    res_500,
-};
+use super::util::{res_400, res_404, res_500};
 use crate::webview::WindowId;
 
 pub async fn clear_index_cache() {}

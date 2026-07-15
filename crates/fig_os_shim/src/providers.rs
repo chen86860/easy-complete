@@ -1,12 +1,6 @@
 use std::sync::Arc;
 
-use crate::{
-    Context,
-    Env,
-    Fs,
-    Platform,
-    SysInfo,
-};
+use crate::{Context, Env, Fs, Platform, SysInfo};
 
 pub trait ContextProvider {
     fn context(&self) -> &Context;

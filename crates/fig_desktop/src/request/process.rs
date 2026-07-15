@@ -1,19 +1,10 @@
 use std::time::Duration;
 
 use fig_proto::fig::server_originated_message::Submessage as ServerOriginatedSubMessage;
-use fig_proto::fig::{
-    RunProcessRequest,
-    RunProcessResponse,
-};
+use fig_proto::fig::{RunProcessRequest, RunProcessResponse};
 use fig_proto::remote::hostbound;
-use fig_remote_ipc::figterm::{
-    FigtermCommand,
-    FigtermState,
-};
-use fig_util::env_var::{
-    PROCESS_LAUNCHED_BY_Q,
-    Q_TERM,
-};
+use fig_remote_ipc::figterm::{FigtermCommand, FigtermState};
+use fig_util::env_var::{PROCESS_LAUNCHED_BY_Q, Q_TERM};
 use tokio::process::Command;
 use tokio::time::timeout;
 use tracing::debug;

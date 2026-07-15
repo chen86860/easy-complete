@@ -4,11 +4,7 @@ use anstream::println;
 use clap::Args;
 use crossterm::style::Stylize;
 use eyre::Result;
-use fig_util::{
-    CLI_BINARY_NAME,
-    PRODUCT_NAME,
-    directories,
-};
+use fig_util::{CLI_BINARY_NAME, PRODUCT_NAME, directories};
 use indoc::formatdoc;
 use tokio::net::UnixStream;
 use uuid::Uuid;

@@ -42,10 +42,7 @@ pub async fn migrate_data_dir() {
 #[cfg(target_os = "macos")]
 fn run_input_method_migration() {
     use fig_integrations::input_method::InputMethod;
-    use tokio::time::{
-        Duration,
-        sleep,
-    };
+    use tokio::time::{Duration, sleep};
     use tracing::warn;
 
     let input_method = InputMethod::default();
@@ -68,11 +65,7 @@ fn run_input_method_migration() {
 
 #[cfg(target_os = "macos")]
 fn prompt_for_accessibility_permission() {
-    use macos_utils::accessibility::{
-        accessibility_is_enabled,
-        open_accessibility,
-        prompt_for_accessibility,
-    };
+    use macos_utils::accessibility::{accessibility_is_enabled, open_accessibility, prompt_for_accessibility};
     use tracing::warn;
 
     if accessibility_is_enabled() {
@@ -88,10 +81,7 @@ fn prompt_for_accessibility_permission() {
 fn run_macos_post_install_permission_tasks(prompt_for_permissions: bool) {
     use fig_integrations::Integration;
     use fig_integrations::input_method::InputMethod;
-    use tracing::{
-        debug,
-        warn,
-    };
+    use tracing::{debug, warn};
 
     tokio::spawn(async {
         let input_method = InputMethod::default();
@@ -216,24 +206,9 @@ pub async fn initialize_fig_dir(env: &fig_os_shim::Env) -> anyhow::Result<()> {
     use std::fs;
 
     use fig_integrations::shell::ShellExt;
-    use fig_util::consts::{
-        APP_BUNDLE_ID,
-        APP_PROCESS_NAME,
-        CLI_BINARY_NAME,
-        PTY_BINARY_NAME,
-    };
+    use fig_util::consts::{CLI_BINARY_NAME, PTY_BINARY_NAME};
     use fig_util::directories::home_dir;
-    use fig_util::launchd_plist::{
-        LaunchdPlist,
-        create_launch_agent,
-    };
-    use fig_util::{
-        CHAT_BINARY_NAME,
-        OLD_CLI_BINARY_NAMES,
-        OLD_PTY_BINARY_NAMES,
-        Shell,
-    };
-    use macos_utils::bundle::get_bundle_path;
+    use fig_util::{CHAT_BINARY_NAME, OLD_CLI_BINARY_NAMES, OLD_PTY_BINARY_NAMES, Shell};
     use tracing::warn;
 
     let local_bin = fig_util::directories::home_local_bin()?;
@@ -339,23 +314,6 @@ pub async fn initialize_fig_dir(env: &fig_os_shim::Env) -> anyhow::Result<()> {
             }
         },
         None => error!("Failed to find {CHAT_BINARY_NAME} in bundle"),
-    }
-
-    if let Some(bundle_path) = get_bundle_path() {
-        let exe = bundle_path.join("Contents").join("MacOS").join(APP_PROCESS_NAME);
-        let startup_launch_agent = LaunchdPlist::new("com.amazon.codewhisperer.launcher")
-            .program_arguments([&exe.to_string_lossy(), "--is-startup", "--no-dashboard"])
-            .associated_bundle_identifiers([APP_BUNDLE_ID])
-            .run_at_load(true);
-
-        create_launch_agent(&startup_launch_agent)?;
-
-        let path = startup_launch_agent.get_file_path()?;
-        std::process::Command::new("launchctl")
-            .arg("load")
-            .arg(&path)
-            .status()
-            .ok();
     }
 
     if let Ok(home) = home_dir() {
@@ -472,19 +430,10 @@ where
     Ctx: fig_os_shim::ContextProvider,
     ExtensionsCtx: fig_os_shim::ContextProvider,
 {
-    use dbus::gnome_shell::{
-        ExtensionInstallationStatus,
-        get_extension_status,
-    };
+    use dbus::gnome_shell::{ExtensionInstallationStatus, get_extension_status};
     use fig_os_shim::FsProvider;
-    use fig_util::directories::{
-        bundled_gnome_extension_version_path,
-        bundled_gnome_extension_zip_path,
-    };
-    use fig_util::system_info::linux::{
-        DisplayServer,
-        get_display_server,
-    };
+    use fig_util::directories::{bundled_gnome_extension_version_path, bundled_gnome_extension_zip_path};
+    use fig_util::system_info::linux::{DisplayServer, get_display_server};
     use tracing::debug;
 
     let display_server = get_display_server(ctx)?;
@@ -565,10 +514,7 @@ where
 #[cfg(target_os = "linux")]
 async fn install_desktop_entry(ctx: &Context, state: &fig_settings::State) -> anyhow::Result<()> {
     use fig_integrations::desktop_entry::DesktopEntryIntegration;
-    use fig_util::directories::{
-        appimage_desktop_entry_icon_path,
-        appimage_desktop_entry_path,
-    };
+    use fig_util::directories::{appimage_desktop_entry_icon_path, appimage_desktop_entry_path};
 
     if !state.get_bool_or("appimage.manageDesktopEntry", false) {
         return Ok(());
@@ -590,10 +536,7 @@ async fn install_autostart_entry(
     settings: &fig_settings::Settings,
     state: &fig_settings::State,
 ) -> anyhow::Result<()> {
-    use fig_integrations::desktop_entry::{
-        AutostartIntegration,
-        should_install_autostart_entry,
-    };
+    use fig_integrations::desktop_entry::{AutostartIntegration, should_install_autostart_entry};
 
     if !should_install_autostart_entry(ctx, settings, state) {
         return Ok(());
@@ -607,11 +550,7 @@ async fn install_autostart_entry(
 /// Installs the CLI and PTY under the user's local bin directory from the AppImage, if required.
 #[cfg(target_os = "linux")]
 async fn install_appimage_binaries(ctx: &Context) -> anyhow::Result<()> {
-    use fig_util::consts::{
-        CHAT_BINARY_NAME,
-        CLI_BINARY_NAME,
-        PTY_BINARY_NAME,
-    };
+    use fig_util::consts::{CHAT_BINARY_NAME, CLI_BINARY_NAME, PTY_BINARY_NAME};
     use fig_util::directories::home_local_bin_ctx;
     use tokio::process::Command;
 
@@ -740,11 +679,7 @@ async fn launch_systemd_user_service(service: SystemdUserService) -> anyhow::Res
 async fn launch_ibus(ctx: &Context) {
     use std::ffi::OsString;
 
-    use sysinfo::{
-        ProcessRefreshKind,
-        RefreshKind,
-        System,
-    };
+    use sysinfo::{ProcessRefreshKind, RefreshKind, System};
     use tokio::process::Command;
 
     let system = tokio::task::block_in_place(|| {
@@ -880,11 +815,7 @@ mod test {
         use std::path::Path;
 
         use fig_util::directories::home_local_bin_ctx;
-        use fig_util::{
-            CHAT_BINARY_NAME,
-            CLI_BINARY_NAME,
-            PTY_BINARY_NAME,
-        };
+        use fig_util::{CHAT_BINARY_NAME, CLI_BINARY_NAME, PTY_BINARY_NAME};
         use tokio::process::Command;
 
         use super::*;
@@ -975,17 +906,11 @@ echo "{binary_name} {version}"
     #[cfg(target_os = "linux")]
     mod linux_gnome_shell_extension_tests {
         use dbus::gnome_shell::{
-            ExtensionInstallationStatus,
-            GNOME_SHELL_PROCESS_NAME,
-            ShellExtensions,
-            get_extension_status,
+            ExtensionInstallationStatus, GNOME_SHELL_PROCESS_NAME, ShellExtensions, get_extension_status,
         };
         use fig_os_shim::Os;
         use fig_settings::State;
-        use fig_util::directories::{
-            bundled_gnome_extension_version_path,
-            bundled_gnome_extension_zip_path,
-        };
+        use fig_util::directories::{bundled_gnome_extension_version_path, bundled_gnome_extension_zip_path};
 
         use super::*;
 
@@ -1099,19 +1024,9 @@ echo "{binary_name} {version}"
 
     #[cfg(target_os = "linux")]
     mod linux_desktop_entry_tests {
-        use fig_integrations::desktop_entry::{
-            AutostartIntegration,
-            local_entry_path,
-            local_icon_path,
-        };
-        use fig_settings::{
-            Settings,
-            State,
-        };
-        use fig_util::directories::{
-            appimage_desktop_entry_icon_path,
-            appimage_desktop_entry_path,
-        };
+        use fig_integrations::desktop_entry::{AutostartIntegration, local_entry_path, local_icon_path};
+        use fig_settings::{Settings, State};
+        use fig_util::directories::{appimage_desktop_entry_icon_path, appimage_desktop_entry_path};
 
         use super::*;
 

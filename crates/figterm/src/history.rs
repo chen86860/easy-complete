@@ -1,14 +1,6 @@
-use fig_settings::history::{
-    HistoryColumn,
-    Order,
-    OrderBy,
-    WhereExpression,
-};
+use fig_settings::history::{HistoryColumn, Order, OrderBy, WhereExpression};
 use flume::Sender;
-use tracing::{
-    error,
-    trace,
-};
+use tracing::{error, trace};
 
 use crate::HOSTNAME;
 

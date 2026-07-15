@@ -1,10 +1,7 @@
 use tokio::sync::mpsc::Sender;
 
 use crate::index::UpdatePackage;
-use crate::{
-    Error,
-    UpdateStatus,
-};
+use crate::{Error, UpdateStatus};
 
 pub(crate) async fn update(
     _package: UpdatePackage,

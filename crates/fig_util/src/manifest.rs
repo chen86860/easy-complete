@@ -3,20 +3,9 @@ use std::str::FromStr;
 use std::sync::OnceLock;
 
 use cfg_if::cfg_if;
-use fig_os_shim::{
-    EnvProvider,
-    FsProvider,
-    PlatformProvider,
-};
-use serde::{
-    Deserialize,
-    Deserializer,
-    Serialize,
-};
-use strum::{
-    Display,
-    EnumString,
-};
+use fig_os_shim::{EnvProvider, FsProvider, PlatformProvider};
+use serde::{Deserialize, Deserializer, Serialize};
+use strum::{Display, EnumString};
 use tracing::debug;
 
 use crate::Error;
@@ -313,10 +302,7 @@ pub fn version() -> Option<&'static str> {
 
 #[cfg(test)]
 mod tests {
-    use serde_json::{
-        from_str,
-        to_string,
-    };
+    use serde_json::{from_str, to_string};
 
     use super::*;
 

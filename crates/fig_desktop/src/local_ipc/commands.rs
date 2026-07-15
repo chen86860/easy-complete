@@ -1,24 +1,11 @@
 use std::sync::Mutex;
 
-use fig_os_shim::{
-    Context,
-    ContextArcProvider,
-    ContextProvider,
-};
+use fig_os_shim::{Context, ContextArcProvider, ContextProvider};
 use fig_proto::local::command_response::Response as CommandResponseTypes;
 use fig_proto::local::dump_state_command::Type as DumpStateType;
 use fig_proto::local::{
-    BundleMetadataResponse,
-    DebugModeCommand,
-    DiagnosticsCommand,
-    DiagnosticsResponse,
-    DumpStateCommand,
-    DumpStateResponse,
-    LogLevelCommand,
-    LogLevelResponse,
-    OpenBrowserCommand,
-    OpenUiElementCommand,
-    QuitCommand,
+    BundleMetadataResponse, DebugModeCommand, DiagnosticsCommand, DiagnosticsResponse, DumpStateCommand,
+    DumpStateResponse, LogLevelCommand, LogLevelResponse, OpenBrowserCommand, OpenUiElementCommand, QuitCommand,
     UiElement,
 };
 use fig_remote_ipc::figterm::FigtermState;
@@ -27,23 +14,12 @@ use fig_settings::settings::SettingsProvider;
 use tao::event_loop::ControlFlow;
 use tracing::error;
 
-use super::{
-    LocalResponse,
-    LocalResult,
-};
-use crate::event::{
-    Event,
-    WindowEvent,
-};
+use super::{LocalResponse, LocalResult};
+use crate::event::{Event, WindowEvent};
 use crate::platform::PlatformState;
 use crate::webview::DASHBOARD_SIZE;
 use crate::webview::notification::WebviewNotificationsState;
-use crate::{
-    AUTOCOMPLETE_ID,
-    DASHBOARD_ID,
-    EventLoopProxy,
-    platform,
-};
+use crate::{AUTOCOMPLETE_ID, DASHBOARD_ID, EventLoopProxy, platform};
 
 pub async fn debug(command: DebugModeCommand, proxy: &EventLoopProxy) -> LocalResult {
     static DEBUG_MODE: Mutex<bool> = Mutex::new(false);

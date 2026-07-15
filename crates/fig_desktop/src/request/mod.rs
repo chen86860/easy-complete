@@ -11,61 +11,25 @@ use std::marker::PhantomData;
 use std::sync::Arc;
 
 use fig_desktop_api::handler::Wrapped;
-use fig_desktop_api::kv::{
-    DashKVStore,
-    KVStore,
-};
+use fig_desktop_api::kv::{DashKVStore, KVStore};
 #[allow(unused_imports)]
-pub use fig_desktop_api::requests::{
-    Error,
-    RequestResult,
-    RequestResultImpl,
-};
-use fig_os_shim::{
-    ContextArcProvider,
-    ContextProvider,
-};
+pub use fig_desktop_api::requests::{Error, RequestResult, RequestResultImpl};
+use fig_os_shim::{ContextArcProvider, ContextProvider};
 use fig_proto::fig::server_originated_message::Submessage as ServerOriginatedSubMessage;
 use fig_proto::fig::{
-    AggregateSessionMetricActionRequest,
-    CheckForUpdatesRequest,
-    CheckForUpdatesResponse,
-    ClientOriginatedMessage,
-    DragWindowRequest,
-    InsertTextRequest,
-    NotificationRequest,
-    OnboardingRequest,
-    PositionWindowRequest,
-    RunProcessRequest,
-    ServerOriginatedMessage,
-    UpdateApplicationPropertiesRequest,
-    UserLogoutRequest,
+    AggregateSessionMetricActionRequest, CheckForUpdatesRequest, CheckForUpdatesResponse, ClientOriginatedMessage,
+    DragWindowRequest, InsertTextRequest, NotificationRequest, OnboardingRequest, PositionWindowRequest,
+    RunProcessRequest, ServerOriginatedMessage, UpdateApplicationPropertiesRequest, UserLogoutRequest,
     WindowFocusRequest,
 };
 use fig_remote_ipc::figterm::FigtermState;
-use fig_settings::{
-    Settings,
-    SettingsProvider,
-    State,
-    StateProvider,
-};
-use tracing::{
-    error,
-    trace,
-    warn,
-};
+use fig_settings::{Settings, SettingsProvider, State, StateProvider};
+use tracing::{error, trace, warn};
 
-use crate::event::{
-    EmitEventName,
-    Event,
-    WindowEvent,
-};
+use crate::event::{EmitEventName, Event, WindowEvent};
 use crate::webview::WindowId;
 use crate::webview::notification::WebviewNotificationsState;
-use crate::{
-    EventLoopProxy,
-    InterceptState,
-};
+use crate::{EventLoopProxy, InterceptState};
 
 pub struct Context<'a> {
     pub figterm_state: &'a FigtermState,

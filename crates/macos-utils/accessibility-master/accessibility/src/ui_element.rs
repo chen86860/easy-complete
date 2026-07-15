@@ -1,57 +1,22 @@
 use std::thread;
-use std::time::{
-    Duration,
-    Instant,
-};
+use std::time::{Duration, Instant};
 
 use accessibility_sys::{
-    AXUIElementCopyActionNames,
-    AXUIElementCopyAttributeNames,
-    AXUIElementCopyAttributeValue,
-    AXUIElementCreateApplication,
-    AXUIElementCreateSystemWide,
-    AXUIElementGetTypeID,
-    AXUIElementPerformAction,
-    AXUIElementRef,
-    AXUIElementSetAttributeValue,
-    pid_t,
+    AXUIElementCopyActionNames, AXUIElementCopyAttributeNames, AXUIElementCopyAttributeValue,
+    AXUIElementCreateApplication, AXUIElementCreateSystemWide, AXUIElementGetTypeID, AXUIElementPerformAction,
+    AXUIElementRef, AXUIElementSetAttributeValue, pid_t,
 };
-use cocoa::base::{
-    id,
-    nil,
-};
-use cocoa::foundation::{
-    NSAutoreleasePool,
-    NSFastEnumeration,
-    NSString,
-};
+use cocoa::base::{id, nil};
+use cocoa::foundation::{NSAutoreleasePool, NSFastEnumeration, NSString};
 use core_foundation::array::CFArray;
-use core_foundation::base::{
-    TCFType,
-    TCFTypeRef,
-};
+use core_foundation::base::{TCFType, TCFTypeRef};
 use core_foundation::string::CFString;
-use core_foundation::{
-    declare_TCFType,
-    impl_CFTypeDescription,
-    impl_TCFType,
-};
+use core_foundation::{declare_TCFType, impl_CFTypeDescription, impl_TCFType};
 use objc::rc::autoreleasepool;
-use objc::{
-    class,
-    msg_send,
-    sel,
-    sel_impl,
-};
+use objc::{class, msg_send, sel, sel_impl};
 
-use crate::util::{
-    ax_call,
-    ax_call_void,
-};
-use crate::{
-    AXAttribute,
-    Error,
-};
+use crate::util::{ax_call, ax_call_void};
+use crate::{AXAttribute, Error};
 
 declare_TCFType!(AXUIElement, AXUIElementRef);
 impl_TCFType!(AXUIElement, AXUIElementRef, AXUIElementGetTypeID);

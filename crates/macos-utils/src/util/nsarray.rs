@@ -5,16 +5,10 @@ use std::marker::PhantomData;
 
 use appkit_nsworkspace_bindings::NSArray as AppkitNSArray;
 use cocoa::base::id as RawId;
-use cocoa::foundation::{
-    NSArray as CocoaNSArray,
-    NSUInteger,
-};
+use cocoa::foundation::{NSArray as CocoaNSArray, NSUInteger};
 use core_foundation::array::CFArrayRef;
 
-use super::{
-    Id,
-    IdRef,
-};
+use super::{Id, IdRef};
 
 pub struct NSArray<T: 'static> {
     inner: Id,

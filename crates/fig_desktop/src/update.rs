@@ -6,34 +6,13 @@ mod macos {
     use std::ffi::CString;
     use std::os::unix::ffi::OsStrExt;
     use std::path::PathBuf;
-    use std::sync::{
-        Mutex,
-        OnceLock,
-    };
+    use std::sync::{Mutex, OnceLock};
 
-    use cocoa::base::{
-        NO,
-        YES,
-        id,
-        nil,
-    };
+    use cocoa::base::{NO, YES, id, nil};
     use objc::declare::ClassDecl;
-    use objc::runtime::{
-        BOOL,
-        Class,
-        Object,
-        Sel,
-    };
-    use objc::{
-        msg_send,
-        sel,
-        sel_impl,
-    };
-    use tracing::{
-        error,
-        info,
-        warn,
-    };
+    use objc::runtime::{BOOL, Class, Object, Sel};
+    use objc::{msg_send, sel, sel_impl};
+    use tracing::{error, info, warn};
 
     static SPARKLE_CONTROLLER: OnceLock<Mutex<Option<usize>>> = OnceLock::new();
     static SPARKLE_LOAD_ATTEMPTED: OnceLock<()> = OnceLock::new();

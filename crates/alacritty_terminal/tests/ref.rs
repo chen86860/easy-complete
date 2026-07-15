@@ -1,29 +1,13 @@
-use std::fs::{
-    self,
-    File,
-};
+use std::fs::{self, File};
 use std::io::Read;
 use std::path::Path;
 
 use alacritty_terminal::ansi::Processor;
-use alacritty_terminal::event::{
-    Event,
-    EventListener,
-};
-use alacritty_terminal::grid::{
-    Dimensions,
-    Grid,
-};
-use alacritty_terminal::index::{
-    Column,
-    Line,
-};
+use alacritty_terminal::event::{Event, EventListener};
+use alacritty_terminal::grid::{Dimensions, Grid};
+use alacritty_terminal::index::{Column, Line};
 use alacritty_terminal::term::cell::Cell;
-use alacritty_terminal::term::{
-    ShellState,
-    SizeInfo,
-    Term,
-};
+use alacritty_terminal::term::{ShellState, SizeInfo, Term};
 use serde::Deserialize;
 
 macro_rules! ref_tests {

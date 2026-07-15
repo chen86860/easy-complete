@@ -4,10 +4,7 @@ mod internal {
     use std::fmt::Display;
 
     use crate::proto::fig::result::Result as FigResultEnum;
-    use crate::proto::fig::{
-        NotificationType,
-        Result as FigResult,
-    };
+    use crate::proto::fig::{NotificationType, Result as FigResult};
 
     impl serde::Serialize for NotificationType {
         fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>

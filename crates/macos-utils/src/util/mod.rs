@@ -5,10 +5,7 @@ mod nsstring;
 use std::ops::Deref;
 
 use cocoa::base::nil;
-pub use notification_center::{
-    NotificationCenter,
-    get_user_info_from_notification,
-};
+pub use notification_center::{NotificationCenter, get_user_info_from_notification};
 pub use nsarray::NSArrayRef;
 pub use nsstring::NSStringRef;
 use objc::rc::StrongPtr;

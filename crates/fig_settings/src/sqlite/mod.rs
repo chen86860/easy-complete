@@ -1,20 +1,12 @@
 use std::ops::Deref;
-use std::path::{
-    Path,
-    PathBuf,
-};
+use std::path::{Path, PathBuf};
 use std::sync::LazyLock;
 
 use fig_util::directories::fig_data_dir;
 use r2d2::Pool;
 use r2d2_sqlite::SqliteConnectionManager;
 use rusqlite::types::FromSql;
-use rusqlite::{
-    Connection,
-    Error,
-    ToSql,
-    params,
-};
+use rusqlite::{Connection, Error, ToSql, params};
 use serde_json::Map;
 use tracing::info;
 

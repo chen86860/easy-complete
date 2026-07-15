@@ -1,8 +1,5 @@
 use std::collections::BTreeMap;
-use std::ffi::{
-    OsStr,
-    OsString,
-};
+use std::ffi::{OsStr, OsString};
 #[cfg(windows)]
 use std::os::windows::ffi::OsStrExt;
 
@@ -45,11 +42,14 @@ impl EnvEntry {
 fn get_base_env() -> BTreeMap<OsString, EnvEntry> {
     std::env::vars_os()
         .map(|(key, value)| {
-            (EnvEntry::map_key(key.clone()), EnvEntry {
-                is_from_base_env: true,
-                preferred_key: key,
-                value,
-            })
+            (
+                EnvEntry::map_key(key.clone()),
+                EnvEntry {
+                    is_from_base_env: true,
+                    preferred_key: key,
+                    value,
+                },
+            )
         })
         .collect()
 }
@@ -142,11 +142,14 @@ impl CommandBuilder {
     {
         let key: OsString = key.as_ref().into();
         let value: OsString = value.as_ref().into();
-        self.envs.insert(EnvEntry::map_key(key.clone()), EnvEntry {
-            is_from_base_env: false,
-            preferred_key: key,
-            value,
-        });
+        self.envs.insert(
+            EnvEntry::map_key(key.clone()),
+            EnvEntry {
+                is_from_base_env: false,
+                preferred_key: key,
+                value,
+            },
+        );
     }
 
     pub fn env_remove<K>(&mut self, key: K)

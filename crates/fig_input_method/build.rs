@@ -1,13 +1,7 @@
 use std::fs;
 
-use apple_bundle::prelude::{
-    InfoPlist as AppleInfoPlist,
-    *,
-};
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use apple_bundle::prelude::{InfoPlist as AppleInfoPlist, *};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 struct CargoToml {

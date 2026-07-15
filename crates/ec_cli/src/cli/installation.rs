@@ -2,19 +2,10 @@
 
 use std::process::ExitCode;
 
-use anstream::{
-    eprintln,
-    println,
-};
+use anstream::{eprintln, println};
 use crossterm::style::Stylize;
-use eyre::{
-    Result,
-    bail,
-};
-use fig_install::{
-    InstallComponents,
-    install,
-};
+use eyre::{Result, bail};
+use fig_install::{InstallComponents, install};
 use fig_os_shim::Env;
 use fig_util::CLI_BINARY_NAME;
 use tracing::warn;

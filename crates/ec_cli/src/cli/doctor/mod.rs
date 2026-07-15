@@ -7,115 +7,49 @@ use std::ffi::OsStr;
 use std::fmt::Display;
 use std::fs::read_to_string;
 use std::future::Future;
-use std::path::{
-    Path,
-    PathBuf,
-};
-use std::process::{
-    Command,
-    ExitCode,
-};
+use std::path::{Path, PathBuf};
+use std::process::{Command, ExitCode};
 use std::sync::Arc;
 use std::time::Duration;
 
-use anstream::{
-    eprintln,
-    println,
-};
+use anstream::{eprintln, println};
 use async_trait::async_trait;
-use checks::{
-    BashVersionCheck,
-    FishVersionCheck,
-    SshdConfigCheck,
-};
+use checks::{BashVersionCheck, FishVersionCheck, SshdConfigCheck};
 use clap::Args;
 use crossterm::style::Stylize;
-use crossterm::terminal::{
-    Clear,
-    ClearType,
-    disable_raw_mode,
-    enable_raw_mode,
-};
-use crossterm::{
-    cursor,
-    execute,
-};
-use eyre::{
-    ContextCompat,
-    Result,
-    WrapErr,
-};
+use crossterm::terminal::{Clear, ClearType, disable_raw_mode, enable_raw_mode};
+use crossterm::{cursor, execute};
+use eyre::{ContextCompat, Result, WrapErr};
 #[cfg(target_os = "macos")]
 use fig_integrations::input_method::InputMethodError;
-use fig_integrations::shell::{
-    ShellExt,
-    ShellIntegration,
-};
+use fig_integrations::shell::{ShellExt, ShellIntegration};
 use fig_integrations::ssh::SshIntegration;
-use fig_integrations::{
-    Error as InstallationError,
-    Integration,
-};
-use fig_ipc::{
-    BufferedUnixStream,
-    SendMessage,
-    SendRecvMessage,
-};
-use fig_os_shim::{
-    Context,
-    Env,
-    Os,
-};
+use fig_integrations::{Error as InstallationError, Integration};
+use fig_ipc::{BufferedUnixStream, SendMessage, SendRecvMessage};
+use fig_os_shim::{Context, Env, Os};
 use fig_proto::local::DiagnosticsResponse;
 use fig_settings::JsonStore;
-use fig_util::directories::{
-    remote_socket_path,
-    settings_path,
-};
-use fig_util::env_var::{
-    PROCESS_LAUNCHED_BY_Q,
-    Q_PARENT,
-    QTERM_SESSION_ID,
-};
+use fig_util::directories::{remote_socket_path, settings_path};
+use fig_util::env_var::{PROCESS_LAUNCHED_BY_Q, Q_PARENT, QTERM_SESSION_ID};
 use fig_util::macos::BUNDLE_CONTENTS_INFO_PLIST_PATH;
 use fig_util::system_info::SupportLevel;
 use fig_util::terminal::in_special_terminal;
 use fig_util::{
-    APP_BUNDLE_NAME,
-    CLI_BINARY_NAME,
-    CLI_CRATE_NAME,
-    OLD_CLI_BINARY_NAMES,
-    PRODUCT_NAME,
-    PTY_BINARY_NAME,
-    Shell,
-    Terminal,
-    directories,
-    system_paths,
+    APP_BUNDLE_NAME, CLI_BINARY_NAME, CLI_CRATE_NAME, OLD_CLI_BINARY_NAMES, PRODUCT_NAME, PTY_BINARY_NAME, Shell,
+    Terminal, directories, system_paths,
 };
 use futures::FutureExt;
 use futures::future::BoxFuture;
 use owo_colors::OwoColorize;
 use regex::Regex;
 use semver::Version;
-use spinners::{
-    Spinner,
-    Spinners,
-};
+use spinners::{Spinner, Spinners};
 use tokio::io::AsyncBufReadExt;
 
 use super::app::restart_fig;
 use super::diagnostics::verify_integration;
-use crate::util::desktop::{
-    LaunchArgs,
-    desktop_app_running,
-    launch_fig_desktop,
-};
-use crate::util::{
-    app_path_from_bundle_id,
-    glob,
-    glob_dir,
-    is_executable_in_path,
-};
+use crate::util::desktop::{LaunchArgs, desktop_app_running, launch_fig_desktop};
+use crate::util::{app_path_from_bundle_id, glob, glob_dir, is_executable_in_path};
 
 #[derive(Debug, Args, PartialEq, Eq)]
 pub struct DoctorArgs {
@@ -1711,10 +1645,7 @@ impl DoctorCheck for DesktopCompatibilityCheck {
     async fn check(&self, _: &()) -> Result<(), DoctorError> {
         use fig_os_shim::Context;
         use fig_util::system_info::linux::{
-            DesktopEnvironment,
-            DisplayServer,
-            get_desktop_environment,
-            get_display_server,
+            DesktopEnvironment, DisplayServer, get_desktop_environment, get_display_server,
         };
 
         let ctx = Context::new();
@@ -2171,13 +2102,8 @@ pub async fn doctor_cli(all: bool, strict: bool) -> Result<ExitCode> {
         #[cfg(target_os = "linux")]
         {
             use checks::linux::{
-                DisplayServerCheck,
-                GnomeExtensionCheck,
-                IBusConnectionCheck,
-                IBusEnvCheck,
-                IBusRunningCheck,
-                SandboxCheck,
-                get_linux_context,
+                DisplayServerCheck, GnomeExtensionCheck, IBusConnectionCheck, IBusEnvCheck, IBusRunningCheck,
+                SandboxCheck, get_linux_context,
             };
             // Linux desktop checks
             if fig_util::manifest::is_full() && !fig_util::system_info::is_remote() {

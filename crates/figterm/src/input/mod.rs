@@ -2,20 +2,11 @@
 //! input received from a terminal.
 use std::fmt::Write;
 
-use anyhow::{
-    Result,
-    bail,
-};
+use anyhow::{Result, bail};
 use bitflags::bitflags;
-use bytes::{
-    Bytes,
-    BytesMut,
-};
+use bytes::{Bytes, BytesMut};
 
-use crate::input::keymap::{
-    Found,
-    KeyMap,
-};
+use crate::input::keymap::{Found, KeyMap};
 use crate::input::readbuf::ReadBuffer;
 
 pub mod keymap;
@@ -60,12 +51,7 @@ pub struct KeyCodeEncodeModes {
 
 #[cfg(windows)]
 use winapi::um::wincon::{
-    INPUT_RECORD,
-    KEY_EVENT,
-    KEY_EVENT_RECORD,
-    MOUSE_EVENT,
-    MOUSE_EVENT_RECORD,
-    WINDOW_BUFFER_SIZE_EVENT,
+    INPUT_RECORD, KEY_EVENT, KEY_EVENT_RECORD, MOUSE_EVENT, MOUSE_EVENT_RECORD, WINDOW_BUFFER_SIZE_EVENT,
     WINDOW_BUFFER_SIZE_RECORD,
 };
 
@@ -279,57 +265,12 @@ impl KeyCode {
     /// <https://sw.kovidgoyal.net/kitty/keyboard-protocol/#functional-key-definitions>
     fn kitty_function_code(self) -> Option<u32> {
         use KeyCode::{
-            Add,
-            ApplicationDownArrow,
-            ApplicationLeftArrow,
-            ApplicationRightArrow,
-            ApplicationUpArrow,
-            Backspace,
-            CapsLock,
-            Decimal,
-            Divide,
-            End,
-            Enter,
-            Escape,
-            Function,
-            Home,
-            Insert,
-            LeftAlt,
-            LeftControl,
-            LeftShift,
-            LeftWindows,
-            MediaNextTrack,
-            MediaPlayPause,
-            MediaPrevTrack,
-            MediaStop,
-            Menu,
-            Multiply,
-            NumLock,
-            Numpad0,
-            Numpad1,
-            Numpad2,
-            Numpad3,
-            Numpad4,
-            Numpad5,
-            Numpad6,
-            Numpad7,
-            Numpad8,
-            Numpad9,
-            PageDown,
-            PageUp,
-            Pause,
-            PrintScreen,
-            RightAlt,
-            RightControl,
-            RightShift,
-            RightWindows,
-            ScrollLock,
-            Separator,
-            Subtract,
-            Tab,
-            VolumeDown,
-            VolumeMute,
-            VolumeUp,
+            Add, ApplicationDownArrow, ApplicationLeftArrow, ApplicationRightArrow, ApplicationUpArrow, Backspace,
+            CapsLock, Decimal, Divide, End, Enter, Escape, Function, Home, Insert, LeftAlt, LeftControl, LeftShift,
+            LeftWindows, MediaNextTrack, MediaPlayPause, MediaPrevTrack, MediaStop, Menu, Multiply, NumLock, Numpad0,
+            Numpad1, Numpad2, Numpad3, Numpad4, Numpad5, Numpad6, Numpad7, Numpad8, Numpad9, PageDown, PageUp, Pause,
+            PrintScreen, RightAlt, RightControl, RightShift, RightWindows, ScrollLock, Separator, Subtract, Tab,
+            VolumeDown, VolumeMute, VolumeUp,
         };
         Some(match self {
             Escape => 27,
@@ -392,21 +333,8 @@ impl KeyCode {
 
     fn encode_kitty(&self, mods: Modifiers, is_down: bool, flags: KittyKeyboardFlags) -> Result<String> {
         use KeyCode::{
-            Backspace,
-            Char,
-            Delete,
-            DownArrow,
-            End,
-            Enter,
-            Function,
-            Home,
-            Insert,
-            LeftArrow,
-            PageDown,
-            PageUp,
-            RightArrow,
-            Tab,
-            UpArrow,
+            Backspace, Char, Delete, DownArrow, End, Enter, Function, Home, Insert, LeftArrow, PageDown, PageUp,
+            RightArrow, Tab, UpArrow,
         };
 
         if !flags.contains(KittyKeyboardFlags::REPORT_EVENT_TYPES) && !is_down {
@@ -549,91 +477,15 @@ impl KeyCode {
         }
 
         use KeyCode::{
-            Add,
-            Alt,
-            ApplicationDownArrow,
-            ApplicationLeftArrow,
-            ApplicationRightArrow,
-            ApplicationUpArrow,
-            Applications,
-            Backspace,
-            BrowserBack,
-            BrowserFavorites,
-            BrowserForward,
-            BrowserHome,
-            BrowserRefresh,
-            BrowserSearch,
-            BrowserStop,
-            Cancel,
-            CapsLock,
-            Char,
-            Clear,
-            Control,
-            Copy,
-            Cut,
-            Decimal,
-            Delete,
-            Divide,
-            DownArrow,
-            End,
-            Enter,
-            Escape,
-            Execute,
-            Function,
-            Help,
-            Home,
-            Hyper,
-            Insert,
-            InternalPasteEnd,
-            InternalPasteStart,
-            LeftAlt,
-            LeftArrow,
-            LeftControl,
-            LeftMenu,
-            LeftShift,
-            LeftWindows,
-            MediaNextTrack,
-            MediaPlayPause,
-            MediaPrevTrack,
-            MediaStop,
-            Menu,
-            Meta,
-            Multiply,
-            NumLock,
-            Numpad0,
-            Numpad1,
-            Numpad2,
-            Numpad3,
-            Numpad4,
-            Numpad5,
-            Numpad6,
-            Numpad7,
-            Numpad8,
-            Numpad9,
-            PageDown,
-            PageUp,
-            Paste,
-            Pause,
-            Print,
-            PrintScreen,
-            RightAlt,
-            RightArrow,
-            RightControl,
-            RightMenu,
-            RightShift,
-            RightWindows,
-            ScrollLock,
-            Select,
-            Separator,
-            Shift,
-            Sleep,
-            Subtract,
-            Super,
-            Tab,
-            UpArrow,
-            VolumeDown,
-            VolumeMute,
-            VolumeUp,
+            Add, Alt, ApplicationDownArrow, ApplicationLeftArrow, ApplicationRightArrow, ApplicationUpArrow,
+            Applications, Backspace, BrowserBack, BrowserFavorites, BrowserForward, BrowserHome, BrowserRefresh,
+            BrowserSearch, BrowserStop, Cancel, CapsLock, Char, Clear, Control, Copy, Cut, Decimal, Delete, Divide,
+            DownArrow, End, Enter, Escape, Execute, Function, Help, Home, Hyper, Insert, InternalPasteEnd,
+            InternalPasteStart, LeftAlt, LeftArrow, LeftControl, LeftMenu, LeftShift, LeftWindows, MediaNextTrack,
+            MediaPlayPause, MediaPrevTrack, MediaStop, Menu, Meta, Multiply, NumLock, Numpad0, Numpad1, Numpad2,
+            Numpad3, Numpad4, Numpad5, Numpad6, Numpad7, Numpad8, Numpad9, PageDown, PageUp, Paste, Pause, Print,
+            PrintScreen, RightAlt, RightArrow, RightControl, RightMenu, RightShift, RightWindows, ScrollLock, Select,
+            Separator, Shift, Sleep, Subtract, Super, Tab, UpArrow, VolumeDown, VolumeMute, VolumeUp,
         };
 
         let key = self.normalize_shift_to_upper_case(mods);
@@ -798,13 +650,17 @@ impl KeyCode {
             Function(n) => {
                 if mods.is_empty() && n < 5 {
                     // F1-F4 are encoded using SS3 if there are no modifiers
-                    write!(buf, "{}", match n {
-                        1 => "\x1bOP",
-                        2 => "\x1bOQ",
-                        3 => "\x1bOR",
-                        4 => "\x1bOS",
-                        _ => unreachable!("wat?"),
-                    })?;
+                    write!(
+                        buf,
+                        "{}",
+                        match n {
+                            1 => "\x1bOP",
+                            2 => "\x1bOQ",
+                            3 => "\x1bOR",
+                            4 => "\x1bOS",
+                            _ => unreachable!("wat?"),
+                        }
+                    )?;
                 } else {
                     // Higher numbered F-keys plus modified F-keys are encoded
                     // using CSI instead of SS3.
@@ -2037,76 +1893,115 @@ mod test {
         let mut p = InputParser::new();
 
         // <esc> <nochar> -> esc
-        assert_eq!(p.parse_as_vec(b"\x1b"), vec![InputEvent::Key(KeyEvent {
-            key: KeyCode::Escape,
-            modifiers: Modifiers::NONE
-        })]);
+        assert_eq!(
+            p.parse_as_vec(b"\x1b"),
+            vec![InputEvent::Key(KeyEvent {
+                key: KeyCode::Escape,
+                modifiers: Modifiers::NONE
+            })]
+        );
 
         // <char> -> char
-        assert_eq!(p.parse_as_vec(b"a"), vec![InputEvent::Key(KeyEvent {
-            key: KeyCode::Char('a'),
-            modifiers: Modifiers::NONE,
-        })]);
+        assert_eq!(
+            p.parse_as_vec(b"a"),
+            vec![InputEvent::Key(KeyEvent {
+                key: KeyCode::Char('a'),
+                modifiers: Modifiers::NONE,
+            })]
+        );
 
         // <esc> '[' (<modifier>) <char> -> keycode sequence, <modifier> is a decimal number and defaults to
         // 1 (xterm)
-        assert_eq!(p.parse_as_vec(b"\x1b[A"), vec![InputEvent::Key(KeyEvent {
-            key: KeyCode::UpArrow,
-            modifiers: Modifiers::NONE,
-        })]);
+        assert_eq!(
+            p.parse_as_vec(b"\x1b[A"),
+            vec![InputEvent::Key(KeyEvent {
+                key: KeyCode::UpArrow,
+                modifiers: Modifiers::NONE,
+            })]
+        );
 
-        assert_eq!(p.parse_as_vec(b"\x1b[1;2A"), vec![InputEvent::Key(KeyEvent {
-            key: KeyCode::UpArrow,
-            modifiers: Modifiers::SHIFT,
-        })]);
+        assert_eq!(
+            p.parse_as_vec(b"\x1b[1;2A"),
+            vec![InputEvent::Key(KeyEvent {
+                key: KeyCode::UpArrow,
+                modifiers: Modifiers::SHIFT,
+            })]
+        );
 
-        assert_eq!(p.parse_as_vec(b"\x1b[1;3A"), vec![InputEvent::Key(KeyEvent {
-            key: KeyCode::UpArrow,
-            modifiers: Modifiers::ALT,
-        })]);
+        assert_eq!(
+            p.parse_as_vec(b"\x1b[1;3A"),
+            vec![InputEvent::Key(KeyEvent {
+                key: KeyCode::UpArrow,
+                modifiers: Modifiers::ALT,
+            })]
+        );
 
-        assert_eq!(p.parse_as_vec(b"\x1b[1;5A"), vec![InputEvent::Key(KeyEvent {
-            key: KeyCode::UpArrow,
-            modifiers: Modifiers::CTRL,
-        })]);
+        assert_eq!(
+            p.parse_as_vec(b"\x1b[1;5A"),
+            vec![InputEvent::Key(KeyEvent {
+                key: KeyCode::UpArrow,
+                modifiers: Modifiers::CTRL,
+            })]
+        );
 
-        assert_eq!(p.parse_as_vec(b"\x1b[1;9A"), vec![InputEvent::Key(KeyEvent {
-            key: KeyCode::UpArrow,
-            modifiers: Modifiers::META,
-        })]);
+        assert_eq!(
+            p.parse_as_vec(b"\x1b[1;9A"),
+            vec![InputEvent::Key(KeyEvent {
+                key: KeyCode::UpArrow,
+                modifiers: Modifiers::META,
+            })]
+        );
 
-        assert_eq!(p.parse_as_vec(b"\x1b[1;13A"), vec![InputEvent::Key(KeyEvent {
-            key: KeyCode::UpArrow,
-            modifiers: Modifiers::META | Modifiers::CTRL,
-        })]);
+        assert_eq!(
+            p.parse_as_vec(b"\x1b[1;13A"),
+            vec![InputEvent::Key(KeyEvent {
+                key: KeyCode::UpArrow,
+                modifiers: Modifiers::META | Modifiers::CTRL,
+            })]
+        );
 
-        assert_eq!(p.parse_as_vec(b"\x1b[1;16A"), vec![InputEvent::Key(KeyEvent {
-            key: KeyCode::UpArrow,
-            modifiers: Modifiers::META | Modifiers::CTRL | Modifiers::SHIFT | Modifiers::ALT,
-        })]);
+        assert_eq!(
+            p.parse_as_vec(b"\x1b[1;16A"),
+            vec![InputEvent::Key(KeyEvent {
+                key: KeyCode::UpArrow,
+                modifiers: Modifiers::META | Modifiers::CTRL | Modifiers::SHIFT | Modifiers::ALT,
+            })]
+        );
 
         // <esc> 'O' <char> -> SS3
-        assert_eq!(p.parse_as_vec(b"\x1bOA"), vec![InputEvent::Key(KeyEvent {
-            key: KeyCode::ApplicationUpArrow,
-            modifiers: Modifiers::NONE,
-        })]);
+        assert_eq!(
+            p.parse_as_vec(b"\x1bOA"),
+            vec![InputEvent::Key(KeyEvent {
+                key: KeyCode::ApplicationUpArrow,
+                modifiers: Modifiers::NONE,
+            })]
+        );
 
-        assert_eq!(p.parse_as_vec(b"\x1bOI"), vec![InputEvent::Key(KeyEvent {
-            key: KeyCode::Tab,
-            modifiers: Modifiers::NONE,
-        })]);
+        assert_eq!(
+            p.parse_as_vec(b"\x1bOI"),
+            vec![InputEvent::Key(KeyEvent {
+                key: KeyCode::Tab,
+                modifiers: Modifiers::NONE,
+            })]
+        );
 
-        assert_eq!(p.parse_as_vec(b"\x1bOSP"), vec![InputEvent::Key(KeyEvent {
-            key: KeyCode::Char(' '),
-            modifiers: Modifiers::NONE,
-        })]);
+        assert_eq!(
+            p.parse_as_vec(b"\x1bOSP"),
+            vec![InputEvent::Key(KeyEvent {
+                key: KeyCode::Char(' '),
+                modifiers: Modifiers::NONE,
+            })]
+        );
 
         // <esc> '[' (<keycode>) (';'<modifier>) '~' -> keycode sequence, <keycode> and <modifier> are
         // decimal numbers and default to 1 (vt)
-        assert_eq!(p.parse_as_vec(b"\x1b[1;5A"), vec![InputEvent::Key(KeyEvent {
-            key: KeyCode::UpArrow,
-            modifiers: Modifiers::CTRL,
-        })]);
+        assert_eq!(
+            p.parse_as_vec(b"\x1b[1;5A"),
+            vec![InputEvent::Key(KeyEvent {
+                key: KeyCode::UpArrow,
+                modifiers: Modifiers::CTRL,
+            })]
+        );
 
         // <esc> <char> -> Alt-keypress or keycode sequence
     }

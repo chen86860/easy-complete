@@ -2,64 +2,25 @@
 
 use std::io;
 use std::pin::Pin;
-use std::task::{
-    Context,
-    Poll,
-};
+use std::task::{Context, Poll};
 use std::time::Duration;
 
 use anyhow::Result;
-use fig_ipc::{
-    BufferedReader,
-    RecvMessage,
-    SendMessage,
-};
+use fig_ipc::{BufferedReader, RecvMessage, SendMessage};
 use fig_proto::FigProtobufEncodable;
-use fig_proto::figterm::{
-    FigtermRequestMessage,
-    FigtermResponseMessage,
-};
+use fig_proto::figterm::{FigtermRequestMessage, FigtermResponseMessage};
 use fig_proto::remote::hostbound::Handshake;
-use fig_proto::remote::{
-    Clientbound,
-    Hostbound,
-    clientbound,
-    hostbound,
-};
-use fig_util::{
-    PTY_BINARY_NAME,
-    directories,
-    gen_hex_string,
-};
-use flume::{
-    Receiver,
-    Sender,
-    unbounded,
-};
+use fig_proto::remote::{Clientbound, Hostbound, clientbound, hostbound};
+use fig_util::{PTY_BINARY_NAME, directories, gen_hex_string};
+use flume::{Receiver, Sender, unbounded};
 use pin_project::pin_project;
-use tokio::io::{
-    AsyncRead,
-    AsyncWrite,
-    AsyncWriteExt,
-    ReadBuf,
-};
+use tokio::io::{AsyncRead, AsyncWrite, AsyncWriteExt, ReadBuf};
 use tokio::join;
-use tokio::process::{
-    ChildStdin,
-    ChildStdout,
-};
+use tokio::process::{ChildStdin, ChildStdout};
 use tokio::sync::oneshot;
 use tokio::task::JoinHandle;
-use tokio::time::{
-    MissedTickBehavior,
-    interval,
-};
-use tracing::{
-    debug,
-    error,
-    info,
-    trace,
-};
+use tokio::time::{MissedTickBehavior, interval};
+use tracing::{debug, error, info, trace};
 
 use crate::MainLoopEvent;
 

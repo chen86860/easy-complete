@@ -2,16 +2,10 @@ use std::borrow::Cow;
 
 use async_trait::async_trait;
 use eyre::Context;
-use semver::{
-    Version,
-    VersionReq,
-};
+use semver::{Version, VersionReq};
 use tokio::process::Command;
 
-use crate::cli::doctor::{
-    DoctorCheck,
-    DoctorError,
-};
+use crate::cli::doctor::{DoctorCheck, DoctorError};
 
 pub struct FishVersionCheck;
 

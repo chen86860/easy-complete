@@ -1,12 +1,6 @@
-use fig_proto::fig::{
-    NotificationRequest,
-    NotificationType,
-};
+use fig_proto::fig::{NotificationRequest, NotificationType};
 
-use super::{
-    RequestResult,
-    RequestResultImpl,
-};
+use super::{RequestResult, RequestResultImpl};
 use crate::WebviewNotificationsState;
 use crate::webview::WindowId;
 

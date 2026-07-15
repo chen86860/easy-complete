@@ -3,71 +3,25 @@ use std::fmt;
 
 use accessibility::util::ax_call;
 use accessibility_sys::{
-    _AXUIElementGetWindow,
-    AXError,
-    AXUIElement,
-    AXUIElementCopyAttributeNames,
-    AXUIElementCopyAttributeValue,
-    AXUIElementRef,
-    AXUIElementSetAttributeValue,
-    AXValue,
-    kAXApplicationRole,
-    kAXBrowserRole,
-    kAXChildrenAttribute,
-    kAXDOMClassListAttribute,
-    kAXEnhancedUserInterfaceAttribute,
-    kAXErrorAttributeUnsupported,
-    kAXFocusedAttribute,
-    kAXFocusedWindowAttribute,
-    kAXFrameAttribute,
-    kAXFullScreenAttribute,
-    kAXGroupRole,
-    kAXManualAccessibilityAttribute,
-    kAXParentAttribute,
-    kAXRoleAttribute,
-    kAXScrollAreaRole,
-    kAXSubroleAttribute,
-    kAXTextFieldRole,
-    kAXWebAreaRole,
+    _AXUIElementGetWindow, AXError, AXUIElement, AXUIElementCopyAttributeNames, AXUIElementCopyAttributeValue,
+    AXUIElementRef, AXUIElementSetAttributeValue, AXValue, kAXApplicationRole, kAXBrowserRole, kAXChildrenAttribute,
+    kAXDOMClassListAttribute, kAXEnhancedUserInterfaceAttribute, kAXErrorAttributeUnsupported, kAXFocusedAttribute,
+    kAXFocusedWindowAttribute, kAXFrameAttribute, kAXFullScreenAttribute, kAXGroupRole,
+    kAXManualAccessibilityAttribute, kAXParentAttribute, kAXRoleAttribute, kAXScrollAreaRole, kAXSubroleAttribute,
+    kAXTextFieldRole, kAXWebAreaRole,
 };
 use core_foundation::ConcreteCFType;
-use core_foundation::array::{
-    CFArray,
-    CFArrayRef,
-};
-use core_foundation::base::{
-    CFType,
-    CFTypeRef,
-    TCFType,
-    TCFTypeRef,
-};
-use core_foundation::boolean::{
-    CFBoolean,
-    kCFBooleanTrue,
-};
+use core_foundation::array::{CFArray, CFArrayRef};
+use core_foundation::base::{CFType, CFTypeRef, TCFType, TCFTypeRef};
+use core_foundation::boolean::{CFBoolean, kCFBooleanTrue};
 use core_foundation::dictionary::CFDictionary;
 use core_foundation::number::CFNumber;
-use core_foundation::string::{
-    CFString,
-    CFStringRef,
-};
-use core_graphics::display::{
-    self,
-    CGRect,
-};
-use core_graphics::window::{
-    CGWindowID,
-    kCGWindowBounds,
-    kCGWindowLayer,
-    kCGWindowNumber,
-    kCGWindowOwnerPID,
-};
+use core_foundation::string::{CFString, CFStringRef};
+use core_graphics::display::{self, CGRect};
+use core_graphics::window::{CGWindowID, kCGWindowBounds, kCGWindowLayer, kCGWindowNumber, kCGWindowOwnerPID};
 use tracing::warn;
 
-use crate::util::{
-    NSArrayRef,
-    NSStringRef,
-};
+use crate::util::{NSArrayRef, NSStringRef};
 
 pub struct UIElement(AXUIElement);
 

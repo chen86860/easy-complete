@@ -5,49 +5,22 @@ use dashmap::DashMap;
 use fig_util::linux::DESKTOP_APP_WM_CLASS;
 use parking_lot::Mutex;
 use serde::Serialize;
-use tao::dpi::{
-    PhysicalPosition,
-    PhysicalSize,
-};
-use tracing::{
-    debug,
-    error,
-    trace,
-};
+use tao::dpi::{PhysicalPosition, PhysicalSize};
+use tracing::{debug, error, trace};
 use x11rb::connection::Connection;
 use x11rb::properties::WmClass;
 use x11rb::protocol::Event as X11Event;
 use x11rb::protocol::xproto::{
-    Atom,
-    AtomEnum,
-    ChangeWindowAttributesAux,
-    EventMask,
-    GetGeometryReply,
-    Property,
-    PropertyNotifyEvent,
-    Window,
-    change_window_attributes,
-    get_atom_name,
-    get_geometry,
-    get_input_focus,
-    get_property,
-    intern_atom,
-    query_tree,
+    Atom, AtomEnum, ChangeWindowAttributesAux, EventMask, GetGeometryReply, Property, PropertyNotifyEvent, Window,
+    change_window_attributes, get_atom_name, get_geometry, get_input_focus, get_property, intern_atom, query_tree,
 };
 use x11rb::rust_connection::RustConnection;
 
 use super::integrations::WM_CLASS_ALLOWLIST;
-use super::{
-    PlatformStateImpl,
-    WM_REVICED_DATA,
-};
+use super::{PlatformStateImpl, WM_REVICED_DATA};
 use crate::event::WindowEvent;
 use crate::utils::Rect;
-use crate::{
-    AUTOCOMPLETE_ID,
-    Event,
-    EventLoopProxy,
-};
+use crate::{AUTOCOMPLETE_ID, Event, EventLoopProxy};
 
 const WM_WINDOW_ROLE: &[u8] = b"WM_WINDOW_ROLE";
 
@@ -106,10 +79,14 @@ pub(super) async fn handle_x11(
 
     let screen = &setup.roots[screen_num];
 
-    change_window_attributes(&conn, screen.root, &ChangeWindowAttributesAux {
-        event_mask: Some(EventMask::PROPERTY_CHANGE),
-        ..Default::default()
-    })
+    change_window_attributes(
+        &conn,
+        screen.root,
+        &ChangeWindowAttributesAux {
+            event_mask: Some(EventMask::PROPERTY_CHANGE),
+            ..Default::default()
+        },
+    )
     .expect("Failed sending event mask update")
     .check()
     .expect("Failed changing event mask");

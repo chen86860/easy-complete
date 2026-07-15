@@ -1,34 +1,15 @@
-use std::io::{
-    Write,
-    stdout,
-};
+use std::io::{Write, stdout};
 use std::os::unix::fs::PermissionsExt as _;
 use std::sync::Arc;
 use std::time::Duration;
 
-use anyhow::{
-    Context,
-    Result,
-};
-use fig_proto::local::{
-    EditBufferHook,
-    InterceptedKeyHook,
-    PostExecHook,
-    PreExecHook,
-    PromptHook,
-    ShellContext,
-};
+use anyhow::{Context, Result};
+use fig_proto::local::{EditBufferHook, InterceptedKeyHook, PostExecHook, PreExecHook, PromptHook, ShellContext};
 use fig_proto::remote::clientbound;
 use fig_remote_ipc::RemoteHookHandler;
 use fig_remote_ipc::figterm::FigtermState;
 use fig_util::RUNTIME_DIR_NAME;
-use portable_pty::{
-    Child,
-    CommandBuilder,
-    PtyPair,
-    PtySize,
-    native_pty_system,
-};
+use portable_pty::{Child, CommandBuilder, PtyPair, PtySize, native_pty_system};
 use tempfile::TempDir;
 use tokio::net::UnixListener;
 use tokio::sync::Mutex;
@@ -127,10 +108,11 @@ impl Shell {
             let buffer = buffer.clone();
             let shell_context = shell_context.clone();
             async move {
-                fig_remote_ipc::remote::start_remote_ipc(path, figterm_state.clone(), RemoteHook {
-                    buffer,
-                    shell_context,
-                })
+                fig_remote_ipc::remote::start_remote_ipc(
+                    path,
+                    figterm_state.clone(),
+                    RemoteHook { buffer, shell_context },
+                )
                 .await
                 .unwrap();
             }

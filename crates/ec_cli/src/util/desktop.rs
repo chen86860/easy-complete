@@ -1,15 +1,7 @@
 use std::process::Command;
 
-use eyre::{
-    Result,
-    eyre,
-};
-use fig_util::{
-    PRODUCT_NAME,
-    directories,
-    manifest,
-    system_info,
-};
+use eyre::{Result, eyre};
+use fig_util::{PRODUCT_NAME, directories, manifest, system_info};
 
 pub struct LaunchArgs {
     /// Should we wait for the socket to continue execution
@@ -28,17 +20,10 @@ pub struct LaunchArgs {
 pub fn desktop_app_running() -> bool {
     use std::ffi::OsString;
 
-    use fig_util::consts::{
-        APP_BUNDLE_ID,
-        APP_PROCESS_NAME,
-    };
+    use fig_util::consts::{APP_BUNDLE_ID, APP_PROCESS_NAME};
     use objc2_app_kit::NSRunningApplication;
     use objc2_foundation::ns_string;
-    use sysinfo::{
-        ProcessRefreshKind,
-        RefreshKind,
-        System,
-    };
+    use sysinfo::{ProcessRefreshKind, RefreshKind, System};
 
     let bundle_id = ns_string!(APP_BUNDLE_ID);
     let running_applications = unsafe { NSRunningApplication::runningApplicationsWithBundleIdentifier(bundle_id) };
@@ -77,11 +62,7 @@ pub fn desktop_app_running() -> bool {
     use std::ffi::OsString;
 
     use fig_util::consts::APP_PROCESS_NAME;
-    use sysinfo::{
-        ProcessRefreshKind,
-        RefreshKind,
-        System,
-    };
+    use sysinfo::{ProcessRefreshKind, RefreshKind, System};
 
     let s = System::new_with_specifics(RefreshKind::nothing().with_processes(ProcessRefreshKind::nothing()));
     let app_process_name = OsString::from(APP_PROCESS_NAME);
@@ -195,10 +176,7 @@ fn launch_linux_desktop(ctx: std::sync::Arc<fig_os_shim::Context>, state: &fig_s
     use std::process::Stdio;
 
     use eyre::Context;
-    use fig_integrations::desktop_entry::{
-        EntryContents,
-        local_entry_path,
-    };
+    use fig_integrations::desktop_entry::{EntryContents, local_entry_path};
     use fig_util::APP_PROCESS_NAME;
     use tracing::error;
 

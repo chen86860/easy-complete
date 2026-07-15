@@ -3,35 +3,19 @@ use std::path::Path;
 
 use dbus::gnome_shell::ShellExtensions;
 use fig_integrations::Integration;
-use fig_integrations::desktop_entry::{
-    AutostartIntegration,
-    DesktopEntryIntegration,
-};
+use fig_integrations::desktop_entry::{AutostartIntegration, DesktopEntryIntegration};
 use fig_integrations::gnome_extension::GnomeExtensionIntegration;
 use fig_os_shim::Context;
-use fig_util::directories::{
-    fig_data_dir_ctx,
-    local_webview_data_dir,
-};
+use fig_util::directories::{fig_data_dir_ctx, local_webview_data_dir};
 use fig_util::manifest::manifest;
-use fig_util::{
-    CLI_BINARY_NAME,
-    PRODUCT_NAME,
-};
+use fig_util::{CLI_BINARY_NAME, PRODUCT_NAME};
 use tokio::sync::mpsc::Sender;
-use tracing::{
-    debug,
-    error,
-    warn,
-};
+use tracing::{debug, error, warn};
 use url::Url;
 
 use crate::download::download_file;
 use crate::index::UpdatePackage;
-use crate::{
-    Error,
-    UpdateStatus,
-};
+use crate::{Error, UpdateStatus};
 
 macro_rules! bail {
     ($($arg:tt)*) => {
@@ -327,13 +311,16 @@ mod tests {
     fn test_archive_def_from_url() {
         let url = Url::parse("https://example.com/path/q-x86_64-linux.tar.zst").unwrap();
         let archive_name = ArchiveParser::from_url(&url).unwrap();
-        assert_eq!(archive_name, ArchiveParser {
-            file_name: "q-x86_64-linux.tar.zst",
-            file_prefix: "q-x86_64-linux",
-            name: "q",
-            arch: Some("x86_64"),
-            os: Some("linux"),
-        });
+        assert_eq!(
+            archive_name,
+            ArchiveParser {
+                file_name: "q-x86_64-linux.tar.zst",
+                file_prefix: "q-x86_64-linux",
+                name: "q",
+                arch: Some("x86_64"),
+                os: Some("linux"),
+            }
+        );
     }
 
     fn print_tree(p: &Path) {

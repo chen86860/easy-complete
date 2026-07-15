@@ -1,11 +1,7 @@
 use std::borrow::Cow;
 
 use fig_proto::local::caret_position_hook::Origin;
-use tao::dpi::{
-    LogicalSize,
-    Position,
-    Size,
-};
+use tao::dpi::{LogicalSize, Position, Size};
 use tao::event_loop::ControlFlow;
 use tokio::sync::mpsc::UnboundedSender;
 use wry::Theme;

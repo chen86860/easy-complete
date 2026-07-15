@@ -1,8 +1,4 @@
-use crate::term::{
-    CommandInfo,
-    ShellState,
-    SizeInfo,
-};
+use crate::term::{CommandInfo, ShellState, SizeInfo};
 
 #[derive(Debug, Clone)]
 pub enum DelayedEvent {

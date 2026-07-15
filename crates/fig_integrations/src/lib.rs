@@ -7,15 +7,14 @@ pub mod file;
 pub mod gnome_extension;
 #[cfg(target_os = "macos")]
 pub mod input_method;
+#[cfg(target_os = "macos")]
+pub mod login_item;
 pub mod shell;
 pub mod ssh;
 
 use async_trait::async_trait;
 pub use backup::backup_file;
-pub use error::{
-    Error,
-    Result,
-};
+pub use error::{Error, Result};
 pub use file::FileIntegration;
 
 #[async_trait]

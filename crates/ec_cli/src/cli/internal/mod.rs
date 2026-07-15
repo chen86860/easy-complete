@@ -4,94 +4,42 @@ mod multiplexer;
 pub mod should_figterm_launch;
 
 use std::collections::HashSet;
-use std::io::{
-    Read,
-    Write,
-    stdout,
-};
+use std::io::{Read, Write, stdout};
 use std::path::PathBuf;
 use std::process::ExitCode;
 use std::sync::Arc;
 use std::time::Duration;
 
 use anstream::println;
-use bytes::{
-    Buf,
-    BytesMut,
-};
-use clap::{
-    ArgGroup,
-    Args,
-    Subcommand,
-    ValueEnum,
-};
+use bytes::{Buf, BytesMut};
+use clap::{ArgGroup, Args, Subcommand, ValueEnum};
 use crossterm::style::Stylize;
-use eyre::{
-    Context,
-    ContextCompat,
-    Result,
-    bail,
-};
+use eyre::{Context, ContextCompat, Result, bail};
 use fig_install::InstallComponents;
 #[cfg(target_os = "macos")]
 use fig_integrations::input_method::InputMethod;
 use fig_ipc::local::send_hook_to_socket;
-use fig_ipc::{
-    BufferedUnixStream,
-    SendMessage,
-    SendRecvMessage,
-};
-use fig_os_shim::{
-    Context as OsContext,
-    Os,
-};
+use fig_ipc::{BufferedUnixStream, SendMessage, SendRecvMessage};
+use fig_os_shim::{Context as OsContext, Os};
 use fig_proto::ReflectMessage;
 use fig_proto::figterm::figterm_request_message::Request as FigtermRequest;
-use fig_proto::figterm::{
-    FigtermRequestMessage,
-    NotifySshSessionStartedRequest,
-    UpdateShellContextRequest,
-};
-use fig_proto::hooks::{
-    new_callback_hook,
-    new_event_hook,
-};
+use fig_proto::figterm::{FigtermRequestMessage, NotifySshSessionStartedRequest, UpdateShellContextRequest};
+use fig_proto::hooks::{new_callback_hook, new_event_hook};
 use fig_proto::local::EnvironmentVariable;
 use fig_proto::util::get_shell;
-use fig_util::directories::{
-    figterm_socket_path,
-    logs_dir,
-    update_lock_path,
-};
+use fig_util::directories::{figterm_socket_path, logs_dir, update_lock_path};
 use fig_util::env_var::QTERM_SESSION_ID;
-use fig_util::{
-    CLI_BINARY_NAME,
-    directories,
-};
+use fig_util::{CLI_BINARY_NAME, directories};
 use multiplexer::MultiplexerArgs;
-use rand::distr::{
-    Alphanumeric,
-    SampleString,
-};
+use rand::distr::{Alphanumeric, SampleString};
 use sysinfo::System;
-use tokio::io::{
-    AsyncReadExt,
-    AsyncWriteExt,
-};
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::process::Command;
 use tokio::select;
-use tracing::{
-    debug,
-    error,
-    info,
-    trace,
-};
+use tracing::{debug, error, info, trace};
 
 use crate::cli::installation::install_cli;
-use crate::util::desktop::{
-    LaunchArgs,
-    launch_fig_desktop,
-};
+use crate::util::desktop::{LaunchArgs, launch_fig_desktop};
 
 #[derive(Debug, Args, PartialEq, Eq)]
 #[command(group(
@@ -606,10 +554,7 @@ impl InternalSubcommand {
             InternalSubcommand::IbusBootstrap => {
                 use std::ffi::OsString;
 
-                use sysinfo::{
-                    ProcessRefreshKind,
-                    RefreshKind,
-                };
+                use sysinfo::{ProcessRefreshKind, RefreshKind};
                 use tokio::process::Command;
 
                 let system = tokio::task::block_in_place(|| {
@@ -907,14 +852,20 @@ mod tests {
 
     #[test]
     fn parse_pre_cmd() {
-        assert_eq!(MockCli::parse_from(["_", "pre-cmd"]), MockCli {
-            subcommand: InternalSubcommand::PreCmd { alias: None }
-        });
+        assert_eq!(
+            MockCli::parse_from(["_", "pre-cmd"]),
+            MockCli {
+                subcommand: InternalSubcommand::PreCmd { alias: None }
+            }
+        );
 
         let alias = format!("a='{CLI_BINARY_NAME} a'\nrd=rmdir");
-        assert_eq!(MockCli::parse_from(["_", "pre-cmd", "--alias", &alias]), MockCli {
-            subcommand: InternalSubcommand::PreCmd { alias: Some(alias) }
-        });
+        assert_eq!(
+            MockCli::parse_from(["_", "pre-cmd", "--alias", &alias]),
+            MockCli {
+                subcommand: InternalSubcommand::PreCmd { alias: Some(alias) }
+            }
+        );
 
         let hyphen_alias = "-='cd -'\n...=../..\nga='git add'";
         assert_eq!(

@@ -1,66 +1,29 @@
 mod fix_permissions;
 
 use std::fmt::Write as _;
-use std::io::{
-    Read,
-    Write as _,
-};
+use std::io::{Read, Write as _};
 use std::path::Path;
-use std::process::{
-    Command,
-    ExitCode,
-};
+use std::process::{Command, ExitCode};
 
 use anstream::println;
-use clap::{
-    Subcommand,
-    ValueEnum,
-};
+use clap::{Subcommand, ValueEnum};
 use crossterm::ExecutableCommand;
 use crossterm::style::Stylize;
-use crossterm::terminal::{
-    disable_raw_mode,
-    enable_raw_mode,
-};
-use eyre::{
-    Context,
-    ContextCompat,
-    Result,
-    bail,
-};
-use fig_ipc::local::{
-    devtools_command,
-    prompt_accessibility_command,
-    set_debug_mode,
-    toggle_debug_mode,
-};
+use crossterm::terminal::{disable_raw_mode, enable_raw_mode};
+use eyre::{Context, ContextCompat, Result, bail};
+use fig_ipc::local::{devtools_command, prompt_accessibility_command, set_debug_mode, toggle_debug_mode};
 use fig_os_shim::Env;
 use fig_util::consts::APP_BUNDLE_ID;
 use fig_util::env_var::Q_DEBUG_SHELL;
 use fig_util::macos::BUNDLE_CONTENTS_MACOS_PATH;
-use fig_util::{
-    APP_BUNDLE_NAME,
-    CLI_BINARY_NAME,
-    PRODUCT_NAME,
-    PTY_BINARY_NAME,
-    Shell,
-    directories,
-};
+use fig_util::{APP_BUNDLE_NAME, CLI_BINARY_NAME, PRODUCT_NAME, PTY_BINARY_NAME, Shell, directories};
 use owo_colors::OwoColorize;
-use tempfile::{
-    NamedTempFile,
-    TempDir,
-};
+use tempfile::{NamedTempFile, TempDir};
 use tracing::error;
 
 use crate::cli::launch_fig_desktop;
 use crate::util::desktop::LaunchArgs;
-use crate::util::{
-    get_app_info,
-    glob,
-    glob_dir,
-    quit_fig,
-};
+use crate::util::{get_app_info, glob, glob_dir, quit_fig};
 
 #[derive(Debug, ValueEnum, Clone, PartialEq, Eq)]
 pub enum Build {
@@ -112,10 +75,7 @@ pub enum AccessibilityAction {
 }
 
 #[cfg(target_os = "macos")]
-use fig_integrations::{
-    Integration,
-    input_method::InputMethod,
-};
+use fig_integrations::{Integration, input_method::InputMethod};
 
 #[cfg(target_os = "macos")]
 #[derive(Debug, Clone, PartialEq, Eq, ValueEnum)]
@@ -252,11 +212,14 @@ impl DebugSubcommand {
             },
             DebugSubcommand::Build { build, app } => match build {
                 Some(build) => {
-                    fig_settings::settings::set_value(format!("developer.{app}.build"), match build {
-                        Build::Production => serde_json::Value::Null,
-                        Build::Beta => "beta".into(),
-                        Build::Develop => "develop".into(),
-                    })?;
+                    fig_settings::settings::set_value(
+                        format!("developer.{app}.build"),
+                        match build {
+                            Build::Production => serde_json::Value::Null,
+                            Build::Beta => "beta".into(),
+                            Build::Develop => "develop".into(),
+                        },
+                    )?;
                     println!(
                         "{PRODUCT_NAME} will now use the {} build of {}",
                         build.magenta(),

@@ -3,21 +3,13 @@ use base64::prelude::*;
 use bytes::BytesMut;
 use dashmap::DashMap;
 use fig_proto::fig::server_originated_message::Submessage as ServerOriginatedSubMessage;
-use fig_proto::fig::{
-    Notification,
-    NotificationType,
-    ServerOriginatedMessage,
-};
+use fig_proto::fig::{Notification, NotificationType, ServerOriginatedMessage};
 use fig_proto::prost::Message;
 use fnv::FnvBuildHasher;
 use tracing::debug;
 
 use crate::EventLoopProxy;
-use crate::event::{
-    EmitEventName,
-    Event,
-    WindowEvent,
-};
+use crate::event::{EmitEventName, Event, WindowEvent};
 use crate::webview::WindowId;
 
 #[derive(Debug, Default)]

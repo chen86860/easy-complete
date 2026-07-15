@@ -1,27 +1,10 @@
 //! Defines the Row type which makes up lines in the grid.
 
-use std::cmp::{
-    max,
-    min,
-};
-use std::ops::{
-    Index,
-    IndexMut,
-    Range,
-    RangeFrom,
-    RangeFull,
-    RangeTo,
-    RangeToInclusive,
-};
-use std::{
-    ptr,
-    slice,
-};
+use std::cmp::{max, min};
+use std::ops::{Index, IndexMut, Range, RangeFrom, RangeFull, RangeTo, RangeToInclusive};
+use std::{ptr, slice};
 
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use serde::{Deserialize, Serialize};
 
 use crate::grid::GridCell;
 use crate::index::Column;

@@ -3,53 +3,24 @@ mod hooks;
 
 use std::sync::Arc;
 
-use anyhow::{
-    Context,
-    Result,
-};
+use anyhow::{Context, Result};
 use fig_install::UpdateOptions;
-use fig_ipc::{
-    BufferedUnixStream,
-    RecvMessage,
-    SendMessage,
-};
-use fig_os_shim::{
-    Context as FigContext,
-    ContextArcProvider,
-    ContextProvider,
-};
+use fig_ipc::{BufferedUnixStream, RecvMessage, SendMessage};
+use fig_os_shim::{Context as FigContext, ContextArcProvider, ContextProvider};
 use fig_proto::local::command_response::Response as CommandResponseTypes;
 use fig_proto::local::local_message::Type as LocalMessageType;
-use fig_proto::local::{
-    CommandResponse,
-    ErrorResponse,
-    LocalMessage,
-    SuccessResponse,
-};
+use fig_proto::local::{CommandResponse, ErrorResponse, LocalMessage, SuccessResponse};
 use fig_remote_ipc::figterm::FigtermState;
 use fig_settings::settings::SettingsProvider;
-use fig_settings::{
-    Settings,
-    State,
-    StateProvider,
-};
+use fig_settings::{Settings, State, StateProvider};
 use fig_util::directories;
 use tokio::net::UnixListener;
-use tracing::{
-    debug,
-    error,
-    trace,
-    warn,
-};
+use tracing::{debug, error, trace, warn};
 
 use crate::event::Event;
 use crate::platform::PlatformState;
 use crate::webview::notification::WebviewNotificationsState;
-use crate::{
-    AUTOCOMPLETE_ID,
-    DASHBOARD_ID,
-    EventLoopProxy,
-};
+use crate::{AUTOCOMPLETE_ID, DASHBOARD_ID, EventLoopProxy};
 
 pub enum LocalResponse {
     Error { code: Option<i32>, message: Option<String> },
@@ -164,28 +135,10 @@ async fn handle_local_ipc<Ctx>(
                     },
                     Some(command) => {
                         use fig_proto::local::command::Command::{
-                            BundleMetadata,
-                            ConnectToIbus,
-                            DebugMode,
-                            Devtools,
-                            Diagnostics,
-                            DumpState,
-                            InputMethod,
-                            ListTerminalIntegrations,
-                            LogLevel,
-                            Login,
-                            Logout,
-                            OpenBrowser,
-                            OpenUiElement,
-                            PromptAccessibility,
-                            Quit,
-                            ReportWindow,
-                            ResetCache,
-                            Restart,
-                            RestartSettingsListener,
-                            RunInstallScript,
-                            TerminalIntegration,
-                            Update,
+                            BundleMetadata, ConnectToIbus, DebugMode, Devtools, Diagnostics, DumpState, InputMethod,
+                            ListTerminalIntegrations, LogLevel, Login, Logout, OpenBrowser, OpenUiElement,
+                            PromptAccessibility, Quit, ReportWindow, ResetCache, Restart, RestartSettingsListener,
+                            RunInstallScript, TerminalIntegration, Update,
                         };
 
                         match command {
@@ -282,24 +235,9 @@ async fn handle_local_ipc<Ctx>(
             Some(LocalMessageType::Hook(hook)) => {
                 use fig_proto::ReflectMessage;
                 use fig_proto::local::hook::Hook::{
-                    Callback,
-                    CaretPosition,
-                    ClearAutocompleteCache,
-                    EditBuffer,
-                    Event,
-                    FileChanged,
-                    FocusChange,
-                    FocusedWindowData,
-                    Hide,
-                    Init,
-                    IntegrationReady,
-                    InterceptedKey,
-                    KeyboardFocusChanged,
-                    OpenedSshConnection,
-                    PostExec,
-                    PreExec,
-                    Prompt,
-                    TmuxPaneChanged,
+                    Callback, CaretPosition, ClearAutocompleteCache, EditBuffer, Event, FileChanged, FocusChange,
+                    FocusedWindowData, Hide, Init, IntegrationReady, InterceptedKey, KeyboardFocusChanged,
+                    OpenedSshConnection, PostExec, PreExec, Prompt, TmuxPaneChanged,
                 };
 
                 if let Err(err) = match hook.hook {

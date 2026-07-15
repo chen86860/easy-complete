@@ -1,52 +1,21 @@
-use std::ffi::{
-    CStr,
-    CString,
-    OsStr,
-};
-use std::os::unix::prelude::{
-    OsStrExt,
-    PermissionsExt,
-};
+use std::ffi::{CStr, CString, OsStr};
+use std::os::unix::prelude::{OsStrExt, PermissionsExt};
 use std::os::unix::process::CommandExt;
-use std::path::{
-    Path,
-    PathBuf,
-};
+use std::path::{Path, PathBuf};
 
-use fig_util::consts::{
-    APP_BUNDLE_ID,
-    CLI_BINARY_NAME,
-    system_paths,
-};
+use fig_util::consts::{APP_BUNDLE_ID, CLI_BINARY_NAME, system_paths};
 use fig_util::macos::BUNDLE_CONTENTS_MACOS_PATH;
-use fig_util::{
-    APP_BUNDLE_NAME,
-    directories,
-};
+use fig_util::{APP_BUNDLE_NAME, directories};
 use regex::Regex;
-use security_framework::authorization::{
-    Authorization,
-    AuthorizationItemSetBuilder,
-    Flags as AuthorizationFlags,
-};
+use security_framework::authorization::{Authorization, AuthorizationItemSetBuilder, Flags as AuthorizationFlags};
 use tokio::fs;
-use tokio::io::{
-    AsyncReadExt,
-    AsyncWriteExt,
-};
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::sync::mpsc::Sender;
-use tracing::{
-    debug,
-    error,
-    warn,
-};
+use tracing::{debug, error, warn};
 
 use crate::download::download_file;
 use crate::index::UpdatePackage;
-use crate::{
-    Error,
-    UpdateStatus,
-};
+use crate::{Error, UpdateStatus};
 
 #[allow(dead_code)]
 pub(crate) async fn update(

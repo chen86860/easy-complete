@@ -1,17 +1,7 @@
 use fig_integrations::shell::ShellExt;
-use fig_os_shim::{
-    ContextArcProvider,
-    ContextProvider,
-    EnvProvider,
-};
-use fig_proto::fig::{
-    OnboardingAction,
-    OnboardingRequest,
-};
-use fig_settings::{
-    SettingsProvider,
-    StateProvider,
-};
+use fig_os_shim::{ContextArcProvider, ContextProvider, EnvProvider};
+use fig_proto::fig::{OnboardingAction, OnboardingRequest};
+use fig_settings::{SettingsProvider, StateProvider};
 use fig_util::Shell;
 use tao::event_loop::ControlFlow;
 #[cfg(target_os = "macos")]
@@ -19,10 +9,7 @@ use tokio::process::Command;
 #[allow(unused_imports)]
 use tracing::error;
 
-use super::{
-    RequestResult,
-    RequestResultImpl,
-};
+use super::{RequestResult, RequestResultImpl};
 use crate::EventLoopProxy;
 use crate::event::Event;
 
@@ -58,10 +45,7 @@ where
             }
         },
         OnboardingAction::Uninstall => {
-            use fig_install::{
-                InstallComponents,
-                uninstall,
-            };
+            use fig_install::{InstallComponents, uninstall};
 
             let result = match uninstall(InstallComponents::all(), ctx.context_arc()).await {
                 Ok(_) => RequestResult::success(),
@@ -110,10 +94,7 @@ where
             }
         },
         OnboardingAction::PromptForAccessibilityPermission => {
-            use crate::local_ipc::{
-                LocalResponse,
-                commands,
-            };
+            use crate::local_ipc::{LocalResponse, commands};
             let res = commands::prompt_for_accessibility_permission(ctx)
                 .await
                 .unwrap_or_else(|e| e);

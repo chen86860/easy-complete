@@ -1,14 +1,8 @@
 use fig_proto::fig::InsertTextRequest;
-use fig_remote_ipc::figterm::{
-    FigtermCommand,
-    FigtermState,
-};
+use fig_remote_ipc::figterm::{FigtermCommand, FigtermState};
 use uuid::Uuid;
 
-use super::{
-    RequestResult,
-    RequestResultImpl,
-};
+use super::{RequestResult, RequestResultImpl};
 
 pub async fn insert_text(request: InsertTextRequest, state: &FigtermState) -> RequestResult {
     let figterm_command = match request.r#type {

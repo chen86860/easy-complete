@@ -5,14 +5,8 @@ use std::sync::OnceLock;
 
 use cfg_if::cfg_if;
 use fig_os_shim::Env;
-use serde::{
-    Deserialize,
-    Serialize,
-};
-use sha2::{
-    Digest,
-    Sha256,
-};
+use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
 
 use crate::Error;
 use crate::manifest::is_minimal;

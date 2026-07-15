@@ -1,14 +1,7 @@
-use std::io::{
-    Write,
-    stdout,
-};
+use std::io::{Write, stdout};
 use std::process::ExitCode;
 
-use clap::{
-    Args,
-    CommandFactory,
-    ValueEnum,
-};
+use clap::{Args, CommandFactory, ValueEnum};
 use eyre::Result;
 use fig_util::CLI_BINARY_NAME;
 
@@ -35,12 +28,16 @@ pub struct CompletionArgs {
 
 impl CompletionArgs {
     pub fn execute(&self) -> Result<ExitCode> {
-        writeln!(stdout(), "{}", match self.shell {
-            Shells::Bash => generation_completions(clap_complete::shells::Bash),
-            Shells::Fish => generation_completions(clap_complete::shells::Fish),
-            Shells::Zsh => generation_completions(clap_complete::shells::Zsh),
-            Shells::Fig => generation_completions(clap_complete_fig::Fig),
-        })
+        writeln!(
+            stdout(),
+            "{}",
+            match self.shell {
+                Shells::Bash => generation_completions(clap_complete::shells::Bash),
+                Shells::Fish => generation_completions(clap_complete::shells::Fish),
+                Shells::Zsh => generation_completions(clap_complete::shells::Zsh),
+                Shells::Fig => generation_completions(clap_complete_fig::Fig),
+            }
+        )
         .ok();
         Ok(ExitCode::SUCCESS)
     }

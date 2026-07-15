@@ -4,10 +4,7 @@ use std::os::unix::prelude::OsStrExt;
 use std::path::PathBuf;
 use std::sync::Weak;
 
-use super::{
-    Pid,
-    RawPid,
-};
+use super::{Pid, RawPid};
 use crate::Context;
 
 pub fn current(ctx: Weak<Context>) -> Pid {

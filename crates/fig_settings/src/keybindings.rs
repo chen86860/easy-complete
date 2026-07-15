@@ -1,15 +1,8 @@
 use std::fmt::Display;
 
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use serde::{Deserialize, Serialize};
 
-use crate::{
-    Error,
-    JsonStore,
-    OldSettings,
-};
+use crate::{Error, JsonStore, OldSettings};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]

@@ -4,17 +4,9 @@ use async_trait::async_trait;
 use eyre::Context;
 use fig_util::Shell;
 use owo_colors::OwoColorize;
-use semver::{
-    Version,
-    VersionReq,
-};
+use semver::{Version, VersionReq};
 
-use crate::cli::doctor::{
-    DoctorCheck,
-    DoctorCheckType,
-    DoctorError,
-    Platform,
-};
+use crate::cli::doctor::{DoctorCheck, DoctorCheckType, DoctorError, Platform};
 
 pub struct BashVersionCheck;
 

@@ -1,61 +1,21 @@
-use std::io::{
-    self,
-    Read,
-    Write,
-};
-use std::os::unix::io::{
-    AsRawFd,
-    FromRawFd,
-    RawFd,
-};
+use std::io::{self, Read, Write};
+use std::os::unix::io::{AsRawFd, FromRawFd, RawFd};
 use std::os::unix::process::CommandExt;
 use std::path::Path;
 
-use anyhow::{
-    Context,
-    Result,
-};
+use anyhow::{Context, Result};
 use async_trait::async_trait;
 use filedescriptor::FileDescriptor;
-use nix::fcntl::{
-    FcntlArg,
-    FdFlag,
-    OFlag,
-    fcntl,
-    open,
-};
+use nix::fcntl::{FcntlArg, FdFlag, OFlag, fcntl, open};
 use nix::libc;
-use nix::pty::{
-    PtyMaster,
-    Winsize,
-    grantpt,
-    posix_openpt,
-    ptsname,
-    unlockpt,
-};
-use nix::sys::signal::{
-    SigHandler,
-    Signal,
-    signal,
-};
-use nix::sys::stat::{
-    Mode,
-    umask,
-};
+use nix::pty::{PtyMaster, Winsize, grantpt, posix_openpt, ptsname, unlockpt};
+use nix::sys::signal::{SigHandler, Signal, signal};
+use nix::sys::stat::{Mode, umask};
 use portable_pty::unix::close_random_fds;
-use portable_pty::{
-    Child,
-    PtySize,
-};
+use portable_pty::{Child, PtySize};
 use tokio::io::unix::AsyncFd;
 
-use crate::pty::{
-    AsyncMasterPty,
-    CommandBuilder,
-    MasterPty,
-    PtyPair,
-    SlavePty,
-};
+use crate::pty::{AsyncMasterPty, CommandBuilder, MasterPty, PtyPair, SlavePty};
 
 nix::ioctl_write_ptr_bad!(ioctl_tiocswinsz, libc::TIOCSWINSZ, Winsize);
 

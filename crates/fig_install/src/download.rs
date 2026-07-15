@@ -7,10 +7,7 @@ use reqwest::IntoUrl;
 use tokio::io::AsyncWriteExt as _;
 use tokio::sync::mpsc::Sender;
 
-use crate::{
-    Error,
-    UpdateStatus,
-};
+use crate::{Error, UpdateStatus};
 
 #[allow(dead_code)]
 pub(crate) async fn download_file(

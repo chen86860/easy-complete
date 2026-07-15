@@ -12,6 +12,7 @@ APP_BUNDLE="/Applications/${APP_DISPLAY}.app"
 LOCAL_BIN="${HOME}/.local/bin"
 LAUNCH_AGENTS="${HOME}/Library/LaunchAgents"
 PLIST_PATH="${LAUNCH_AGENTS}/${BUNDLE_ID}.plist"
+UPSTREAM_PLIST_PATH="${LAUNCH_AGENTS}/com.amazon.codewhisperer.launcher.plist"
 INPUT_METHODS_DIR="${HOME}/Library/Input Methods"
 IME_SYMLINK="${INPUT_METHODS_DIR}/EasyCompleteInputMethod.app"
 APP_SUPPORT="${HOME}/Library/Application Support/${APP_NAME}"
@@ -56,17 +57,24 @@ fi
 
 # ── 2. Kill running processes ─────────────────────────────────────────────────
 info "Stopping processes..."
+if [[ -x "${APP_BUNDLE}/Contents/MacOS/${APP_NAME}" ]]; then
+  "${APP_BUNDLE}/Contents/MacOS/${APP_NAME}" --unregister-login-item 2>/dev/null || true
+fi
 pkill -x "${APP_NAME}"       2>/dev/null || true
 pkill -f "fig_input_method"  2>/dev/null || true
 pkill -f "ecterm"          2>/dev/null || true
 sleep 0.5
 
-# ── 3. Unload and remove LaunchAgent ─────────────────────────────────────────
-info "Removing LaunchAgent..."
-if [[ -f "$PLIST_PATH" ]]; then
-  launchctl unload "$PLIST_PATH" 2>/dev/null || true
-  rm -f "$PLIST_PATH"
-fi
+# ── 3. Remove login item and legacy LaunchAgents ─────────────────────────────
+info "Removing login startup entries..."
+launchctl bootout "gui/$(id -u)/${BUNDLE_ID}" 2>/dev/null || true
+launchctl bootout "gui/$(id -u)/com.amazon.codewhisperer.launcher" 2>/dev/null || true
+for launch_agent in "$PLIST_PATH" "$UPSTREAM_PLIST_PATH"; do
+  if [[ -f "$launch_agent" ]]; then
+    launchctl unload "$launch_agent" 2>/dev/null || true
+    rm -f "$launch_agent"
+  fi
+done
 
 # ── 4. Remove IME symlink ──────────────────────────────────────────────────────
 info "Removing Input Method..."

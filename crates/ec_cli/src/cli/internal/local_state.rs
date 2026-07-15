@@ -1,14 +1,7 @@
 use anstream::println;
-use clap::{
-    ArgGroup,
-    Args,
-    Subcommand,
-};
+use clap::{ArgGroup, Args, Subcommand};
 use crossterm::style::Stylize;
-use eyre::{
-    Result,
-    eyre,
-};
+use eyre::{Result, eyre};
 use fig_ipc::local::restart_settings_listener;
 use fig_util::PRODUCT_NAME;
 use serde_json::json;

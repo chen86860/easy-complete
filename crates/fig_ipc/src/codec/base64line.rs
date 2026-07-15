@@ -1,19 +1,11 @@
-use std::io::{
-    Error,
-    Write,
-};
+use std::io::{Error, Write};
 use std::marker::PhantomData;
 
 use base64::prelude::*;
 use bytes::BytesMut;
 use fig_proto::prost::Message;
 use flate2::Compression;
-use tokio_util::codec::{
-    AnyDelimiterCodec,
-    AnyDelimiterCodecError,
-    Decoder,
-    Encoder,
-};
+use tokio_util::codec::{AnyDelimiterCodec, AnyDelimiterCodecError, Decoder, Encoder};
 
 #[derive(Debug, Clone)]
 pub struct Base64LineCodec<T: Message> {
@@ -87,15 +79,9 @@ impl<T: Message> Encoder<T> for Base64LineCodec<T> {
 mod tests {
     use std::collections::HashMap;
 
-    use fig_proto::fig::{
-        EnvironmentVariable,
-        ShellContext,
-    };
+    use fig_proto::fig::{EnvironmentVariable, ShellContext};
     use fig_proto::local::PromptHook;
-    use fig_proto::remote::{
-        Hostbound,
-        hostbound,
-    };
+    use fig_proto::remote::{Hostbound, hostbound};
 
     use super::*;
 

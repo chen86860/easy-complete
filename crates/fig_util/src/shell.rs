@@ -1,26 +1,17 @@
 use std::fmt::Display;
-use std::path::{
-    Path,
-    PathBuf,
-};
+use std::path::{Path, PathBuf};
 use std::str::FromStr;
 
 use clap::ValueEnum;
 use fig_os_shim::Env;
 use regex::Regex;
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use serde::{Deserialize, Serialize};
 use tokio::process::Command;
 
 use crate::consts::build::SKIP_FISH_TESTS;
 use crate::env_var::Q_ZDOTDIR;
 use crate::process_info::get_parent_process_exe;
-use crate::{
-    Error,
-    directories,
-};
+use crate::{Error, directories};
 
 /// All supported shells
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, ValueEnum)]

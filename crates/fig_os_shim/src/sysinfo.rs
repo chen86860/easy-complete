@@ -1,8 +1,5 @@
 use std::ffi::OsString;
-use std::sync::{
-    Arc,
-    Mutex,
-};
+use std::sync::{Arc, Mutex};
 
 use crate::Shim;
 
@@ -11,10 +8,7 @@ pub struct SysInfo(inner::Inner);
 
 mod inner {
     use std::collections::HashSet;
-    use std::sync::{
-        Arc,
-        Mutex,
-    };
+    use std::sync::{Arc, Mutex};
 
     #[derive(Debug, Clone, Default)]
     pub enum Inner {

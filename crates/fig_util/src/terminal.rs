@@ -3,10 +3,7 @@ use std::fmt;
 use std::sync::OnceLock;
 
 use fig_os_shim::Context;
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use serde::{Deserialize, Serialize};
 
 /// Terminals that macOS supports
 pub const MACOS_TERMINALS: &[Terminal] = &[
@@ -798,10 +795,7 @@ mod tests {
     use std::sync::Arc;
 
     use fig_os_shim::process_info::TestExe;
-    use fig_os_shim::{
-        Os,
-        ProcessInfo,
-    };
+    use fig_os_shim::{Os, ProcessInfo};
 
     use super::*;
 
@@ -836,20 +830,26 @@ mod tests {
             "Max search depth reached should return None"
         );
 
-        let ctx = make_context(Os::Linux, vec![
-            (Some("q"), None),
-            (Some("python3"), Some("/usr/bin/python3 /usr/bin/terminator")),
-        ]);
+        let ctx = make_context(
+            Os::Linux,
+            vec![
+                (Some("q"), None),
+                (Some("python3"), Some("/usr/bin/python3 /usr/bin/terminator")),
+            ],
+        );
         assert_eq!(
             Terminal::from_process_info(&ctx, &LINUX_TERMINALS.to_vec()),
             Some(Terminal::Terminator),
             "should return terminator"
         );
 
-        let ctx = make_context(Os::Linux, vec![
-            (Some("q"), None),
-            (Some("python3"), Some("/usr/bin/python3 /usr/bin/guake")),
-        ]);
+        let ctx = make_context(
+            Os::Linux,
+            vec![
+                (Some("q"), None),
+                (Some("python3"), Some("/usr/bin/python3 /usr/bin/guake")),
+            ],
+        );
         assert_eq!(
             Terminal::from_process_info(&ctx, &LINUX_TERMINALS.to_vec()),
             Some(Terminal::Guake),

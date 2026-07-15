@@ -1,19 +1,10 @@
 use std::boxed::Box;
 
 use bitflags::bitflags;
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use serde::{Deserialize, Serialize};
 
-use crate::ansi::{
-    Color,
-    NamedColor,
-};
-use crate::grid::{
-    self,
-    GridCell,
-};
+use crate::ansi::{Color, NamedColor};
+use crate::grid::{self, GridCell};
 use crate::index::Column;
 
 bitflags! {
@@ -203,10 +194,7 @@ impl LineLength for grid::Row<Cell> {
 
 #[cfg(test)]
 mod tests {
-    use super::{
-        Cell,
-        LineLength,
-    };
+    use super::{Cell, LineLength};
     use crate::grid::Row;
     use crate::index::Column;
 

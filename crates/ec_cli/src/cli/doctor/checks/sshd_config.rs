@@ -7,12 +7,7 @@ use fig_util::url::AUTOCOMPLETE_SSH_WIKI;
 use owo_colors::OwoColorize;
 use regex::Regex;
 
-use crate::cli::doctor::{
-    DoctorCheck,
-    DoctorCheckType,
-    DoctorError,
-    Platform,
-};
+use crate::cli::doctor::{DoctorCheck, DoctorCheckType, DoctorError, Platform};
 
 pub struct SshdConfigCheck;
 

@@ -1,15 +1,8 @@
 use fig_proto::fig::server_originated_message::Submessage as ServerOriginatedSubMessage;
-use fig_proto::fig::{
-    GetLocalStateRequest,
-    GetLocalStateResponse,
-    UpdateLocalStateRequest,
-};
+use fig_proto::fig::{GetLocalStateRequest, GetLocalStateResponse, UpdateLocalStateRequest};
 use fig_settings::state;
 
-use super::{
-    RequestResult,
-    RequestResultImpl,
-};
+use super::{RequestResult, RequestResultImpl};
 
 pub async fn get(request: GetLocalStateRequest) -> RequestResult {
     let res = match request.key {

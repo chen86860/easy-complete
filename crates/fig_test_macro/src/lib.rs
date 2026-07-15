@@ -1,9 +1,6 @@
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{
-    ItemFn,
-    parse_macro_input,
-};
+use syn::{ItemFn, parse_macro_input};
 
 #[proc_macro_attribute]
 pub fn test(_: TokenStream, stream: TokenStream) -> TokenStream {

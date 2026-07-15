@@ -17,55 +17,24 @@ mod theme;
 mod uninstall;
 mod update;
 
-use std::io::{
-    Write as _,
-    stdout,
-};
+use std::io::{Write as _, stdout};
 use std::process::ExitCode;
 
-use anstream::{
-    eprintln,
-    println,
-};
-use clap::{
-    ArgAction,
-    CommandFactory,
-    Parser,
-    Subcommand,
-    ValueEnum,
-};
+use anstream::{eprintln, println};
+use clap::{ArgAction, CommandFactory, Parser, Subcommand, ValueEnum};
 use crossterm::style::Stylize;
-use eyre::{
-    Result,
-    WrapErr,
-    bail,
-};
+use eyre::{Result, WrapErr, bail};
 use fig_ipc::local::open_ui_element;
-use fig_log::{
-    LogArgs,
-    initialize_logging,
-};
+use fig_log::{LogArgs, initialize_logging};
 use fig_proto::local::UiElement;
-use fig_util::{
-    CLI_BINARY_NAME,
-    PRODUCT_NAME,
-    directories,
-    manifest,
-    system_info,
-};
+use fig_util::{CLI_BINARY_NAME, PRODUCT_NAME, directories, manifest, system_info};
 use internal::InternalSubcommand;
 use serde::Serialize;
-use tracing::{
-    Level,
-    debug,
-};
+use tracing::{Level, debug};
 
 use self::integrations::IntegrationsSubcommands;
 use crate::util::CliContext;
-use crate::util::desktop::{
-    LaunchArgs,
-    launch_fig_desktop,
-};
+use crate::util::desktop::{LaunchArgs, launch_fig_desktop};
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, ValueEnum)]
 pub enum OutputFormat {
@@ -339,31 +308,43 @@ mod test {
     /// Test flag parsing for the top level [Cli]
     #[test]
     fn test_flags() {
-        assert_eq!(Cli::parse_from([CLI_BINARY_NAME, "-v"]), Cli {
-            subcommand: None,
-            verbose: 1,
-            help_all: false,
-        });
+        assert_eq!(
+            Cli::parse_from([CLI_BINARY_NAME, "-v"]),
+            Cli {
+                subcommand: None,
+                verbose: 1,
+                help_all: false,
+            }
+        );
 
-        assert_eq!(Cli::parse_from([CLI_BINARY_NAME, "-vvv"]), Cli {
-            subcommand: None,
-            verbose: 3,
-            help_all: false,
-        });
+        assert_eq!(
+            Cli::parse_from([CLI_BINARY_NAME, "-vvv"]),
+            Cli {
+                subcommand: None,
+                verbose: 3,
+                help_all: false,
+            }
+        );
 
-        assert_eq!(Cli::parse_from([CLI_BINARY_NAME, "--help-all"]), Cli {
-            subcommand: None,
-            verbose: 0,
-            help_all: true,
-        });
+        assert_eq!(
+            Cli::parse_from([CLI_BINARY_NAME, "--help-all"]),
+            Cli {
+                subcommand: None,
+                verbose: 0,
+                help_all: true,
+            }
+        );
     }
 
     /// This test validates that the restart command maintains the same CLI facing definition
     #[test]
     fn test_restart() {
-        assert_parse!(["restart", "app"], CliRootCommands::Restart {
-            process: Processes::App
-        });
+        assert_parse!(
+            ["restart", "app"],
+            CliRootCommands::Restart {
+                process: Processes::App
+            }
+        );
     }
 
     /// This test validates that the internal input method installation command maintains the same

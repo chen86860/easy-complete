@@ -1,13 +1,7 @@
 use async_trait::async_trait;
 use fig_proto::FigProtobufEncodable;
-use tokio::io::{
-    AsyncWrite,
-    AsyncWriteExt,
-};
-use tracing::{
-    error,
-    trace,
-};
+use tokio::io::{AsyncWrite, AsyncWriteExt};
+use tracing::{error, trace};
 
 use crate::SendError;
 

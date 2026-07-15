@@ -1,59 +1,26 @@
-use std::path::{
-    Path,
-    PathBuf,
-};
-use std::time::{
-    Duration,
-    SystemTime,
-};
+use std::path::{Path, PathBuf};
+use std::time::{Duration, SystemTime};
 
 use alacritty_terminal::Term;
 use alacritty_terminal::term::ShellState;
 use anyhow::Result;
-use fig_proto::fig::{
-    EnvironmentVariable,
-    RunProcessResponse,
-};
+use fig_proto::fig::{EnvironmentVariable, RunProcessResponse};
 use fig_proto::figterm::figterm_request_message::Request as FigtermRequest;
 use fig_proto::figterm::figterm_response_message::Response as FigtermResponse;
-use fig_proto::figterm::intercept_request::{
-    InterceptCommand,
-    SetFigjsIntercepts,
-    SetFigjsVisible,
-};
-use fig_proto::figterm::{
-    self,
-    FigtermRequestMessage,
-    FigtermResponseMessage,
-    TelemetryRequest,
-};
-use fig_proto::remote::{
-    Clientbound,
-    Hostbound,
-    clientbound,
-    hostbound,
-};
+use fig_proto::figterm::intercept_request::{InterceptCommand, SetFigjsIntercepts, SetFigjsVisible};
+use fig_proto::figterm::{self, FigtermRequestMessage, FigtermResponseMessage, TelemetryRequest};
+use fig_proto::remote::{Clientbound, Hostbound, clientbound, hostbound};
 use fig_util::env_var::PROCESS_LAUNCHED_BY_Q;
 use flume::Sender;
 use tokio::process::Command;
-use tracing::{
-    debug,
-    error,
-    trace,
-    warn,
-};
+use tracing::{debug, error, trace, warn};
 
 use crate::event_handler::EventHandler;
 use crate::history::HistorySender;
 use crate::interceptor::KeyInterceptor;
 use crate::pty::AsyncMasterPty;
 use crate::{
-    EXPECTED_BUFFER,
-    INSERT_ON_NEW_CMD,
-    INSERTION_LOCKED_AT,
-    MainLoopEvent,
-    SHELL_ALIAS,
-    SHELL_ENVIRONMENT_VARIABLES,
+    EXPECTED_BUFFER, INSERT_ON_NEW_CMD, INSERTION_LOCKED_AT, MainLoopEvent, SHELL_ALIAS, SHELL_ENVIRONMENT_VARIABLES,
     shell_state_to_context,
 };
 

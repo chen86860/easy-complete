@@ -1,8 +1,5 @@
 use std::path::PathBuf;
-use std::{
-    env,
-    fs,
-};
+use std::{env, fs};
 
 use image::imageops::FilterType;
 

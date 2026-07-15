@@ -3,17 +3,10 @@ use std::sync::LazyLock;
 use anyhow::Result;
 use dashmap::DashMap;
 use fig_proto::figterm::Action;
-use fig_settings::keybindings::{
-    KeyBinding,
-    KeyBindings,
-};
+use fig_settings::keybindings::{KeyBinding, KeyBindings};
 use tracing::trace;
 
-use crate::input::{
-    KeyCode,
-    KeyEvent,
-    Modifiers,
-};
+use crate::input::{KeyCode, KeyEvent, Modifiers};
 
 // TODO: remove hardcoded list of global actions and use `availability`
 const GLOBAL_ACTIONS: &[&str] = &["toggleAutocomplete", "showAutocomplete"];

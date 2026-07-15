@@ -1,19 +1,10 @@
-use fig_desktop_api::requests::{
-    RequestResult,
-    RequestResultImpl,
-};
+use fig_desktop_api::requests::{RequestResult, RequestResultImpl};
 use fig_proto::fig::UserLogoutRequest;
 use tracing::error;
 
-use crate::event::{
-    Event,
-    WindowEvent,
-};
+use crate::event::{Event, WindowEvent};
 use crate::webview::LOGIN_PATH;
-use crate::{
-    DASHBOARD_ID,
-    EventLoopProxy,
-};
+use crate::{DASHBOARD_ID, EventLoopProxy};
 
 pub async fn logout(_request: UserLogoutRequest, proxy: &EventLoopProxy) -> RequestResult {
     // fig_auth removed

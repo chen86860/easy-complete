@@ -1,9 +1,6 @@
 use std::borrow::Cow;
 #[cfg(any(target_os = "macos", target_os = "linux"))]
-use std::io::{
-    Write,
-    stdout,
-};
+use std::io::{Write, stdout};
 use std::process::ExitCode;
 
 use fig_os_shim::Context;
@@ -204,10 +201,7 @@ fn should_launch(ctx: &Context, quiet: bool) -> u8 {
 
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 pub fn should_figterm_launch_exit_status(ctx: &Context, quiet: bool) -> u8 {
-    use fig_util::env_var::{
-        PROCESS_LAUNCHED_BY_Q,
-        Q_PARENT,
-    };
+    use fig_util::env_var::{PROCESS_LAUNCHED_BY_Q, Q_PARENT};
 
     let env = ctx.env();
 
@@ -321,22 +315,9 @@ mod tests {
 
     use std::path::PathBuf;
 
-    use fig_os_shim::process_info::{
-        FakePid,
-        Pid,
-        ProcessInfo,
-    };
-    use fig_os_shim::{
-        ContextBuilder,
-        Env,
-        Os,
-        Platform,
-    };
-    use fig_util::env_var::{
-        PROCESS_LAUNCHED_BY_Q,
-        Q_PARENT,
-        Q_TERM,
-    };
+    use fig_os_shim::process_info::{FakePid, Pid, ProcessInfo};
+    use fig_os_shim::{ContextBuilder, Env, Os, Platform};
+    use fig_util::env_var::{PROCESS_LAUNCHED_BY_Q, Q_PARENT, Q_TERM};
 
     use super::*;
 

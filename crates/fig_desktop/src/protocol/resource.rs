@@ -6,17 +6,9 @@ use std::sync::Arc;
 use fig_os_shim::Context;
 use tracing::info;
 use wry::http::header::CONTENT_TYPE;
-use wry::http::{
-    Request,
-    Response,
-    StatusCode,
-};
+use wry::http::{Request, Response, StatusCode};
 
-use super::util::{
-    res_400,
-    res_404,
-    res_500,
-};
+use super::util::{res_400, res_404, res_500};
 use crate::webview::WindowId;
 
 fn relativize(path: &Path) -> &Path {

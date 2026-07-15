@@ -2,27 +2,15 @@ use std::collections::HashMap;
 use std::sync::LazyLock;
 use std::sync::atomic::Ordering;
 
-use anyhow::{
-    Result,
-    anyhow,
-};
+use anyhow::{Result, anyhow};
 use fig_proto::local::FocusedWindowDataHook;
 use fig_util::Terminal;
 use tracing::debug;
 
 use super::WM_REVICED_DATA;
-use crate::event::{
-    Event,
-    WindowEvent,
-};
-use crate::platform::{
-    ActiveWindowData,
-    PlatformState,
-};
-use crate::{
-    AUTOCOMPLETE_ID,
-    EventLoopProxy,
-};
+use crate::event::{Event, WindowEvent};
+use crate::platform::{ActiveWindowData, PlatformState};
+use crate::{AUTOCOMPLETE_ID, EventLoopProxy};
 
 pub static WM_CLASS_ALLOWLIST: LazyLock<HashMap<&'static str, Terminal>> = LazyLock::new(|| {
     let mut allowlist = HashMap::new();

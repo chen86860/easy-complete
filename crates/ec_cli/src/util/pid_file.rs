@@ -1,36 +1,15 @@
-use std::fs::{
-    File,
-    OpenOptions,
-};
-use std::io::{
-    Error,
-    ErrorKind,
-    Seek,
-    SeekFrom,
-    Write,
-};
+use std::fs::{File, OpenOptions};
+use std::io::{Error, ErrorKind, Seek, SeekFrom, Write};
 use std::os::unix::fs::OpenOptionsExt;
 use std::path::PathBuf;
 
 use eyre::Result;
-use nix::fcntl::{
-    Flock,
-    FlockArg,
-};
-use nix::sys::signal::{
-    Signal,
-    kill,
-};
+use nix::fcntl::{Flock, FlockArg};
+use nix::sys::signal::{Signal, kill};
 use nix::unistd::Pid;
 use tokio::fs::read_to_string;
 use tokio::time::sleep;
-use tracing::{
-    debug,
-    error,
-    info,
-    instrument,
-    warn,
-};
+use tracing::{debug, error, info, instrument, warn};
 
 /// A file-based process lock that ensures only one instance of a process is running.
 ///

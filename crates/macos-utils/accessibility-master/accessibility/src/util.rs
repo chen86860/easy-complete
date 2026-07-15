@@ -1,9 +1,6 @@
 use std::mem::MaybeUninit;
 
-use accessibility_sys::{
-    AXError,
-    kAXErrorSuccess,
-};
+use accessibility_sys::{AXError, kAXErrorSuccess};
 
 #[allow(clippy::missing_safety_doc)]
 pub unsafe fn ax_call<F, V>(f: F) -> Result<V, AXError>

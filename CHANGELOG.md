@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.0.44
+
+- feat: replaced the unconditional macOS LaunchAgent with a user-controlled launch-at-login integration: macOS 13+ now uses `SMAppService.mainAppService`, while macOS 12 keeps a non-`KeepAlive` LaunchAgent fallback
+- fix: synchronized the Launch at Login setting with the actual system registration, migrated and removed both historical LaunchAgents, kept login launches silent, and made uninstall fully unregister every startup entry
+- change: set macOS 12 as the explicit minimum deployment target in both the Rust build and the app bundle metadata
+- chore: migrated formatting from nightly-only rustfmt options to the pinned stable toolchain, updated CI/setup/docs, and mechanically reformatted the Rust workspace
+
 ## v2.0.43
 
 - fix: deliver webview emit events even while the autocomplete window is disabled, so settings changes such as the autocomplete theme take effect immediately while the dashboard is focused instead of remaining stale until restart

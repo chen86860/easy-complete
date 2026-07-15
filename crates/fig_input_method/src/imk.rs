@@ -6,41 +6,12 @@ use fig_proto::local::caret_position_hook::Origin;
 use fig_util::Terminal;
 use macos_utils::NotificationCenter;
 use objc2::mutability::InteriorMutable;
-use objc2::rc::{
-    Allocated,
-    Retained,
-};
-use objc2::runtime::{
-    AnyObject,
-    Bool,
-    Sel,
-};
-use objc2::{
-    ClassType,
-    DeclaredClass,
-    declare_class,
-    msg_send,
-    msg_send_id,
-    sel,
-};
-use objc2_foundation::{
-    NSPoint,
-    NSRange,
-    NSRect,
-    NSSize,
-    NSString,
-    ns_string,
-};
-use objc2_input_method_kit::{
-    IMKInputController,
-    IMKServer,
-};
-use tracing::{
-    debug,
-    info,
-    trace,
-    warn,
-};
+use objc2::rc::{Allocated, Retained};
+use objc2::runtime::{AnyObject, Bool, Sel};
+use objc2::{ClassType, DeclaredClass, declare_class, msg_send, msg_send_id, sel};
+use objc2_foundation::{NSPoint, NSRange, NSRect, NSSize, NSString, ns_string};
+use objc2_input_method_kit::{IMKInputController, IMKServer};
+use tracing::{debug, info, trace, warn};
 
 const INPUT_CONTROLLER_CLASS_NAME: &str = env!("InputMethodServerControllerClass");
 

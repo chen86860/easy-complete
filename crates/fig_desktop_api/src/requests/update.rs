@@ -1,14 +1,6 @@
-use fig_proto::fig::{
-    CheckForUpdatesRequest,
-    CheckForUpdatesResponse,
-    UpdateApplicationRequest,
-};
+use fig_proto::fig::{CheckForUpdatesRequest, CheckForUpdatesResponse, UpdateApplicationRequest};
 
-use super::{
-    RequestResult,
-    RequestResultImpl,
-    ServerOriginatedSubMessage,
-};
+use super::{RequestResult, RequestResultImpl, ServerOriginatedSubMessage};
 
 pub async fn update_application(_request: UpdateApplicationRequest) -> RequestResult {
     RequestResult::success()

@@ -3,30 +3,14 @@ use std::fmt::Display;
 use anstream::adapter::strip_str;
 use fig_integrations::Integration;
 #[cfg(target_os = "linux")]
-use fig_integrations::desktop_entry::{
-    AutostartIntegration,
-    DesktopEntryIntegration,
-};
+use fig_integrations::desktop_entry::{AutostartIntegration, DesktopEntryIntegration};
 use fig_integrations::shell::ShellExt;
 use fig_integrations::ssh::SshIntegration;
-use fig_os_shim::{
-    ContextArcProvider,
-    ContextProvider,
-    EnvProvider,
-};
-use fig_proto::fig::install_response::{
-    InstallationStatus,
-    Response,
-};
+use fig_os_shim::{ContextArcProvider, ContextProvider, EnvProvider};
+use fig_proto::fig::install_response::{InstallationStatus, Response};
 use fig_proto::fig::result::Result as ProtoResultEnum;
 use fig_proto::fig::server_originated_message::Submessage as ServerOriginatedSubMessage;
-use fig_proto::fig::{
-    InstallAction,
-    InstallComponent,
-    InstallRequest,
-    InstallResponse,
-    Result as ProtoResult,
-};
+use fig_proto::fig::{InstallAction, InstallComponent, InstallRequest, InstallResponse, Result as ProtoResult};
 use fig_settings::settings::SettingsProvider;
 use fig_settings::state::StateProvider;
 use fig_util::Shell;
@@ -310,10 +294,7 @@ where
     ExtensionsCtx: ContextProvider + Send + Sync,
 {
     use fig_integrations::gnome_extension::GnomeExtensionIntegration;
-    use fig_util::directories::{
-        bundled_gnome_extension_version_path,
-        bundled_gnome_extension_zip_path,
-    };
+    use fig_util::directories::{bundled_gnome_extension_version_path, bundled_gnome_extension_zip_path};
 
     let extension_uuid = shell_extensions.extension_uuid().await?;
     let bundled_version: u32 = ctx
@@ -347,20 +328,11 @@ mod tests {
 
     #[cfg(target_os = "linux")]
     use fig_integrations::desktop_entry::global_entry_path;
-    use fig_os_shim::{
-        Context,
-        ContextProvider,
-    };
+    use fig_os_shim::{Context, ContextProvider};
     use fig_proto::fig::server_originated_message::Submessage;
-    use fig_settings::{
-        Settings,
-        State,
-    };
+    use fig_settings::{Settings, State};
     #[cfg(target_os = "linux")]
-    use fig_util::directories::{
-        appimage_desktop_entry_icon_path,
-        appimage_desktop_entry_path,
-    };
+    use fig_util::directories::{appimage_desktop_entry_icon_path, appimage_desktop_entry_path};
 
     use super::*;
 
@@ -504,10 +476,7 @@ mod tests {
     /// [bundled_extension_version_path].
     #[cfg(target_os = "linux")]
     async fn write_extension_bundle(ctx: &Context, uuid: &str, version: u32) {
-        use fig_util::directories::{
-            bundled_gnome_extension_version_path,
-            bundled_gnome_extension_zip_path,
-        };
+        use fig_util::directories::{bundled_gnome_extension_version_path, bundled_gnome_extension_zip_path};
 
         let zip_path = bundled_gnome_extension_zip_path(ctx, uuid).unwrap();
         let version_path = bundled_gnome_extension_version_path(ctx, uuid).unwrap();
@@ -519,10 +488,7 @@ mod tests {
     #[cfg(target_os = "linux")]
     #[tokio::test]
     async fn test_gnome_extension_installation_and_uninstallation() {
-        use dbus::gnome_shell::{
-            GNOME_SHELL_PROCESS_NAME,
-            ShellExtensions,
-        };
+        use dbus::gnome_shell::{GNOME_SHELL_PROCESS_NAME, ShellExtensions};
         use fig_os_shim::Os;
 
         let ctx = Context::builder()

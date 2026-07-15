@@ -5,17 +5,11 @@ use std::process::ExitCode;
 
 use anstream::eprintln;
 use clap::Parser;
-use clap::error::{
-    ContextKind,
-    ErrorKind,
-};
+use clap::error::{ContextKind, ErrorKind};
 use crossterm::style::Stylize;
 use eyre::Result;
 use fig_log::get_log_level_max;
-use fig_util::{
-    CLI_BINARY_NAME,
-    PRODUCT_NAME,
-};
+use fig_util::{CLI_BINARY_NAME, PRODUCT_NAME};
 use tracing::metadata::LevelFilter;
 
 #[global_allocator]

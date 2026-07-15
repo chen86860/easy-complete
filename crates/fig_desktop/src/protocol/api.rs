@@ -5,31 +5,12 @@ use bytes::Bytes;
 use fig_os_shim::Context as OsContext;
 use fig_proto::fig::ClientOriginatedMessage;
 use fig_proto::prost::Message;
-use fig_settings::{
-    Settings,
-    State,
-};
+use fig_settings::{Settings, State};
 use wry::http::header::CONTENT_TYPE;
-use wry::http::{
-    HeaderValue,
-    Method,
-    Request,
-    Response,
-    StatusCode,
-};
+use wry::http::{HeaderValue, Method, Request, Response, StatusCode};
 
-use crate::request::{
-    Context,
-    EventHandler,
-};
-use crate::webview::{
-    DASH_KV_STORE,
-    FIGTERM_STATE,
-    GLOBAL_PROXY,
-    INTERCEPT_STATE,
-    NOTIFICATIONS_STATE,
-    WindowId,
-};
+use crate::request::{Context, EventHandler};
+use crate::webview::{DASH_KV_STORE, FIGTERM_STATE, GLOBAL_PROXY, INTERCEPT_STATE, NOTIFICATIONS_STATE, WindowId};
 
 static APPLICATION_FIG_API: HeaderValue = HeaderValue::from_static("application/fig-api");
 
@@ -86,10 +67,7 @@ pub async fn handle(
 #[cfg(test)]
 mod tests {
     use fig_desktop_api::handler::ClientOriginatedSubMessage;
-    use fig_proto::fig::{
-        ClientOriginatedMessage,
-        PingRequest,
-    };
+    use fig_proto::fig::{ClientOriginatedMessage, PingRequest};
 
     use super::*;
     use crate::AUTOCOMPLETE_ID;

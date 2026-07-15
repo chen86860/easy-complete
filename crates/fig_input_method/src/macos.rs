@@ -1,40 +1,18 @@
 use std::os::raw::c_void;
 
 use core_foundation::array::CFArrayRef;
-use core_foundation::base::{
-    CFRelease,
-    CFTypeRef,
-    OSStatus,
-    TCFType,
-};
+use core_foundation::base::{CFRelease, CFTypeRef, OSStatus, TCFType};
 use core_foundation::boolean::CFBoolean;
-use core_foundation::dictionary::{
-    CFDictionary,
-    CFDictionaryRef,
-};
-use core_foundation::string::{
-    CFString,
-    CFStringRef,
-};
+use core_foundation::dictionary::{CFDictionary, CFDictionaryRef};
+use core_foundation::string::{CFString, CFStringRef};
 use core_foundation::url::CFURL;
-use fig_log::{
-    LogArgs,
-    initialize_logging,
-};
+use fig_log::{LogArgs, initialize_logging};
 use fig_util::directories;
 use objc2::rc::autoreleasepool;
 use objc2::runtime::Bool;
-use objc2::{
-    ClassType,
-    msg_send,
-};
+use objc2::{ClassType, msg_send};
 use objc2_app_kit::NSApp;
-use objc2_foundation::{
-    MainThreadMarker,
-    NSBundle,
-    NSObject,
-    ns_string,
-};
+use objc2_foundation::{MainThreadMarker, NSBundle, NSObject, ns_string};
 use tracing::info;
 
 use crate::imk;

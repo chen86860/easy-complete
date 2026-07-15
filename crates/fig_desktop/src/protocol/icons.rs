@@ -3,45 +3,23 @@ use std::collections::HashMap;
 use std::ffi::OsStr;
 use std::hash::Hash;
 use std::io::Cursor;
-use std::path::{
-    Path,
-    PathBuf,
-};
-use std::sync::{
-    Arc,
-    LazyLock,
-};
+use std::path::{Path, PathBuf};
+use std::sync::{Arc, LazyLock};
 use std::time::Duration;
 
 use anyhow::Result;
 use fig_os_shim::Context;
 use image::imageops::FilterType;
-use image::{
-    GenericImage,
-    GenericImageView,
-    ImageFormat,
-    Rgba,
-};
+use image::{GenericImage, GenericImageView, ImageFormat, Rgba};
 use moka::future::Cache;
 use percent_encoding::percent_decode_str;
-use tracing::{
-    debug,
-    trace,
-    warn,
-};
+use tracing::{debug, trace, warn};
 use url::Url;
 use wry::http::header::CONTENT_TYPE;
-use wry::http::{
-    Request,
-    Response,
-    StatusCode,
-};
+use wry::http::{Request, Response, StatusCode};
 
 use crate::platform::PlatformState;
-use crate::protocol::util::{
-    parse_hex_rgb,
-    scale_u8,
-};
+use crate::protocol::util::{parse_hex_rgb, scale_u8};
 use crate::webview::WindowId;
 
 const DEFAULT_ICON: &str = "template";

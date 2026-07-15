@@ -1,9 +1,6 @@
 use std::borrow::Cow;
 
-use camino::{
-    Utf8Path,
-    Utf8PathBuf,
-};
+use camino::{Utf8Path, Utf8PathBuf};
 use fig_os_shim::Env;
 use fig_proto::fig::FilePath;
 

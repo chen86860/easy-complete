@@ -2,36 +2,17 @@ use std::io::Cursor;
 use std::path::Path;
 use std::sync::Arc;
 
-use anyhow::{
-    Error,
-    anyhow,
-};
-use bytes::{
-    Buf,
-    BufMut,
-    Bytes,
-    BytesMut,
-};
+use anyhow::{Error, anyhow};
+use bytes::{Buf, BufMut, Bytes, BytesMut};
 use fig_util::Terminal;
 use flume::Receiver;
 use parking_lot::Mutex;
 use serde::Serialize;
-use serde_json::{
-    Value,
-    json,
-};
-use tao::dpi::{
-    LogicalPosition,
-    LogicalSize,
-};
+use serde_json::{Value, json};
+use tao::dpi::{LogicalPosition, LogicalSize};
 use tokio::io::AsyncWriteExt;
 use tokio::net::UnixStream;
-use tracing::{
-    error,
-    info,
-    trace,
-    warn,
-};
+use tracing::{error, info, trace, warn};
 
 use super::integrations::GSE_ALLOWLIST;
 use crate::EventLoopProxy;

@@ -66,15 +66,12 @@ jobs:
       - name: Set up Rust
         run: rustup show
 
-      - name: Set up nightly rustfmt
-        run: rustup toolchain install nightly --profile minimal --component rustfmt
-
       - uses: Swatinem/rust-cache@v2
         with:
           key: ci
 
       - name: Check formatting
-        run: cargo +nightly fmt --check
+        run: cargo fmt --check
 
       - name: Clippy
         run: cargo clippy --locked --workspace --color always -- -D warnings

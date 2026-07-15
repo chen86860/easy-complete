@@ -5,60 +5,26 @@ use base64::prelude::*;
 use bytes::BytesMut;
 use fig_proto::fig::notification::Type as NotificationEnum;
 use fig_proto::fig::server_originated_message::Submessage as ServerOriginatedSubMessage;
-use fig_proto::fig::{
-    EventNotification,
-    Notification,
-    NotificationType,
-    ServerOriginatedMessage,
-};
+use fig_proto::fig::{EventNotification, Notification, NotificationType, ServerOriginatedMessage};
 use fig_proto::local::caret_position_hook::Origin;
 use fig_proto::prost::Message;
-use fig_remote_ipc::figterm::{
-    FigtermCommand,
-    FigtermState,
-};
+use fig_remote_ipc::figterm::{FigtermCommand, FigtermState};
 use parking_lot::Mutex;
-use tao::dpi::{
-    LogicalPosition,
-    LogicalSize,
-    Position,
-};
+use tao::dpi::{LogicalPosition, LogicalSize, Position};
 use tao::window::Window;
 use tokio::sync::mpsc::UnboundedSender;
-use tracing::{
-    debug,
-    error,
-    info,
-    instrument,
-    warn,
-};
+use tracing::{debug, error, info, instrument, warn};
 use url::Url;
-use wry::{
-    Theme,
-    WebContext,
-    WebView,
-};
+use wry::{Theme, WebContext, WebView};
 
 use super::notification::WebviewNotificationsState;
 use super::to_tao_theme;
 use super::window_id::WindowId;
-use crate::event::{
-    EmitEventName,
-    WindowEvent,
-    WindowGeometryResult,
-    WindowPosition,
-};
-use crate::platform::{
-    self,
-    PlatformState,
-};
+use crate::event::{EmitEventName, WindowEvent, WindowGeometryResult, WindowPosition};
+use crate::platform::{self, PlatformState};
 use crate::utils::Rect;
 #[allow(unused_imports)]
-use crate::{
-    AUTOCOMPLETE_ID,
-    DASHBOARD_ID,
-    EventLoopWindowTarget,
-};
+use crate::{AUTOCOMPLETE_ID, DASHBOARD_ID, EventLoopWindowTarget};
 
 pub struct WindowGeometryState {
     /// The outer position of the window by positioning scheme
@@ -359,10 +325,7 @@ impl WindowState {
 
                 #[cfg(target_os = "macos")]
                 if self.window_id == DASHBOARD_ID {
-                    use tao::platform::macos::{
-                        ActivationPolicy,
-                        EventLoopWindowTargetExtMacOS,
-                    };
+                    use tao::platform::macos::{ActivationPolicy, EventLoopWindowTargetExtMacOS};
 
                     let mut policy_lock = platform::ACTIVATION_POLICY.lock().unwrap();
                     if *policy_lock != ActivationPolicy::Accessory {
@@ -399,10 +362,7 @@ impl WindowState {
                 } else {
                     #[cfg(target_os = "macos")]
                     if self.window_id == DASHBOARD_ID {
-                        use tao::platform::macos::{
-                            ActivationPolicy,
-                            EventLoopWindowTargetExtMacOS,
-                        };
+                        use tao::platform::macos::{ActivationPolicy, EventLoopWindowTargetExtMacOS};
 
                         let mut policy_lock = platform::ACTIVATION_POLICY.lock().unwrap();
                         if *policy_lock != ActivationPolicy::Regular {
@@ -429,12 +389,16 @@ impl WindowState {
                 let event_name = "dashboard.navigate";
                 let payload = serde_json::json!({ "path": path });
 
-                self.notification(notifications_state, &NotificationType::NotifyOnEvent, Notification {
-                    r#type: Some(NotificationEnum::EventNotification(EventNotification {
-                        event_name: Some(event_name.to_string()),
-                        payload: Some(payload.to_string()),
-                    })),
-                });
+                self.notification(
+                    notifications_state,
+                    &NotificationType::NotifyOnEvent,
+                    Notification {
+                        r#type: Some(NotificationEnum::EventNotification(EventNotification {
+                            event_name: Some(event_name.to_string()),
+                            payload: Some(payload.to_string()),
+                        })),
+                    },
+                );
             },
             WindowEvent::NavigateForward => {
                 self.webview.evaluate_script("window.history.forward();").unwrap();
@@ -443,12 +407,16 @@ impl WindowState {
                 self.webview.evaluate_script("window.history.back();").unwrap();
             },
             WindowEvent::Event { event_name, payload } => {
-                self.notification(notifications_state, &NotificationType::NotifyOnEvent, Notification {
-                    r#type: Some(NotificationEnum::EventNotification(EventNotification {
-                        event_name: Some(event_name.into_owned()),
-                        payload: payload.map(|s| s.into_owned()),
-                    })),
-                });
+                self.notification(
+                    notifications_state,
+                    &NotificationType::NotifyOnEvent,
+                    Notification {
+                        r#type: Some(NotificationEnum::EventNotification(EventNotification {
+                            event_name: Some(event_name.into_owned()),
+                            payload: payload.map(|s| s.into_owned()),
+                        })),
+                    },
+                );
             },
             WindowEvent::Reload => {
                 info!(%self.window_id, "Reloading window");

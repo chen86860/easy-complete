@@ -1,50 +1,20 @@
 use std::marker::PhantomData;
 
 use accessibility_sys::{
-    kAXAllowedValuesAttribute,
-    kAXChildrenAttribute,
-    kAXContentsAttribute,
-    kAXDescriptionAttribute,
-    kAXElementBusyAttribute,
-    kAXEnabledAttribute,
-    kAXFocusedAttribute,
-    kAXFocusedUIElementAttribute,
-    kAXHelpAttribute,
-    kAXIdentifierAttribute,
-    kAXLabelValueAttribute,
-    kAXMainAttribute,
-    kAXMaxValueAttribute,
-    kAXMinValueAttribute,
-    kAXMinimizedAttribute,
-    kAXParentAttribute,
-    kAXPlaceholderValueAttribute,
-    kAXRoleAttribute,
-    kAXRoleDescriptionAttribute,
-    kAXSelectedChildrenAttribute,
-    kAXSelectedTextRangeAttribute,
-    kAXSubroleAttribute,
-    kAXTitleAttribute,
-    kAXTopLevelUIElementAttribute,
-    kAXValueAttribute,
-    kAXValueDescriptionAttribute,
-    kAXValueIncrementAttribute,
-    kAXVisibleChildrenAttribute,
-    kAXWindowAttribute,
-    kAXWindowsAttribute,
+    kAXAllowedValuesAttribute, kAXChildrenAttribute, kAXContentsAttribute, kAXDescriptionAttribute,
+    kAXElementBusyAttribute, kAXEnabledAttribute, kAXFocusedAttribute, kAXFocusedUIElementAttribute, kAXHelpAttribute,
+    kAXIdentifierAttribute, kAXLabelValueAttribute, kAXMainAttribute, kAXMaxValueAttribute, kAXMinValueAttribute,
+    kAXMinimizedAttribute, kAXParentAttribute, kAXPlaceholderValueAttribute, kAXRoleAttribute,
+    kAXRoleDescriptionAttribute, kAXSelectedChildrenAttribute, kAXSelectedTextRangeAttribute, kAXSubroleAttribute,
+    kAXTitleAttribute, kAXTopLevelUIElementAttribute, kAXValueAttribute, kAXValueDescriptionAttribute,
+    kAXValueIncrementAttribute, kAXVisibleChildrenAttribute, kAXWindowAttribute, kAXWindowsAttribute,
 };
 use core_foundation::array::CFArray;
-use core_foundation::base::{
-    CFType,
-    TCFType,
-};
+use core_foundation::base::{CFType, TCFType};
 use core_foundation::boolean::CFBoolean;
 use core_foundation::string::CFString;
 
-use crate::{
-    AXUIElement,
-    ElementFinder,
-    Error,
-};
+use crate::{AXUIElement, ElementFinder, Error};
 
 pub trait TAXAttribute {
     type Value: TCFType;

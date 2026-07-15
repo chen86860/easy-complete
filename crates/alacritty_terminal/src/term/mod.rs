@@ -1,73 +1,23 @@
 //! Exports the `Term` type which is a high-level API for the Grid.
 
-use std::cmp::{
-    max,
-    min,
-};
-use std::ops::{
-    Index,
-    IndexMut,
-    Range,
-};
+use std::cmp::{max, min};
+use std::ops::{Index, IndexMut, Range};
 use std::path::PathBuf;
 use std::time::SystemTime;
-use std::{
-    env,
-    mem,
-    ptr,
-    str,
-};
+use std::{env, mem, ptr, str};
 
 use bitflags::bitflags;
-use serde::{
-    Deserialize,
-    Serialize,
-};
-use tracing::{
-    debug,
-    trace,
-};
+use serde::{Deserialize, Serialize};
+use tracing::{debug, trace};
 use unicode_width::UnicodeWidthChar;
 
 use self::cell::FigFlags;
-use crate::ansi::{
-    self,
-    Attr,
-    CharsetIndex,
-    Color,
-    Handler,
-    NamedColor,
-    StandardCharset,
-};
-use crate::event::{
-    DelayedEvent,
-    Event,
-    EventListener,
-};
-use crate::grid::{
-    Dimensions,
-    Grid,
-    GridIterator,
-    Scroll,
-};
-use crate::index::{
-    self,
-    Boundary,
-    Column,
-    Direction,
-    Line,
-    Point,
-    Rect,
-};
-use crate::term::cell::{
-    Cell,
-    LineLength,
-    ShellFlags,
-};
-use crate::term::color::{
-    Colors,
-    Rgb,
-};
+use crate::ansi::{self, Attr, CharsetIndex, Color, Handler, NamedColor, StandardCharset};
+use crate::event::{DelayedEvent, Event, EventListener};
+use crate::grid::{Dimensions, Grid, GridIterator, Scroll};
+use crate::index::{self, Boundary, Column, Direction, Line, Point, Rect};
+use crate::term::cell::{Cell, LineLength, ShellFlags};
+use crate::term::color::{Colors, Rgb};
 
 pub mod cell;
 pub mod color;
@@ -2111,18 +2061,10 @@ pub mod test {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ansi::{
-        self,
-        CharsetIndex,
-        Handler,
-        StandardCharset,
-    };
+    use crate::ansi::{self, CharsetIndex, Handler, StandardCharset};
     use crate::event::VoidListener;
     use crate::grid::Scroll;
-    use crate::index::{
-        Column,
-        Point,
-    };
+    use crate::index::{Column, Point};
 
     #[test]
     fn scroll_display_page_up() {

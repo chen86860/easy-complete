@@ -3,10 +3,7 @@ use std::os::windows::process::CommandExt;
 use tokio::sync::mpsc::Sender;
 
 use crate::index::UpdatePackage;
-use crate::{
-    Error,
-    UpdateStatus,
-};
+use crate::{Error, UpdateStatus};
 
 pub async fn update(
     package: UpdatePackage,

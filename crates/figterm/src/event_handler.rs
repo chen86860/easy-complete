@@ -1,32 +1,14 @@
-use alacritty_terminal::event::{
-    Event,
-    EventListener,
-};
+use alacritty_terminal::event::{Event, EventListener};
 use alacritty_terminal::term::ShellState;
 use fig_proto::remote::Hostbound;
-use fig_proto::remote_hooks::{
-    hook_to_message,
-    new_postexec_hook,
-    new_preexec_hook,
-    new_prompt_hook,
-};
+use fig_proto::remote_hooks::{hook_to_message, new_postexec_hook, new_preexec_hook, new_prompt_hook};
 // use fig_telemetry::sentry::configure_scope;
 use flume::Sender;
 use tracing::level_filters::LevelFilter;
-use tracing::{
-    debug,
-    error,
-};
+use tracing::{debug, error};
 
-use crate::history::{
-    HistoryCommand,
-    HistorySender,
-};
-use crate::{
-    INSERT_ON_NEW_CMD,
-    MainLoopEvent,
-    shell_state_to_context,
-};
+use crate::history::{HistoryCommand, HistorySender};
+use crate::{INSERT_ON_NEW_CMD, MainLoopEvent, shell_state_to_context};
 
 pub struct EventHandler {
     socket_sender: Sender<Hostbound>,

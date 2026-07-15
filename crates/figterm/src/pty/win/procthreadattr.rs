@@ -1,13 +1,7 @@
 use std::io::Error as IoError;
-use std::{
-    mem,
-    ptr,
-};
+use std::{mem, ptr};
 
-use anyhow::{
-    Error,
-    ensure,
-};
+use anyhow::{Error, ensure};
 use winapi::shared::minwindef::DWORD;
 use winapi::um::processthreadsapi::*;
 

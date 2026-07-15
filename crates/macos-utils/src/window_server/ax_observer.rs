@@ -4,26 +4,12 @@ use std::pin::Pin;
 
 use accessibility::util::ax_call;
 use accessibility_sys::{
-    AXError,
-    AXObserverAddNotification,
-    AXObserverCallback,
-    AXObserverCreate,
-    AXObserverGetRunLoopSource,
-    AXObserverRef,
-    AXUIElementRef,
-    pid_t,
+    AXError, AXObserverAddNotification, AXObserverCallback, AXObserverCreate, AXObserverGetRunLoopSource,
+    AXObserverRef, AXUIElementRef, pid_t,
 };
 use core_foundation::base::TCFType;
-use core_foundation::runloop::{
-    CFRunLoopAddSource,
-    CFRunLoopGetCurrent,
-    CFRunLoopRemoveSource,
-    kCFRunLoopDefaultMode,
-};
-use core_foundation::string::{
-    CFString,
-    CFStringRef,
-};
+use core_foundation::runloop::{CFRunLoopAddSource, CFRunLoopGetCurrent, CFRunLoopRemoveSource, kCFRunLoopDefaultMode};
+use core_foundation::string::{CFString, CFStringRef};
 
 pub struct AXObserver<T> {
     inner: AXObserverRef,

@@ -4,16 +4,9 @@ use std::sync::Mutex;
 
 use anyhow::Result;
 use fig_settings::settings;
-use tracing::{
-    error,
-    info,
-    warn,
-};
+use tracing::{error, info, warn};
 
-use crate::protocol::icons::{
-    ProcessedAsset,
-    process_asset,
-};
+use crate::protocol::icons::{ProcessedAsset, process_asset};
 
 static SELECTED_THEME: Mutex<Cow<'_, str>> = Mutex::new(Cow::Borrowed("hicolor"));
 

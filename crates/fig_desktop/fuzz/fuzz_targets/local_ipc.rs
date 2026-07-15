@@ -7,11 +7,7 @@ use std::ops::Deref;
 use std::path::PathBuf;
 use std::sync::LazyLock;
 
-use fig_ipc::{
-    BufferedUnixStream,
-    RecvMessage,
-    SendMessage,
-};
+use fig_ipc::{BufferedUnixStream, RecvMessage, SendMessage};
 use fig_proto::local::LocalMessage;
 use libfuzzer_sys::fuzz_target;
 use tokio::net::UnixListener;

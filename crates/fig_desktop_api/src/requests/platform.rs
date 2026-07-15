@@ -1,27 +1,12 @@
-use fig_os_shim::{
-    EnvProvider,
-    PlatformProvider,
-};
+use fig_os_shim::{EnvProvider, PlatformProvider};
 use fig_proto::fig::{
-    AppBundleType,
-    DesktopEnvironment,
-    DisplayServerProtocol,
-    GetPlatformInfoRequest,
-    GetPlatformInfoResponse,
-    Os,
+    AppBundleType, DesktopEnvironment, DisplayServerProtocol, GetPlatformInfoRequest, GetPlatformInfoResponse, Os,
 };
 use fig_util::system_info::linux::{
-    DesktopEnvironment as FigDesktopEnvironment,
-    DisplayServer,
-    get_desktop_environment,
-    get_display_server,
+    DesktopEnvironment as FigDesktopEnvironment, DisplayServer, get_desktop_environment, get_display_server,
 };
 
-use super::{
-    Error,
-    RequestResult,
-    ServerOriginatedSubMessage,
-};
+use super::{Error, RequestResult, ServerOriginatedSubMessage};
 
 pub async fn get_platform_info<Ctx>(_request: GetPlatformInfoRequest, ctx: &Ctx) -> RequestResult
 where

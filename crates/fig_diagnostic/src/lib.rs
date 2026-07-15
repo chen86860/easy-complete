@@ -1,27 +1,13 @@
 #![allow(clippy::ref_option_ref)]
 use std::collections::BTreeMap;
 
-use fig_os_shim::{
-    Context,
-    Os,
-    PlatformProvider,
-};
+use fig_os_shim::{Context, Os, PlatformProvider};
 use fig_util::consts::build::HASH;
 use fig_util::manifest::manifest;
-use fig_util::system_info::{
-    OSVersion,
-    os_version,
-};
-use fig_util::{
-    Shell,
-    Terminal,
-};
+use fig_util::system_info::{OSVersion, os_version};
+use fig_util::{Shell, Terminal};
 use serde::Serialize;
-use sysinfo::{
-    CpuRefreshKind,
-    MemoryRefreshKind,
-    RefreshKind,
-};
+use sysinfo::{CpuRefreshKind, MemoryRefreshKind, RefreshKind};
 use time::OffsetDateTime;
 use time::format_description::well_known::Rfc3339;
 
@@ -182,10 +168,7 @@ pub struct CurrentEnvironment {
 
 impl CurrentEnvironment {
     async fn new() -> CurrentEnvironment {
-        use fig_util::process_info::{
-            Pid,
-            PidExt,
-        };
+        use fig_util::process_info::{Pid, PidExt};
         let ctx = Context::new();
 
         let username = format!("/{}", whoami::username());

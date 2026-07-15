@@ -1,29 +1,15 @@
 use fig_proto::fig::server_originated_message::Submessage as ServerOriginatedSubMessage;
 use fig_proto::fig::{
-    DragWindowRequest,
-    FocusAction,
-    PositionWindowRequest,
-    PositionWindowResponse,
-    WindowFocusRequest,
+    DragWindowRequest, FocusAction, PositionWindowRequest, PositionWindowResponse, WindowFocusRequest,
 };
 use fig_remote_ipc::figterm::FigtermState;
 use tao::dpi::LogicalSize;
 use tracing::debug;
 
-use super::{
-    RequestResult,
-    RequestResultImpl,
-};
-use crate::event::{
-    Event,
-    WindowEvent,
-    WindowGeometryResult,
-};
+use super::{RequestResult, RequestResultImpl};
+use crate::event::{Event, WindowEvent, WindowGeometryResult};
 use crate::webview::WindowId;
-use crate::{
-    AUTOCOMPLETE_ID,
-    EventLoopProxy,
-};
+use crate::{AUTOCOMPLETE_ID, EventLoopProxy};
 
 pub async fn position_window(
     request: PositionWindowRequest,

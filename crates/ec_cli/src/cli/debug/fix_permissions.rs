@@ -1,31 +1,17 @@
 use std::fs::Metadata;
 use std::io::ErrorKind;
-use std::os::unix::fs::{
-    MetadataExt as _,
-    PermissionsExt,
-};
+use std::os::unix::fs::{MetadataExt as _, PermissionsExt};
 use std::path::Path;
 
 use anstream::println;
 use color_eyre::owo_colors::OwoColorize;
-use eyre::{
-    Context,
-    ContextCompat,
-    Result,
-    bail,
-};
+use eyre::{Context, ContextCompat, Result, bail};
 use fig_integrations::shell::ShellExt as _;
 use fig_os_shim::Env;
 use fig_util::directories::home_dir;
-use fig_util::{
-    CLI_BINARY_NAME,
-    Shell,
-};
+use fig_util::{CLI_BINARY_NAME, Shell};
 use nix::libc::uid_t;
-use nix::unistd::{
-    Gid,
-    Uid,
-};
+use nix::unistd::{Gid, Uid};
 use tracing::info;
 
 pub fn fix_permissions(env: &Env) -> Result<()> {

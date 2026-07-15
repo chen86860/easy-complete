@@ -1,15 +1,8 @@
 use fig_proto::fig::server_originated_message::Submessage as ServerSubmessage;
-use fig_proto::fig::{
-    OpenInExternalApplicationRequest,
-    PingRequest,
-    PingResponse,
-};
+use fig_proto::fig::{OpenInExternalApplicationRequest, PingRequest, PingResponse};
 use fig_util::open_url_async;
 
-use super::{
-    RequestResult,
-    RequestResultImpl,
-};
+use super::{RequestResult, RequestResultImpl};
 
 pub async fn open_in_external_application(request: OpenInExternalApplicationRequest) -> RequestResult {
     match request.url {

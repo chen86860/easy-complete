@@ -1,13 +1,6 @@
 use std::sync::Arc;
 
-use fig_proto::local::{
-    EditBufferHook,
-    InterceptedKeyHook,
-    PostExecHook,
-    PreExecHook,
-    PromptHook,
-    ShellContext,
-};
+use fig_proto::local::{EditBufferHook, InterceptedKeyHook, PostExecHook, PreExecHook, PromptHook, ShellContext};
 use fig_proto::remote::clientbound;
 use figterm::FigtermState;
 use tokio::time::Instant;

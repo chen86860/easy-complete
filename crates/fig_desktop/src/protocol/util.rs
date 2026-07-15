@@ -4,10 +4,7 @@ use std::error::Error;
 use anyhow::Result;
 use image::Rgb;
 use wry::http::header::CONTENT_TYPE;
-use wry::http::{
-    Response,
-    StatusCode,
-};
+use wry::http::{Response, StatusCode};
 
 pub fn res_404() -> Result<Response<Cow<'static, [u8]>>> {
     Ok(Response::builder()

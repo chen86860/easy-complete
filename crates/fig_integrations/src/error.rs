@@ -1,12 +1,6 @@
 use std::borrow::Cow;
-use std::io::{
-    self,
-    ErrorKind,
-};
-use std::path::{
-    Path,
-    PathBuf,
-};
+use std::io::{self, ErrorKind};
+use std::path::{Path, PathBuf};
 
 use fig_util::CLI_BINARY_NAME;
 use owo_colors::OwoColorize as _;

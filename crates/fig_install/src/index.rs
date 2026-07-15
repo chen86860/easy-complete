@@ -1,41 +1,16 @@
 use std::collections::hash_map::DefaultHasher;
-use std::hash::{
-    Hash,
-    Hasher,
-};
+use std::hash::{Hash, Hasher};
 use std::sync::LazyLock;
-use std::time::{
-    SystemTime,
-    UNIX_EPOCH,
-};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use cfg_if::cfg_if;
 use fig_os_shim::Context;
-use fig_util::manifest::{
-    Channel,
-    FileType,
-    Os,
-    TargetTriple,
-    Variant,
-    bundle_metadata,
-};
+use fig_util::manifest::{Channel, FileType, Os, TargetTriple, Variant, bundle_metadata};
 use fig_util::system_info::get_system_id;
 use semver::Version;
-use serde::{
-    Deserialize,
-    Deserializer,
-    Serialize,
-    Serializer,
-};
-use strum::{
-    Display,
-    EnumString,
-};
-use tracing::{
-    error,
-    info,
-    trace,
-};
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use strum::{Display, EnumString};
+use tracing::{error, info, trace};
 use url::Url;
 
 use crate::Error;
@@ -441,11 +416,7 @@ pub async fn get_file_type(ctx: &Context, variant: &Variant) -> Result<FileType,
 mod tests {
     use std::str::FromStr;
 
-    use fig_util::{
-        OLD_CLI_BINARY_NAMES,
-        OLD_PRODUCT_NAME,
-        PRODUCT_NAME,
-    };
+    use fig_util::{OLD_CLI_BINARY_NAMES, OLD_PRODUCT_NAME, PRODUCT_NAME};
 
     use super::*;
 
@@ -593,53 +564,62 @@ mod tests {
         println!("{:#?}", index);
 
         assert_eq!(index.supported.len(), 2);
-        assert_eq!(index.supported[0], Support {
-            architecture: PackageArchitecture::Universal,
-            target_triple: Some(TargetTriple::UniversalAppleDarwin),
-            variant: Variant::Full,
-            os: Some(Os::Macos),
-            file_type: Some(FileType::Dmg),
-        });
-        assert_eq!(index.supported[1], Support {
-            architecture: PackageArchitecture::X86_64,
-            target_triple: Some(TargetTriple::X86_64UnknownLinuxGnu),
-            variant: Variant::Minimal,
-            os: Some(Os::Linux),
-            file_type: Some(FileType::TarZst),
-        });
+        assert_eq!(
+            index.supported[0],
+            Support {
+                architecture: PackageArchitecture::Universal,
+                target_triple: Some(TargetTriple::UniversalAppleDarwin),
+                variant: Variant::Full,
+                os: Some(Os::Macos),
+                file_type: Some(FileType::Dmg),
+            }
+        );
+        assert_eq!(
+            index.supported[1],
+            Support {
+                architecture: PackageArchitecture::X86_64,
+                target_triple: Some(TargetTriple::X86_64UnknownLinuxGnu),
+                variant: Variant::Minimal,
+                os: Some(Os::Linux),
+                file_type: Some(FileType::TarZst),
+            }
+        );
 
         assert_eq!(index.versions.len(), 4);
 
         // check the 1.0.0 entry matches
-        assert_eq!(index.versions[2], RemoteVersion {
-            version: Version::new(1, 0, 0),
-            rollout: None,
-            packages: vec![
-                Package {
-                    architecture: PackageArchitecture::Universal,
-                    variant: Variant::Full,
-                    os: Some(Os::Macos),
-                    target_triple: None,
-                    file_type: Some(FileType::Dmg),
-                    download: "1.0.0/Q.dmg".into(),
-                    sha256: "87a311e493bb2b0e68a1b4b5d267c79628d23c1e39b0a62d1a80b0c2352f80a2".into(),
-                    size: 88174538,
-                    cli_path: Some(format!("Contents/MacOS/{old_cli_name}")),
-                },
-                Package {
-                    architecture: PackageArchitecture::X86_64,
-                    variant: Variant::Minimal,
-                    os: Some(Os::Linux),
-                    target_triple: None,
-                    file_type: Some(FileType::TarZst),
-                    download: "1.0.0/q-x86_64-linux.tar.zst".into(),
-                    sha256: "5a6abea56bfa91bd58d49fe40322058d0efea825f7e19f7fb7db1c204ae625b6".into(),
-                    size: 76836772,
-                    cli_path: None,
-                }
-            ],
-            update_conditions: vec![],
-        });
+        assert_eq!(
+            index.versions[2],
+            RemoteVersion {
+                version: Version::new(1, 0, 0),
+                rollout: None,
+                packages: vec![
+                    Package {
+                        architecture: PackageArchitecture::Universal,
+                        variant: Variant::Full,
+                        os: Some(Os::Macos),
+                        target_triple: None,
+                        file_type: Some(FileType::Dmg),
+                        download: "1.0.0/Q.dmg".into(),
+                        sha256: "87a311e493bb2b0e68a1b4b5d267c79628d23c1e39b0a62d1a80b0c2352f80a2".into(),
+                        size: 88174538,
+                        cli_path: Some(format!("Contents/MacOS/{old_cli_name}")),
+                    },
+                    Package {
+                        architecture: PackageArchitecture::X86_64,
+                        variant: Variant::Minimal,
+                        os: Some(Os::Linux),
+                        target_triple: None,
+                        file_type: Some(FileType::TarZst),
+                        download: "1.0.0/q-x86_64-linux.tar.zst".into(),
+                        sha256: "5a6abea56bfa91bd58d49fe40322058d0efea825f7e19f7fb7db1c204ae625b6".into(),
+                        size: 76836772,
+                        cli_path: None,
+                    }
+                ],
+                update_conditions: vec![],
+            }
+        );
     }
 
     fn load_test_index() -> Index {

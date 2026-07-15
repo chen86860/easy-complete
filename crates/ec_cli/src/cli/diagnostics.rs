@@ -1,35 +1,18 @@
-use std::io::{
-    IsTerminal,
-    stdout,
-};
+use std::io::{IsTerminal, stdout};
 use std::process::ExitCode;
 
 use anstream::println;
 use clap::Args;
 use color_eyre::Result;
-use crossterm::terminal::{
-    Clear,
-    ClearType,
-};
-use crossterm::{
-    cursor,
-    execute,
-};
+use crossterm::terminal::{Clear, ClearType};
+use crossterm::{cursor, execute};
 use eyre::ContextCompat;
 use fig_diagnostic::Diagnostics;
 use fig_ipc::local::send_recv_command_to_socket;
 use fig_proto::local::command::Command;
 use fig_proto::local::command_response::Response;
-use fig_proto::local::{
-    DiagnosticsCommand,
-    DiagnosticsResponse,
-    IntegrationAction,
-    TerminalIntegrationCommand,
-};
-use spinners::{
-    Spinner,
-    Spinners,
-};
+use fig_proto::local::{DiagnosticsCommand, DiagnosticsResponse, IntegrationAction, TerminalIntegrationCommand};
+use spinners::{Spinner, Spinners};
 
 use super::OutputFormat;
 
@@ -47,10 +30,7 @@ impl DiagnosticArgs {
     pub async fn execute(&self) -> Result<ExitCode> {
         #[cfg(target_os = "macos")]
         if !self.force && !crate::util::desktop::desktop_app_running() {
-            use fig_util::{
-                CLI_BINARY_NAME,
-                PRODUCT_NAME,
-            };
+            use fig_util::{CLI_BINARY_NAME, PRODUCT_NAME};
             use owo_colors::OwoColorize;
 
             println!(

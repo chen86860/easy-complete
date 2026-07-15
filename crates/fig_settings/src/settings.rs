@@ -1,33 +1,17 @@
-use std::sync::{
-    Arc,
-    Mutex,
-};
+use std::sync::{Arc, Mutex};
 
 use serde::de::DeserializeOwned;
-use serde_json::{
-    Map,
-    Value,
-};
+use serde_json::{Map, Value};
 
-use crate::{
-    JsonStore,
-    OldSettings,
-    Result,
-};
+use crate::{JsonStore, OldSettings, Result};
 
 #[derive(Debug, Clone, Default)]
 pub struct Settings(inner::Inner);
 
 mod inner {
-    use std::sync::{
-        Arc,
-        Mutex,
-    };
+    use std::sync::{Arc, Mutex};
 
-    use serde_json::{
-        Map,
-        Value,
-    };
+    use serde_json::{Map, Value};
 
     #[derive(Debug, Clone, Default)]
     pub enum Inner {
@@ -211,10 +195,7 @@ pub fn get_int_or(key: impl AsRef<str>, default: i64) -> i64 {
 
 #[cfg(test)]
 mod test {
-    use super::{
-        Result,
-        Settings,
-    };
+    use super::{Result, Settings};
 
     /// General read/write settings test
     #[test]

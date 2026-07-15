@@ -1,22 +1,11 @@
 use std::ptr::NonNull;
 
 use objc2::rc::Retained;
-use objc2::runtime::{
-    AnyObject,
-    Sel,
-};
-use objc2_app_kit::{
-    NSRunningApplication,
-    NSWorkspace,
-};
+use objc2::runtime::{AnyObject, Sel};
+use objc2_app_kit::{NSRunningApplication, NSWorkspace};
 use objc2_foundation::{
-    NSDictionary,
-    NSDistributedNotificationCenter,
-    NSNotification,
-    NSNotificationCenter,
-    NSNotificationName,
-    NSOperationQueue,
-    ns_string,
+    NSDictionary, NSDistributedNotificationCenter, NSNotification, NSNotificationCenter, NSNotificationName,
+    NSOperationQueue, ns_string,
 };
 
 enum Inner {

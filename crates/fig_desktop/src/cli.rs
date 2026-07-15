@@ -18,6 +18,9 @@ pub struct Cli {
     /// Don't attempt to update right away
     #[arg(long)]
     pub ignore_immediate_update: bool,
+    /// Unregister launch at login and exit (used by the uninstaller)
+    #[arg(long, hide = true)]
+    pub unregister_login_item: bool,
     /// Url to open
     pub url_link: Option<String>,
 }

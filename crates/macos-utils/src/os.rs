@@ -1,7 +1,4 @@
-use objc2_foundation::{
-    NSOperatingSystemVersion,
-    NSProcessInfo,
-};
+use objc2_foundation::{NSOperatingSystemVersion, NSProcessInfo};
 
 #[derive(Clone, Copy, Debug)]
 pub struct OperatingSystemVersion(NSOperatingSystemVersion);

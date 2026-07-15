@@ -1,42 +1,20 @@
 use std::process::ExitCode;
 
 use anstream::println;
-use clap::{
-    ArgGroup,
-    Args,
-    Parser,
-    Subcommand,
-    ValueEnum,
-};
-use eyre::{
-    Result,
-    WrapErr,
-    bail,
-};
+use clap::{ArgGroup, Args, Parser, Subcommand, ValueEnum};
+use eyre::{Result, WrapErr, bail};
 use fig_ipc::local::open_ui_element;
 use fig_os_shim::Os;
 use fig_proto::local::UiElement;
 use fig_settings::JsonStore;
-use fig_util::{
-    CLI_BINARY_NAME,
-    directories,
-    manifest,
-    system_info,
-};
+use fig_util::{CLI_BINARY_NAME, directories, manifest, system_info};
 use globset::Glob;
 use serde_json::json;
 
 use super::OutputFormat;
 use crate::cli::Cli;
-use crate::util::desktop::{
-    LaunchArgs,
-    launch_fig_desktop,
-};
-use crate::util::{
-    CliContext,
-    app_not_running_message,
-    qchat_path,
-};
+use crate::util::desktop::{LaunchArgs, launch_fig_desktop};
+use crate::util::{CliContext, app_not_running_message, qchat_path};
 
 #[derive(Debug, Subcommand, PartialEq, Eq)]
 pub enum SettingsSubcommands {

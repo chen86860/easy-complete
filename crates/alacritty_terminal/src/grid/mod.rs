@@ -1,36 +1,13 @@
 //! A specialized 2D grid implementation optimized for use in a terminal.
 
-use std::cmp::{
-    max,
-    min,
-};
-use std::ops::{
-    Bound,
-    Deref,
-    Index,
-    IndexMut,
-    Range,
-    RangeBounds,
-};
+use std::cmp::{max, min};
+use std::ops::{Bound, Deref, Index, IndexMut, Range, RangeBounds};
 
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use serde::{Deserialize, Serialize};
 
-use crate::ansi::{
-    CharsetIndex,
-    StandardCharset,
-};
-use crate::index::{
-    Column,
-    Line,
-    Point,
-};
-use crate::term::cell::{
-    ResetDiscriminant,
-    ShellFlags,
-};
+use crate::ansi::{CharsetIndex, StandardCharset};
+use crate::index::{Column, Line, Point};
+use crate::term::cell::{ResetDiscriminant, ShellFlags};
 
 pub mod resize;
 mod row;

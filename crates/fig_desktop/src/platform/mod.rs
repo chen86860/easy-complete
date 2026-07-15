@@ -5,20 +5,11 @@ use macos_utils::window_server::ApplicationSpecifier;
 use serde::Serialize;
 use tao::dpi::Position;
 
-use crate::protocol::icons::{
-    AssetSpecifier,
-    ProcessedAsset,
-};
+use crate::protocol::icons::{AssetSpecifier, ProcessedAsset};
 use crate::utils::Rect;
 use crate::webview::notification::WebviewNotificationsState;
-use crate::webview::{
-    FigIdMap,
-    WindowId,
-};
-use crate::{
-    EventLoopProxy,
-    EventLoopWindowTarget,
-};
+use crate::webview::{FigIdMap, WindowId};
+use crate::{EventLoopProxy, EventLoopWindowTarget};
 
 cfg_if::cfg_if! {
     if #[cfg(target_os = "linux")] {

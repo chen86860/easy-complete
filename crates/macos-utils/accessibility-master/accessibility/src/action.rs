@@ -1,21 +1,10 @@
 use accessibility_sys::{
-    kAXConfirmAction,
-    kAXDecrementAction,
-    kAXIncrementAction,
-    kAXPickAction,
-    kAXPressAction,
-    kAXRaiseAction,
-    kAXShowAlternateUIAction,
-    kAXShowDefaultUIAction,
-    kAXShowMenuAction,
+    kAXConfirmAction, kAXDecrementAction, kAXIncrementAction, kAXPickAction, kAXPressAction, kAXRaiseAction,
+    kAXShowAlternateUIAction, kAXShowDefaultUIAction, kAXShowMenuAction,
 };
 use core_foundation::string::CFString;
 
-use crate::{
-    AXUIElement,
-    ElementFinder,
-    Error,
-};
+use crate::{AXUIElement, ElementFinder, Error};
 
 macro_rules! performer {
     (@decl $name:ident, $const:ident) => {

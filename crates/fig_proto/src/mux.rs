@@ -2,10 +2,7 @@ use std::io::Read;
 
 use flate2::Compression;
 use prost::Message;
-use rand::{
-    Rng,
-    RngCore,
-};
+use rand::{Rng, RngCore};
 use thiserror::Error;
 
 pub use crate::proto::mux::*;

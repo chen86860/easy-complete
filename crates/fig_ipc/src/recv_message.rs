@@ -3,14 +3,8 @@ use std::io;
 use async_trait::async_trait;
 use bytes::Buf;
 use fig_proto::prost::Message;
-use fig_proto::{
-    FigMessage,
-    ReflectMessage,
-};
-use tokio::io::{
-    AsyncRead,
-    AsyncReadExt,
-};
+use fig_proto::{FigMessage, ReflectMessage};
+use tokio::io::{AsyncRead, AsyncReadExt};
 
 use crate::BufferedReader;
 use crate::error::RecvError;

@@ -6,40 +6,17 @@ pub mod settings;
 pub mod sqlite;
 pub mod state;
 
-use std::fs::{
-    self,
-    File,
-};
-use std::io::{
-    Read,
-    Seek,
-    SeekFrom,
-    Write,
-};
+use std::fs::{self, File};
+use std::io::{Read, Seek, SeekFrom, Write};
 use std::path::PathBuf;
 
-pub use error::{
-    Error,
-    Result,
-};
+pub use error::{Error, Result};
 use fd_lock::RwLock as FileRwLock;
 use fig_util::directories;
-use parking_lot::{
-    MappedRwLockReadGuard,
-    MappedRwLockWriteGuard,
-    RwLock,
-    RwLockReadGuard,
-    RwLockWriteGuard,
-};
+use parking_lot::{MappedRwLockReadGuard, MappedRwLockWriteGuard, RwLock, RwLockReadGuard, RwLockWriteGuard};
 use serde_json::Value;
-pub use settings::{
-    Settings,
-    SettingsProvider,
-};
-pub use state::{
-    State,
-    StateProvider,
-};
+pub use settings::{Settings, SettingsProvider};
+pub use state::{State, StateProvider};
 use thiserror::Error;
 use tracing::error;
 

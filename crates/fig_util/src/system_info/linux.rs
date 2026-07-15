@@ -4,15 +4,9 @@ use std::sync::OnceLock;
 
 use fig_os_shim::EnvProvider;
 use regex::Regex;
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use serde::{Deserialize, Serialize};
 
-use crate::{
-    Error,
-    UnknownDesktopErrContext,
-};
+use crate::{Error, UnknownDesktopErrContext};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum DisplayServer {

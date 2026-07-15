@@ -13,11 +13,5 @@ pub mod url;
 mod util;
 pub mod window_server;
 
-pub use util::{
-    NotificationCenter,
-    get_user_info_from_notification,
-};
-pub use window_server::{
-    WindowServer,
-    WindowServerEvent,
-};
+pub use util::{NotificationCenter, get_user_info_from_notification};
+pub use window_server::{WindowServer, WindowServerEvent};

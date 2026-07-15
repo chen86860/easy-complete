@@ -9,11 +9,7 @@ use tracing::level_filters::LevelFilter;
 use tracing_appender::non_blocking::WorkerGuard;
 use tracing_subscriber::filter::Directive;
 use tracing_subscriber::prelude::*;
-use tracing_subscriber::{
-    EnvFilter,
-    Registry,
-    fmt,
-};
+use tracing_subscriber::{EnvFilter, Registry, fmt};
 
 const MAX_FILE_SIZE: u64 = 10 * 1024 * 1024;
 const DEFAULT_FILTER: LevelFilter = LevelFilter::ERROR;
@@ -261,12 +257,7 @@ mod tests {
     use std::fs::read_to_string;
     use std::time::Duration;
 
-    use tracing::{
-        debug,
-        error,
-        trace,
-        warn,
-    };
+    use tracing::{debug, error, trace, warn};
 
     use super::*;
 

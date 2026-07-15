@@ -1,27 +1,13 @@
 use std::sync::Arc;
 
 use fig_proto::fig::notification::Type as NotificationEnum;
-use fig_proto::fig::{
-    NotificationType,
-    SettingsChangedNotification,
-};
+use fig_proto::fig::{NotificationType, SettingsChangedNotification};
 use fig_settings::JsonStore;
 use fig_util::directories;
 use notify::event::ModifyKind;
-use notify::{
-    EventKind,
-    RecursiveMode,
-    Watcher,
-};
-use serde_json::{
-    Map,
-    Value,
-};
-use tracing::{
-    debug,
-    error,
-    trace,
-};
+use notify::{EventKind, RecursiveMode, Watcher};
+use serde_json::{Map, Value};
+use tracing::{debug, error, trace};
 
 use crate::EventLoopProxy;
 use crate::notification_bus::NOTIFICATION_BUS;

@@ -1,21 +1,11 @@
 mod pid;
 
 use std::path::PathBuf;
-use std::sync::{
-    Arc,
-    Weak,
-};
+use std::sync::{Arc, Weak};
 
-pub use pid::{
-    FakePid,
-    Pid,
-    RawPid,
-};
+pub use pid::{FakePid, Pid, RawPid};
 
-use crate::{
-    Context,
-    Shim,
-};
+use crate::{Context, Shim};
 
 #[cfg(target_os = "linux")]
 mod linux;

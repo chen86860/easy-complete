@@ -1,14 +1,8 @@
 use std::path::PathBuf;
 use std::str::FromStr;
-use std::sync::{
-    Arc,
-    Weak,
-};
+use std::sync::{Arc, Weak};
 
-use super::{
-    Pid,
-    RawPid,
-};
+use super::{Pid, RawPid};
 use crate::Context;
 
 pub fn current(ctx: Weak<Context>) -> Pid {

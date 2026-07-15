@@ -5,52 +5,25 @@ mod sway;
 mod x11;
 
 use std::sync::Arc;
-use std::sync::atomic::{
-    AtomicBool,
-    Ordering,
-};
+use std::sync::atomic::{AtomicBool, Ordering};
 
 use fig_os_shim::Context;
 use fig_util::Terminal;
 use fig_util::consts::linux::DESKTOP_APP_WM_CLASS;
-use fig_util::system_info::linux::{
-    DesktopEnvironment,
-    DisplayServer,
-    get_desktop_environment,
-    get_display_server,
-};
+use fig_util::system_info::linux::{DesktopEnvironment, DisplayServer, get_desktop_environment, get_display_server};
 use parking_lot::Mutex;
 use serde::Serialize;
-use tao::dpi::{
-    LogicalPosition,
-    PhysicalPosition,
-    PhysicalSize,
-    Position,
-};
-use tracing::{
-    error,
-    info,
-    trace,
-    warn,
-};
+use tao::dpi::{LogicalPosition, PhysicalPosition, PhysicalSize, Position};
+use tracing::{error, info, trace, warn};
 
 use self::x11::X11State;
 use super::PlatformBoundEvent;
 use crate::platform::linux::sway::SwayState;
-use crate::protocol::icons::{
-    AssetSpecifier,
-    ProcessedAsset,
-};
+use crate::protocol::icons::{AssetSpecifier, ProcessedAsset};
 use crate::utils::Rect;
 use crate::webview::notification::WebviewNotificationsState;
-use crate::webview::{
-    FigIdMap,
-    WindowId,
-};
-use crate::{
-    EventLoopProxy,
-    EventLoopWindowTarget,
-};
+use crate::webview::{FigIdMap, WindowId};
+use crate::{EventLoopProxy, EventLoopWindowTarget};
 
 /// Whether or not the desktop app has received a request containing
 /// window data (e.g. window focus, position, etc.). Essentially if this
@@ -323,16 +296,8 @@ pub mod gtk {
     /// to keep the WM_CLASS consistent by always using [FIG_WM_CLASS]
     /// instead of the program name.
     pub fn init() -> Result<(), gtk::glib::BoolError> {
-        use gtk::glib::translate::{
-            ToGlibPtr,
-            from_glib,
-        };
-        use gtk::{
-            ffi,
-            glib,
-            is_initialized,
-            set_initialized,
-        };
+        use gtk::glib::translate::{ToGlibPtr, from_glib};
+        use gtk::{ffi, glib, is_initialized, set_initialized};
 
         if gtk::is_initialized_main_thread() {
             return Ok(());

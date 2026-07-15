@@ -5,122 +5,40 @@
 use std::ffi::CString;
 use std::path::Path;
 use std::slice;
-use std::sync::atomic::{
-    AtomicBool,
-    Ordering,
-};
-use std::sync::{
-    Arc,
-    LazyLock,
-    Mutex,
-    RwLock,
-};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, LazyLock, Mutex, RwLock};
 
 use accessibility_sys::{
-    AXError,
-    AXIsProcessTrusted,
-    AXUIElementCreateSystemWide,
-    AXUIElementSetMessagingTimeout,
-    pid_t,
+    AXError, AXIsProcessTrusted, AXUIElementCreateSystemWide, AXUIElementSetMessagingTimeout, pid_t,
 };
 use anyhow::Context;
-use cocoa::base::{
-    NO,
-    YES,
-    id,
-};
+use cocoa::base::{NO, YES, id};
 use core_graphics::display::CGRect;
 use core_graphics::window::CGWindowID;
 use fig_integrations::input_method::InputMethod;
-use fig_proto::fig::{
-    AccessibilityChangeNotification,
-    Notification,
-    NotificationType,
-};
+use fig_proto::fig::{AccessibilityChangeNotification, Notification, NotificationType};
 use fig_proto::local::caret_position_hook::Origin;
 use fig_util::Terminal;
 use macos_utils::accessibility::accessibility_is_enabled;
-use macos_utils::caret_position::{
-    CaretPosition,
-    get_caret_position,
-};
-use macos_utils::window_server::{
-    CGWindowLevelForKey,
-    UIElement,
-};
-use macos_utils::{
-    NotificationCenter,
-    WindowServer,
-    WindowServerEvent,
-};
+use macos_utils::caret_position::{CaretPosition, get_caret_position};
+use macos_utils::window_server::{CGWindowLevelForKey, UIElement};
+use macos_utils::{NotificationCenter, WindowServer, WindowServerEvent};
 use objc::declare::MethodImplementation;
-use objc::runtime::{
-    BOOL,
-    Class,
-    Object,
-    Sel,
-    class_addMethod,
-    objc_getClass,
-};
-use objc::{
-    Encode,
-    EncodeArguments,
-    Encoding,
-    msg_send,
-    sel,
-    sel_impl,
-};
-use objc2_foundation::{
-    NSDictionary,
-    NSOperationQueue,
-    ns_string,
-};
+use objc::runtime::{BOOL, Class, Object, Sel, class_addMethod, objc_getClass};
+use objc::{Encode, EncodeArguments, Encoding, msg_send, sel, sel_impl};
+use objc2_foundation::{NSDictionary, NSOperationQueue, ns_string};
 use serde::Serialize;
-use tao::dpi::{
-    LogicalPosition,
-    LogicalSize,
-    Position,
-};
-use tao::platform::macos::{
-    ActivationPolicy,
-    EventLoopWindowTargetExtMacOS,
-    WindowExtMacOS as _,
-};
-use tracing::{
-    debug,
-    error,
-    trace,
-    warn,
-};
+use tao::dpi::{LogicalPosition, LogicalSize, Position};
+use tao::platform::macos::{ActivationPolicy, EventLoopWindowTargetExtMacOS, WindowExtMacOS as _};
+use tracing::{debug, error, trace, warn};
 
-use super::{
-    PlatformBoundEvent,
-    PlatformWindow,
-};
-use crate::event::{
-    Event,
-    WindowEvent,
-    WindowPosition,
-};
-use crate::protocol::icons::{
-    AssetKind,
-    AssetSpecifier,
-    ProcessedAsset,
-};
+use super::{PlatformBoundEvent, PlatformWindow};
+use crate::event::{Event, WindowEvent, WindowPosition};
+use crate::protocol::icons::{AssetKind, AssetSpecifier, ProcessedAsset};
 use crate::utils::Rect;
 use crate::webview::notification::WebviewNotificationsState;
-use crate::webview::{
-    FigIdMap,
-    GLOBAL_PROXY,
-    WindowId,
-};
-use crate::{
-    AUTOCOMPLETE_ID,
-    AUTOCOMPLETE_WINDOW_TITLE,
-    DASHBOARD_ID,
-    EventLoopProxy,
-    EventLoopWindowTarget,
-};
+use crate::webview::{FigIdMap, GLOBAL_PROXY, WindowId};
+use crate::{AUTOCOMPLETE_ID, AUTOCOMPLETE_WINDOW_TITLE, DASHBOARD_ID, EventLoopProxy, EventLoopWindowTarget};
 
 pub const DEFAULT_CARET_WIDTH: f64 = 10.0;
 
@@ -159,6 +77,28 @@ pub fn activate_app() {
 #[allow(dead_code)]
 pub fn is_ventura() -> bool {
     MACOS_VERSION.major >= 13
+}
+
+/// Check the Apple Event that launched the app for the Login Item marker.
+///
+/// `SMAppService.mainAppService` does not support custom arguments. Launch
+/// Services instead marks its open-application event with
+/// `keyAELaunchedAsLogInItem` (`'lgit'`).
+pub fn launched_as_login_item() -> bool {
+    const KEY_AE_LAUNCHED_AS_LOGIN_ITEM: u32 = u32::from_be_bytes(*b"lgit");
+
+    unsafe {
+        let Some(manager_class) = Class::get("NSAppleEventManager") else {
+            return false;
+        };
+        let manager: id = msg_send![manager_class, sharedAppleEventManager];
+        let event: id = msg_send![manager, currentAppleEvent];
+        if event.is_null() {
+            return false;
+        }
+        let attribute: id = msg_send![event, attributeDescriptorForKeyword: KEY_AE_LAUNCHED_AS_LOGIN_ITEM];
+        !attribute.is_null()
+    }
 }
 
 struct Unmanaged {

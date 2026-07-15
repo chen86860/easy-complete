@@ -1,68 +1,26 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
-use std::sync::atomic::{
-    AtomicU64,
-    Ordering,
-};
+use std::sync::atomic::{AtomicU64, Ordering};
 
-use anyhow::{
-    Context,
-    Result,
-};
-use fig_ipc::{
-    BufferedReader,
-    RecvMessage,
-    SendMessage,
-};
-use fig_proto::figterm::{
-    InsertTextRequest,
-    InterceptRequest,
-    SetBufferRequest,
-    intercept_request,
-};
+use anyhow::{Context, Result};
+use fig_ipc::{BufferedReader, RecvMessage, SendMessage};
+use fig_proto::figterm::{InsertTextRequest, InterceptRequest, SetBufferRequest, intercept_request};
 use fig_proto::local::ShellContext;
 use fig_proto::remote::clientbound::request::Request;
-use fig_proto::remote::clientbound::{
-    self,
-    HandshakeResponse,
-};
-use fig_proto::remote::{
-    Clientbound,
-    Hostbound,
-    RunProcessRequest,
-    hostbound,
-};
+use fig_proto::remote::clientbound::{self, HandshakeResponse};
+use fig_proto::remote::{Clientbound, Hostbound, RunProcessRequest, hostbound};
 use fig_util::PTY_BINARY_NAME;
 use time::OffsetDateTime;
-use tokio::net::{
-    UnixListener,
-    UnixStream,
-};
+use tokio::net::{UnixListener, UnixStream};
 use tokio::select;
 use tokio::sync::Notify;
-use tokio::time::{
-    Duration,
-    Instant,
-    MissedTickBehavior,
-};
-use tracing::{
-    debug,
-    error,
-    info,
-    trace,
-    warn,
-};
+use tokio::time::{Duration, Instant, MissedTickBehavior};
+use tracing::{debug, error, info, trace, warn};
 use uuid::Uuid;
 
 use crate::RemoteHookHandler;
-use crate::figterm::{
-    EditBuffer,
-    FigtermCommand,
-    FigtermSession,
-    FigtermState,
-    InterceptMode,
-};
+use crate::figterm::{EditBuffer, FigtermCommand, FigtermSession, FigtermState, InterceptMode};
 
 pub async fn start_remote_ipc(
     socket_path: PathBuf,

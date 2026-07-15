@@ -1,10 +1,7 @@
 use std::process::ExitCode;
 
 use clap::Subcommand;
-use eyre::{
-    Result,
-    WrapErr,
-};
+use eyre::{Result, WrapErr};
 use fig_ipc::local::send_hook_to_socket;
 use fig_proto::hooks;
 use fig_util::env_var::QTERM_SESSION_ID;

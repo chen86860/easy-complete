@@ -7,37 +7,14 @@ use fig_remote_ipc::figterm::FigtermState;
 use fig_util::consts::PRODUCT_NAME;
 use fig_util::url::USER_MANUAL;
 use muda::accelerator::Accelerator;
-use muda::{
-    IconMenuItem,
-    Menu,
-    MenuEvent,
-    MenuId,
-    PredefinedMenuItem,
-    Submenu,
-};
+use muda::{IconMenuItem, Menu, MenuEvent, MenuId, PredefinedMenuItem, Submenu};
 use tao::event_loop::ControlFlow;
-use tracing::{
-    error,
-    trace,
-};
-use tray_icon::{
-    Icon,
-    TrayIcon,
-    TrayIconBuilder,
-};
+use tracing::{error, trace};
+use tray_icon::{Icon, TrayIcon, TrayIconBuilder};
 
-use crate::event::{
-    Event,
-    ShowMessageNotification,
-    WindowEvent,
-};
+use crate::event::{Event, ShowMessageNotification, WindowEvent};
 use crate::webview::LOGIN_PATH;
-use crate::{
-    AUTOCOMPLETE_ID,
-    DASHBOARD_ID,
-    EventLoopProxy,
-    EventLoopWindowTarget,
-};
+use crate::{AUTOCOMPLETE_ID, DASHBOARD_ID, EventLoopProxy, EventLoopWindowTarget};
 
 // macro_rules! icon {
 //     ($icon:literal) => {{

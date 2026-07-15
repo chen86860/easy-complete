@@ -7,36 +7,16 @@ use dbus::connect_to_ibus_daemon;
 use fig_os_shim::Context;
 use fig_proto::local::caret_position_hook::Origin;
 use fig_util::terminal::PositioningKind;
-use tao::dpi::{
-    LogicalPosition,
-    LogicalSize,
-    PhysicalPosition,
-    PhysicalSize,
-    Position,
-    Size,
-};
-use tracing::{
-    debug,
-    error,
-};
+use tao::dpi::{LogicalPosition, LogicalSize, PhysicalPosition, PhysicalSize, Position, Size};
+use tracing::{debug, error};
 use zbus::export::futures_util::TryStreamExt;
 use zbus::fdo::DBusProxy;
-use zbus::{
-    MatchRule,
-    MessageStream,
-};
+use zbus::{MatchRule, MessageStream};
 
 use super::PlatformStateImpl;
-use crate::event::{
-    Event,
-    WindowEvent,
-    WindowPosition,
-};
+use crate::event::{Event, WindowEvent, WindowPosition};
 use crate::platform::ActiveWindowData;
-use crate::{
-    AUTOCOMPLETE_ID,
-    EventLoopProxy,
-};
+use crate::{AUTOCOMPLETE_ID, EventLoopProxy};
 
 /// Connects to the `ibus-daemon` D-Bus service if not already connected, launching a task to
 /// continually listen on InputContext signals.

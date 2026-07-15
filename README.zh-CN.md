@@ -91,7 +91,7 @@ cd easy-complete
 1. 构建 Rust 二进制和 TypeScript 前端。
 2. 组装出 `Easy Complete.app` 并复制到 `/Applications`。
 3. 把 `ec` 和 `ecterm` 两个 CLI 软链到 `~/.local/bin`。
-4. 安装 LaunchAgent，使应用登录时自启。
+4. 可在设置中开启**登录时启动**（macOS 13+ 使用系统登录项，macOS 12 回退到 LaunchAgent）。
 5. 配置 shell 集成并注册输入法。
 6. **弹出授予「辅助功能」权限的提示**（必需，见下文）。
 
@@ -198,7 +198,7 @@ cargo run --bin q_cli -- <子命令>
 cargo run --bin easy-complete
 
 cargo clippy --locked --workspace --color always -- -D warnings   # lint（CI 要求 -D warnings）
-cargo +nightly fmt                                                # 格式化（需 nightly）
+cargo fmt                                                         # 格式化
 cargo test -p <crate_name>                                        # 测试某个 crate
 ```
 

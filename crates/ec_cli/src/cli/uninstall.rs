@@ -4,10 +4,7 @@ use anstream::println;
 use crossterm::style::Stylize;
 use eyre::Result;
 use fig_os_shim::Context;
-use fig_util::{
-    CLI_BINARY_NAME,
-    PRODUCT_NAME,
-};
+use fig_util::{CLI_BINARY_NAME, PRODUCT_NAME};
 
 use crate::util::dialoguer_theme;
 
@@ -87,10 +84,7 @@ async fn uninstall_linux_minimal(ctx: std::sync::Arc<fig_os_shim::Context>) -> R
 #[cfg(target_os = "linux")]
 async fn uninstall_linux_full(ctx: std::sync::Arc<fig_os_shim::Context>) -> Result<()> {
     use eyre::bail;
-    use fig_install::{
-        InstallComponents,
-        uninstall,
-    };
+    use fig_install::{InstallComponents, uninstall};
 
     match ctx.process_info().current_pid().exe() {
         Some(exe) => {

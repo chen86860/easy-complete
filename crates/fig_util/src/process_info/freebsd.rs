@@ -1,9 +1,6 @@
 use std::path::PathBuf;
 
-use super::{
-    Pid,
-    PidExt,
-};
+use super::{Pid, PidExt};
 
 impl PidExt for Pid {
     fn current() -> Self {

@@ -1,41 +1,22 @@
 use std::ffi::OsString;
 use std::io::Error as IoError;
 use std::os::windows::ffi::OsStringExt;
-use std::os::windows::io::{
-    AsRawHandle,
-    FromRawHandle,
-};
+use std::os::windows::io::{AsRawHandle, FromRawHandle};
 use std::path::Path;
 use std::sync::Mutex;
-use std::{
-    mem,
-    ptr,
-};
+use std::{mem, ptr};
 
-use anyhow::{
-    Error,
-    bail,
-    ensure,
-};
-use filedescriptor::{
-    FileDescriptor,
-    OwnedHandle,
-};
+use anyhow::{Error, bail, ensure};
+use filedescriptor::{FileDescriptor, OwnedHandle};
 use lazy_static::lazy_static;
 use shared_library::shared_library;
 use tracing::error;
 use winapi::shared::minwindef::DWORD;
-use winapi::shared::winerror::{
-    HRESULT,
-    S_OK,
-};
+use winapi::shared::winerror::{HRESULT, S_OK};
 use winapi::um::handleapi::*;
 use winapi::um::processthreadsapi::*;
 use winapi::um::winbase::{
-    CREATE_UNICODE_ENVIRONMENT,
-    EXTENDED_STARTUPINFO_PRESENT,
-    STARTF_USESTDHANDLES,
-    STARTUPINFOEXW,
+    CREATE_UNICODE_ENVIRONMENT, EXTENDED_STARTUPINFO_PRESENT, STARTF_USESTDHANDLES, STARTUPINFOEXW,
 };
 use winapi::um::wincon::COORD;
 use winapi::um::winnt::HANDLE;

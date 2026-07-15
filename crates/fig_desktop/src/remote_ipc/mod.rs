@@ -6,48 +6,22 @@ use base64::prelude::*;
 use bytes::BytesMut;
 use fig_proto::fig::server_originated_message::Submessage as ServerOriginatedSubMessage;
 use fig_proto::fig::{
-    EditBufferChangedNotification,
-    HistoryUpdatedNotification,
-    KeybindingPressedNotification,
-    LocationChangedNotification,
-    Notification,
-    NotificationType,
-    Process,
-    ProcessChangedNotification,
-    ServerOriginatedMessage,
-    ShellPromptReturnedNotification,
+    EditBufferChangedNotification, HistoryUpdatedNotification, KeybindingPressedNotification,
+    LocationChangedNotification, Notification, NotificationType, Process, ProcessChangedNotification,
+    ServerOriginatedMessage, ShellPromptReturnedNotification,
 };
-use fig_proto::local::{
-    EditBufferHook,
-    InterceptedKeyHook,
-    PostExecHook,
-    PreExecHook,
-    PromptHook,
-};
+use fig_proto::local::{EditBufferHook, InterceptedKeyHook, PostExecHook, PreExecHook, PromptHook};
 use fig_proto::prost::Message;
 use fig_proto::remote::clientbound;
-use fig_remote_ipc::figterm::{
-    FigtermState,
-    SessionMetrics,
-};
+use fig_remote_ipc::figterm::{FigtermState, SessionMetrics};
 use time::OffsetDateTime;
-use tracing::{
-    debug,
-    error,
-};
+use tracing::{debug, error};
 use uuid::Uuid;
 
-use crate::event::{
-    EmitEventName,
-    Event,
-    WindowEvent,
-};
+use crate::event::{EmitEventName, Event, WindowEvent};
 use crate::platform::PlatformBoundEvent;
 use crate::webview::notification::WebviewNotificationsState;
-use crate::{
-    AUTOCOMPLETE_ID,
-    EventLoopProxy,
-};
+use crate::{AUTOCOMPLETE_ID, EventLoopProxy};
 
 #[derive(Debug, Clone)]
 pub struct RemoteHook {

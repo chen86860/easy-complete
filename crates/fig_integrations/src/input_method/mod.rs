@@ -3,49 +3,19 @@
 
 use std::borrow::Cow;
 use std::io::ErrorKind;
-use std::path::{
-    Path,
-    PathBuf,
-};
+use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::ptr;
 
 use async_trait::async_trait;
-use core_foundation::array::{
-    CFArray,
-    CFArrayRef,
-};
-use core_foundation::base::{
-    Boolean,
-    CFGetTypeID,
-    CFType,
-    CFTypeID,
-    CFTypeRef,
-    OSStatus,
-    TCFType,
-    TCFTypeRef,
-};
+use core_foundation::array::{CFArray, CFArrayRef};
+use core_foundation::base::{Boolean, CFGetTypeID, CFType, CFTypeID, CFTypeRef, OSStatus, TCFType, TCFTypeRef};
 use core_foundation::boolean::CFBoolean;
-use core_foundation::bundle::{
-    CFBundle,
-    CFBundleRef,
-};
-use core_foundation::dictionary::{
-    CFDictionary,
-    CFDictionaryRef,
-};
-use core_foundation::string::{
-    CFString,
-    CFStringRef,
-};
-use core_foundation::url::{
-    CFURL,
-    CFURLRef,
-};
-use core_foundation::{
-    declare_TCFType,
-    impl_TCFType,
-};
+use core_foundation::bundle::{CFBundle, CFBundleRef};
+use core_foundation::dictionary::{CFDictionary, CFDictionaryRef};
+use core_foundation::string::{CFString, CFStringRef};
+use core_foundation::url::{CFURL, CFURLRef};
+use core_foundation::{declare_TCFType, impl_TCFType};
 use fig_settings::state;
 use fig_util::Terminal;
 use fig_util::consts::CLI_BINARY_NAME;
@@ -53,28 +23,13 @@ use fig_util::directories::home_dir;
 use fig_util::macos::BUNDLE_CONTENTS_HELPERS_PATH;
 use macos_utils::applications;
 use objc::runtime::Object;
-use objc::{
-    class,
-    msg_send,
-    sel,
-    sel_impl,
-};
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use objc::{class, msg_send, sel, sel_impl};
+use serde::{Deserialize, Serialize};
 use tokio::fs;
-use tracing::{
-    debug,
-    info,
-    trace,
-};
+use tracing::{debug, info, trace};
 
 use crate::Integration;
-use crate::error::{
-    ErrorExt,
-    Result,
-};
+use crate::error::{ErrorExt, Result};
 
 pub enum __TISInputSource {}
 pub type TISInputSourceRef = *const __TISInputSource;

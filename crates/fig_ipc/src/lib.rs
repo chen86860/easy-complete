@@ -11,18 +11,8 @@ mod unix_socket;
 
 pub use buffered_reader::BufferedReader;
 pub use codec::Base64LineCodec;
-pub use error::{
-    ConnectError,
-    Error,
-    RecvError,
-    SendError,
-};
+pub use error::{ConnectError, Error, RecvError, SendError};
 pub use recv_message::RecvMessage;
 pub use send_message::SendMessage;
 pub use send_recv_message::SendRecvMessage;
-pub use unix_socket::{
-    BufferedUnixStream,
-    socket_connect,
-    socket_connect_timeout,
-    validate_socket,
-};
+pub use unix_socket::{BufferedUnixStream, socket_connect, socket_connect_timeout, validate_socket};

@@ -1,27 +1,12 @@
 //! Grid resize and reflow.
 
-use std::cmp::{
-    Ordering,
-    max,
-    min,
-};
+use std::cmp::{Ordering, max, min};
 use std::mem;
 
 use crate::grid::row::Row;
-use crate::grid::{
-    Dimensions,
-    Grid,
-    GridCell,
-};
-use crate::index::{
-    Boundary,
-    Column,
-    Line,
-};
-use crate::term::cell::{
-    ResetDiscriminant,
-    ShellFlags,
-};
+use crate::grid::{Dimensions, Grid, GridCell};
+use crate::index::{Boundary, Column, Line};
+use crate::term::cell::{ResetDiscriminant, ShellFlags};
 
 impl<T: GridCell + Default + PartialEq + Clone> Grid<T> {
     /// Resize the grid's width and/or height.

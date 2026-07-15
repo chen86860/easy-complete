@@ -14,127 +14,50 @@ pub mod update;
 
 use std::env;
 #[cfg(unix)]
-use std::ffi::{
-    CString,
-    OsStr,
-};
-use std::sync::{
-    LazyLock,
-    Mutex,
-    RwLock,
-};
-use std::time::{
-    Duration,
-    SystemTime,
-};
+use std::ffi::{CString, OsStr};
+use std::sync::{LazyLock, Mutex, RwLock};
+use std::time::{Duration, SystemTime};
 
 use alacritty_terminal::Term;
 use alacritty_terminal::ansi::Processor;
 use alacritty_terminal::event::EventListener;
 use alacritty_terminal::grid::Dimensions;
-use alacritty_terminal::term::{
-    ShellState,
-    SizeInfo,
-    TextBuffer,
-};
-use anyhow::{
-    Context as _,
-    Result,
-    anyhow,
-};
+use alacritty_terminal::term::{ShellState, SizeInfo, TextBuffer};
+use anyhow::{Context as _, Result, anyhow};
 use bytes::BytesMut;
 use cfg_if::cfg_if;
 use clap::Parser;
 use cli::Cli;
-use fig_log::{
-    LogArgs,
-    initialize_logging,
-};
-use fig_os_shim::{
-    Context,
-    Env,
-};
-use fig_proto::local::{
-    self,
-    EnvironmentVariable,
-    TerminalCursorCoordinates,
-};
+use fig_log::{LogArgs, initialize_logging};
+use fig_os_shim::{Context, Env};
+use fig_proto::local::{self, EnvironmentVariable, TerminalCursorCoordinates};
 use fig_proto::remote::Hostbound;
-use fig_proto::remote_hooks::{
-    hook_to_message,
-    new_edit_buffer_hook,
-};
+use fig_proto::remote_hooks::{hook_to_message, new_edit_buffer_hook};
 use fig_settings::state;
 use fig_util::consts::CLI_BINARY_NAME;
-use fig_util::env_var::{
-    Q_LOG_LEVEL,
-    Q_SHELL,
-    Q_TERM,
-    QTERM_SESSION_ID,
-};
-use fig_util::process_info::{
-    Pid,
-    PidExt,
-};
-use fig_util::{
-    PRODUCT_NAME,
-    PTY_BINARY_NAME,
-    Terminal as FigTerminal,
-    directories,
-};
-use flume::{
-    Receiver,
-    Sender,
-};
+use fig_util::env_var::{Q_LOG_LEVEL, Q_SHELL, Q_TERM, QTERM_SESSION_ID};
+use fig_util::process_info::{Pid, PidExt};
+use fig_util::{PRODUCT_NAME, PTY_BINARY_NAME, Terminal as FigTerminal, directories};
+use flume::{Receiver, Sender};
 #[cfg(unix)]
 use nix::unistd::execvp;
 use portable_pty::PtySize;
-use tokio::io::{
-    self,
-    AsyncWriteExt,
-};
+use tokio::io::{self, AsyncWriteExt};
 use tokio::sync::oneshot;
-use tokio::{
-    runtime,
-    select,
-};
-use tracing::{
-    debug,
-    error,
-    info,
-    trace,
-    warn,
-};
+use tokio::{runtime, select};
+use tracing::{debug, error, info, trace, warn};
 
 use crate::event_handler::EventHandler;
-use crate::input::{
-    InputEvent,
-    KeyCode,
-    KeyCodeEncodeModes,
-    KeyboardEncoding,
-    Modifiers,
-};
+use crate::input::{InputEvent, KeyCode, KeyCodeEncodeModes, KeyboardEncoding, Modifiers};
 use crate::interceptor::KeyInterceptor;
-use crate::ipc::{
-    spawn_figterm_ipc,
-    spawn_remote_ipc,
-};
-use crate::message::{
-    process_figterm_message,
-    process_remote_message,
-};
+use crate::ipc::{spawn_figterm_ipc, spawn_remote_ipc};
+use crate::message::{process_figterm_message, process_remote_message};
 #[cfg(unix)]
 use crate::pty::unix::open_pty;
 #[cfg(windows)]
 use crate::pty::win::open_pty;
-use crate::pty::{
-    AsyncMasterPtyExt,
-    CommandBuilder,
-};
-use crate::term::{
-    SystemTerminal,
-    Terminal,
-};
+use crate::pty::{AsyncMasterPtyExt, CommandBuilder};
+use crate::term::{SystemTerminal, Terminal};
 
 #[global_allocator]
 static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;

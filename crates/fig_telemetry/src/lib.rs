@@ -1,10 +1,7 @@
 use std::path::PathBuf;
 use std::time::Duration;
 
-use serde_json::{
-    Value,
-    json,
-};
+use serde_json::{Value, json};
 use tracing::warn;
 use uuid::Uuid;
 

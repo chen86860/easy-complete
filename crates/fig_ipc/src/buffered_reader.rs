@@ -1,20 +1,10 @@
-use std::io::{
-    self,
-    IoSlice,
-};
+use std::io::{self, IoSlice};
 use std::pin::Pin;
-use std::task::{
-    Context,
-    Poll,
-};
+use std::task::{Context, Poll};
 
 use bytes::BytesMut;
 use pin_project_lite::pin_project;
-use tokio::io::{
-    AsyncRead,
-    AsyncWrite,
-    ReadBuf,
-};
+use tokio::io::{AsyncRead, AsyncWrite, ReadBuf};
 
 pin_project! {
     /// A light wrapper around a `BufReader<UnixStream>`

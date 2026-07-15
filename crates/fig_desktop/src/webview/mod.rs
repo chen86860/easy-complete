@@ -8,11 +8,7 @@ pub mod window_id;
 
 use std::collections::HashMap;
 use std::rc::Rc;
-use std::sync::{
-    Arc,
-    LazyLock,
-    OnceLock,
-};
+use std::sync::{Arc, LazyLock, OnceLock};
 use std::time::Duration;
 
 use cfg_if::cfg_if;
@@ -23,95 +19,34 @@ use fig_proto::fig::ClientOriginatedMessage;
 use fig_proto::fig::client_originated_message::Submessage;
 use fig_remote_ipc::figterm::FigtermState;
 use fig_util::consts::PRODUCT_NAME;
-use fig_util::{
-    URL_SCHEMA,
-    directories,
-};
+use fig_util::{URL_SCHEMA, directories};
 use fnv::FnvBuildHasher;
 use muda::MenuEvent;
 use regex::RegexSet;
-use tao::dpi::{
-    LogicalPosition,
-    LogicalSize,
-};
-use tao::event::{
-    Event as WryEvent,
-    StartCause,
-    WindowEvent as WryWindowEvent,
-};
-use tao::event_loop::{
-    ControlFlow,
-    EventLoopBuilder,
-};
-use tao::window::{
-    Theme as TaoTheme,
-    Window,
-    WindowBuilder,
-    WindowId as WryWindowId,
-};
+use tao::dpi::{LogicalPosition, LogicalSize};
+use tao::event::{Event as WryEvent, StartCause, WindowEvent as WryWindowEvent};
+use tao::event_loop::{ControlFlow, EventLoopBuilder};
+use tao::window::{Theme as TaoTheme, Window, WindowBuilder, WindowId as WryWindowId};
 use tokio::time::MissedTickBehavior;
-use tracing::{
-    debug,
-    error,
-    info,
-    trace,
-    warn,
-};
+use tracing::{debug, error, info, trace, warn};
 use url::Url;
 use window::WindowState;
-use wry::{
-    Theme as WryTheme,
-    WebContext,
-    WebView,
-    WebViewBuilder,
-};
+use wry::{Theme as WryTheme, WebContext, WebView, WebViewBuilder};
 
 use self::menu::menu_bar;
 use self::notification::WebviewNotificationsState;
 use self::window_id::DashboardId;
-use crate::event::{
-    Event,
-    ShowMessageNotification,
-    WindowEvent,
-};
-use crate::notification_bus::{
-    JsonNotification,
-    NOTIFICATION_BUS,
-};
-use crate::platform::{
-    PlatformBoundEvent,
-    PlatformState,
-};
+use crate::event::{Event, ShowMessageNotification, WindowEvent};
+use crate::notification_bus::{JsonNotification, NOTIFICATION_BUS};
+use crate::platform::{PlatformBoundEvent, PlatformState};
 use crate::protocol::spec::clear_index_cache;
-use crate::protocol::{
-    api,
-    icons,
-    resource,
-    spec,
-};
+use crate::protocol::{api, icons, resource, spec};
 use crate::remote_ipc::RemoteHook;
 use crate::request::api_request;
-use crate::tray::{
-    self,
-    build_tray,
-    get_context_menu,
-    get_icon,
-};
+use crate::tray::{self, build_tray, get_context_menu, get_icon};
 use crate::webview::window_id::AutocompleteId;
-pub use crate::webview::window_id::{
-    AUTOCOMPLETE_ID,
-    DASHBOARD_ID,
-    WindowId,
-};
-use crate::{
-    EventLoop,
-    EventLoopProxy,
-    InterceptState,
-    auth_watcher,
-    file_watcher,
-    local_ipc,
-    utils,
-};
+pub use crate::webview::window_id::{AUTOCOMPLETE_ID, DASHBOARD_ID, WindowId};
+use crate::{EventLoop, EventLoopProxy, InterceptState, auth_watcher, file_watcher, local_ipc, utils};
 
 pub const DASHBOARD_SIZE: LogicalSize<f64> = LogicalSize::new(820.0, 640.0);
 pub const DASHBOARD_MINIMUM_SIZE: LogicalSize<f64> = LogicalSize::new(DASHBOARD_SIZE.width, 520.0);
@@ -158,6 +93,7 @@ pub struct WebviewManager {
     notifications_state: Arc<WebviewNotificationsState>,
     dash_kv_store: Arc<DashKVStore>,
     context: Arc<Context>,
+    show_dashboard_after_normal_launch: bool,
 }
 
 pub static GLOBAL_PROXY: OnceLock<EventLoopProxy> = OnceLock::new();
@@ -170,15 +106,12 @@ pub static DASH_KV_STORE: OnceLock<Arc<DashKVStore>> = OnceLock::new();
 impl WebviewManager {
     #[allow(unused_variables)]
     #[allow(unused_mut)]
-    pub fn new(context: Arc<Context>, visible: bool) -> Self {
+    pub fn new(context: Arc<Context>, visible: bool, show_dashboard_after_normal_launch: bool) -> Self {
         let mut event_loop = EventLoopBuilder::with_user_event().build();
 
         #[cfg(target_os = "macos")]
         if !visible {
-            use tao::platform::macos::{
-                ActivationPolicy,
-                EventLoopExtMacOS,
-            };
+            use tao::platform::macos::{ActivationPolicy, EventLoopExtMacOS};
 
             use crate::platform::ACTIVATION_POLICY;
 
@@ -214,6 +147,7 @@ impl WebviewManager {
             notifications_state,
             dash_kv_store,
             context,
+            show_dashboard_after_normal_launch,
         }
     }
 
@@ -402,7 +336,18 @@ impl WebviewManager {
             }
 
             match event {
-                WryEvent::NewEvents(StartCause::Init) => info!("Fig has started"),
+                WryEvent::NewEvents(StartCause::Init) => {
+                    info!("Fig has started");
+                    #[cfg(target_os = "macos")]
+                    if self.show_dashboard_after_normal_launch && !crate::platform::launched_as_login_item() {
+                        proxy
+                            .send_event(Event::WindowEvent {
+                                window_id: DASHBOARD_ID,
+                                window_event: WindowEvent::Show,
+                            })
+                            .ok();
+                    }
+                },
                 WryEvent::WindowEvent { event, window_id, .. } => {
                     if let Some(window_state) = self.window_id_map.get(&window_id) {
                         match event {
@@ -705,10 +650,7 @@ window.close = function() {{
 #[cfg(target_os = "macos")]
 fn system_accent_css_color() -> String {
     use objc2::rc::autoreleasepool;
-    use objc2_app_kit::{
-        NSColor,
-        NSColorSpace,
-    };
+    use objc2_app_kit::{NSColor, NSColorSpace};
 
     autoreleasepool(|_| unsafe {
         let accent = NSColor::controlAccentColor();
@@ -738,20 +680,10 @@ const DASHBOARD_SIDEBAR_WIDTH: f64 = 228.0;
 #[cfg(target_os = "macos")]
 fn install_dashboard_sidebar_vibrancy(window: &Window) {
     use objc2_app_kit::{
-        NSAutoresizingMaskOptions,
-        NSVisualEffectBlendingMode,
-        NSVisualEffectMaterial,
-        NSVisualEffectState,
-        NSVisualEffectView,
-        NSWindow,
-        NSWindowOrderingMode,
+        NSAutoresizingMaskOptions, NSVisualEffectBlendingMode, NSVisualEffectMaterial, NSVisualEffectState,
+        NSVisualEffectView, NSWindow, NSWindowOrderingMode,
     };
-    use objc2_foundation::{
-        CGPoint,
-        CGRect,
-        CGSize,
-        MainThreadMarker,
-    };
+    use objc2_foundation::{CGPoint, CGRect, CGSize, MainThreadMarker};
     use tao::platform::macos::WindowExtMacOS;
 
     let Some(mtm) = MainThreadMarker::new() else {
@@ -935,10 +867,7 @@ pub fn build_autocomplete(
     #[cfg(target_os = "linux")]
     {
         use gtk::gdk::WindowTypeHint;
-        use gtk::traits::{
-            GtkWindowExt,
-            WidgetExt,
-        };
+        use gtk::traits::{GtkWindowExt, WidgetExt};
         use tao::platform::unix::WindowExtUnix;
 
         let gtk_window = window.gtk_window();
@@ -1041,14 +970,8 @@ async fn init_webview_notification_listeners(proxy: EventLoopProxy) {
     #[cfg(target_os = "linux")]
     {
         use fig_integrations::Integration;
-        use fig_integrations::desktop_entry::{
-            AutostartIntegration,
-            should_install_autostart_entry,
-        };
-        use fig_settings::{
-            Settings,
-            State,
-        };
+        use fig_integrations::desktop_entry::{AutostartIntegration, should_install_autostart_entry};
+        use fig_settings::{Settings, State};
 
         use crate::notification_bus::JsonNotification;
         watcher!(
@@ -1266,10 +1189,7 @@ async fn init_webview_notification_listeners(proxy: EventLoopProxy) {
     #[cfg(target_os = "macos")]
     {
         use macos_utils::NotificationCenter;
-        use objc2_foundation::{
-            NSOperationQueue,
-            ns_string,
-        };
+        use objc2_foundation::{NSOperationQueue, ns_string};
 
         let mut default_center = NotificationCenter::default_center();
         let notification_name = ns_string!("NSSystemColorsDidChangeNotification");

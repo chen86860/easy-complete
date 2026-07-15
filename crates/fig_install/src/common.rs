@@ -4,18 +4,9 @@ use std::sync::Arc;
 use fig_integrations::Integration;
 use fig_integrations::shell::ShellExt;
 use fig_integrations::ssh::SshIntegration;
-use fig_os_shim::{
-    Context,
-    Env,
-};
+use fig_os_shim::{Context, Env};
 use fig_util::{
-    CHAT_BINARY_NAME,
-    CLI_BINARY_NAME,
-    OLD_CLI_BINARY_NAMES,
-    OLD_PTY_BINARY_NAMES,
-    PTY_BINARY_NAME,
-    Shell,
-    directories,
+    CHAT_BINARY_NAME, CLI_BINARY_NAME, OLD_CLI_BINARY_NAMES, OLD_PTY_BINARY_NAMES, PTY_BINARY_NAME, Shell, directories,
 };
 
 use crate::Error;
@@ -110,10 +101,7 @@ pub async fn uninstall(components: InstallComponents, ctx: Arc<Context>) -> Resu
     #[cfg(target_os = "macos")]
     if components.contains(InstallComponents::INPUT_METHOD) {
         use fig_integrations::Error;
-        use fig_integrations::input_method::{
-            InputMethod,
-            InputMethodError,
-        };
+        use fig_integrations::input_method::{InputMethod, InputMethodError};
 
         match InputMethod::default().uninstall().await {
             Ok(_) | Err(Error::InputMethod(InputMethodError::CouldNotListInputSources)) => {},

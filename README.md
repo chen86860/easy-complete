@@ -95,7 +95,7 @@ The source installer will:
 1. Build the Rust binaries and the TypeScript frontend.
 2. Assemble `Easy Complete.app` and copy it to `/Applications`.
 3. Symlink the `ec` and `ecterm` CLIs into `~/.local/bin`.
-4. Install a LaunchAgent so the app starts on login.
+4. Let you enable **Launch at Login** from Settings (a system Login Item on macOS 13+, with a LaunchAgent fallback on macOS 12).
 5. Set up shell integration and register the input method.
 6. **Prompt you to grant Accessibility permission** (required — see below).
 
@@ -210,7 +210,7 @@ cargo run --bin q_cli -- <subcommand>
 cargo run --bin easy-complete
 
 cargo clippy --locked --workspace --color always -- -D warnings   # lint (CI: -D warnings)
-cargo +nightly fmt                                                # format (nightly)
+cargo fmt                                                         # format
 cargo test -p <crate_name>                                        # test a crate
 ```
 

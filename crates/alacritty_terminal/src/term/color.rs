@@ -1,25 +1,9 @@
-use std::fmt::{
-    self,
-    Display,
-    Formatter,
-};
-use std::ops::{
-    Add,
-    Index,
-    IndexMut,
-    Mul,
-};
+use std::fmt::{self, Display, Formatter};
+use std::ops::{Add, Index, IndexMut, Mul};
 use std::str::FromStr;
 
-use serde::de::{
-    Error as _,
-    Visitor,
-};
-use serde::{
-    Deserialize,
-    Deserializer,
-    Serialize,
-};
+use serde::de::{Error as _, Visitor};
+use serde::{Deserialize, Deserializer, Serialize};
 use serde_yaml::Value;
 use tracing::trace;
 

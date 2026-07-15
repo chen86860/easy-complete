@@ -16,6 +16,7 @@ BUNDLE_ID="dev.emmmm.easy-complete"
 APP_CATEGORY="public.app-category.productivity"   # Finder / Launchpad "Developer Tools"
 COPYRIGHT="${COPYRIGHT:-© $(date +%Y) emmmm.dev. All rights reserved.}"
 DEFAULT_SPARKLE_APPCAST_URL="https://github.com/chen86860/easy-complete/releases/latest/download/appcast.xml"
+export MACOSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET:-12.0}"
 
 REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 VERSION=$(cargo metadata --no-deps --format-version 1 | python3 -c "import sys,json; print(json.load(sys.stdin)['packages'][0]['version'])" 2>/dev/null || echo "dev")
@@ -139,6 +140,8 @@ cat > "${STAGING_BUNDLE}/Contents/Info.plist" <<PLIST
     <string>APPL</string>
     <key>LSApplicationCategoryType</key>
     <string>${APP_CATEGORY}</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>${MACOSX_DEPLOYMENT_TARGET}</string>
     <key>NSHumanReadableCopyright</key>
     <string>${COPYRIGHT}</string>
     <key>NSHighResolutionCapable</key>

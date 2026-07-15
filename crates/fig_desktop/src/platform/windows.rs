@@ -1,90 +1,36 @@
 use std::borrow::Cow;
 use std::ffi::CStr;
 use std::mem::ManuallyDrop;
-use std::sync::{
-    Arc,
-    LazyLock,
-};
+use std::sync::{Arc, LazyLock};
 
 use anyhow::anyhow;
 use parking_lot::Mutex;
 use tao::dpi::Position;
-use tracing::{
-    debug,
-    trace,
-};
-use windows::Win32::Foundation::{
-    HWND,
-    RECT,
-};
+use tracing::{debug, trace};
+use windows::Win32::Foundation::{HWND, RECT};
 use windows::Win32::System::Com::{
-    CLSCTX_INPROC_SERVER,
-    CoCreateInstance,
-    CoInitialize,
-    VARIANT,
-    VARIANT_0,
-    VARIANT_0_0,
-    VARIANT_0_0_0,
-    VT_BOOL,
+    CLSCTX_INPROC_SERVER, CoCreateInstance, CoInitialize, VARIANT, VARIANT_0, VARIANT_0_0, VARIANT_0_0_0, VT_BOOL,
 };
 use windows::Win32::System::ProcessStatus::K32GetProcessImageFileNameA;
-use windows::Win32::System::Threading::{
-    OpenProcess,
-    PROCESS_QUERY_LIMITED_INFORMATION,
-};
+use windows::Win32::System::Threading::{OpenProcess, PROCESS_QUERY_LIMITED_INFORMATION};
 use windows::Win32::UI::Accessibility::{
-    AccessibleObjectFromEvent,
-    CUIAutomation,
-    HWINEVENTHOOK,
-    IUIAutomation,
-    IUIAutomationFocusChangedEventHandler,
-    IUIAutomationFocusChangedEventHandler_Impl,
-    IUIAutomationTextPattern,
-    SetWinEventHook,
-    TextUnit_Character,
-    TreeScope_Descendants,
-    UIA_HasKeyboardFocusPropertyId,
-    UIA_IsTextPatternAvailablePropertyId,
-    UIA_TextPatternId,
+    AccessibleObjectFromEvent, CUIAutomation, HWINEVENTHOOK, IUIAutomation, IUIAutomationFocusChangedEventHandler,
+    IUIAutomationFocusChangedEventHandler_Impl, IUIAutomationTextPattern, SetWinEventHook, TextUnit_Character,
+    TreeScope_Descendants, UIA_HasKeyboardFocusPropertyId, UIA_IsTextPatternAvailablePropertyId, UIA_TextPatternId,
     UnhookWinEvent,
 };
 use windows::Win32::UI::WindowsAndMessaging::{
-    CHILDID_SELF,
-    EVENT_OBJECT_LOCATIONCHANGE,
-    EVENT_SYSTEM_FOREGROUND,
-    GetForegroundWindow,
-    GetWindowThreadProcessId,
-    OBJECT_IDENTIFIER,
-    OBJID_CARET,
-    OBJID_WINDOW,
-    WINEVENT_OUTOFCONTEXT,
-    WINEVENT_SKIPOWNPROCESS,
+    CHILDID_SELF, EVENT_OBJECT_LOCATIONCHANGE, EVENT_SYSTEM_FOREGROUND, GetForegroundWindow, GetWindowThreadProcessId,
+    OBJECT_IDENTIFIER, OBJID_CARET, OBJID_WINDOW, WINEVENT_OUTOFCONTEXT, WINEVENT_SKIPOWNPROCESS,
 };
 use windows::core::implement;
 
-use crate::event::{
-    Event,
-    RelativeDirection,
-    WindowEvent,
-};
-use crate::platform::{
-    PlatformBoundEvent,
-    PlatformWindow,
-};
-use crate::protocol::icons::{
-    AssetSpecifier,
-    ProcessedAsset,
-};
+use crate::event::{Event, RelativeDirection, WindowEvent};
+use crate::platform::{PlatformBoundEvent, PlatformWindow};
+use crate::protocol::icons::{AssetSpecifier, ProcessedAsset};
 use crate::utils::Rect;
-use crate::webview::{
-    FigWindowMap,
-    WindowId,
-};
-use crate::{
-    AUTOCOMPLETE_ID,
-    EventLoopProxy,
-    EventLoopWindowTarget,
-};
+use crate::webview::{FigWindowMap, WindowId};
+use crate::{AUTOCOMPLETE_ID, EventLoopProxy, EventLoopWindowTarget};
 
 const VT_TRUE: VARIANT = VARIANT {
     Anonymous: VARIANT_0 {

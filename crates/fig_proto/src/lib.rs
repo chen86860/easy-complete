@@ -14,21 +14,11 @@ use std::mem::size_of;
 use std::num::TryFromIntError;
 use std::sync::LazyLock;
 
-use bytes::{
-    Buf,
-    Bytes,
-    BytesMut,
-};
+use bytes::{Buf, Bytes, BytesMut};
 pub use prost;
-use prost::{
-    DecodeError,
-    Message,
-};
+use prost::{DecodeError, Message};
 use prost_reflect::DescriptorPool;
-pub use prost_reflect::{
-    DynamicMessage,
-    ReflectMessage,
-};
+pub use prost_reflect::{DynamicMessage, ReflectMessage};
 use serde::Serialize;
 use thiserror::Error;
 
@@ -214,10 +204,13 @@ impl FigMessage {
 
         let message_len = 10 + size_of::<u64>() + len;
 
-        Ok((message_len, FigMessage {
-            inner: Bytes::from(inner),
-            message_type,
-        }))
+        Ok((
+            message_len,
+            FigMessage {
+                inner: Bytes::from(inner),
+                message_type,
+            },
+        ))
     }
 
     pub fn decode<T>(self) -> Result<T, FigMessageDecodeError>

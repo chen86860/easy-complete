@@ -1,27 +1,13 @@
 use anyhow::Result;
 use fig_proto::local::{
-    CaretPositionHook,
-    ClearAutocompleteCacheHook,
-    EventHook,
-    FileChangedHook,
-    FocusedWindowDataHook,
+    CaretPositionHook, ClearAutocompleteCacheHook, EventHook, FileChangedHook, FocusedWindowDataHook,
 };
-use tao::dpi::{
-    LogicalPosition,
-    LogicalSize,
-};
+use tao::dpi::{LogicalPosition, LogicalSize};
 
-use crate::event::{
-    WindowEvent,
-    WindowPosition,
-};
+use crate::event::{WindowEvent, WindowPosition};
 use crate::platform::PlatformState;
 use crate::webview::WindowId;
-use crate::{
-    AUTOCOMPLETE_ID,
-    Event,
-    EventLoopProxy,
-};
+use crate::{AUTOCOMPLETE_ID, Event, EventLoopProxy};
 
 pub async fn caret_position(
     hook @ CaretPositionHook {

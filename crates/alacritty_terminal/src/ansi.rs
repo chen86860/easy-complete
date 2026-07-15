@@ -3,33 +3,14 @@
 use std::convert::TryFrom;
 use std::fmt::Write;
 use std::path::Path;
-use std::time::{
-    Duration,
-    Instant,
-};
-use std::{
-    iter,
-    str,
-};
+use std::time::{Duration, Instant};
+use std::{iter, str};
 
-use serde::{
-    Deserialize,
-    Serialize,
-};
-use tracing::{
-    debug,
-    error,
-    trace,
-};
-use vte::{
-    Params,
-    ParamsIter,
-};
+use serde::{Deserialize, Serialize};
+use tracing::{debug, error, trace};
+use vte::{Params, ParamsIter};
 
-use crate::index::{
-    Column,
-    Line,
-};
+use crate::index::{Column, Line};
 use crate::term::color::Rgb;
 
 /// Maximum time before a synchronized update is aborted.
@@ -603,7 +584,7 @@ pub enum CursorShape {
 #[derive(Debug, Eq, PartialEq)]
 pub enum Mode {
     /// ?1
-    CursorKeys                    = 1,
+    CursorKeys = 1,
     /// Select 80 or 132 columns per page (DECCOLM).
     ///
     /// CSI ? 3 h -> set 132 column font.
@@ -615,47 +596,47 @@ pub enum Mode {
     /// * erases all data in page memory
     /// * resets DECLRMM to unavailable
     /// * clears data from the status line (if set to host-writable)
-    ColumnMode                    = 3,
+    ColumnMode = 3,
     /// IRM Insert Mode.
     ///
     /// NB should be part of non-private mode enum.
     ///
     /// * `CSI 4 h` change to insert mode
     /// * `CSI 4 l` reset to replacement mode
-    Insert                        = 4,
+    Insert = 4,
     /// ?6
-    Origin                        = 6,
+    Origin = 6,
     /// ?7
-    LineWrap                      = 7,
+    LineWrap = 7,
     /// ?12
-    BlinkingCursor                = 12,
+    BlinkingCursor = 12,
     /// 20
     ///
     /// NB This is actually a private mode. We should consider adding a second
     /// enumeration for public/private modesets.
-    LineFeedNewLine               = 20,
+    LineFeedNewLine = 20,
     /// ?25
-    ShowCursor                    = 25,
+    ShowCursor = 25,
     /// ?1000
-    ReportMouseClicks             = 1000,
+    ReportMouseClicks = 1000,
     /// ?1002
-    ReportCellMouseMotion         = 1002,
+    ReportCellMouseMotion = 1002,
     /// ?1003
-    ReportAllMouseMotion          = 1003,
+    ReportAllMouseMotion = 1003,
     /// ?1004
-    ReportFocusInOut              = 1004,
+    ReportFocusInOut = 1004,
     /// ?1005
-    Utf8Mouse                     = 1005,
+    Utf8Mouse = 1005,
     /// ?1006
-    SgrMouse                      = 1006,
+    SgrMouse = 1006,
     /// ?1007
-    AlternateScroll               = 1007,
+    AlternateScroll = 1007,
     /// ?1042
-    UrgencyHints                  = 1042,
+    UrgencyHints = 1042,
     /// ?1049
     SwapScreenAndSetRestoreCursor = 1049,
     /// ?2004
-    BracketedPaste                = 2004,
+    BracketedPaste = 2004,
 }
 
 impl Mode {
@@ -744,7 +725,7 @@ pub enum TabulationClearMode {
 #[derive(Serialize, Deserialize, Debug, Copy, Clone, Eq, PartialEq, PartialOrd, Ord)]
 pub enum NamedColor {
     /// Black.
-    Black      = 0,
+    Black = 0,
     /// Red.
     Red,
     /// Green.

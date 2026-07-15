@@ -17,57 +17,25 @@ mod webview;
 
 use std::path::Path;
 use std::process::ExitCode;
-use std::sync::{
-    Arc,
-    RwLock,
-};
+use std::sync::{Arc, RwLock};
 
 use clap::Parser;
 use event::Event;
-use fig_log::{
-    LogArgs,
-    initialize_logging,
-};
+use fig_log::{LogArgs, initialize_logging};
 use fig_os_shim::Context;
-use fig_util::consts::{
-    APP_PROCESS_NAME,
-    PRODUCT_NAME,
-};
-use fig_util::{
-    URL_SCHEMA,
-    directories,
-};
+use fig_util::consts::{APP_PROCESS_NAME, PRODUCT_NAME};
+use fig_util::{URL_SCHEMA, directories};
 use platform::PlatformState;
-use sysinfo::{
-    ProcessRefreshKind,
-    RefreshKind,
-    System,
-    get_current_pid,
-};
+use sysinfo::{ProcessRefreshKind, RefreshKind, System, get_current_pid};
 use tao::event_loop::{
-    EventLoop as WryEventLoop,
-    EventLoopProxy as WryEventLoopProxy,
-    EventLoopWindowTarget as WryEventLoopWindowTarget,
+    EventLoop as WryEventLoop, EventLoopProxy as WryEventLoopProxy, EventLoopWindowTarget as WryEventLoopWindowTarget,
 };
-use tracing::{
-    error,
-    warn,
-};
+use tracing::{error, warn};
 use url::Url;
 use webview::notification::WebviewNotificationsState;
-pub use webview::{
-    AUTOCOMPLETE_ID,
-    AUTOCOMPLETE_WINDOW_TITLE,
-    DASHBOARD_ID,
-};
+pub use webview::{AUTOCOMPLETE_ID, AUTOCOMPLETE_WINDOW_TITLE, DASHBOARD_ID};
 use webview::{
-    AutocompleteOptions,
-    DashboardOptions,
-    WebviewManager,
-    autocomplete,
-    build_autocomplete,
-    build_dashboard,
-    dashboard,
+    AutocompleteOptions, DashboardOptions, WebviewManager, autocomplete, build_autocomplete, build_dashboard, dashboard,
 };
 
 // #[global_allocator]
@@ -86,6 +54,17 @@ pub type EventLoopWindowTarget = WryEventLoopWindowTarget<Event>;
 #[tokio::main]
 async fn main() -> ExitCode {
     let cli = cli::Cli::parse();
+
+    #[cfg(target_os = "macos")]
+    if cli.unregister_login_item {
+        return match fig_integrations::login_item::set_enabled(false) {
+            Ok(()) => ExitCode::SUCCESS,
+            Err(err) => {
+                eprintln!("Failed to unregister launch at login: {err}");
+                ExitCode::FAILURE
+            },
+        };
+    }
 
     let _log_guard = initialize_logging(LogArgs {
         log_level: None,
@@ -111,7 +90,39 @@ async fn main() -> ExitCode {
         error!(%err, "failed to init global settings");
     }
 
-    if cli.is_startup && !fig_settings::settings::get_bool_or("app.launchOnStartup", false) {
+    let mut launch_on_startup = fig_settings::settings::get_bool_or("app.launchOnStartup", false);
+    #[cfg(target_os = "macos")]
+    {
+        const LOGIN_ITEM_MIGRATED_KEY: &str = "desktop.loginItemMigratedToSMAppService";
+
+        if fig_integrations::login_item::supports_modern_login_item() {
+            let migrated = fig_settings::state::get_bool_or(LOGIN_ITEM_MIGRATED_KEY, false);
+            let result = if migrated {
+                // Once migrated, System Settings is authoritative. This prevents
+                // the app from silently re-registering after the user disables it there.
+                fig_integrations::login_item::is_enabled().and_then(|enabled| {
+                    launch_on_startup = enabled;
+                    fig_integrations::login_item::reconcile(enabled)
+                })
+            } else {
+                fig_integrations::login_item::reconcile(launch_on_startup)
+            };
+
+            if let Err(err) = result {
+                warn!(%err, "failed to migrate launch-at-login registration");
+                launch_on_startup = false;
+            } else if let Ok(enabled) = fig_integrations::login_item::is_enabled() {
+                launch_on_startup = enabled;
+            }
+
+            fig_settings::settings::set_value("app.launchOnStartup", launch_on_startup).ok();
+            fig_settings::state::set_value(LOGIN_ITEM_MIGRATED_KEY, true).ok();
+        } else if let Err(err) = fig_integrations::login_item::reconcile(launch_on_startup) {
+            warn!(%err, "failed to reconcile legacy launch-at-login registration");
+        }
+    }
+
+    if cli.is_startup && !launch_on_startup {
         return ExitCode::SUCCESS;
     }
 
@@ -181,12 +192,17 @@ async fn main() -> ExitCode {
     let is_logged_in = true;
 
     let accessibility_enabled = PlatformState::accessibility_is_enabled().unwrap_or(true);
-    let visible = !cli.no_dashboard;
+    #[cfg(target_os = "macos")]
+    let defer_dashboard_for_modern_login_item =
+        !cli.no_dashboard && launch_on_startup && fig_integrations::login_item::supports_modern_login_item();
+    #[cfg(not(target_os = "macos"))]
+    let defer_dashboard_for_modern_login_item = false;
+    let visible = !cli.no_dashboard && !defer_dashboard_for_modern_login_item;
 
     let autocomplete_enabled =
         !fig_settings::settings::get_bool_or("autocomplete.disable", false) && accessibility_enabled;
 
-    let mut webview_manager = WebviewManager::new(ctx, visible);
+    let mut webview_manager = WebviewManager::new(ctx, visible, defer_dashboard_for_modern_login_item);
     let auto_updates_enabled = !fig_settings::settings::get_bool_or("app.disableAutoupdates", false);
     if auto_updates_enabled {
         // start_automatic_checks dispatches to the main thread asynchronously,

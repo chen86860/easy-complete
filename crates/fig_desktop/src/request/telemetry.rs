@@ -1,14 +1,8 @@
 use fig_proto::fig::AggregateSessionMetricActionRequest;
-use fig_proto::fig::aggregate_session_metric_action_request::{
-    Action,
-    Increment,
-};
+use fig_proto::fig::aggregate_session_metric_action_request::{Action, Increment};
 use fig_remote_ipc::figterm::FigtermState;
 
-use super::{
-    RequestResult,
-    RequestResultImpl,
-};
+use super::{RequestResult, RequestResultImpl};
 
 pub fn handle_aggregate_session_metric_action_request(
     request: AggregateSessionMetricActionRequest,

@@ -1,40 +1,17 @@
 use std::fs::File;
-use std::io::{
-    ErrorKind,
-    Write,
-};
+use std::io::{ErrorKind, Write};
 use std::path::PathBuf;
 
 use async_trait::async_trait;
 use cfg_if::cfg_if;
 use clap::ValueEnum;
 use fig_os_shim::Env;
-use fig_util::{
-    CLI_BINARY_NAME,
-    PRODUCT_NAME,
-    PTY_BINARY_NAME,
-    Shell,
-    directories,
-};
-use regex::{
-    Regex,
-    RegexSet,
-};
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use fig_util::{CLI_BINARY_NAME, PRODUCT_NAME, PTY_BINARY_NAME, Shell, directories};
+use regex::{Regex, RegexSet};
+use serde::{Deserialize, Serialize};
 
-use crate::error::{
-    ErrorExt,
-    Result,
-};
-use crate::{
-    Error,
-    FileIntegration,
-    Integration,
-    backup_file,
-};
+use crate::error::{ErrorExt, Result};
+use crate::{Error, FileIntegration, Integration, backup_file};
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, ValueEnum, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
@@ -733,16 +710,10 @@ fn split_shebang(contents: &str) -> (&str, &str) {
 #[cfg(test)]
 mod test {
     use std::io::Write;
-    use std::process::{
-        Command,
-        Stdio,
-    };
+    use std::process::{Command, Stdio};
 
     use fig_util::build::SKIP_SHELLCHECK_TESTS;
-    use fig_util::directories::{
-        home_dir,
-        old_fig_data_dir,
-    };
+    use fig_util::directories::{home_dir, old_fig_data_dir};
 
     use super::*;
 

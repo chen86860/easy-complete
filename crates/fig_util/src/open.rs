@@ -12,10 +12,7 @@ pub enum Error {
 #[allow(unexpected_cfgs)]
 fn open_macos(url_str: impl AsRef<str>) -> Result<(), Error> {
     use objc2::ClassType;
-    use objc2_foundation::{
-        NSString,
-        NSURL,
-    };
+    use objc2_foundation::{NSString, NSURL};
 
     let url_nsstring = NSString::from_str(url_str.as_ref());
     let nsurl = unsafe { NSURL::initWithString(NSURL::alloc(), &url_nsstring) }.ok_or(Error::Failed)?;

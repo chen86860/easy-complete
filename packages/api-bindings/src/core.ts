@@ -82,7 +82,9 @@ export function sendMessage(
       headers: {
         "content-type": "application/fig-api",
       },
-      body: buffer,
+      // Copy into an ArrayBuffer-backed view. Protobuf's Uint8Array may be
+      // backed by SharedArrayBuffer, which is not accepted by fetch BodyInit.
+      body: new Uint8Array(buffer).buffer,
     }).then(async (res) => {
       const body = new Uint8Array(await res.arrayBuffer());
       const message = fromBinary(ServerOriginatedMessageSchema, body);

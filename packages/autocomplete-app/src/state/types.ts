@@ -72,9 +72,5 @@ export type AutocompleteState = {
 } & AutocompleteActions;
 
 export declare type NamedSetState<T> = {
-  (
-    name: string,
-    partial: Partial<T> | ((s: T) => Partial<T>),
-    replace?: boolean,
-  ): void;
+  (name: string, partial: Partial<T> | ((s: T) => Partial<T>)): void;
 };

@@ -195,7 +195,7 @@ export function BehaviorSection({
           <Toggle
             checked={Boolean(
               settings[SETTINGS.FUZZY_SEARCH] ??
-                getDefaultSetting(SETTINGS.FUZZY_SEARCH),
+              getDefaultSetting(SETTINGS.FUZZY_SEARCH),
             )}
             onChange={(value) => set(SETTINGS.FUZZY_SEARCH, value)}
           />

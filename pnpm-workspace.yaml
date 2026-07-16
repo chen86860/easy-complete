@@ -1,6 +1,20 @@
 packages:
   - proto
   - packages/*
+overrides:
+  '@babel/runtime@<7.26.10': 7.29.7
+  'brace-expansion@1': 1.1.13
+  'brace-expansion@2': 2.0.3
+  'caniuse-lite@<1.0.30001805': 1.0.30001805
+  'diff@4': 4.0.4
+  'flatted@3': 3.4.2
+  'form-data@4': 4.0.6
+  'glob@10': 10.5.0
+  'minimatch@3': 3.1.4
+  'minimatch@9': 9.0.7
+  'picomatch@2': 2.3.2
+  'ws@8': 8.21.0
+  'yaml@2': 2.8.3
 allowBuilds:
   '@bufbuild/buf': true
   core-js: true

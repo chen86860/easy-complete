@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import clsx from "clsx";
 
 export function Toggle({
@@ -73,21 +72,18 @@ export function NumberInput({
   step?: number;
   onChange: (value: number) => void;
 }) {
-  const [draft, setDraft] = useState(String(value));
-  useEffect(() => setDraft(String(value)), [value]);
-
   return (
     <input
+      key={value}
       type="number"
-      value={draft}
+      defaultValue={value}
       min={min}
       max={max}
       step={step ?? 1}
-      onChange={(event) => setDraft(event.target.value)}
-      onBlur={() => {
-        const nextValue = parseFloat(draft);
+      onBlur={(event) => {
+        const nextValue = parseFloat(event.currentTarget.value);
         if (!Number.isNaN(nextValue)) onChange(nextValue);
-        else setDraft(String(value));
+        else event.currentTarget.value = String(value);
       }}
       className="dashboard-number-input w-[78px] rounded-[10px] border-0 bg-[rgba(120,120,128,0.16)] py-1.5 pl-2.5 text-right text-[13px] text-black outline-none"
     />
@@ -103,16 +99,13 @@ export function TextInput({
   placeholder?: string;
   onChange: (value: string) => void;
 }) {
-  const [draft, setDraft] = useState(value);
-  useEffect(() => setDraft(value), [value]);
-
   return (
     <input
+      key={value}
       type="text"
-      value={draft}
+      defaultValue={value}
       placeholder={placeholder}
-      onChange={(event) => setDraft(event.target.value)}
-      onBlur={() => onChange(draft)}
+      onBlur={(event) => onChange(event.currentTarget.value)}
       className="w-[156px] rounded-[10px] border-0 bg-[rgba(120,120,128,0.16)] px-2.5 py-1.5 text-[13px] text-black outline-none"
     />
   );

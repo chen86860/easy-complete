@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.0.46
+
+- change: upgrade the frontend runtime and build stack to React 19, Vite 8, Vitest 4, TypeScript 6, Zustand 5, Zod 4, and react-window 2, while keeping Tailwind on the latest Safari 15-compatible v3 release
+- change: replace the React 18-only resize-observer wrapper with the native browser API, migrate list virtualization and stricter Zustand state updates, and align dashboard inputs and hooks with React 19 behavior
+- chore: refresh compatible lint, formatting, codegen, and workspace dependencies; remove deprecated types and unused lint plugins; migrate Vitest workspace configuration; pin patched transitive dependencies so the dependency audit is clean
+- test: validate the upgrade on Node 22.23.1 with repeated full builds, coverage tests, and shuffled test ordering (177 tests passing)
+
 ## v2.0.45
 
 - fix: render path-backed file and folder suggestion icons as real images, with built-in icon fallbacks when local icon loading fails

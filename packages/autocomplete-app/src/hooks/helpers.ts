@@ -1,21 +1,43 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 
-import useResizeObserver from "use-resize-observer";
-
 type Dimensions = {
   height?: number;
   width?: number;
 };
 
+type DynamicResizeObserverOptions = {
+  onResize?: (dimensions: Dimensions) => void;
+};
+
 // Like resizeObserver but re-calls onResize callback when onResize changes.
-export const useDynamicResizeObserver: typeof useResizeObserver = (opts) => {
-  const { onResize, ...otherOpts } = opts || {};
+export const useDynamicResizeObserver = (
+  opts: DynamicResizeObserverOptions = {},
+) => {
+  const { onResize } = opts;
+  const [element, setElement] = useState<HTMLElement | null>(null);
   const [{ height, width }, setDimensions] = useState<Dimensions>({
     height: 0,
     width: 0,
   });
 
-  const { ref } = useResizeObserver({ ...otherOpts, onResize: setDimensions });
+  useEffect(() => {
+    if (!element) return undefined;
+
+    const updateDimensions = ({ width, height }: DOMRectReadOnly) => {
+      setDimensions((current) =>
+        current.width === width && current.height === height
+          ? current
+          : { width, height },
+      );
+    };
+    updateDimensions(element.getBoundingClientRect());
+
+    const observer = new ResizeObserver(([entry]) => {
+      updateDimensions(entry.contentRect);
+    });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [element]);
 
   useEffect(() => {
     if (onResize) {
@@ -23,7 +45,7 @@ export const useDynamicResizeObserver: typeof useResizeObserver = (opts) => {
     }
   }, [height, width, onResize]);
 
-  return useMemo(() => ({ height, width, ref }), [height, width, ref]);
+  return useMemo(() => ({ height, width, ref: setElement }), [height, width]);
 };
 
 export const useShake = (): [boolean, () => void] => {

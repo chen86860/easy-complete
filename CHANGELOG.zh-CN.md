@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.0.46
+
+- 变更：将前端运行时与构建工具升级到 React 19、Vite 8、Vitest 4、TypeScript 6、Zustand 5、Zod 4 和 react-window 2；Tailwind 保持在兼容 Safari 15 的最新 v3 版本
+- 变更：使用浏览器原生 ResizeObserver 替代仅支持 React 18 的封装，迁移列表虚拟化与 Zustand 5 的严格状态更新，并按 React 19 行为调整设置输入框和 Hooks
+- 维护：刷新兼容的 lint、格式化、codegen 与工作区依赖，移除废弃类型和未使用的 lint 插件，迁移 Vitest workspace 配置，并锁定已修复的传递依赖以保持安全审计无漏洞
+- 测试：在 Node 22.23.1 下重复执行全量构建、覆盖率测试和随机顺序测试，共 177 项测试通过
+
 ## v2.0.45
 
 - fix: 文件与目录建议图标改用真实图片元素渲染；本地图标加载失败时自动回退到内置图标

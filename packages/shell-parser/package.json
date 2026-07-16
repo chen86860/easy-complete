@@ -27,11 +27,11 @@
   "devDependencies": {
     "@easy-complete/eslint-config": "workspace:^",
     "@easy-complete/tsconfig": "workspace:^",
-    "@vitest/coverage-v8": "^3.0.8",
-    "eslint": "^9.18.0",
-    "prettier": "^3.4.2",
-    "typescript": "^5.8.3",
-    "vitest": "^3.0.8"
+    "@vitest/coverage-v8": "^4.1.10",
+    "eslint": "^9.39.5",
+    "prettier": "^3.9.5",
+    "typescript": "6.0.3",
+    "vitest": "^4.1.10"
   },
   "publishConfig": {
     "access": "public"

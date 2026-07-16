@@ -4,16 +4,6 @@ import { parseArguments } from "@easy-complete/autocomplete-parser";
 import { useAutocompleteStore } from "../state";
 import { shellContextSelector } from "../state/generators";
 
-function usePrevious<T>(value: T) {
-  const ref = useRef<T>(value);
-
-  useEffect(() => {
-    ref.current = value;
-  }, [value]);
-
-  return ref.current;
-}
-
 const isBufferDifferenceFromTyping = (
   oldBuffer: string,
   newBuffer: string,
@@ -41,10 +31,12 @@ export const useParseArgumentsEffect = (
   );
   const context = useAutocompleteStore(shellContextSelector, shallow);
 
-  const oldCommand = usePrevious(command);
+  const previousCommandRef = useRef(command);
 
   useEffect(() => {
     let isMostRecentEffect = true;
+    const oldCommand = previousCommandRef.current;
+    previousCommandRef.current = command;
 
     const tokens = command?.tokens || [];
     const oldTokens = oldCommand?.tokens || [];

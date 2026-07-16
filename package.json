@@ -18,26 +18,26 @@
     "test:ci": "vitest run --run --coverage",
     "test:ui": "vitest --ui",
     "coverage": "vitest run --coverage",
-    "lint": "turbo lint --parallel",
-    "lint:fix": "turbo lint:fix --parallel",
+    "lint": "turbo lint",
+    "lint:fix": "turbo lint:fix",
     "dev": "turbo dev",
     "dev:autocomplete": "pnpm -C packages/autocomplete-app dev",
     "preview:autocomplete": "pnpm -C packages/autocomplete-app preview",
-    "clean": "turbo clean --parallel",
+    "clean": "turbo clean",
     "prepare": "husky",
     "precommit": "lint-staged --config .lintstagedrc.mjs",
     "setup": "bash scripts/setup.sh"
   },
   "devDependencies": {
     "@chen86860/autocomplete-specs": "3.0.7",
-    "@vitest/coverage-v8": "^3.0.8",
-    "@vitest/ui": "^3.0.8",
+    "@vitest/coverage-v8": "^4.1.10",
+    "@vitest/ui": "^4.1.10",
     "husky": "^9.1.7",
-    "lint-staged": "^15.5.1",
+    "lint-staged": "^17.0.8",
     "micromatch": "^4.0.8",
-    "prettier": "^3.5.3",
-    "tsx": "^4.19.4",
-    "turbo": "^2.5.2",
-    "vitest": "^3.0.8"
+    "prettier": "^3.9.5",
+    "tsx": "^4.23.1",
+    "turbo": "^2.10.5",
+    "vitest": "^4.1.10"
   }
 }

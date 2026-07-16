@@ -32,8 +32,8 @@
     "@easy-complete/types": "workspace:^",
     "@easy-complete/shared": "workspace:^",
     "@withfig/autocomplete-types": "^1.31.0",
-    "eslint": "^9.18.0",
-    "prettier": "^3.4.2",
-    "typescript": "^5.8.3"
+    "eslint": "^9.39.5",
+    "prettier": "^3.9.5",
+    "typescript": "6.0.3"
   }
 }

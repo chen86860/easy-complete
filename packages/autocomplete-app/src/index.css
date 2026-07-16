@@ -62,8 +62,8 @@
 
 .text {
   /* Variable may be unset or incorrect, using two defaults handles both */
-  font-family: var(--font-family, Monaco, Hack, monospace), Monaco, Hack,
-    monospace;
+  font-family:
+    var(--font-family, Monaco, Hack, monospace), Monaco, Hack, monospace;
   color: rgb(var(--main-text-color));
 }
 
@@ -114,8 +114,8 @@
   display: flex;
   align-items: center;
   justify-content: stretch;
-  font-family: var(--font-family, Monaco, Hack, monospace), Monaco, Hack,
-    monospace;
+  font-family:
+    var(--font-family, Monaco, Hack, monospace), Monaco, Hack, monospace;
   --padding-x: 10px;
   --padding-y: 6px;
 

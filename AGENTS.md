@@ -145,7 +145,7 @@ To keep the bundle small, the sync script supports excluding whole namespaces vi
 | `ec_cli`           | CLI binary, all `ec` subcommands                                 |
 | `fig_input_method` | macOS IMKit input method helper                                  |
 | `fig_integrations` | Shell/terminal/editor integration install logic                  |
-| `fig_desktop_api`  | Request/response handlers for WebView↔native bridge             |
+| `fig_desktop_api`  | Request/response handlers for WebView↔native bridge              |
 | `fig_ipc`          | Unix socket IPC primitives                                       |
 | `fig_proto`        | Generated Protobuf message types                                 |
 | `fig_settings`     | Settings persistence (JSON)                                      |

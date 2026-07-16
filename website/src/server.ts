@@ -4,6 +4,15 @@ interface Env {
   SITE_ORIGIN?: string;
 }
 
+const INDEXABLE_ROUTES = [
+  "/",
+  "/install",
+  "/terminals/ghostty",
+  "/fig-alternative",
+  "/troubleshooting",
+  "/privacy",
+] as const;
+
 function siteOrigin(request: Request, env: Env): string {
   const configuredOrigin = env.SITE_ORIGIN?.trim().replace(/\/$/, "");
   return configuredOrigin || new URL(request.url).origin;
@@ -32,23 +41,28 @@ export default {
           `Sitemap: ${origin}/sitemap.xml`,
           "",
         ].join("\n"),
-        "text/plain; charset=utf-8",
+        "text/plain; charset=utf-8"
       );
     }
 
     if (url.pathname === "/sitemap.xml") {
+      const lastModified = "2026-07-16";
+      const urls = INDEXABLE_ROUTES.flatMap((path) => [
+        "  <url>",
+        `    <loc>${origin}${path}</loc>`,
+        `    <lastmod>${lastModified}</lastmod>`,
+        "  </url>",
+      ]);
+
       return textResponse(
         [
           '<?xml version="1.0" encoding="UTF-8"?>',
           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-          "  <url>",
-          `    <loc>${origin}/</loc>`,
-          "    <priority>1.0</priority>",
-          "  </url>",
+          ...urls,
           "</urlset>",
           "",
         ].join("\n"),
-        "application/xml; charset=utf-8",
+        "application/xml; charset=utf-8"
       );
     }
 

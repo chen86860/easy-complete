@@ -9,12 +9,31 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TroubleshootingRouteImport } from './routes/troubleshooting'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as InstallRouteImport } from './routes/install'
+import { Route as FigAlternativeRouteImport } from './routes/fig-alternative'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TerminalsGhosttyRouteImport } from './routes/terminals.ghostty'
 
+const TroubleshootingRoute = TroubleshootingRouteImport.update({
+  id: '/troubleshooting',
+  path: '/troubleshooting',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InstallRoute = InstallRouteImport.update({
+  id: '/install',
+  path: '/install',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FigAlternativeRoute = FigAlternativeRouteImport.update({
+  id: '/fig-alternative',
+  path: '/fig-alternative',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -22,40 +41,101 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TerminalsGhosttyRoute = TerminalsGhosttyRouteImport.update({
+  id: '/terminals/ghostty',
+  path: '/terminals/ghostty',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/fig-alternative': typeof FigAlternativeRoute
+  '/install': typeof InstallRoute
   '/privacy': typeof PrivacyRoute
+  '/troubleshooting': typeof TroubleshootingRoute
+  '/terminals/ghostty': typeof TerminalsGhosttyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/fig-alternative': typeof FigAlternativeRoute
+  '/install': typeof InstallRoute
   '/privacy': typeof PrivacyRoute
+  '/troubleshooting': typeof TroubleshootingRoute
+  '/terminals/ghostty': typeof TerminalsGhosttyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/fig-alternative': typeof FigAlternativeRoute
+  '/install': typeof InstallRoute
   '/privacy': typeof PrivacyRoute
+  '/troubleshooting': typeof TroubleshootingRoute
+  '/terminals/ghostty': typeof TerminalsGhosttyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/privacy'
+  fullPaths:
+    | '/'
+    | '/fig-alternative'
+    | '/install'
+    | '/privacy'
+    | '/troubleshooting'
+    | '/terminals/ghostty'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/privacy'
-  id: '__root__' | '/' | '/privacy'
+  to:
+    | '/'
+    | '/fig-alternative'
+    | '/install'
+    | '/privacy'
+    | '/troubleshooting'
+    | '/terminals/ghostty'
+  id:
+    | '__root__'
+    | '/'
+    | '/fig-alternative'
+    | '/install'
+    | '/privacy'
+    | '/troubleshooting'
+    | '/terminals/ghostty'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FigAlternativeRoute: typeof FigAlternativeRoute
+  InstallRoute: typeof InstallRoute
   PrivacyRoute: typeof PrivacyRoute
+  TroubleshootingRoute: typeof TroubleshootingRoute
+  TerminalsGhosttyRoute: typeof TerminalsGhosttyRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/troubleshooting': {
+      id: '/troubleshooting'
+      path: '/troubleshooting'
+      fullPath: '/troubleshooting'
+      preLoaderRoute: typeof TroubleshootingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacy': {
       id: '/privacy'
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/install': {
+      id: '/install'
+      path: '/install'
+      fullPath: '/install'
+      preLoaderRoute: typeof InstallRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fig-alternative': {
+      id: '/fig-alternative'
+      path: '/fig-alternative'
+      fullPath: '/fig-alternative'
+      preLoaderRoute: typeof FigAlternativeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -65,12 +145,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/terminals/ghostty': {
+      id: '/terminals/ghostty'
+      path: '/terminals/ghostty'
+      fullPath: '/terminals/ghostty'
+      preLoaderRoute: typeof TerminalsGhosttyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FigAlternativeRoute: FigAlternativeRoute,
+  InstallRoute: InstallRoute,
   PrivacyRoute: PrivacyRoute,
+  TroubleshootingRoute: TroubleshootingRoute,
+  TerminalsGhosttyRoute: TerminalsGhosttyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,18 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import logoUrl from "../assets/logo.png";
 import { GITHUB_URL } from "../data.ts";
+import { pageHead } from "../seo.tsx";
+
+const PRIVACY_DESCRIPTION =
+  "What anonymous usage data Easy Complete collects, what it never collects, and how to turn telemetry off.";
 
 export const Route = createFileRoute("/privacy")({
-  head: () => ({
-    meta: [
-      { title: "Privacy — Easy Complete" },
-      {
-        name: "description",
-        content:
-          "What anonymous usage data Easy Complete collects, what it never collects, and how to turn telemetry off.",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Privacy — Easy Complete",
+      description: PRIVACY_DESCRIPTION,
+      path: "/privacy",
+    }),
   component: PrivacyPage,
 });
 
@@ -70,10 +70,10 @@ function PrivacyPage() {
   return (
     <div className="min-h-screen bg-[#0a0d12] text-[#e6edf3]">
       <header className="border-b border-[#141a21]">
-        <div className="mx-auto flex max-w-[1240px] items-center justify-between gap-5 px-7 py-[14px]">
+        <div className="mx-auto flex max-w-310 items-center justify-between gap-5 px-7 py-3.5">
           <a
             href="/"
-            className="flex items-center gap-[10px] font-mono text-[16px] font-bold tracking-[-.01em]"
+            className="flex items-center gap-2.5 font-mono text-[16px] font-bold tracking-[-.01em]"
           >
             <img src={logoUrl} alt="" className="h-8 w-8 rounded-[9px]" />
             <span>easy-complete</span>
@@ -87,8 +87,8 @@ function PrivacyPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-[760px] px-7 pb-24 pt-14">
-        <p className="mb-3 font-mono text-xs uppercase tracking-[.22em] text-[var(--accent)]">
+      <main className="mx-auto max-w-190 px-7 pb-24 pt-14">
+        <p className="mb-3 font-mono text-xs uppercase tracking-[.22em] text-(--accent)">
           Privacy
         </p>
         <h1 className="m-0 mb-4 text-[36px] font-bold leading-[1.1] tracking-[-.03em]">
@@ -99,23 +99,20 @@ function PrivacyPage() {
           your command line, generating suggestions, and rendering the overlay
           all happen locally, with no account and no cloud calls. Separately
           from that, the app collects a small set of{" "}
-          <strong className="text-[#cdd6e0]">
-            anonymous usage statistics
-          </strong>{" "}
-          so we know how many people use it and whether completions are
-          useful. This page lists exactly what is sent, what is never sent,
-          and how to turn it off.
+          <strong className="text-[#cdd6e0]">anonymous usage statistics</strong>{" "}
+          so we know how many people use it and whether completions are useful.
+          This page lists exactly what is sent, what is never sent, and how to
+          turn it off.
         </p>
 
         <h2 className={SECTION_HEADING}>What we collect</h2>
         <p className={PARAGRAPH}>
           Every event carries the app version, macOS version, your login shell
-          name (e.g. <code className={CODE_INLINE}>zsh</code>), the terminal
-          app name when detectable, and a{" "}
-          <strong className="text-[#cdd6e0]">random device ID</strong> — a
-          UUID generated on first launch that is not derived from your
-          hardware, username, or anything identifying, and resets if you
-          reinstall.
+          name (e.g. <code className={CODE_INLINE}>zsh</code>), the terminal app
+          name when detectable, and a{" "}
+          <strong className="text-[#cdd6e0]">random device ID</strong> — a UUID
+          generated on first launch that is not derived from your hardware,
+          username, or anything identifying, and resets if you reinstall.
         </p>
         <div className="mb-4 overflow-x-auto rounded-[14px] border border-[#1c232d]">
           <table className="w-full border-collapse text-left text-[14px]">
@@ -132,7 +129,7 @@ function PrivacyPage() {
                   key={row.event}
                   className="border-b border-[#141a21] last:border-b-0"
                 >
-                  <td className="px-4 py-3 font-mono text-[13px] text-[var(--accent)]">
+                  <td className="px-4 py-3 font-mono text-[13px] text-(--accent)">
                     {row.event}
                   </td>
                   <td className="px-4 py-3 leading-[1.55] text-[#9aa4b0]">
@@ -171,13 +168,13 @@ function PrivacyPage() {
           Events are sent over HTTPS to our own analytics proxy and stored in{" "}
           <a
             href="https://posthog.com"
-            className="text-[var(--accent)] underline decoration-[var(--accent-line)] underline-offset-4"
+            className="text-(--accent) underline decoration-(--accent-line) underline-offset-4"
           >
             PostHog
           </a>
-          . PostHog derives a coarse location (country/city) from the request
-          IP at ingestion; the IP address itself is not stored on events. Data
-          is used solely to understand aggregate usage of Easy Complete and is
+          . PostHog derives a coarse location (country/city) from the request IP
+          at ingestion; the IP address itself is not stored on events. Data is
+          used solely to understand aggregate usage of Easy Complete and is
           never sold or shared.
         </p>
 
@@ -188,7 +185,9 @@ function PrivacyPage() {
           install and uninstall reporting:
         </p>
         <pre className="mb-4 overflow-x-auto rounded-[14px] border border-[#1c232d] bg-[#0d1219] p-5 font-mono text-[13px] leading-[1.6] text-[#cdd6e0]">
-          {"ec telemetry disable   # turn off\nec telemetry status    # check current state"}
+          {
+            "ec telemetry disable   # turn off\nec telemetry status    # check current state"
+          }
         </pre>
 
         <h2 className={SECTION_HEADING}>Questions</h2>
@@ -197,14 +196,14 @@ function PrivacyPage() {
           what is sent in the{" "}
           <a
             href={`${GITHUB_URL}/tree/main/crates/fig_telemetry`}
-            className="text-[var(--accent)] underline decoration-[var(--accent-line)] underline-offset-4"
+            className="text-(--accent) underline decoration-(--accent-line) underline-offset-4"
           >
             fig_telemetry crate
           </a>
           . For anything else, open an issue on{" "}
           <a
             href={GITHUB_URL}
-            className="text-[var(--accent)] underline decoration-[var(--accent-line)] underline-offset-4"
+            className="text-(--accent) underline decoration-(--accent-line) underline-offset-4"
           >
             GitHub
           </a>

@@ -5,7 +5,6 @@ import {
   type HtmlTagDescriptor,
 } from "vite";
 import react from "@vitejs/plugin-react";
-// import legacy from "@vitejs/plugin-legacy";
 
 const csp: Record<string, string> = {
   "default-src": "'self'",
@@ -53,13 +52,6 @@ export default defineConfig(({ mode, command }) => {
     plugins: [
       react(),
       htmlCspPlugin,
-      // legacy({
-      //   targets: [
-      //     "safari >= 11",
-      //     "last 3 Chrome version",
-      //     "last 3 Firefox version",
-      //   ],
-      // }),
     ],
     css: {
       modules: {
@@ -71,7 +63,7 @@ export default defineConfig(({ mode, command }) => {
       strictPort: true,
     },
     build: {
-      target: command === "build" ? "es2017" : "esnext",
+      target: command === "build" ? "safari15" : "esnext",
       // TODO: re-enable prod source maps to upload them to sentry (see build CIs)
       sourcemap: command !== "build",
       rollupOptions: {
@@ -86,14 +78,6 @@ export default defineConfig(({ mode, command }) => {
     define: {
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
       "process.env": {},
-    },
-    esbuild: {
-      target: command === "build" ? ["es2017", "safari11"] : undefined,
-    },
-    resolve: {
-      alias: {
-        util: "util",
-      },
     },
   };
 });

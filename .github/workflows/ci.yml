@@ -23,7 +23,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version-file: package.json
           cache: pnpm
           cache-dependency-path: |
             pnpm-lock.yaml
@@ -57,6 +57,9 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v7
+
+      - name: Verify Apple Silicon runner
+        run: test "$(uname -m)" = "arm64"
 
       - name: Install build dependencies
         env:

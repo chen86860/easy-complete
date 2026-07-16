@@ -9,7 +9,7 @@ type SuggestionIconProps = {
   style: React.CSSProperties;
 };
 
-function renderIcon(icon: URL, height: string | number) {
+function renderIcon(icon: URL, height: string | number, fallbackIcon?: URL) {
   const isFigProtocol = icon.protocol === "fig:";
 
   const isTemplate = isFigProtocol ? icon.host.endsWith("template") : false;
@@ -17,17 +17,16 @@ function renderIcon(icon: URL, height: string | number) {
   const color = isFigProtocol ? icon.searchParams.get("color") : undefined;
   const badge = isFigProtocol ? icon.searchParams.get("badge") : undefined;
   const type = isFigProtocol ? icon.searchParams.get("type") : undefined;
+  const ariaLabel = type
+    ? `Icon for ${type}`
+    : isTemplate
+      ? "Template icon"
+      : `Icon for ${icon.pathname}`;
 
   return (
     <div
-      role="img"
-      aria-label={
-        type
-          ? `Icon for ${type}`
-          : isTemplate
-            ? "Template icon"
-            : `Icon for ${icon.pathname}`
-      }
+      role={isTemplate ? "img" : undefined}
+      aria-label={isTemplate ? ariaLabel : undefined}
       className="grid overflow-hidden bg-contain bg-no-repeat"
       style={{
         height,
@@ -40,6 +39,18 @@ function renderIcon(icon: URL, height: string | number) {
           : `url(${icon})`,
       }}
     >
+      {!isTemplate && (
+        <img
+          src={icon.toString()}
+          alt={ariaLabel}
+          className="col-start-1 row-start-1 h-full w-full object-contain"
+          onError={({ currentTarget }) => {
+            if (fallbackIcon && currentTarget.src !== fallbackIcon.toString()) {
+              currentTarget.src = fallbackIcon.toString();
+            }
+          }}
+        />
+      )}
       {badge &&
         (isTemplate ? (
           <span
@@ -52,7 +63,7 @@ function renderIcon(icon: URL, height: string | number) {
           </span>
         ) : (
           <span
-            className="flex h-2.5 w-2.5 place-content-center place-self-end bg-contain bg-no-repeat text-[80%] text-white"
+            className="col-start-1 row-start-1 flex h-2.5 w-2.5 place-content-center place-self-end bg-contain bg-no-repeat text-[80%] text-white"
             style={{
               backgroundImage: `url(${transformIconUri(
                 new URL(`fig://template?color=${color}`),
@@ -114,6 +125,10 @@ const SuggestionIcon = ({
   }
 
   if (!img) {
+    const fallbackIconMap: Partial<Record<SuggestionType, URL>> = {
+      folder: transformIconUri(new URL("fig://icon?type=folder")),
+      file: transformIconUri(new URL("fig://icon?type=file")),
+    };
     const srcMap: Partial<Record<SuggestionType | "other", URL>> = {
       folder: new URL(localProtocol("path", `${iconPath}${name}`)),
       file: new URL(localProtocol("path", `${iconPath}${name}`)),
@@ -129,7 +144,11 @@ const SuggestionIcon = ({
       (type && srcMap[type] ? srcMap[type] : undefined) ??
       new URL(localProtocol("icon", "?type=box"));
 
-    img = renderIcon(src, height ?? 0);
+    img = renderIcon(
+      src,
+      height ?? 0,
+      type ? fallbackIconMap[type] : undefined,
+    );
   }
 
   return <div style={style}>{img}</div>;

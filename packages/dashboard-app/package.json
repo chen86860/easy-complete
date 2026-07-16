@@ -1,7 +1,7 @@
 {
   "name": "@easy-complete/dashboard-app",
   "private": true,
-  "version": "2.0.44",
+  "version": "2.0.45",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,6 +11,9 @@
     "lint:fix": "eslint src --fix && prettier --write src",
     "clean": "rm -rf dist"
   },
+  "browserslist": [
+    "Safari >= 15"
+  ],
   "dependencies": {
     "@bufbuild/protobuf": "2.4.0",
     "@easy-complete/api-bindings": "workspace:~",
@@ -27,7 +30,7 @@
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
-    "autoprefixer": "^10.4.21",
+    "autoprefixer": "^10.5.3",
     "eslint": "^9.18.0",
     "postcss": "^8.5.3",
     "prettier": "^3.4.2",

@@ -32,6 +32,11 @@ info() { echo -e "${GREEN}==>${NC} $*"; }
 
 cd "$REPO_DIR"
 
+if [ "$(uname -s)" != "Darwin" ] || [ "$(uname -m)" != "arm64" ]; then
+  echo "error: Easy Complete release bundles must be built on Apple Silicon macOS" >&2
+  exit 1
+fi
+
 # ── 1. Build ──────────────────────────────────────────────────────────────────
 # Distribution build profile (size/perf-optimized). Override with CARGO_PROFILE=release
 # for a faster local iteration build. cargo writes `dist` output to target/dist/ and
@@ -76,6 +81,17 @@ SPARKLE_FRAMEWORK="${SPARKLE_FRAMEWORK:-$("${REPO_DIR}/scripts/fetch-sparkle.sh"
 mkdir -p "$FRAMEWORKS_DIR"
 cp -R "$SPARKLE_FRAMEWORK" "$FRAMEWORKS_DIR/"
 
+# Sparkle ships as a universal framework. The application is ARM64-only, so
+# remove Intel slices before signing and packaging the bundle.
+while IFS= read -r -d '' binary; do
+  if file -b "$binary" | grep -q "Mach-O universal binary"; then
+    thinned="${binary}.arm64"
+    lipo "$binary" -thin arm64 -output "$thinned"
+    chmod "$(stat -f '%Lp' "$binary")" "$thinned"
+    mv "$thinned" "$binary"
+  fi
+done < <(find "${FRAMEWORKS_DIR}/Sparkle.framework" -type f -print0)
+
 SPARKLE_PUBLIC_KEY_ENTRY=""
 if [ -n "${SPARKLE_PUBLIC_ED_KEY:-}" ]; then
   read -r -d '' SPARKLE_PUBLIC_KEY_ENTRY <<PLIST || true
@@ -118,6 +134,16 @@ mkdir -p "${IM_APP}/Contents/Resources"
 cp "${TARGET_DIR}/fig_input_method"   "${IM_APP}/Contents/MacOS/"
 cp "crates/fig_input_method/Info.plist" "${IM_APP}/Contents/"
 cp crates/fig_input_method/resources/*  "${IM_APP}/Contents/Resources/" 2>/dev/null || true
+
+while IFS= read -r -d '' binary; do
+  if file -b "$binary" | grep -q "Mach-O"; then
+    archs="$(lipo -archs "$binary")"
+    if [ "$archs" != "arm64" ]; then
+      echo "error: non-ARM64 binary in app bundle: $binary ($archs)" >&2
+      exit 1
+    fi
+  fi
+done < <(find "$STAGING_BUNDLE" -type f -print0)
 
 cat > "${STAGING_BUNDLE}/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>

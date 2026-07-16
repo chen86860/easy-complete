@@ -165,7 +165,7 @@ Easy Complete 由三个相互协作的原生进程组成，通过 Unix 域套接
 | --------------- | ------------- | ---------------------------------------------------------------------------------------------- |
 | `easy-complete` | `fig_desktop` | 原生应用宿主——承载补全浮层与设置面板（运行于 `wry` WebView 的 React 应用）、系统托盘、窗口管理 |
 | `ecterm`        | `figterm`     | 介于 shell 与终端模拟器之间的伪终端；拦截 shell 编辑缓冲区以驱动补全                           |
-| `ec`            | `q_cli`       | CLI 入口——`setup`、`integrations`、`diagnostic`、`settings` 等                                 |
+| `ec`            | `ec_cli`      | CLI 入口——`setup`、`integrations`、`diagnostic`、`settings` 等                                |
 
 Shell 钩子（`.zshrc`、`.bashrc`、fish 配置）在每次提示符和按键时，把 shell 状态（当前目
 录、命令文本、光标位置）回报给 `ecterm`。在 macOS 上，`fig_input_method` 辅助应用负责为绕
@@ -184,17 +184,17 @@ Shell 钩子（`.zshrc`、`.bashrc`、fish 配置）在每次提示符和按键�
 ### 工具链
 
 - Rust `1.87.0`（在 `rust-toolchain.toml` 中固定），edition 2024
-- Node `^22`，pnpm `10`
+- Node `>=22.13 <23`，pnpm `11.13`
 - TypeScript 构建图由 Turborepo 管理
 
 ### Rust
 
 ```bash
 # 构建所有 release 二进制
-cargo build --release -p fig_desktop -p figterm -p q_cli -p fig_input_method
+cargo build --release -p fig_desktop -p figterm -p ec_cli -p fig_input_method
 
 # 以 dev 模式运行单个 crate
-cargo run --bin q_cli -- <子命令>
+cargo run --bin ec -- <子命令>
 cargo run --bin easy-complete
 
 cargo clippy --locked --workspace --color always -- -D warnings   # lint（CI 要求 -D warnings）
@@ -220,7 +220,7 @@ pnpm test                                   # 运行 Vitest
 | ----------------------- | ------------------------------------------------------- |
 | `fig_desktop`           | 原生应用宿主：窗口（`tao`）、WebView（`wry`）、系统托盘 |
 | `figterm`               | PTY 拦截、shell 编辑缓冲区追踪                          |
-| `q_cli`                 | CLI 二进制，所有 `ec` 子命令                            |
+| `ec_cli`                | CLI crate，提供 `ec` 二进制及其所有子命令               |
 | `fig_input_method`      | macOS 输入法辅助应用（光标追踪）                        |
 | `fig_integrations`      | shell / 终端 / 编辑器集成的安装逻辑                     |
 | `fig_ipc` / `fig_proto` | Unix 套接字 IPC 原语与生成的 Protobuf 类型              |

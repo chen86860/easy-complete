@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.0.45
+
+- fix: render path-backed file and folder suggestion icons as real images, with built-in icon fallbacks when local icon loading fails
+- change: modernize the embedded webviews to a Safari 15 target, remove legacy browser/polyfill dependencies, and align local and CI tooling on Node 22.23.1 with pnpm 11.13.0
+- change: make the macOS distribution pipeline ARM64-only end to end; remove obsolete universal/Linux/Windows Makefiles and Linux packaging assets, strip Intel slices from Sparkle before signing, and reject non-ARM binaries during app and DMG assembly
+- chore: remove deprecated or unused frontend types and dependencies, prune the lockfile, quiet API request code generation, and correct the CLI crate/binary names in the README files
+
 ## v2.0.44
 
 - feat: replaced the unconditional macOS LaunchAgent with a user-controlled launch-at-login integration: macOS 13+ now uses `SMAppService.mainAppService`, while macOS 12 keeps a non-`KeepAlive` LaunchAgent fallback

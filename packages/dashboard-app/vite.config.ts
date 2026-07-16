@@ -8,7 +8,7 @@ export default defineConfig({
     strictPort: true,
   },
   build: {
-    target: "es2017",
+    target: "safari15",
     sourcemap: false,
   },
   define: {

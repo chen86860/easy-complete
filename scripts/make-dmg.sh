@@ -28,6 +28,16 @@ info() { echo -e "${GREEN}==>${NC} $*"; }
 [ -d "$APP" ] || { echo "error: $APP not found — run scripts/build-app.sh first" >&2; exit 1; }
 [ -f "$BG" ]  || { echo "error: $BG not found — run: swift scripts/make-dmg-background.swift" >&2; exit 1; }
 
+while IFS= read -r -d '' binary; do
+  if file -b "$binary" | grep -q "Mach-O"; then
+    archs="$(lipo -archs "$binary")"
+    if [ "$archs" != "arm64" ]; then
+      echo "error: refusing to package non-ARM64 binary: $binary ($archs)" >&2
+      exit 1
+    fi
+  fi
+done < <(find "$APP" -type f -print0)
+
 command -v create-dmg >/dev/null 2>&1 \
   || { echo "error: create-dmg not found — run: brew install create-dmg" >&2; exit 1; }
 

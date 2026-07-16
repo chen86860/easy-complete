@@ -177,7 +177,7 @@ sockets (Protobuf messages):
 | --------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | `easy-complete` | `fig_desktop` | Native app host — owns the autocomplete overlay and dashboard (React apps in `wry` WebViews), system tray, and window management |
 | `ecterm`        | `figterm`     | Pseudoterminal between your shell and terminal emulator; intercepts the shell edit buffer to drive completions                   |
-| `ec`            | `q_cli`       | CLI entry point — `setup`, `integrations`, `diagnostic`, `settings`, and more                                                    |
+| `ec`            | `ec_cli`      | CLI entry point — `setup`, `integrations`, `diagnostic`, `settings`, and more                                                    |
 
 Shell hooks (`.zshrc`, `.bashrc`, fish config) report shell state — CWD, command text,
 cursor position — back to `ecterm` on every prompt and keystroke. On macOS, the
@@ -196,17 +196,17 @@ cursor position — back to `ecterm` on every prompt and keystroke. On macOS, th
 ### Toolchain
 
 - Rust `1.87.0` (pinned in `rust-toolchain.toml`), edition 2024
-- Node `^22`, pnpm `10`
+- Node `>=22.13 <23`, pnpm `11.13`
 - Turborepo for the TypeScript build graph
 
 ### Rust
 
 ```bash
 # Build all release binaries
-cargo build --release -p fig_desktop -p figterm -p q_cli -p fig_input_method
+cargo build --release -p fig_desktop -p figterm -p ec_cli -p fig_input_method
 
 # Run a single crate in dev mode
-cargo run --bin q_cli -- <subcommand>
+cargo run --bin ec -- <subcommand>
 cargo run --bin easy-complete
 
 cargo clippy --locked --workspace --color always -- -D warnings   # lint (CI: -D warnings)
@@ -232,7 +232,7 @@ instead of the bundled `Contents/Resources/`.
 | ----------------------- | ---------------------------------------------------------------- |
 | `fig_desktop`           | Native app host: windowing (`tao`), WebView (`wry`), system tray |
 | `figterm`               | PTY interceptor, shell edit-buffer tracking                      |
-| `q_cli`                 | CLI binary, all `ec` subcommands                                 |
+| `ec_cli`                | CLI crate, providing the `ec` binary and all its subcommands     |
 | `fig_input_method`      | macOS input method helper (cursor tracking)                      |
 | `fig_integrations`      | Shell/terminal/editor integration install logic                  |
 | `fig_ipc` / `fig_proto` | Unix-socket IPC primitives & generated Protobuf types            |

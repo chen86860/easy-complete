@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.0.45
+
+- fix: 文件与目录建议图标改用真实图片元素渲染；本地图标加载失败时自动回退到内置图标
+- change: WebView 编译目标升级至 Safari 15，移除旧浏览器兼容与 polyfill 依赖，并将本地和 CI 工具链统一为 Node 22.23.1 与 pnpm 11.13.0
+- change: macOS 发布链路端到端收敛为纯 ARM64；删除废弃的 universal/Linux/Windows Makefile 与 Linux 打包资源，签名前裁掉 Sparkle 的 Intel slices，并在应用和 DMG 装配阶段拒绝非 ARM 二进制
+- chore: 删除废弃或未使用的前端类型与依赖、精简 lockfile、降低 API 请求 codegen 噪音，并修正 README 中的 CLI crate 与二进制名称
+
 ## v2.0.44
 
 - feat: 移除无条件安装的 macOS LaunchAgent，改为由用户控制的登录启动集成；macOS 13+ 使用 `SMAppService.mainAppService`，macOS 12 回退到不启用 `KeepAlive` 的 LaunchAgent

@@ -4,10 +4,10 @@
   "author": "Easy Complete Contributors",
   "repository": "https://github.com/chen86860/easy-complete",
   "license": "MIT OR Apache-2.0",
-  "packageManager": "pnpm@10.0.0+sha256.43abf6e720fb7bc53c591b0862605c7d323d0a9d2dd33bcac07b062e13cf4948",
+  "packageManager": "pnpm@11.13.0",
   "type": "module",
   "engines": {
-    "node": "^22.0.0"
+    "node": ">=22.13 <23"
   },
   "scripts": {
     "build": "turbo build",

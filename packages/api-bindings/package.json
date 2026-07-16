@@ -14,11 +14,11 @@
   },
   "scripts": {
     "clean": "rm -rf dist/",
-    "build": "npm run clean && npm run generate-requests && tsc",
+    "build": "pnpm clean && pnpm generate-requests && tsc",
     "lint": "eslint src && prettier --check src",
     "lint:fix": "eslint --fix src && prettier --write src",
     "precommit": "lint-staged",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "pnpm build",
     "generate-requests": "tsx codegen/generate-requests.ts && prettier -w src/requests.ts"
   },
   "dependencies": {

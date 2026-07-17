@@ -2,6 +2,7 @@ packages:
   - proto
   - packages/*
 overrides:
+  '@types/react-window>@types/react': 18.3.31
   '@babel/runtime@<7.26.10': 7.29.7
   'brace-expansion@1': 1.1.13
   'brace-expansion@2': 2.0.3

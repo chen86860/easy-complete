@@ -9,6 +9,7 @@ import React, {
   useCallback,
   useRef,
   useMemo,
+  MutableRefObject,
 } from "react";
 
 import logger from "loglevel";
@@ -261,7 +262,8 @@ function App() {
     setFontFamily(fontFamily as string);
   }, [fontFamily]);
   // Scroll when selectedIndex changes.
-  const listRef = useRef<AutoSizedHandleRef>(null);
+  const listRef =
+    useRef<AutoSizedHandleRef>() as MutableRefObject<AutoSizedHandleRef>;
 
   const scrollToItemCallback = useCallback(() => {
     logger.info("Scrolling to", { selectedIndex });
@@ -465,9 +467,8 @@ function App() {
               width="100%"
               itemCount={Math.round(suggestions.length)}
             >
-              {({ ariaAttributes, index, style }) => (
+              {({ index, style }) => (
                 <Suggestion
-                  ariaAttributes={ariaAttributes}
                   style={style}
                   suggestion={suggestions[index]}
                   commonPrefix={commonPrefix || ""}

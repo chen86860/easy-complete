@@ -1,5 +1,4 @@
 import { useCallback, useMemo, CSSProperties, useRef } from "react";
-import type { RowComponentProps } from "react-window";
 import logger from "loglevel";
 import fuzzysort from "@easy-complete/fuzzysort";
 import { Suggestion as SuggestionT } from "@easy-complete/shared/internal";
@@ -8,7 +7,6 @@ import { getQueryTermForSuggestion } from "../suggestions/helpers";
 import SuggestionIcon from "./SuggestionIcon";
 
 type SuggestionProps = {
-  ariaAttributes: RowComponentProps["ariaAttributes"];
   style: CSSProperties;
   suggestion: SuggestionT;
   onClick: (item: SuggestionT) => void;
@@ -273,7 +271,6 @@ const getTitle = (
 };
 
 const Suggestion = ({
-  ariaAttributes,
   style,
   suggestion,
   commonPrefix,
@@ -298,7 +295,6 @@ const Suggestion = ({
 
   return (
     <div
-      {...ariaAttributes}
       style={style}
       className={`flex items-center overflow-hidden pl-1.5 ${
         isActive ? "bg-selected-bg brightness-95" : ""

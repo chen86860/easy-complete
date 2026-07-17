@@ -224,11 +224,7 @@ const updateSuggestions =
           updatedState.visibleState === Visibility.HIDDEN_UNTIL_KEYPRESS ||
           (willBeVisible === wasVisible && !suggestionsMayChange)
         ) {
-          if (replace) {
-            set(updatedState, true);
-          } else {
-            set(updatedState);
-          }
+          set(updatedState, replace);
           return;
         }
 
@@ -263,18 +259,10 @@ const updateSuggestions =
           }
         }
 
-        const nextState = {
-          ...state,
-          ...update,
-          suggestions,
-          selectedIndex,
-          hasChangedIndex,
-        };
-        if (replace) {
-          set(nextState, true);
-        } else {
-          set(nextState);
-        }
+        set(
+          { ...state, ...update, suggestions, selectedIndex, hasChangedIndex },
+          replace,
+        );
       },
       get,
       api,
@@ -290,10 +278,10 @@ type NamedStateCreator<T> = (
 const log =
   <T>(config: NamedStateCreator<T>): StateCreator<T, [], []> =>
   (set, get, api) => {
-    const namedSet: NamedSetState<T> = (name, partial) => {
+    const namedSet: NamedSetState<T> = (name, partial, replace) => {
       console.groupCollapsed(`applying update: ${name}`);
-      logger.info({ name, partial });
-      set(partial);
+      logger.info({ name, partial, replace });
+      set(partial, replace);
       console.groupEnd();
     };
     return config(namedSet, get, api);

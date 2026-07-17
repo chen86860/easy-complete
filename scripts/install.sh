@@ -7,7 +7,7 @@ APP_NAME="easy-complete"          # binary / process name (no spaces)
 APP_DISPLAY="Easy Complete"       # human-readable / bundle directory name
 BUNDLE_ID="dev.emmmm.easy-complete"
 
-REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 STAGING_BUNDLE="${REPO_DIR}/build/${APP_DISPLAY}.app"
 APP_BUNDLE="/Applications/${APP_DISPLAY}.app"
 LOCAL_BIN="${HOME}/.local/bin"
@@ -20,7 +20,7 @@ error() { echo -e "${RED}==>${NC} $*" >&2; }
 # ── 1. Build & assemble the .app ──────────────────────────────────────────────
 # Shared with CI (see .github/workflows/release.yml) so the bundle is assembled
 # identically whether installed locally or packaged into a release DMG.
-"${REPO_DIR}/build-app.sh"
+"${REPO_DIR}/scripts/build-app.sh"
 
 # ── 3. Install to /Applications ───────────────────────────────────────────────
 info "Installing to /Applications/..."

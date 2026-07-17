@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.0.47
+
+- fix: restore the proven React 18, react-window 1, and Zustand 4 autocomplete runtime after the v2.0.46 migration prevented the suggestion panel from opening on terminal input
+- change: keep the compatible Vite 8, Vitest 4, and broader build-tool upgrades while returning the autocomplete list, resize observer, and state updates to their stable implementations
+- fix: correct the local installer repository and build-script paths so it assembles and installs the app from the repository root
+- feat: add installation, troubleshooting, Ghostty, and Fig-alternative website guides with route-specific SEO metadata
+- test: validate the rollback with production builds, lint, 177 passing tests, and an installed-app terminal smoke test
+
 ## v2.0.46
 
 - change: upgrade the frontend runtime and build stack to React 19, Vite 8, Vitest 4, TypeScript 6, Zustand 5, Zod 4, and react-window 2, while keeping Tailwind on the latest Safari 15-compatible v3 release

@@ -644,6 +644,17 @@ window.close = function() {{
 }};
 "#
     ));
+
+    if !cfg!(debug_assertions) {
+        script.push_str(
+            r#"
+// The production dashboard is application chrome, not a browser surface.
+// Suppress WebKit's browser context menu (including Inspect Element).
+document.addEventListener("contextmenu", (event) => event.preventDefault(), true);
+"#,
+        );
+    }
+
     script
 }
 
@@ -791,7 +802,8 @@ pub fn build_dashboard(
                 })
                 .unwrap();
         })
-        .with_devtools(true)
+        // Local debug builds keep inspector access; release builds stay free of browser UI.
+        .with_devtools(cfg!(debug_assertions))
         .with_asynchronous_custom_protocol(
             "qcliresource".into(),
             utils::wrap_custom_protocol(

@@ -12,6 +12,8 @@ body,
   height: 100%;
   overflow: hidden;
   overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 body {
@@ -68,6 +70,7 @@ a {
 
 input,
 textarea {
+  /* Editable controls retain the native ability to select and replace text. */
   -webkit-user-select: text;
   user-select: text;
 }

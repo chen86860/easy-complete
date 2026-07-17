@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.48
+
+- fix: keep only the current release item and its referenced delta files in the Sparkle appcast, preventing stale update entries from pointing at assets that are not uploaded with the new release
+- change: make the settings window feel more native by disabling browser context menus, Inspect Element, and chrome text selection in production while preserving editable-field selection and full inspector access in local debug builds
+
 ## v2.0.47
 
 - fix: restore the proven React 18, react-window 1, and Zustand 4 autocomplete runtime after the v2.0.46 migration prevented the suggestion panel from opening on terminal input

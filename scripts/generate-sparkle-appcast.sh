@@ -63,15 +63,46 @@ printf '%s' "$SPARKLE_PRIVATE_ED_KEY" | \
 # but the generated delta files use dots on disk ("Easy.Complete...delta").
 # GitHub release assets are uploaded from disk, so keep appcast URLs aligned with
 # the real asset names or Sparkle will fall back to the full DMG after a 404.
-python3 - "$APPCAST_DIR/appcast.xml" <<'PY'
+python3 - "$APPCAST_DIR/appcast.xml" "$VERSION" "$APPCAST_DIR" <<'PY'
 import pathlib
 import re
 import sys
 
 appcast_path = pathlib.Path(sys.argv[1])
+version = sys.argv[2]
+appcast_dir = pathlib.Path(sys.argv[3])
 appcast = appcast_path.read_text()
 appcast = re.sub(r'(?<=/)[^"/]+(?=\.delta")', lambda m: m.group(0).replace("%20", "."), appcast)
+
+# generate_appcast can preserve an older item from the input appcast even with
+# --maximum-versions 1. Since every enclosure receives the current tag's URL
+# prefix, that stale item points at a full DMG that is not uploaded to the new
+# release. Keep only the item generated for this release.
+items = list(re.finditer(r"\s*<item>.*?</item>", appcast, flags=re.DOTALL))
+version_marker = f"<sparkle:version>{version}</sparkle:version>"
+current_items = [match.group(0) for match in items if version_marker in match.group(0)]
+if len(current_items) != 1:
+    raise SystemExit(
+        f"error: expected exactly one appcast item for {version}, found {len(current_items)}"
+    )
+if items:
+    appcast = (
+        appcast[: items[0].start()]
+        + "\n"
+        + current_items[0].lstrip()
+        + appcast[items[-1].end() :]
+    )
+
 appcast_path.write_text(appcast)
+
+# Do not upload delta files inherited from an older appcast item.
+referenced_deltas = {
+    pathlib.PurePosixPath(url).name
+    for url in re.findall(r'url="([^"]+\.delta)"', appcast)
+}
+for delta_path in appcast_dir.glob("*.delta"):
+    if delta_path.name not in referenced_deltas:
+        delta_path.unlink()
 PY
 
 printf '%s\n' "$APPCAST_DIR/appcast.xml"

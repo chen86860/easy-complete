@@ -231,6 +231,8 @@ jobs:
           test -f dist/Easy-Complete-arm64.dmg
           test -f "dist/Easy-Complete-${APP_VERSION}-arm64.dmg"
           test -f dist/sparkle/appcast.xml
+          test "$(grep -c '<item>' dist/sparkle/appcast.xml)" -eq 1
+          grep -Fq "<sparkle:version>${APP_VERSION}</sparkle:version>" dist/sparkle/appcast.xml
           find dist/sparkle -maxdepth 1 -name '*.delta' -print
 
       - name: Classify release channel

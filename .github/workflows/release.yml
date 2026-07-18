@@ -233,6 +233,21 @@ jobs:
           test -f dist/sparkle/appcast.xml
           test "$(grep -c '<item>' dist/sparkle/appcast.xml)" -eq 1
           grep -Fq "<sparkle:version>${APP_VERSION}</sparkle:version>" dist/sparkle/appcast.xml
+          python3 - <<'PY'
+          import pathlib
+          import re
+
+          appcast_dir = pathlib.Path("dist/sparkle")
+          appcast = (appcast_dir / "appcast.xml").read_text()
+          referenced = {
+              pathlib.PurePosixPath(url).name
+              for url in re.findall(r'url="([^"]+\.delta)"', appcast)
+          }
+          available = {path.name for path in appcast_dir.glob("*.delta")}
+          missing = sorted(referenced - available)
+          if missing:
+              raise SystemExit(f"appcast references missing delta files: {', '.join(missing)}")
+          PY
           find dist/sparkle -maxdepth 1 -name '*.delta' -print
 
       - name: Classify release channel

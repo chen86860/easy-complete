@@ -93,6 +93,33 @@ if items:
         + appcast[items[-1].end() :]
     )
 
+# generate_appcast can leave delta enclosures in the appcast without writing
+# the corresponding delta files. Publishing those references would make
+# Sparkle request release assets that do not exist, so keep only enclosures
+# backed by files in the output directory.
+available_deltas = {path.name for path in appcast_dir.glob("*.delta")}
+
+def prune_delta_block(match):
+    block = match.group(0)
+
+    def prune_enclosure(enclosure_match):
+        url = enclosure_match.group(1)
+        name = pathlib.PurePosixPath(url).name
+        return enclosure_match.group(0) if name in available_deltas else ""
+
+    block = re.sub(
+        r'\s*<enclosure\b[^>]*url="([^"]+\.delta)"[^>]*/>',
+        prune_enclosure,
+        block,
+    )
+    return block if "<enclosure" in block else ""
+
+appcast = re.sub(
+    r'\s*<sparkle:deltas>.*?</sparkle:deltas>',
+    prune_delta_block,
+    appcast,
+    flags=re.DOTALL,
+)
 appcast_path.write_text(appcast)
 
 # Do not upload delta files inherited from an older appcast item.

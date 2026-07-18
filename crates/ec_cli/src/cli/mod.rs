@@ -13,7 +13,6 @@ pub mod internal;
 mod issue;
 mod settings;
 mod telemetry;
-mod theme;
 mod uninstall;
 mod update;
 
@@ -77,14 +76,11 @@ pub enum CliRootCommands {
     #[command(subcommand, hide = true)]
     Hook(hook::HookSubcommand),
     /// Debug the app
-    #[command(subcommand)]
+    #[command(subcommand, hide = true)]
     Debug(debug::DebugSubcommand),
     /// Customize appearance & behavior
     #[command(alias("setting"))]
     Settings(settings::SettingsArgs),
-    /// Setup cli components
-    #[command(alias("install"))]
-    Setup(internal::InstallArgs),
     /// Uninstall
     #[command(hide = true)]
     Uninstall {
@@ -99,9 +95,8 @@ pub enum CliRootCommands {
     #[command(alias("diagnostics"))]
     Diagnostic(diagnostics::DiagnosticArgs),
     /// Generate the dotfiles for the given shell
+    #[command(hide = true)]
     Init(init::InitArgs),
-    /// Get or set theme
-    Theme(theme::ThemeArgs),
     /// Create a new Github issue
     Issue(issue::IssueArgs),
     /// Fix and diagnose common issues
@@ -133,7 +128,8 @@ pub enum CliRootCommands {
 }
 
 const HELP_TEXT: &str = color_print::cstr! {"
-<magenta,em>{name}</magenta,em> (easy-complete)
+<magenta,em>{name}</magenta,em> (easy-complete) v{version}
+<dim>Project:</dim> https://github.com/chen86860/easy-complete
 
 <magenta,em>Usage:</magenta,em> {usage}
 
@@ -200,19 +196,12 @@ impl Cli {
 
         match self.subcommand {
             Some(subcommand) => match subcommand {
-                CliRootCommands::Setup(args) => {
-                    let no_confirm = args.no_confirm;
-                    let force = args.force;
-                    let global = args.global;
-                    installation::install_cli(args.into(), no_confirm, force, global).await
-                },
                 CliRootCommands::Uninstall { no_confirm } => uninstall::uninstall_command(no_confirm).await,
                 CliRootCommands::Update(args) => args.execute().await,
                 CliRootCommands::Diagnostic(args) => args.execute().await,
                 CliRootCommands::Init(args) => args.execute().await,
                 CliRootCommands::Doctor(args) => args.execute().await,
                 CliRootCommands::Hook(hook_subcommand) => hook_subcommand.execute().await,
-                CliRootCommands::Theme(theme_args) => theme_args.execute().await,
                 CliRootCommands::Settings(settings_args) => settings_args.execute(&cli_context).await,
                 CliRootCommands::Debug(debug_subcommand) => debug_subcommand.execute().await,
                 CliRootCommands::Issue(args) => args.execute().await,
@@ -395,5 +384,28 @@ mod test {
                 strict: true,
             })
         );
+    }
+
+    #[test]
+    fn test_simplified_command_surface() {
+        assert_parse!(["update"], CliRootCommands::Update(update::UpdateArgs {}));
+        assert!(Cli::try_parse_from([CLI_BINARY_NAME, "setup"]).is_err());
+        assert!(Cli::try_parse_from([CLI_BINARY_NAME, "theme"]).is_err());
+
+        let command = Cli::command();
+        for command_name in ["debug", "init"] {
+            let subcommand = command
+                .get_subcommands()
+                .find(|subcommand| subcommand.get_name() == command_name)
+                .unwrap();
+            assert!(subcommand.is_hide_set());
+        }
+    }
+
+    #[test]
+    fn help_banner_includes_version_and_project_url() {
+        let help = Cli::command().render_help().to_string();
+        assert!(help.contains(&format!("v{}", env!("CARGO_PKG_VERSION"))));
+        assert!(help.contains("https://github.com/chen86860/easy-complete"));
     }
 }

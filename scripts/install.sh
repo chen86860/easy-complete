@@ -50,9 +50,9 @@ ln -sf "/Applications/${APP_DISPLAY}.app/Contents/MacOS/ecterm" "${LOCAL_BIN}/ec
 # ── 6. Shell integration ───────────────────────────────────────────────────────
 info "Installing shell integration..."
 export PATH="${LOCAL_BIN}:${PATH}"
-ec integrations install --silent dotfiles 2>/dev/null || {
+ec setup --no-confirm 2>/dev/null || {
   warn "Automatic shell setup skipped. Run manually:"
-  warn "  ec integrations install dotfiles"
+  warn "  ec setup"
 }
 
 # ── 7. Input Method ────────────────────────────────────────────────────────────

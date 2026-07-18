@@ -4,6 +4,7 @@ mod hooks;
 use std::sync::Arc;
 
 use anyhow::{Context, Result};
+use fig_install::UpdateOptions;
 use fig_ipc::{BufferedUnixStream, RecvMessage, SendMessage};
 use fig_os_shim::{Context as FigContext, ContextArcProvider, ContextProvider};
 use fig_proto::local::command_response::Response as CommandResponseTypes;
@@ -158,16 +159,19 @@ async fn handle_local_ipc<Ctx>(
                             ),
                             ConnectToIbus(_) => commands::connect_to_ibus(proxy.clone(), &platform_state).await,
                             BundleMetadata(_) => commands::bundle_metadata(&ctx.context_arc()).await,
-                            Update(_) => {
-                                if crate::update::check_for_update(true, false).await {
-                                    Ok(LocalResponse::Success(None))
-                                } else {
-                                    Err(LocalResponse::Error {
-                                        code: None,
-                                        message: Some("The Sparkle updater is unavailable".to_owned()),
-                                    })
-                                }
-                            },
+                            Update(_) => fig_install::update(
+                                ctx.context_arc(),
+                                Some(Box::new(move |_| {
+                                    debug!("Updating from proto");
+                                })),
+                                UpdateOptions::default(),
+                            )
+                            .await
+                            .map(|_| LocalResponse::Success(None))
+                            .map_err(|err| LocalResponse::Error {
+                                code: None,
+                                message: Some(format!("Failed to update: {err}")),
+                            }),
                             Devtools(command) => {
                                 let window_id = match command.window() {
                                     fig_proto::local::devtools_command::Window::DevtoolsAutocomplete => AUTOCOMPLETE_ID,

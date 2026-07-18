@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Terminal } from "./components/Terminal.tsx";
 import logoUrl from "./assets/logo.png";
+import { DOWNLOAD_URL } from "./download.ts";
 import {
   GITHUB_URL,
   faqs,
@@ -18,6 +19,8 @@ const ACTION_SURFACE =
 
 const CARD_SURFACE =
   "ec-card will-change-transform transition-[transform,box-shadow,background-color,border-color] duration-[260ms] ease-[var(--ease-out-quart)]";
+
+const BREW_INSTALL_COMMAND = "brew install --cask chen86860/tap/easy-complete";
 
 function prefersReducedMotion() {
   return (
@@ -96,6 +99,135 @@ function GitHubIcon() {
         d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.4-4-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.4-1.3-5.4-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.4 5.9.4.4.8 1.1.8 2.2v3.2c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"
       />
     </svg>
+  );
+}
+
+function CopyIcon({ copied }: { copied: boolean }) {
+  return copied ? (
+    <svg
+      aria-hidden="true"
+      className="h-3.5 w-3.5 shrink-0"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+    >
+      <path d="m3 8.5 3 3 7-7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ) : (
+    <svg
+      aria-hidden="true"
+      className="h-3.5 w-3.5 shrink-0"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.4"
+    >
+      <rect x="5.25" y="5.25" width="7.5" height="7.5" rx="1.5" />
+      <path d="M3.25 10.75h-.5a1.5 1.5 0 0 1-1.5-1.5v-6.5a1.5 1.5 0 0 1 1.5-1.5h6.5a1.5 1.5 0 0 1 1.5 1.5v.5" />
+    </svg>
+  );
+}
+
+async function writeClipboardText(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return;
+  } catch {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    let copied = false;
+    try {
+      textarea.select();
+      copied = document.execCommand("copy");
+    } finally {
+      textarea.remove();
+    }
+    if (!copied) throw new Error("Clipboard copy failed");
+  }
+}
+
+function InstallActions({ className = "" }: { className?: string }) {
+  const [copyState, setCopyState] = useState<"idle" | "copied" | "error">(
+    "idle"
+  );
+  const resetTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  useEffect(
+    () => () => {
+      if (resetTimer.current) clearTimeout(resetTimer.current);
+    },
+    []
+  );
+
+  const copyBrewCommand = async () => {
+    try {
+      await writeClipboardText(BREW_INSTALL_COMMAND);
+      setCopyState("copied");
+    } catch {
+      setCopyState("error");
+    }
+
+    if (resetTimer.current) clearTimeout(resetTimer.current);
+    resetTimer.current = setTimeout(() => setCopyState("idle"), 1800);
+  };
+
+  return (
+    <div className={`flex flex-col items-center ${className}`}>
+      <div className="flex flex-wrap justify-center gap-3.25">
+        <a
+          href={DOWNLOAD_URL}
+          className={`${ACTION_SURFACE} inline-flex items-center gap-2.25 rounded-[11px] bg-(--accent) px-6.5 py-3.25 text-[16px] font-semibold text-[#06140a] hover:brightness-110 hover:shadow-[0_14px_34px_-12px_var(--accent-line)]`}
+        >
+          <AppleIcon />
+          Download DMG
+        </a>
+        <a
+          href={GITHUB_URL}
+          className={`${ACTION_SURFACE} inline-flex items-center gap-2.25 rounded-[11px] border border-[#2c343e] px-6.5 py-3.25 text-[16px] font-medium text-[#e6edf3] hover:border-[#475060] hover:bg-[#141a22]`}
+        >
+          <GitHubIcon />
+          View on GitHub
+        </a>
+      </div>
+
+      <div
+        className="mt-4 flex w-full max-w-120 items-center gap-2.5"
+        aria-hidden="true"
+      >
+        <span className="h-px flex-1 bg-[#202832]" />
+        <span className="font-mono text-[10px] tracking-wider text-[#596472] uppercase">
+          Or install with Homebrew
+        </span>
+        <span className="h-px flex-1 bg-[#202832]" />
+      </div>
+
+      <div className="group mt-2 inline-flex max-w-full items-stretch overflow-hidden rounded-md border border-[#232c36] bg-[#0c1117] font-mono text-[11px] text-[#8793a1] transition-[background-color,border-color,color] hover:border-[#37424f] hover:bg-[#11171e] hover:text-[#b5c0cc] sm:text-xs">
+        <code className="min-w-0 cursor-text px-3 py-2 leading-5 whitespace-normal select-text sm:whitespace-nowrap">
+          {BREW_INSTALL_COMMAND}
+        </code>
+        <button
+          type="button"
+          onClick={copyBrewCommand}
+          className={`inline-flex min-w-24 shrink-0 items-center justify-center gap-1.5 border-l border-[#232c36] px-3 transition-colors hover:bg-[#17202a] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--accent) ${
+            copyState === "copied" ? "text-(--accent)" : ""
+          }`}
+          aria-label={`Copy Homebrew install command: ${BREW_INSTALL_COMMAND}`}
+        >
+          <CopyIcon copied={copyState === "copied"} />
+          <span aria-live="polite">
+            {copyState === "copied"
+              ? "Copied"
+              : copyState === "error"
+              ? "Try again"
+              : "Copy"}
+          </span>
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -189,23 +321,10 @@ export function App() {
               docker, cargo. Native, fast, and entirely on-device.
             </p>
             <div
-              className="ec-hero-step mb-11 flex flex-wrap justify-center gap-3.25"
+              className="ec-hero-step mb-11"
               style={{ animationDelay: "270ms" }}
             >
-              <a
-                href="/install"
-                className={`${ACTION_SURFACE} inline-flex items-center gap-2.25 rounded-[11px] bg-(--accent) px-6.5 py-3.25 text-[16px] font-semibold text-[#06140a] hover:brightness-110 hover:shadow-[0_14px_34px_-12px_var(--accent-line)]`}
-              >
-                <AppleIcon />
-                Install with Homebrew
-              </a>
-              <a
-                href={GITHUB_URL}
-                className={`${ACTION_SURFACE} inline-flex items-center gap-2.25 rounded-[11px] border border-[#2c343e] px-6.5 py-3.25 text-[16px] font-medium text-[#e6edf3] hover:border-[#475060] hover:bg-[#141a22]`}
-              >
-                <GitHubIcon />
-                View on GitHub
-              </a>
+              <InstallActions />
             </div>
             <div
               className="ec-hero-terminal w-full max-w-150"
@@ -463,22 +582,7 @@ export function App() {
           <p className="m-0 mb-7.5 text-[18px] text-[#909aa6]">
             Let your terminal remember them for you.
           </p>
-          <div className="mb-7.5 flex flex-wrap justify-center gap-3.25">
-            <a
-              href="/install"
-              className={`${ACTION_SURFACE} inline-flex items-center gap-2.25 rounded-[11px] bg-(--accent) px-6.5 py-3.25 text-[16px] font-semibold text-[#06140a] hover:brightness-110 hover:shadow-[0_14px_34px_-12px_var(--accent-line)]`}
-            >
-              <AppleIcon />
-              Install with Homebrew
-            </a>
-            <a
-              href={GITHUB_URL}
-              className={`${ACTION_SURFACE} inline-flex items-center gap-2.25 rounded-[11px] border border-[#2c343e] px-6.5 py-3.25 text-[16px] font-medium text-[#e6edf3] hover:border-[#475060] hover:bg-[#141a22]`}
-            >
-              <GitHubIcon />
-              View on GitHub
-            </a>
-          </div>
+          <InstallActions className="mb-7.5" />
           <p className="m-0 font-mono text-[13px] leading-[1.7] text-[#5d6773]">
             Requires macOS 12+ · Apple Silicon (ARM64) · MIT / Apache-2.0
             <br />A focused local completion engine built for fast terminal

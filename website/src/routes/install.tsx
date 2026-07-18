@@ -13,7 +13,7 @@ import { SeoJsonLd, guideSchema, pageHead } from "../seo.tsx";
 
 const TITLE = "Install Easy Complete on macOS — Terminal Autocomplete";
 const DESCRIPTION =
-  "Install Easy Complete on Apple Silicon macOS, grant Accessibility permission, reload your shell, and verify terminal autocomplete with ec doctor.";
+  "Install Easy Complete with Homebrew on Apple Silicon macOS, grant Accessibility permission, reload your shell, and verify it with ec doctor.";
 
 export const Route = createFileRoute("/install")({
   head: () =>
@@ -41,18 +41,25 @@ function InstallPage() {
           Mac (M1 or newer). The published DMG is ARM64 only.
         </GuideCallout>
 
-        <h2 className={GUIDE_HEADING}>1. Download the macOS app</h2>
+        <h2 className={GUIDE_HEADING}>1. Install with Homebrew</h2>
         <p className={GUIDE_PARAGRAPH}>
-          Download the latest signed DMG, open it, and drag{" "}
-          <strong className="text-[#d6dee8]">Easy Complete.app</strong> into
-          your Applications folder.
+          Install the signed and notarized app with one Homebrew command. The
+          Easy Complete tap is added automatically:
+        </p>
+        <pre className={GUIDE_CODE}>
+          brew install --cask chen86860/tap/easy-complete
+        </pre>
+        <p className={GUIDE_PARAGRAPH}>
+          Prefer to install manually? Download the latest signed DMG, open it,
+          and drag <strong className="text-[#d6dee8]">Easy Complete.app</strong>{" "}
+          into your Applications folder.
         </p>
         <p className="mb-8">
           <a
             href={DOWNLOAD_URL}
             className="inline-flex rounded-[10px] bg-(--accent) px-5 py-3 font-semibold text-[#06140a] transition hover:brightness-110"
           >
-            Download the latest ARM64 DMG
+            Download the ARM64 DMG instead
           </a>
         </p>
 

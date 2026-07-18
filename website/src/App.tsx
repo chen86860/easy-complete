@@ -9,7 +9,6 @@ import {
   reasons,
   terminals,
 } from "./data.ts";
-import { DOWNLOAD_URL } from "./download.ts";
 
 const SECTION_LABEL =
   "font-mono text-xs uppercase tracking-[.22em] text-(--accent) mb-3.5";
@@ -159,7 +158,7 @@ export function App() {
                 GitHub
               </a>
               <a
-                href={DOWNLOAD_URL}
+                href="/install"
                 className="inline-flex items-center gap-1.75 rounded-lg bg-(--accent) px-4 py-2 font-semibold text-[#06140a] transition hover:brightness-110 hover:shadow-[0_8px_24px_-8px_var(--accent-line)]"
               >
                 <AppleIcon />
@@ -194,11 +193,11 @@ export function App() {
               style={{ animationDelay: "270ms" }}
             >
               <a
-                href={DOWNLOAD_URL}
+                href="/install"
                 className={`${ACTION_SURFACE} inline-flex items-center gap-2.25 rounded-[11px] bg-(--accent) px-6.5 py-3.25 text-[16px] font-semibold text-[#06140a] hover:brightness-110 hover:shadow-[0_14px_34px_-12px_var(--accent-line)]`}
               >
                 <AppleIcon />
-                Install for macOS
+                Install with Homebrew
               </a>
               <a
                 href={GITHUB_URL}
@@ -466,11 +465,11 @@ export function App() {
           </p>
           <div className="mb-7.5 flex flex-wrap justify-center gap-3.25">
             <a
-              href={DOWNLOAD_URL}
+              href="/install"
               className={`${ACTION_SURFACE} inline-flex items-center gap-2.25 rounded-[11px] bg-(--accent) px-6.5 py-3.25 text-[16px] font-semibold text-[#06140a] hover:brightness-110 hover:shadow-[0_14px_34px_-12px_var(--accent-line)]`}
             >
               <AppleIcon />
-              Install for macOS (ARM64)
+              Install with Homebrew
             </a>
             <a
               href={GITHUB_URL}

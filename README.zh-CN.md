@@ -50,7 +50,29 @@ Mac。应用会收集匿名使用统计（打开次数、每日补全次数—�
 
 ## ⚡️ 安装
 
-### 下载 DMG
+### Homebrew（推荐）
+
+使用一条命令安装 Easy Complete：
+
+```bash
+brew install --cask chen86860/tap/easy-complete
+```
+
+安装完成后，从 `/Applications` 启动 **Easy Complete**，按提示授予**辅助功能**权限，
+然后重新加载 shell：
+
+```bash
+exec $SHELL
+```
+
+首次启动时，Easy Complete 会设置随附的 CLI 二进制、shell 集成、输入法和登录启动项。可以
+运行下面的命令确认安装状态：
+
+```bash
+ec doctor
+```
+
+### 手动下载 DMG
 
 下载最新的 Apple Silicon DMG：
 
@@ -69,8 +91,7 @@ Mac。应用会收集匿名使用统计（打开次数、每日补全次数—�
    exec $SHELL
    ```
 
-首次启动时，Easy Complete 会设置随附的 CLI 二进制、shell 集成、输入法和登录启动项。可以
-运行下面的命令确认安装状态：
+可以运行下面的命令确认安装状态：
 
 ```bash
 ec doctor

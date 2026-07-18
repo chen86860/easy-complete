@@ -53,7 +53,29 @@ for the full list of what is and isn't collected.
 
 ## ⚡️ Install
 
-### Download the DMG
+### Homebrew (recommended)
+
+Install Easy Complete with one command:
+
+```bash
+brew install --cask chen86860/tap/easy-complete
+```
+
+Then launch **Easy Complete** from `/Applications`, grant **Accessibility**
+permission when prompted, and reload your shell:
+
+```bash
+exec $SHELL
+```
+
+On first launch, Easy Complete sets up the bundled CLI binaries, shell integration,
+input method, and login startup entries. To verify the installation, run:
+
+```bash
+ec doctor
+```
+
+### Download the DMG manually
 
 Download the latest Apple Silicon DMG:
 
@@ -72,8 +94,7 @@ Then:
    exec $SHELL
    ```
 
-On first launch, Easy Complete sets up the bundled CLI binaries, shell integration,
-input method, and login startup entries. To verify the installation, run:
+To verify the installation, run:
 
 ```bash
 ec doctor

@@ -124,7 +124,7 @@ export const faqs: Faq[] = [
   {
     question: "How do I install Easy Complete?",
     answer:
-      "Download the latest macOS DMG from GitHub Releases, open it, and follow the install instructions.",
+      "Install it with the Easy Complete Homebrew Cask, or download the latest macOS DMG from GitHub Releases and follow the install guide.",
   },
 ];
 

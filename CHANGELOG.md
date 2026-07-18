@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.49
+
+- feat: add an official `chen86860/homebrew-tap` Cask so Easy Complete can be installed with one Homebrew command
+- docs: make Homebrew the recommended installation path in the English and Chinese READMEs and on the website, while retaining the signed DMG as a manual alternative
+
 ## v2.0.48
 
 - fix: keep only the current release item and its referenced delta files in the Sparkle appcast, preventing stale update entries from pointing at assets that are not uploaded with the new release

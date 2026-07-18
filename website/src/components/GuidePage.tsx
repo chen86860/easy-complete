@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import logoUrl from "../assets/logo.png";
 import { GITHUB_URL } from "../data.ts";
-import { DOWNLOAD_URL } from "../download.ts";
 
 export const GUIDE_HEADING =
   "m-0 mb-4 mt-12 text-[24px] font-bold tracking-[-.025em] text-[#e6edf3]";
@@ -37,7 +36,7 @@ export function GuidePage({ eyebrow, title, intro, children }: GuidePageProps) {
               GitHub
             </a>
             <a
-              href={DOWNLOAD_URL}
+              href="/install"
               className="inline-flex rounded-lg bg-(--accent) px-4 py-2 font-semibold text-[#06140a] transition hover:brightness-110"
             >
               Install

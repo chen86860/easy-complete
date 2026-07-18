@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.49
+
+- 功能：新增官方 `chen86860/homebrew-tap` Cask，Easy Complete 现在可以通过一条 Homebrew 命令安装
+- 文档：在中英文 README 与网站中将 Homebrew 设为推荐安装方式，同时保留已签名 DMG 作为手动安装选项
+
 ## v2.0.48
 
 - 修复：Sparkle appcast 仅保留当前版本条目及其引用的 delta 文件，避免旧更新条目指向新版本未上传的资产

@@ -59,10 +59,10 @@ printf '%s' "$SPARKLE_PRIVATE_ED_KEY" | \
 
 [ -f "$APPCAST_DIR/appcast.xml" ] || { echo "error: appcast.xml was not generated" >&2; exit 1; }
 
-# Sparkle derives delta names from the app bundle display name ("Easy Complete"),
-# but the generated delta files use dots on disk ("Easy.Complete...delta").
-# GitHub release assets are uploaded from disk, so keep appcast URLs aligned with
-# the real asset names or Sparkle will fall back to the full DMG after a 404.
+# Sparkle derives delta names from the app bundle display name ("Easy Complete")
+# and writes files with spaces on disk. GitHub normalizes those spaces to dots in
+# release asset names, so normalize the files ourselves and keep the appcast URLs
+# aligned with the exact names uploaded to the release.
 python3 - "$APPCAST_DIR/appcast.xml" "$VERSION" "$APPCAST_DIR" <<'PY'
 import pathlib
 import re
@@ -72,6 +72,18 @@ appcast_path = pathlib.Path(sys.argv[1])
 version = sys.argv[2]
 appcast_dir = pathlib.Path(sys.argv[3])
 appcast = appcast_path.read_text()
+
+for delta_path in appcast_dir.glob("*.delta"):
+    normalized_path = delta_path.with_name(delta_path.name.replace(" ", "."))
+    if normalized_path == delta_path:
+        continue
+    if normalized_path.exists():
+        raise SystemExit(
+            f"error: cannot normalize delta filename because target exists: {normalized_path.name}"
+        )
+    delta_path.rename(normalized_path)
+    print(f"Normalized delta filename: {delta_path.name} -> {normalized_path.name}")
+
 appcast = re.sub(r'(?<=/)[^"/]+(?=\.delta")', lambda m: m.group(0).replace("%20", "."), appcast)
 
 # generate_appcast can preserve an older item from the input appcast even with
@@ -130,6 +142,8 @@ referenced_deltas = {
 for delta_path in appcast_dir.glob("*.delta"):
     if delta_path.name not in referenced_deltas:
         delta_path.unlink()
+
+print(f"Kept {len(referenced_deltas)} referenced delta file(s)")
 PY
 
 printf '%s\n' "$APPCAST_DIR/appcast.xml"

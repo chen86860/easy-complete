@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.0.50
+
+- 修复：在清理 appcast 前先规范化 Sparkle 生成的含空格 delta 文件名，并在 delta 资产缺失或不匹配时让发布失败
+- 变更：精简 `ec` 命令界面，移除废弃的 `setup` 与 `theme` 命令，隐藏内部命令，并在帮助信息中展示版本与项目地址
+- 修复：`ec issue` 改用 GitHub 标准标题/正文链接，`ec update` 接入原生 Sparkle 更新器，Shell 集成安装改用受支持的 integrations 命令
+- 构建：将已损坏的 pnpm 11.13.0 固定版本替换为 pnpm 11.14.0，恢复本地与发布构建
+
 ## v2.0.49
 
 - 功能：新增官方 `chen86860/homebrew-tap` Cask，Easy Complete 现在可以通过一条 Homebrew 命令安装

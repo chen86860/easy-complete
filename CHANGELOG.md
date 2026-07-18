@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.0.50
+
+- fix: preserve Sparkle-generated delta files by normalizing their space-based filenames before appcast cleanup, and fail releases when delta assets are missing or mismatched
+- change: simplify the `ec` command surface by removing obsolete `setup` and `theme` commands, hiding internal commands, and adding version and project information to help output
+- fix: make `ec issue` use GitHub's standard title/body URL, route `ec update` through the native Sparkle updater, and install shell integration through the supported integrations command
+- build: replace the broken pnpm 11.13.0 pin with pnpm 11.14.0 so local and release builds can complete
+
 ## v2.0.49
 
 - feat: add an official `chen86860/homebrew-tap` Cask so Easy Complete can be installed with one Homebrew command

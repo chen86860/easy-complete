@@ -244,9 +244,14 @@ jobs:
               for url in re.findall(r'url="([^"]+\.delta)"', appcast)
           }
           available = {path.name for path in appcast_dir.glob("*.delta")}
+          if not referenced:
+              raise SystemExit("appcast contains no delta enclosures")
           missing = sorted(referenced - available)
           if missing:
               raise SystemExit(f"appcast references missing delta files: {', '.join(missing)}")
+          unexpected = sorted(available - referenced)
+          if unexpected:
+              raise SystemExit(f"delta files are not referenced by appcast: {', '.join(unexpected)}")
           PY
           find dist/sparkle -maxdepth 1 -name '*.delta' -print
 

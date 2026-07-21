@@ -54,3 +54,5 @@ run-build.sh
 *.app/
 packages/dashboard-app/dist/
 dist/
+.codex-audit
+.claude/settings.local.json

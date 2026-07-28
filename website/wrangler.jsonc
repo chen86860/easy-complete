@@ -4,6 +4,13 @@
   "compatibility_date": "2026-06-18",
   "compatibility_flags": ["nodejs_compat"],
   "main": "src/server.ts",
+  // Every page is server-rendered and dist/client holds no HTML, so the asset
+  // router's default "auto-trailing-slash" only gets in the way: it answers
+  // /install/ with a 307 before the Worker runs. Disable it and let
+  // canonicalRedirect() in src/server.ts issue the 301 instead.
+  "assets": {
+    "html_handling": "none"
+  },
   "observability": {
     "enabled": true
   }

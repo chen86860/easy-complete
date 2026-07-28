@@ -10,7 +10,7 @@ export function Toggle({
   return (
     <button
       className={clsx(
-        "native-toggle group relative h-5 w-11 flex-shrink-0 rounded-full border-0 p-0",
+        "native-toggle group relative h-5 w-[38px] flex-shrink-0 rounded-full border-0 p-0",
         "shadow-[inset_0_0_0_0.5px_rgba(60,60,67,0.12)] transition-colors duration-150",
         checked
           ? "bg-[var(--dashboard-accent-color)]"
@@ -22,10 +22,10 @@ export function Toggle({
     >
       <span
         className={clsx(
-          "absolute left-[3px] top-[3px] block h-3.5 w-6 rounded-full bg-white",
+          "absolute left-[3px] top-[3px] block h-3.5 w-5 rounded-full bg-white",
           "shadow-[0_0_0_0.5px_rgba(0,0,0,0.04),0_0.5px_1px_rgba(0,0,0,0.08)]",
           "transition-transform duration-150 ease-[cubic-bezier(0.28,0.11,0.32,1)] group-active:scale-95",
-          checked ? "translate-x-3.5" : "translate-x-0",
+          checked ? "translate-x-3" : "translate-x-0",
         )}
       />
     </button>

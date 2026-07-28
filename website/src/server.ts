@@ -18,6 +18,31 @@ function siteOrigin(request: Request, env: Env): string {
   return configuredOrigin || new URL(request.url).origin;
 }
 
+/**
+ * Collapse trailing-slash and case variants onto the canonical route with a
+ * permanent redirect, so crawlers consolidate them instead of treating each
+ * variant as its own URL.
+ */
+function canonicalRedirect(url: URL, origin: string): Response | undefined {
+  const pathname = url.pathname;
+
+  if (pathname === "/" || pathname.startsWith("/assets/")) {
+    return undefined;
+  }
+
+  const trimmed = pathname.replace(/\/+$/, "") || "/";
+  const canonical =
+    INDEXABLE_ROUTES.find(
+      (route) => route.toLowerCase() === trimmed.toLowerCase()
+    ) ?? trimmed;
+
+  if (canonical === pathname) {
+    return undefined;
+  }
+
+  return Response.redirect(`${origin}${canonical}${url.search}`, 301);
+}
+
 function textResponse(body: string, contentType: string): Response {
   return new Response(body, {
     headers: {
@@ -32,11 +57,19 @@ export default {
     const url = new URL(request.url);
     const origin = siteOrigin(request, env);
 
+    const redirect = canonicalRedirect(url, origin);
+    if (redirect) {
+      return redirect;
+    }
+
     if (url.pathname === "/robots.txt") {
       return textResponse(
         [
           "User-agent: *",
           "Allow: /",
+          // Cloudflare AI Labyrinth serves generated decoy pages under this
+          // path; keep them out of the crawl queue.
+          "Disallow: /cdn-cgi/content",
           "",
           `Sitemap: ${origin}/sitemap.xml`,
           "",

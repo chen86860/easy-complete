@@ -32,6 +32,22 @@ updates:
         patterns: ["vitest", "@vitest/*"]
       radix-ui:
         patterns: ["@radix-ui/*"]
+  # The website is a standalone pnpm project with its own lockfile, so the "/" entry above does
+  # not cover it. Without this, its advisories never get an update PR.
+  - package-ecosystem: "npm"
+    directory: "/website"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: fix
+      prefix-development: chore
+      include: scope
+    open-pull-requests-limit: 10
+    groups:
+      cloudflare:
+        patterns: ["@cloudflare/*", "wrangler", "miniflare"]
+      tanstack:
+        patterns: ["@tanstack/*"]
   - package-ecosystem: "cargo"
     directory: "/"
     schedule:

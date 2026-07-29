@@ -1,5 +1,15 @@
 # Standalone project — kept out of the parent Rust/TS monorepo workspace.
 packages: []
+# Security patches for transitive dependencies. Each entry stays inside the range its parent
+# asked for, so vite/wrangler/miniflare keep working. Drop an entry once the parent ships a
+# version that already resolves past it.
+overrides:
+  'postcss@8': 8.5.22
+  'js-yaml@4': 4.3.0
+  'undici@7': 7.29.0
+  'ws@8': 8.21.1
+  'esbuild@0.27': 0.28.1
+  'sharp@0.34': 0.35.3
 allowBuilds:
   esbuild: true
   sharp: true

@@ -25,7 +25,6 @@ use fig_log::{LogArgs, initialize_logging};
 use fig_os_shim::Context;
 use fig_util::consts::{APP_PROCESS_NAME, PRODUCT_NAME};
 use fig_util::{URL_SCHEMA, directories};
-use platform::PlatformState;
 use sysinfo::{ProcessRefreshKind, RefreshKind, System, get_current_pid};
 use tao::event_loop::{
     EventLoop as WryEventLoop, EventLoopProxy as WryEventLoopProxy, EventLoopWindowTarget as WryEventLoopWindowTarget,
@@ -34,9 +33,7 @@ use tracing::{error, warn};
 use url::Url;
 use webview::notification::WebviewNotificationsState;
 pub use webview::{AUTOCOMPLETE_ID, AUTOCOMPLETE_WINDOW_TITLE, DASHBOARD_ID};
-use webview::{
-    AutocompleteOptions, DashboardOptions, WebviewManager, autocomplete, build_autocomplete, build_dashboard, dashboard,
-};
+use webview::{DashboardOptions, WebviewManager, build_dashboard, dashboard};
 
 // #[global_allocator]
 // static GLOBAL: Jemalloc = Jemalloc;
@@ -191,16 +188,12 @@ async fn main() -> ExitCode {
     // fig_auth removed - treat as always logged in
     let is_logged_in = true;
 
-    let accessibility_enabled = PlatformState::accessibility_is_enabled().unwrap_or(true);
     #[cfg(target_os = "macos")]
     let defer_dashboard_for_modern_login_item =
         !cli.no_dashboard && launch_on_startup && fig_integrations::login_item::supports_modern_login_item();
     #[cfg(not(target_os = "macos"))]
     let defer_dashboard_for_modern_login_item = false;
     let visible = !cli.no_dashboard && !defer_dashboard_for_modern_login_item;
-
-    let autocomplete_enabled =
-        !fig_settings::settings::get_bool_or("autocomplete.disable", false) && accessibility_enabled;
 
     let mut webview_manager = WebviewManager::new(ctx, visible, defer_dashboard_for_modern_login_item);
     let auto_updates_enabled = !fig_settings::settings::get_bool_or("app.disableAutoupdates", false);
@@ -215,29 +208,21 @@ async fn main() -> ExitCode {
             let _ = update::check_for_update(false, false).await;
         });
     }
-    webview_manager
-        .build_webview(
-            DASHBOARD_ID,
-            build_dashboard,
-            DashboardOptions {
-                show_onboarding: !is_logged_in,
-                visible,
-                page,
-            },
-            true,
-            dashboard::url,
-        )
-        .unwrap();
-    webview_manager
-        .build_webview(
-            AUTOCOMPLETE_ID,
-            build_autocomplete,
-            AutocompleteOptions,
-            autocomplete_enabled,
-            autocomplete::url,
-        )
-        .unwrap();
-
+    if visible {
+        webview_manager
+            .build_webview(
+                DASHBOARD_ID,
+                build_dashboard,
+                DashboardOptions {
+                    show_onboarding: !is_logged_in,
+                    visible,
+                    page,
+                },
+                true,
+                dashboard::url,
+            )
+            .unwrap();
+    }
     webview_manager.run().await.unwrap();
     ExitCode::SUCCESS
 }

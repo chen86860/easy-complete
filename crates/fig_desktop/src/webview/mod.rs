@@ -9,7 +9,7 @@ pub mod window_id;
 use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::{Arc, LazyLock, OnceLock};
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use cfg_if::cfg_if;
 use fig_desktop_api::init_script::javascript_init;
@@ -27,6 +27,7 @@ use tao::dpi::{LogicalPosition, LogicalSize};
 use tao::event::{Event as WryEvent, StartCause, WindowEvent as WryWindowEvent};
 use tao::event_loop::{ControlFlow, EventLoopBuilder};
 use tao::window::{Theme as TaoTheme, Window, WindowBuilder, WindowId as WryWindowId};
+use tokio::sync::mpsc::UnboundedSender;
 use tokio::time::MissedTickBehavior;
 use tracing::{debug, error, info, trace, warn};
 use url::Url;
@@ -46,13 +47,20 @@ use crate::request::api_request;
 use crate::tray::{self, build_tray, get_context_menu, get_icon};
 use crate::webview::window_id::AutocompleteId;
 pub use crate::webview::window_id::{AUTOCOMPLETE_ID, DASHBOARD_ID, WindowId};
-use crate::{EventLoop, EventLoopProxy, InterceptState, auth_watcher, file_watcher, local_ipc, utils};
+use crate::{
+    EventLoop, EventLoopProxy, EventLoopWindowTarget, InterceptState, auth_watcher, file_watcher, local_ipc, utils,
+};
 
 pub const DASHBOARD_SIZE: LogicalSize<f64> = LogicalSize::new(820.0, 640.0);
 pub const DASHBOARD_MINIMUM_SIZE: LogicalSize<f64> = LogicalSize::new(DASHBOARD_SIZE.width, 520.0);
 pub const DASHBOARD_MAXIMUM_SIZE: LogicalSize<f64> = LogicalSize::new(DASHBOARD_SIZE.width, 10_000.0);
 
 pub const AUTOCOMPLETE_WINDOW_TITLE: &str = "Fig Autocomplete";
+pub const AUTOCOMPLETE_KEEP_READY_SETTING: &str = "autocomplete.keepReady";
+const AUTOCOMPLETE_RELEASE_DELAY_SETTING: &str = "developer.autocomplete.releaseDelaySeconds";
+const DEFAULT_AUTOCOMPLETE_RELEASE_DELAY: Duration = Duration::from_secs(10 * 60);
+/// How long to hold window events before giving up on the webview reporting that it mounted.
+const AUTOCOMPLETE_MOUNT_TIMEOUT: Duration = Duration::from_secs(5);
 
 pub const LOGIN_PATH: &str = "/";
 
@@ -102,6 +110,433 @@ pub static INTERCEPT_STATE: OnceLock<Arc<InterceptState>> = OnceLock::new();
 pub static PLATFORM_STATE: OnceLock<Arc<PlatformState>> = OnceLock::new();
 pub static NOTIFICATIONS_STATE: OnceLock<Arc<WebviewNotificationsState>> = OnceLock::new();
 pub static DASH_KV_STORE: OnceLock<Arc<DashKVStore>> = OnceLock::new();
+
+/// Whether an event can only be served by a live window, and so must rebuild a released one.
+fn event_requests_window(event: &WindowEvent) -> bool {
+    match event {
+        WindowEvent::Show | WindowEvent::Devtools => true,
+        WindowEvent::Batch(events) => events.iter().any(event_requests_window),
+        _ => false,
+    }
+}
+
+fn autocomplete_should_be_loaded(active_sessions: usize, keep_ready: bool) -> bool {
+    active_sessions > 0 || keep_ready
+}
+
+fn autocomplete_should_release(
+    timer_generation: u64,
+    current_generation: u64,
+    active_sessions: usize,
+    keep_ready: bool,
+) -> bool {
+    timer_generation == current_generation && !autocomplete_should_be_loaded(active_sessions, keep_ready)
+}
+
+fn autocomplete_release_delay() -> Duration {
+    let seconds = fig_settings::settings::get_int_or(
+        AUTOCOMPLETE_RELEASE_DELAY_SETTING,
+        DEFAULT_AUTOCOMPLETE_RELEASE_DELAY.as_secs() as i64,
+    )
+    .clamp(1, 24 * 60 * 60);
+    Duration::from_secs(seconds as u64)
+}
+
+fn dashboard_page_for_event(event: &WindowEvent) -> Option<String> {
+    match event {
+        WindowEvent::NavigateRelative { path } => Some(path.to_string()),
+        WindowEvent::Batch(events) => events.iter().filter_map(dashboard_page_for_event).next_back(),
+        _ => None,
+    }
+}
+
+fn build_dashboard_webview(
+    context: &Arc<Context>,
+    fig_id_map: &mut FigIdMap,
+    window_id_map: &mut WryIdMap,
+    window_target: &EventLoopWindowTarget,
+    page: Option<String>,
+) -> anyhow::Result<()> {
+    let web_context_path = directories::fig_data_dir()?
+        .join("webcontexts")
+        .join(DASHBOARD_ID.0.as_ref());
+    let mut web_context = WebContext::new(Some(web_context_path));
+    let (window, webview) = build_dashboard(
+        Arc::clone(context),
+        &mut web_context,
+        window_target,
+        DashboardOptions {
+            show_onboarding: false,
+            visible: false,
+            page,
+        },
+    )?;
+    let window_state = Rc::new(WindowState::new(
+        window,
+        DASHBOARD_ID,
+        webview,
+        web_context,
+        true,
+        dashboard::url(),
+    ));
+    insert_webview(fig_id_map, window_id_map, window_state);
+    Ok(())
+}
+
+fn build_autocomplete_webview(
+    context: &Arc<Context>,
+    fig_id_map: &mut FigIdMap,
+    window_id_map: &mut WryIdMap,
+    window_target: &EventLoopWindowTarget,
+) -> anyhow::Result<Instant> {
+    let started_at = Instant::now();
+    let web_context_path = directories::fig_data_dir()?
+        .join("webcontexts")
+        .join(AUTOCOMPLETE_ID.0.as_ref());
+    let mut web_context = WebContext::new(Some(web_context_path));
+    let (window, webview) = build_autocomplete(
+        Arc::clone(context),
+        &mut web_context,
+        window_target,
+        AutocompleteOptions,
+    )?;
+    let enabled = !fig_settings::settings::get_bool_or("autocomplete.disable", false)
+        && PlatformState::accessibility_is_enabled().unwrap_or(true);
+    let window_state = Rc::new(WindowState::new(
+        window,
+        AUTOCOMPLETE_ID,
+        webview,
+        web_context,
+        enabled,
+        autocomplete::url(),
+    ));
+    insert_webview(fig_id_map, window_id_map, window_state);
+
+    // A rebuilt overlay gets a brand new native window, so the level the focus handler applied to
+    // the previous one is gone. Without this it stays at the default level until the user switches
+    // terminals again, which puts it behind always-on-top terminals like iTerm's Quake mode.
+    GLOBAL_PROXY
+        .get()
+        .expect("event loop proxy is initialized")
+        .send_event(Event::PlatformBoundEvent(
+            PlatformBoundEvent::AutocompleteWindowLevelUpdateRequested,
+        ))
+        .ok();
+
+    let duration_ms = started_at.elapsed().as_millis() as u64;
+    info!(duration_ms, "Autocomplete webview created");
+    fig_telemetry::track_with_props(
+        "autocomplete_webview_created",
+        serde_json::json!({ "duration_ms": duration_ms }),
+    );
+    Ok(started_at)
+}
+
+fn insert_webview(fig_id_map: &mut FigIdMap, window_id_map: &mut WryIdMap, window_state: Rc<WindowState>) {
+    fig_id_map.insert(window_state.window_id.clone(), window_state.clone());
+    window_id_map.insert(window_state.window.id(), window_state);
+}
+
+fn remove_webview(
+    fig_id_map: &mut FigIdMap,
+    window_id_map: &mut WryIdMap,
+    notifications_state: &WebviewNotificationsState,
+    window_id: &WindowId,
+) {
+    if let Some(window_state) = fig_id_map.remove(window_id) {
+        window_id_map.remove(&window_state.window.id());
+        notifications_state.subscriptions.remove(window_id);
+        debug!(%window_id, "Released window and webview");
+    }
+}
+
+fn close_dashboard(
+    fig_id_map: &mut FigIdMap,
+    window_id_map: &mut WryIdMap,
+    notifications_state: &WebviewNotificationsState,
+    proxy: &EventLoopProxy,
+) {
+    if !fig_id_map.contains_key(&DASHBOARD_ID) {
+        return;
+    }
+
+    proxy
+        .send_event(Event::PlatformBoundEvent(PlatformBoundEvent::AppWindowFocusChanged {
+            window_id: DASHBOARD_ID,
+            focused: true,
+            fullscreen: false,
+            visible: false,
+        }))
+        .ok();
+    remove_webview(fig_id_map, window_id_map, notifications_state, &DASHBOARD_ID);
+}
+
+/// Dispatches events that were held back while the autocomplete webview was loading.
+///
+/// These are handled inline rather than pushed back through the event loop proxy: the proxy is
+/// FIFO, so re-sending would put these older events *behind* any event that arrived while the
+/// webview was mounting, and a stale `Show` replayed after a fresh `Hide` would leave the overlay
+/// stuck on screen.
+fn dispatch_deferred_autocomplete_events(
+    events: Vec<WindowEvent>,
+    fig_id_map: &FigIdMap,
+    figterm_state: &FigtermState,
+    platform_state: &PlatformState,
+    notifications_state: &WebviewNotificationsState,
+    window_target: &EventLoopWindowTarget,
+    api_tx: &UnboundedSender<(WindowId, String)>,
+) {
+    let Some(window_state) = fig_id_map.get(&AUTOCOMPLETE_ID) else {
+        return;
+    };
+
+    for window_event in events {
+        if window_state.enabled() || window_event.is_allowed_while_disabled() {
+            window_state.handle(
+                window_event,
+                figterm_state,
+                platform_state,
+                notifications_state,
+                window_target,
+                api_tx,
+            );
+        } else {
+            trace!(
+                ?window_event,
+                "Ignoring deferred event for disabled autocomplete window"
+            );
+        }
+    }
+}
+
+/// Handles [`WindowEvent::Close`] for the windows that can be rebuilt on demand.
+///
+/// Returns `false` for every other window, in which case the caller falls through to the regular
+/// handler, which hides the window instead of releasing it.
+fn release_window(
+    window_id: &WindowId,
+    fig_id_map: &mut FigIdMap,
+    window_id_map: &mut WryIdMap,
+    notifications_state: &WebviewNotificationsState,
+    autocomplete_lifecycle: &mut AutocompleteLifecycle,
+    proxy: &EventLoopProxy,
+) -> bool {
+    if *window_id == DASHBOARD_ID {
+        close_dashboard(fig_id_map, window_id_map, notifications_state, proxy);
+        return true;
+    }
+
+    if *window_id == AUTOCOMPLETE_ID {
+        autocomplete_lifecycle.release(fig_id_map, window_id_map, notifications_state);
+        return true;
+    }
+
+    false
+}
+
+#[derive(Default)]
+struct AutocompleteLifecycle {
+    release_generation: u64,
+    release_task: Option<tokio::task::JoinHandle<()>>,
+    created_at: Option<Instant>,
+    mount_generation: u64,
+    mounted: bool,
+    deferred_events: Vec<WindowEvent>,
+    ready_reported: bool,
+    specs_ready_reported: bool,
+}
+
+impl AutocompleteLifecycle {
+    fn ensure_loaded(
+        &mut self,
+        context: &Arc<Context>,
+        fig_id_map: &mut FigIdMap,
+        window_id_map: &mut WryIdMap,
+        window_target: &EventLoopWindowTarget,
+        proxy: &EventLoopProxy,
+    ) -> anyhow::Result<()> {
+        if fig_id_map.contains_key(&AUTOCOMPLETE_ID) {
+            return Ok(());
+        }
+
+        self.created_at = Some(build_autocomplete_webview(
+            context,
+            fig_id_map,
+            window_id_map,
+            window_target,
+        )?);
+        self.reset_mount_state();
+        self.ready_reported = false;
+        self.specs_ready_reported = false;
+
+        // The webview normally reports in as soon as its React app mounts. If it never does — a
+        // bundle that fails to load, say — drain the deferred events anyway rather than leaving
+        // the overlay permanently deaf.
+        let generation = self.mount_generation;
+        let proxy = proxy.clone();
+        tokio::spawn(async move {
+            tokio::time::sleep(AUTOCOMPLETE_MOUNT_TIMEOUT).await;
+            proxy
+                .send_event(Event::AutocompleteMountTimeoutElapsed { generation })
+                .ok();
+        });
+
+        Ok(())
+    }
+
+    /// Invalidates any in-flight mount timeout and drops events deferred for the old webview.
+    fn reset_mount_state(&mut self) {
+        self.mount_generation = self.mount_generation.wrapping_add(1);
+        self.mounted = false;
+        self.deferred_events.clear();
+    }
+
+    /// Holds an event back while the webview is still loading.
+    ///
+    /// Returns the event when it can be dispatched now, or [`None`] once it has been deferred.
+    /// Showing a freshly built overlay immediately would flash an empty window, and the edit
+    /// buffer state behind the event would be lost because the new app starts blank.
+    fn defer_until_mounted(&mut self, loaded: bool, window_event: WindowEvent) -> Option<WindowEvent> {
+        if self.mounted || !loaded {
+            return Some(window_event);
+        }
+
+        debug!(?window_event, "Deferring autocomplete event until the webview mounts");
+        self.deferred_events.push(window_event);
+        None
+    }
+
+    /// Marks the webview as ready for events and returns everything deferred, in arrival order.
+    fn mark_mounted(&mut self) -> Vec<WindowEvent> {
+        if self.mounted {
+            return Vec::new();
+        }
+
+        self.mounted = true;
+        let deferred = std::mem::take(&mut self.deferred_events);
+        if !deferred.is_empty() {
+            debug!(count = deferred.len(), "Replaying deferred autocomplete events");
+        }
+        deferred
+    }
+
+    fn mount_timeout_elapsed(&mut self, generation: u64) -> Vec<WindowEvent> {
+        if generation != self.mount_generation || self.mounted {
+            return Vec::new();
+        }
+
+        warn!("Autocomplete webview never reported mounting, replaying deferred events anyway");
+        self.mark_mounted()
+    }
+
+    fn reconcile(
+        &mut self,
+        context: &Arc<Context>,
+        fig_id_map: &mut FigIdMap,
+        window_id_map: &mut WryIdMap,
+        figterm_state: &FigtermState,
+        window_target: &EventLoopWindowTarget,
+        proxy: &EventLoopProxy,
+    ) -> anyhow::Result<()> {
+        if let Some(release_task) = self.release_task.take() {
+            release_task.abort();
+        }
+        self.release_generation = self.release_generation.wrapping_add(1);
+        let active_sessions = figterm_state.inner.lock().linked_sessions.len();
+        let keep_ready = fig_settings::settings::get_bool_or(AUTOCOMPLETE_KEEP_READY_SETTING, false);
+
+        if autocomplete_should_be_loaded(active_sessions, keep_ready) {
+            self.ensure_loaded(context, fig_id_map, window_id_map, window_target, proxy)?;
+            debug!(active_sessions, keep_ready, "Keeping autocomplete webview loaded");
+        } else if fig_id_map.contains_key(&AUTOCOMPLETE_ID) {
+            let generation = self.release_generation;
+            let proxy = proxy.clone();
+            let release_delay = autocomplete_release_delay();
+            self.release_task = Some(tokio::spawn(async move {
+                tokio::time::sleep(release_delay).await;
+                proxy
+                    .send_event(Event::AutocompleteReleaseTimerElapsed { generation })
+                    .ok();
+            }));
+            info!(
+                active_sessions,
+                delay_seconds = release_delay.as_secs(),
+                "Scheduled autocomplete webview release"
+            );
+        }
+
+        Ok(())
+    }
+
+    fn release_if_idle(
+        &mut self,
+        timer_generation: u64,
+        fig_id_map: &mut FigIdMap,
+        window_id_map: &mut WryIdMap,
+        notifications_state: &WebviewNotificationsState,
+        figterm_state: &FigtermState,
+    ) {
+        self.release_task = None;
+        let active_sessions = figterm_state.inner.lock().linked_sessions.len();
+        let keep_ready = fig_settings::settings::get_bool_or(AUTOCOMPLETE_KEEP_READY_SETTING, false);
+        if autocomplete_should_release(timer_generation, self.release_generation, active_sessions, keep_ready) {
+            self.release(fig_id_map, window_id_map, notifications_state);
+            info!("Released idle autocomplete webview");
+        } else {
+            debug!(
+                timer_generation,
+                current_generation = self.release_generation,
+                active_sessions,
+                keep_ready,
+                "Ignored stale autocomplete release timer"
+            );
+        }
+    }
+
+    /// Tears down the webview and forgets everything tied to that instance.
+    fn release(
+        &mut self,
+        fig_id_map: &mut FigIdMap,
+        window_id_map: &mut WryIdMap,
+        notifications_state: &WebviewNotificationsState,
+    ) {
+        remove_webview(fig_id_map, window_id_map, notifications_state, &AUTOCOMPLETE_ID);
+        self.reset_mount_state();
+        self.created_at = None;
+        self.ready_reported = false;
+        self.specs_ready_reported = false;
+    }
+
+    fn mark_ready(&mut self) {
+        if self.ready_reported {
+            return;
+        }
+        if let Some(created_at) = self.created_at.as_ref() {
+            let duration_ms = created_at.elapsed().as_millis() as u64;
+            info!(duration_ms, "Autocomplete rendered its first suggestions");
+            fig_telemetry::track_with_props(
+                "autocomplete_webview_ready",
+                serde_json::json!({ "duration_ms": duration_ms }),
+            );
+            self.ready_reported = true;
+        }
+    }
+
+    fn mark_specs_ready(&mut self) {
+        if self.specs_ready_reported {
+            return;
+        }
+        if let Some(created_at) = self.created_at.as_ref() {
+            let duration_ms = created_at.elapsed().as_millis() as u64;
+            info!(duration_ms, "Autocomplete preloaded specs ready");
+            fig_telemetry::track_with_props(
+                "autocomplete_preloaded_specs_ready",
+                serde_json::json!({ "duration_ms": duration_ms }),
+            );
+            self.specs_ready_reported = true;
+        }
+    }
+}
 
 impl WebviewManager {
     #[allow(unused_variables)]
@@ -160,22 +595,14 @@ impl WebviewManager {
         enabled: bool,
         url: Url,
     ) {
-        let webview_arc = Rc::new(WindowState::new(
-            window,
-            window_id.clone(),
-            webview,
-            context,
-            enabled,
-            url,
-        ));
-        self.fig_id_map.insert(window_id, webview_arc.clone());
-        self.window_id_map.insert(webview_arc.window.id(), webview_arc);
+        let window_state = Rc::new(WindowState::new(window, window_id, webview, context, enabled, url));
+        insert_webview(&mut self.fig_id_map, &mut self.window_id_map, window_state);
     }
 
     pub fn build_webview<T>(
         &mut self,
         window_id: WindowId,
-        builder: impl Fn(Arc<Context>, &mut WebContext, &EventLoop, T) -> anyhow::Result<(Window, WebView)>,
+        builder: impl Fn(Arc<Context>, &mut WebContext, &EventLoopWindowTarget, T) -> anyhow::Result<(Window, WebView)>,
         options: T,
         enabled: bool,
         url_fn: impl Fn() -> Url,
@@ -325,6 +752,8 @@ impl WebviewManager {
             .send_event(Event::PlatformBoundEvent(PlatformBoundEvent::InitializePostRun))
             .expect("Failed to send post init event");
 
+        let mut autocomplete_lifecycle = AutocompleteLifecycle::default();
+
         self.event_loop.run(move |event, window_target, control_flow| {
             *control_flow = ControlFlow::Wait;
             trace!(?event, "Main loop event");
@@ -338,6 +767,7 @@ impl WebviewManager {
             match event {
                 WryEvent::NewEvents(StartCause::Init) => {
                     info!("Fig has started");
+                    proxy.send_event(Event::AutocompleteLifecycleChanged).ok();
                     #[cfg(target_os = "macos")]
                     if self.show_dashboard_after_normal_launch && !crate::platform::launched_as_login_item() {
                         proxy
@@ -349,25 +779,26 @@ impl WebviewManager {
                     }
                 },
                 WryEvent::WindowEvent { event, window_id, .. } => {
-                    if let Some(window_state) = self.window_id_map.get(&window_id) {
+                    let should_close_dashboard = self
+                        .window_id_map
+                        .get(&window_id)
+                        .is_some_and(|window_state| {
+                            matches!(&event, WryWindowEvent::CloseRequested)
+                                && window_state.window_id == DASHBOARD_ID
+                        });
+
+                    if should_close_dashboard {
+                        close_dashboard(
+                            &mut self.fig_id_map,
+                            &mut self.window_id_map,
+                            &self.notifications_state,
+                            &proxy,
+                        );
+                    } else if let Some(window_state) = self.window_id_map.get(&window_id) {
                         match event {
                             WryWindowEvent::CloseRequested => {
-                                // This is async so we need to pass 'visible' explicitly
+                                // Non-dashboard windows retain their existing hide behavior.
                                 window_state.window.set_visible(false);
-
-                                if window_state.window_id == DASHBOARD_ID {
-                                    proxy
-                                        .send_event(Event::PlatformBoundEvent(
-                                            PlatformBoundEvent::AppWindowFocusChanged {
-                                                window_id: DASHBOARD_ID,
-                                                focused: true, /* set to true, in order to update activation
-                                                                * policy & remove from dock */
-                                                fullscreen: false,
-                                                visible: false,
-                                            },
-                                        ))
-                                        .ok();
-                                }
                             },
                             WryWindowEvent::ThemeChanged(theme) => window_state.set_theme(match theme {
                                 TaoTheme::Light => Some(WryTheme::Light),
@@ -414,7 +845,64 @@ impl WebviewManager {
                         Event::WindowEvent {
                             window_id,
                             window_event,
-                        } => match self.fig_id_map.get(&window_id) {
+                        } => {
+                            if matches!(&window_event, WindowEvent::Close)
+                                && release_window(
+                                    &window_id,
+                                    &mut self.fig_id_map,
+                                    &mut self.window_id_map,
+                                    &self.notifications_state,
+                                    &mut autocomplete_lifecycle,
+                                    &proxy,
+                                )
+                            {
+                                return;
+                            }
+
+                            if window_id == DASHBOARD_ID
+                                && !self.fig_id_map.contains_key(&DASHBOARD_ID)
+                                && event_requests_window(&window_event)
+                            {
+                                let page = dashboard_page_for_event(&window_event);
+                                if let Err(err) = build_dashboard_webview(
+                                    &self.context,
+                                    &mut self.fig_id_map,
+                                    &mut self.window_id_map,
+                                    window_target,
+                                    page,
+                                ) {
+                                    error!(%err, "Failed to rebuild dashboard webview");
+                                    return;
+                                }
+                            }
+
+                            let window_event = if window_id == AUTOCOMPLETE_ID {
+                                if !self.fig_id_map.contains_key(&AUTOCOMPLETE_ID)
+                                    && event_requests_window(&window_event)
+                                {
+                                    if let Err(err) = autocomplete_lifecycle.ensure_loaded(
+                                        &self.context,
+                                        &mut self.fig_id_map,
+                                        &mut self.window_id_map,
+                                        window_target,
+                                        &proxy,
+                                    ) {
+                                        error!(%err, "Failed to rebuild autocomplete webview");
+                                        return;
+                                    }
+                                    proxy.send_event(Event::AutocompleteLifecycleChanged).ok();
+                                }
+
+                                let loaded = self.fig_id_map.contains_key(&AUTOCOMPLETE_ID);
+                                match autocomplete_lifecycle.defer_until_mounted(loaded, window_event) {
+                                    Some(window_event) => window_event,
+                                    None => return,
+                                }
+                            } else {
+                                window_event
+                            };
+
+                            match self.fig_id_map.get(&window_id) {
                             Some(window_state) => {
                                 if window_state.enabled() || window_event.is_allowed_while_disabled() {
                                     window_state.handle(
@@ -434,10 +922,14 @@ impl WebviewManager {
                                 }
                             },
                             None => {
-                                // TODO(grant): figure out how to handle this gracefully
-                                warn!("No window {window_id} available for event");
+                                if window_id == DASHBOARD_ID || window_id == AUTOCOMPLETE_ID {
+                                    trace!("Ignored event for unloaded window {window_id}");
+                                } else {
+                                    warn!("No window {window_id} available for event");
+                                }
                                 trace!(?window_event, "Event");
                             },
+                            }
                         },
                         Event::WindowEventAll { window_event } => {
                             for (_window_id, window_state) in self.window_id_map.iter() {
@@ -468,6 +960,55 @@ impl WebviewManager {
                                 .ok();
                             tray.set_icon_as_template(true);
                             tray.set_menu(Some(Box::new(get_context_menu(is_logged_in))));
+                        },
+                        Event::AutocompleteLifecycleChanged => {
+                            if let Err(err) = autocomplete_lifecycle.reconcile(
+                                &self.context,
+                                &mut self.fig_id_map,
+                                &mut self.window_id_map,
+                                &self.figterm_state,
+                                window_target,
+                                &proxy,
+                            ) {
+                                error!(%err, "Failed to update autocomplete lifecycle");
+                            }
+                        },
+                        Event::AutocompleteReleaseTimerElapsed { generation } => {
+                            autocomplete_lifecycle.release_if_idle(
+                                generation,
+                                &mut self.fig_id_map,
+                                &mut self.window_id_map,
+                                &self.notifications_state,
+                                &self.figterm_state,
+                            );
+                        },
+                        Event::AutocompleteWebviewMounted => {
+                            dispatch_deferred_autocomplete_events(
+                                autocomplete_lifecycle.mark_mounted(),
+                                &self.fig_id_map,
+                                &self.figterm_state,
+                                &self.platform_state,
+                                &self.notifications_state,
+                                window_target,
+                                &api_handler_tx,
+                            );
+                        },
+                        Event::AutocompleteMountTimeoutElapsed { generation } => {
+                            dispatch_deferred_autocomplete_events(
+                                autocomplete_lifecycle.mount_timeout_elapsed(generation),
+                                &self.fig_id_map,
+                                &self.figterm_state,
+                                &self.platform_state,
+                                &self.notifications_state,
+                                window_target,
+                                &api_handler_tx,
+                            );
+                        },
+                        Event::AutocompleteWebviewReady => {
+                            autocomplete_lifecycle.mark_ready();
+                        },
+                        Event::AutocompleteSpecsReady => {
+                            autocomplete_lifecycle.mark_specs_ready();
                         },
                         Event::ReloadCredentials => {
                             // tray.set_menu(Some(Box::new(get_context_menu())));
@@ -725,7 +1266,7 @@ fn install_dashboard_sidebar_vibrancy(window: &Window) {
 pub fn build_dashboard(
     ctx: Arc<Context>,
     web_context: &mut WebContext,
-    event_loop: &EventLoop,
+    event_loop: &EventLoopWindowTarget,
     DashboardOptions {
         show_onboarding,
         visible,
@@ -771,7 +1312,7 @@ pub fn build_dashboard(
         window.gtk_window().set_role("dashboard");
     }
 
-    let proxy = event_loop.create_proxy();
+    let proxy = GLOBAL_PROXY.get().expect("event loop proxy is initialized").clone();
 
     let mut url = dashboard::url();
 
@@ -790,7 +1331,7 @@ pub fn build_dashboard(
                 proxy
                     .send_event(Event::WindowEvent {
                         window_id: DASHBOARD_ID.clone(),
-                        window_event: WindowEvent::Hide,
+                        window_event: WindowEvent::Close,
                     })
                     .unwrap();
                 return;
@@ -848,7 +1389,7 @@ pub struct AutocompleteOptions;
 pub fn build_autocomplete(
     ctx: Arc<Context>,
     web_context: &mut WebContext,
-    event_loop: &EventLoop,
+    event_loop: &EventLoopWindowTarget,
     _autocomplete_options: AutocompleteOptions,
 ) -> anyhow::Result<(Window, WebView)> {
     let mut window_builder = WindowBuilder::new()
@@ -892,17 +1433,28 @@ pub fn build_autocomplete(
         }
     }
 
-    let proxy = event_loop.create_proxy();
+    let proxy = GLOBAL_PROXY.get().expect("event loop proxy is initialized").clone();
 
     let webview_builder = WebViewBuilder::with_web_context(web_context)
         .with_url(autocomplete::url().as_str())
         .with_ipc_handler(move |payload| {
+            let body = payload.into_body();
+            if body == "__ec_autocomplete_mounted__" {
+                proxy.send_event(Event::AutocompleteWebviewMounted).ok();
+                return;
+            }
+            if body == "__ec_autocomplete_ready__" {
+                proxy.send_event(Event::AutocompleteWebviewReady).ok();
+                return;
+            }
+            if body == "__ec_autocomplete_specs_ready__" {
+                proxy.send_event(Event::AutocompleteSpecsReady).ok();
+                return;
+            }
             proxy
                 .send_event(Event::WindowEvent {
                     window_id: AUTOCOMPLETE_ID.clone(),
-                    window_event: WindowEvent::Api {
-                        payload: payload.into_body(),
-                    },
+                    window_event: WindowEvent::Api { payload: body },
                 })
                 .unwrap();
         })
@@ -1049,6 +1601,14 @@ async fn init_webview_notification_listeners(proxy: EventLoopProxy) {
                     window_event: WindowEvent::SetTheme(theme),
                 })
                 .unwrap();
+        }
+    );
+
+    watcher!(
+        settings,
+        AUTOCOMPLETE_KEEP_READY_SETTING,
+        |_notification: JsonNotification, proxy: &EventLoopProxy| {
+            proxy.send_event(Event::AutocompleteLifecycleChanged).unwrap();
         }
     );
 
@@ -1221,5 +1781,90 @@ async fn init_webview_notification_listeners(proxy: EventLoopProxy) {
         });
         // NSNotificationCenter retains both the observer block and the queue.
         drop(queue);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{
+        AutocompleteLifecycle, autocomplete_should_be_loaded, autocomplete_should_release, dashboard_page_for_event,
+        event_requests_window,
+    };
+    use crate::event::WindowEvent;
+
+    #[test]
+    fn windows_are_rebuilt_only_for_events_that_need_a_window() {
+        assert!(event_requests_window(&WindowEvent::Show));
+        assert!(event_requests_window(&WindowEvent::Batch(vec![
+            WindowEvent::NavigateRelative { path: "/about".into() },
+            WindowEvent::Show,
+        ])));
+        assert!(!event_requests_window(&WindowEvent::NavigateRelative {
+            path: "/about".into(),
+        }));
+        assert!(!event_requests_window(&WindowEvent::Close));
+    }
+
+    #[test]
+    fn dashboard_rebuild_uses_the_last_requested_page() {
+        let event = WindowEvent::Batch(vec![
+            WindowEvent::NavigateRelative {
+                path: "/behavior".into(),
+            },
+            WindowEvent::Batch(vec![
+                WindowEvent::NavigateRelative { path: "/about".into() },
+                WindowEvent::Show,
+            ]),
+        ]);
+
+        assert_eq!(dashboard_page_for_event(&event).as_deref(), Some("/about"));
+    }
+
+    #[test]
+    fn autocomplete_loads_for_sessions_or_keep_ready() {
+        assert!(!autocomplete_should_be_loaded(0, false));
+        assert!(autocomplete_should_be_loaded(1, false));
+        assert!(autocomplete_should_be_loaded(0, true));
+        assert!(event_requests_window(&WindowEvent::Batch(vec![
+            WindowEvent::Hide,
+            WindowEvent::Devtools,
+        ])));
+    }
+
+    #[test]
+    fn deferred_events_replay_in_order_once_mounted() {
+        let mut lifecycle = AutocompleteLifecycle::default();
+
+        assert!(lifecycle.defer_until_mounted(true, WindowEvent::Show).is_none());
+        assert!(lifecycle.defer_until_mounted(true, WindowEvent::Hide).is_none());
+
+        // An unloaded webview has nothing to wait for, so those events pass through untouched.
+        assert!(lifecycle.defer_until_mounted(false, WindowEvent::Devtools).is_some());
+
+        let replayed = lifecycle.mark_mounted();
+        assert!(matches!(replayed.as_slice(), [WindowEvent::Show, WindowEvent::Hide]));
+
+        // Once mounted, events flow straight through and the queue stays empty.
+        assert!(lifecycle.defer_until_mounted(true, WindowEvent::Show).is_some());
+        assert!(lifecycle.mark_mounted().is_empty());
+    }
+
+    #[test]
+    fn stale_mount_timeouts_are_ignored() {
+        let mut lifecycle = AutocompleteLifecycle::default();
+        lifecycle.reset_mount_state();
+        let generation = lifecycle.mount_generation;
+        lifecycle.reset_mount_state();
+
+        assert!(lifecycle.mount_timeout_elapsed(generation).is_empty());
+        assert!(!lifecycle.mounted);
+    }
+
+    #[test]
+    fn autocomplete_release_ignores_stale_or_active_timers() {
+        assert!(autocomplete_should_release(4, 4, 0, false));
+        assert!(!autocomplete_should_release(3, 4, 0, false));
+        assert!(!autocomplete_should_release(4, 4, 1, false));
+        assert!(!autocomplete_should_release(4, 4, 0, true));
     }
 }

@@ -125,4 +125,10 @@ pub enum PlatformBoundEvent {
     ExternalWindowFocusChanged {
         window: PlatformWindowImpl,
     },
+    /// Re-applies the autocomplete overlay's window level from the currently focused terminal.
+    ///
+    /// The level is normally set by [`PlatformBoundEvent::ExternalWindowFocusChanged`], but the
+    /// overlay's webview can be released and rebuilt between focus changes, which leaves the new
+    /// native window at the default level until the user switches terminals again.
+    AutocompleteWindowLevelUpdateRequested,
 }

@@ -156,7 +156,7 @@ pub fn handle_event(menu_event: &MenuEvent, proxy: &EventLoopProxy) {
         menu_id if menu_id == DASHBOARD_CLOSE => proxy
             .send_event(Event::WindowEvent {
                 window_id: DASHBOARD_ID,
-                window_event: WindowEvent::Hide,
+                window_event: WindowEvent::Close,
             })
             .unwrap(),
         menu_id if menu_id == DASHBOARD_ABOUT => proxy

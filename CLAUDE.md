@@ -107,7 +107,24 @@ Three cooperating native processes communicate via Unix domain sockets (protobuf
 
 ### WebView UI
 
-The autocomplete overlay and dashboard are React + Tailwind apps in `packages/autocomplete-app` and `packages/dashboard-app`. In production they are served from `Contents/Resources/{autocomplete,dashboard}/`. In dev, Vite serves them on localhost and `fig_desktop` connects to that instead.
+The autocomplete overlay and dashboard are React + Tailwind apps in `packages/autocomplete-app` and `packages/dashboard-app`. In production they are served from `Contents/Resources/{autocomplete,dashboard}/`. In dev, Vite serves them on localhost and `fig_desktop` connects to that instead. Both are served over the `ecresource://localhost` custom protocol (`fig_desktop/src/protocol/resource.rs`), which falls back to `index.html` for extension-less paths so SPA routes like `/about` work.
+
+### WebView Lifecycle
+
+Neither webview is built at startup. `AutocompleteLifecycle` in `fig_desktop/src/webview/mod.rs` creates and releases them on demand:
+
+- **Autocomplete** is built when a `figterm` session connects (`RemoteHookHandler::sessions_changed`) and released after the last session disconnects. Window events that need a live window (`Show`, `Devtools`) rebuild it on the spot.
+- **Dashboard** is built on `Show`/`Devtools` and fully released on close (`WindowEvent::Close`, distinct from `Hide`), so closing the settings window reclaims its memory.
+
+Because a rebuilt overlay starts blank, native window events are deferred until the app posts `__ec_autocomplete_mounted__` over the IPC bridge, then replayed in order. A 5s timeout drains the queue if that signal never arrives. Two more IPC signals feed startup telemetry: `__ec_autocomplete_ready__` (first suggestions rendered) and `__ec_autocomplete_specs_ready__` (spec preload finished).
+
+Relevant settings:
+
+| Key                                          | Default | Effect                                                                          |
+| -------------------------------------------- | ------- | ------------------------------------------------------------------------------- |
+| `autocomplete.keepReady`                     | `false` | Keep the overlay loaded with no terminals connected — faster first suggestion, more memory |
+| `developer.autocomplete.releaseDelaySeconds` | `600`   | Idle delay before releasing the overlay, clamped to 1s–24h. Debug only; low values cause constant rebuilds |
+| `dashboard.language`                         | unset   | Dashboard UI language: `system`, `en`, or `zh-CN`                                |
 
 ### Website Tailwind CSS
 

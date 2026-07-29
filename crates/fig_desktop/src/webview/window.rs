@@ -302,7 +302,7 @@ impl WindowState {
                     }
                 }
             },
-            WindowEvent::Hide => {
+            WindowEvent::Hide | WindowEvent::Close => {
                 if !self.window.is_visible() {
                     return;
                 }

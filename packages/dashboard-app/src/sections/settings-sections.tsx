@@ -206,6 +206,17 @@ export function BehaviorSection({
           />
         </Row>
         <Row
+          label={t("behavior.keepAutocompleteReady")}
+          description={t("behavior.keepAutocompleteReadyDescription")}
+        >
+          <Toggle
+            checked={Boolean(
+              settings[SETTINGS.KEEP_AUTOCOMPLETE_READY] ?? false,
+            )}
+            onChange={(value) => set(SETTINGS.KEEP_AUTOCOMPLETE_READY, value)}
+          />
+        </Row>
+        <Row
           label={t("behavior.showAfterTab")}
           description={t("behavior.showAfterTabDescription")}
           last

@@ -15,6 +15,9 @@ pub type AuthCode = Option<(u32, Instant)>;
 pub trait RemoteHookHandler {
     type Error: std::fmt::Display;
 
+    /// Called after the set of authenticated figterm sessions changes.
+    async fn sessions_changed(&mut self, _figterm_state: &Arc<FigtermState>) {}
+
     async fn edit_buffer(
         &mut self,
         edit_buffer_hook: &EditBufferHook,

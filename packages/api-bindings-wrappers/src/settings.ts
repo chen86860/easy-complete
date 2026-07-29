@@ -9,6 +9,7 @@ export enum SETTINGS {
   // App settings
   LAUNCH_ON_STARTUP = "app.launchOnStartup",
   DISABLE_AUTO_UPDATES = "app.disableAutoupdates",
+  KEEP_AUTOCOMPLETE_READY = "autocomplete.keepReady",
   DASHBOARD_LANGUAGE = "dashboard.language",
 
   // Style settings

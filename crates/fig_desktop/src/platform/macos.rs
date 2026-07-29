@@ -187,6 +187,26 @@ impl PlatformWindowImpl {
     }
 }
 
+/// Pins the autocomplete overlay above the focused terminal.
+///
+/// `terminal_level` is the window level of the terminal the overlay is following. Handles iTerm
+/// Quake mode by explicitly setting the window level, see
+/// <https://github.com/gnachman/iTerm2/blob/1a5a09f02c62afcc70a647603245e98862e51911/sources/iTermProfileHotKey.m#L276-L310>
+/// for more on window levels.
+fn apply_autocomplete_window_level(window_map: &FigIdMap, terminal_level: Option<i64>) {
+    let Some(window) = window_map.get(&AUTOCOMPLETE_ID) else {
+        return;
+    };
+
+    let ns_window = window.window.ns_window().cast::<Object>();
+    let above = match terminal_level {
+        None | Some(0) => unsafe { CGWindowLevelForKey(kCGFloatingWindowLevelKey) as i64 },
+        Some(level) => level,
+    };
+    debug!("Setting window level to {terminal_level:?}");
+    let _: () = unsafe { msg_send![ns_window, setLevel: above] };
+}
+
 impl PlatformStateImpl {
     pub(super) fn new(proxy: EventLoopProxy) -> Self {
         let focused_window: Option<PlatformWindowImpl> = None;
@@ -481,18 +501,18 @@ impl PlatformStateImpl {
                     focused.replace(window);
                 }
 
-                if let Some(window) = window_map.get(&AUTOCOMPLETE_ID) {
-                    let ns_window = window.window.ns_window().cast::<Object>();
-                    // Handle iTerm Quake mode by explicitly setting window level. See
-                    // https://github.com/gnachman/iTerm2/blob/1a5a09f02c62afcc70a647603245e98862e51911/sources/iTermProfileHotKey.m#L276-L310
-                    // for more on window levels.
-                    let above = match level {
-                        None | Some(0) => unsafe { CGWindowLevelForKey(kCGFloatingWindowLevelKey) as i64 },
-                        Some(level) => level,
-                    };
-                    debug!("Setting window level to {level:?}");
-                    let _: () = unsafe { msg_send![ns_window, setLevel: above] };
-                }
+                apply_autocomplete_window_level(window_map, level);
+
+                Ok(())
+            },
+            PlatformBoundEvent::AutocompleteWindowLevelUpdateRequested => {
+                let level = self
+                    .focused_window
+                    .lock()
+                    .unwrap()
+                    .as_ref()
+                    .and_then(|window| window.get_level());
+                apply_autocomplete_window_level(window_map, level);
 
                 Ok(())
             },

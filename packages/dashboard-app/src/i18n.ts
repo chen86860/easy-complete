@@ -38,6 +38,9 @@ const en = {
   "behavior.launchAtLogin": "Launch at Login",
   "behavior.launchAtLoginDescription":
     "Start Easy Complete automatically when you sign in",
+  "behavior.keepAutocompleteReady": "Always Keep Suggestions Ready",
+  "behavior.keepAutocompleteReadyDescription":
+    "Keep autocomplete loaded when no terminals are connected for faster first suggestions, using more memory",
   "behavior.showAfterTab": "Show Suggestions After Tab",
   "behavior.showAfterTabDescription":
     "Wait until you press Tab before opening the suggestion popup",
@@ -178,6 +181,9 @@ const zhCN: Record<TranslationKey, string> = {
   "behavior.startupAndTrigger": "启动与触发",
   "behavior.launchAtLogin": "登录时启动",
   "behavior.launchAtLoginDescription": "登录系统时自动启动 Easy Complete",
+  "behavior.keepAutocompleteReady": "始终保持联想就绪",
+  "behavior.keepAutocompleteReadyDescription":
+    "没有终端连接时仍保留联想服务，以更高内存占用换取首次建议更快显示",
   "behavior.showAfterTab": "按 Tab 后显示建议",
   "behavior.showAfterTabDescription": "按下 Tab 后再打开补全建议弹窗",
   "behavior.suggestions": "补全建议",

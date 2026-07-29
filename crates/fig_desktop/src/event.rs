@@ -29,6 +29,19 @@ pub enum Event {
     ReloadTray {
         is_logged_in: bool,
     },
+    AutocompleteLifecycleChanged,
+    AutocompleteReleaseTimerElapsed {
+        generation: u64,
+    },
+    /// The autocomplete webview finished loading and can receive window events.
+    AutocompleteWebviewMounted,
+    /// Fallback for when the autocomplete webview never reports mounting.
+    AutocompleteMountTimeoutElapsed {
+        generation: u64,
+    },
+    /// The autocomplete webview rendered suggestions for the first time.
+    AutocompleteWebviewReady,
+    AutocompleteSpecsReady,
 
     ShowMessageNotification(ShowMessageNotification),
 }
@@ -102,8 +115,10 @@ pub enum WindowEvent {
         dry_run: bool,
         tx: Option<UnboundedSender<WindowGeometryResult>>,
     },
-    /// Hides the window
+    /// Hides the window without releasing its webview.
     Hide,
+    /// Closes the window and releases its webview when supported.
+    Close,
     Show,
     Emit {
         event_name: EmitEventName,
@@ -143,6 +158,7 @@ impl WindowEvent {
         matches!(
             self,
             WindowEvent::Hide
+                | WindowEvent::Close
                 | WindowEvent::SetEnabled(_)
                 // TODO: we really shouldnt need to allow these to be called when disabled,
                 // however we allow them at the moment because notification listeners are

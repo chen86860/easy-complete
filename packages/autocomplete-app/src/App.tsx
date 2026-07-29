@@ -43,6 +43,7 @@ import {
   useDynamicResizeObserver,
   useSystemTheme,
 } from "./hooks/helpers";
+import { useReportFirstSuggestions, useReportMounted } from "./hooks/lifecycle";
 
 import Suggestion from "./components/Suggestion";
 import Description, { DescriptionPosition } from "./components/Description";
@@ -121,6 +122,9 @@ function App() {
   // }, []);
 
   const isLoading = isLoadingSuggestions;
+
+  useReportMounted();
+  useReportFirstSuggestions(suggestions.length > 0);
 
   useEffect(() => {
     // Default font-size is 12.8px (0.8em) and default row size is 20px = 12.8 * 1.5625

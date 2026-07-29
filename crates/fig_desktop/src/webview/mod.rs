@@ -805,10 +805,10 @@ pub fn build_dashboard(
         // Local debug builds keep inspector access; release builds stay free of browser UI.
         .with_devtools(cfg!(debug_assertions))
         .with_asynchronous_custom_protocol(
-            "qcliresource".into(),
+            resource::RESOURCE_SCHEME.into(),
             utils::wrap_custom_protocol(
                 Arc::clone(&ctx),
-                "qcliresource::Dashboard",
+                "ecresource::Dashboard",
                 DashboardId,
                 resource::handle::<resource::Dashboard>,
             ),
@@ -919,10 +919,10 @@ pub fn build_autocomplete(
             utils::wrap_custom_protocol(Arc::clone(&ctx), "spec", AutocompleteId, spec::handle),
         )
         .with_asynchronous_custom_protocol(
-            "qcliresource".into(),
+            resource::RESOURCE_SCHEME.into(),
             utils::wrap_custom_protocol(
                 Arc::clone(&ctx),
-                "qcliresource::Autocomplete",
+                "ecresource::Autocomplete",
                 AutocompleteId,
                 resource::handle::<resource::Autocomplete>,
             ),

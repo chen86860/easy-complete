@@ -1,6 +1,8 @@
 use tracing::error;
 use url::Url;
 
+use crate::protocol::resource::RESOURCE_URL;
+
 pub fn url() -> Url {
     if let Ok(dashboard_url) = std::env::var("DASHBOARD_URL") {
         return Url::parse(&dashboard_url).unwrap();
@@ -15,5 +17,5 @@ pub fn url() -> Url {
         }
     };
 
-    Url::parse("qcliresource://localhost").unwrap()
+    Url::parse(RESOURCE_URL).unwrap()
 }

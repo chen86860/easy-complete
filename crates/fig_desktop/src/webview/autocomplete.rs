@@ -3,7 +3,9 @@ use std::sync::LazyLock;
 use tracing::error;
 use url::Url;
 
-pub static RESOURCE_URL: LazyLock<Url> = LazyLock::new(|| Url::parse("qcliresource://localhost").unwrap());
+use crate::protocol::resource::RESOURCE_URL;
+
+pub static AUTOCOMPLETE_RESOURCE_URL: LazyLock<Url> = LazyLock::new(|| Url::parse(RESOURCE_URL).unwrap());
 
 pub fn url() -> Url {
     if let Ok(autocomplete_url) = std::env::var("AUTOCOMPLETE_URL") {
@@ -19,5 +21,5 @@ pub fn url() -> Url {
         }
     };
 
-    RESOURCE_URL.clone()
+    AUTOCOMPLETE_RESOURCE_URL.clone()
 }

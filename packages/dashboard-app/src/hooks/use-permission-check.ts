@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Install } from "@easy-complete/api-bindings";
+import { useI18n } from "../i18n";
 
 export type PermissionId = "accessibility" | "shellIntegration" | "inputMethod";
 export type PermissionState = "checking" | "ready" | "missing" | "error";
@@ -18,33 +19,14 @@ export type PermissionStatus = PermissionRequirement & {
   detail?: string;
 };
 
-const REQUIREMENTS: PermissionRequirement[] = [
-  {
-    id: "accessibility",
-    title: "Accessibility Permission",
-    description:
-      "Required to read the focused terminal window and position completions.",
-    repairLabel: "Grant Accessibility",
-  },
-  {
-    id: "shellIntegration",
-    title: "Shell Integration",
-    description:
-      "Injects hooks into .zshrc / .bashrc so Easy Complete can track your shell state.",
-    repairLabel: "Install Shell Hooks",
-    requires: ["accessibility"],
-  },
-  {
-    id: "inputMethod",
-    title: "Input Method Integration",
-    description:
-      "Required for cursor tracking in Kitty, Alacritty, Zed, Ghostty, and WezTerm.",
-    repairLabel: "Install Input Method",
-  },
+const REQUIREMENTS: Array<Pick<PermissionRequirement, "id" | "requires">> = [
+  { id: "accessibility" },
+  { id: "shellIntegration", requires: ["accessibility"] },
+  { id: "inputMethod" },
 ];
 
-const asMessage = (error: unknown) =>
-  error instanceof Error ? error.message : "Unable to check this requirement.";
+const asMessage = (error: unknown, fallback: string) =>
+  error instanceof Error ? error.message : fallback;
 
 function toInstallComponent(id: PermissionId): Install.Component {
   if (id === "shellIntegration") return "dotfiles";
@@ -52,6 +34,7 @@ function toInstallComponent(id: PermissionId): Install.Component {
 }
 
 export function usePermissionCheck() {
+  const { t } = useI18n();
   const [states, setStates] = useState<Record<PermissionId, PermissionState>>({
     accessibility: "checking",
     shellIntegration: "checking",
@@ -62,21 +45,27 @@ export function usePermissionCheck() {
   );
   const [repairing, setRepairing] = useState<PermissionId | "all" | null>(null);
 
-  const checkOne = useCallback(async (id: PermissionId) => {
-    setStates((previous) => ({ ...previous, [id]: "checking" }));
-    setDetails((previous) => ({ ...previous, [id]: undefined }));
+  const checkOne = useCallback(
+    async (id: PermissionId) => {
+      setStates((previous) => ({ ...previous, [id]: "checking" }));
+      setDetails((previous) => ({ ...previous, [id]: undefined }));
 
-    try {
-      const installed = await Install.isInstalled(toInstallComponent(id));
-      setStates((previous) => ({
-        ...previous,
-        [id]: installed ? "ready" : "missing",
-      }));
-    } catch (error) {
-      setStates((previous) => ({ ...previous, [id]: "error" }));
-      setDetails((previous) => ({ ...previous, [id]: asMessage(error) }));
-    }
-  }, []);
+      try {
+        const installed = await Install.isInstalled(toInstallComponent(id));
+        setStates((previous) => ({
+          ...previous,
+          [id]: installed ? "ready" : "missing",
+        }));
+      } catch (error) {
+        setStates((previous) => ({ ...previous, [id]: "error" }));
+        setDetails((previous) => ({
+          ...previous,
+          [id]: asMessage(error, t("permission.checkError")),
+        }));
+      }
+    },
+    [t],
+  );
 
   const refresh = useCallback(async () => {
     await Promise.all(
@@ -92,13 +81,16 @@ export function usePermissionCheck() {
       try {
         await Install.install(toInstallComponent(id));
       } catch (error) {
-        setDetails((previous) => ({ ...previous, [id]: asMessage(error) }));
+        setDetails((previous) => ({
+          ...previous,
+          [id]: asMessage(error, t("permission.checkError")),
+        }));
       } finally {
         await checkOne(id);
         setRepairing(null);
       }
     },
-    [checkOne],
+    [checkOne, t],
   );
 
   const repairAll = useCallback(async () => {
@@ -140,10 +132,13 @@ export function usePermissionCheck() {
     () =>
       REQUIREMENTS.map((requirement) => ({
         ...requirement,
+        title: t(`permission.${requirement.id}.title`),
+        description: t(`permission.${requirement.id}.description`),
+        repairLabel: t(`permission.${requirement.id}.repair`),
         state: states[requirement.id],
         detail: details[requirement.id],
       })),
-    [details, states],
+    [details, states, t],
   );
 
   const ready = permissions.every((permission) => permission.state === "ready");

@@ -4,17 +4,9 @@ import {
   AppearanceSection,
   BehaviorSection,
 } from "../sections/settings-sections";
+import { useI18n } from "../i18n";
 import type { Section, SettingSetter, SettingsMap } from "../types";
 import { preventScrollBounce } from "../utils/prevent-scroll-bounce";
-
-const SECTION_META: Record<Section, { title: string; description?: string }> = {
-  appearance: { title: "Appearance" },
-  behavior: { title: "Behavior" },
-  about: {
-    title: "About",
-    description: "App info, updates, and project links",
-  },
-};
 
 export function DashboardContent({
   section,
@@ -25,8 +17,18 @@ export function DashboardContent({
   settings: SettingsMap;
   set: SettingSetter;
 }) {
+  const { t } = useI18n();
   const scrollRef = useRef<HTMLElement>(null);
-  const meta = SECTION_META[section];
+  const sectionMeta: Record<Section, { title: string; description?: string }> =
+    {
+      appearance: { title: t("nav.appearance") },
+      behavior: { title: t("nav.behavior") },
+      about: {
+        title: t("nav.about"),
+        description: t("section.aboutDescription"),
+      },
+    };
+  const meta = sectionMeta[section];
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0 });

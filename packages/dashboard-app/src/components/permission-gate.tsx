@@ -5,16 +5,12 @@ import type {
   PermissionState,
   PermissionStatus,
 } from "../hooks/use-permission-check";
+import { useI18n } from "../i18n";
 import { IconCheck, IconWarning } from "./icons";
 
-const STATUS_COPY: Record<PermissionState, string> = {
-  checking: "Checking",
-  ready: "Ready",
-  missing: "Needs setup",
-  error: "Needs attention",
-};
-
 function StatusBadge({ state }: { state: PermissionState }) {
+  const { t } = useI18n();
+
   return (
     <span
       className={clsx(
@@ -25,7 +21,7 @@ function StatusBadge({ state }: { state: PermissionState }) {
       )}
     >
       {state === "ready" ? <IconCheck /> : <IconWarning />}
-      <span className="ml-1.5">{STATUS_COPY[state]}</span>
+      <span className="ml-1.5">{t(`permission.status.${state}`)}</span>
     </span>
   );
 }
@@ -41,6 +37,7 @@ function PermissionRow({
   repairing: PermissionId | "all" | null;
   onRepair: (id: PermissionId) => void;
 }) {
+  const { t } = useI18n();
   const busy = repairing === permission.id || repairing === "all";
   const canRepair =
     permission.state === "missing" || permission.state === "error";
@@ -63,7 +60,7 @@ function PermissionRow({
         </div>
         {blocked ? (
           <div className="mt-1.5 text-[12px] leading-[17px] text-[rgba(60,60,67,0.45)]">
-            Grant Accessibility first to enable this step.
+            {t("permission.accessibilityFirst")}
           </div>
         ) : permission.detail ? (
           <div className="mt-1.5 text-[12px] leading-[17px] text-[#c02b20]">
@@ -83,7 +80,7 @@ function PermissionRow({
             : "bg-[rgba(120,120,128,0.14)] text-[rgba(60,60,67,0.50)]",
         )}
       >
-        {busy ? "Working..." : permission.repairLabel}
+        {busy ? t("permission.working") : permission.repairLabel}
       </button>
     </div>
   );
@@ -114,6 +111,8 @@ export function PermissionGate({
   telemetryEnabled: boolean;
   onTelemetryChange: (value: boolean) => void;
 }) {
+  const { t } = useI18n();
+
   if (ready || import.meta.env.DEV) return <>{children}</>;
 
   if (checking) {
@@ -129,10 +128,10 @@ export function PermissionGate({
       <div className="w-full max-w-[640px]">
         <div className="mb-4 pl-1">
           <h1 className="m-0 text-[22px] font-[700] text-[#050505]">
-            Finish Setup
+            {t("permission.finishSetup")}
           </h1>
           <p className="mb-0 mt-1.5 text-[13px] leading-5 text-[rgba(60,60,67,0.70)]">
-            Easy Complete needs these permissions before settings can be used.
+            {t("permission.finishSetupDescription")}
           </p>
         </div>
 
@@ -155,7 +154,7 @@ export function PermissionGate({
             disabled={refreshing || repairing !== null}
             className="rounded-[9px] border-0 bg-[rgba(120,120,128,0.16)] px-3 py-1.5 text-[13px] font-semibold text-[#050505] outline-none disabled:text-[rgba(60,60,67,0.42)]"
           >
-            {refreshing ? "Checking..." : "Check Again"}
+            {refreshing ? t("permission.checking") : t("permission.checkAgain")}
           </button>
           <button
             type="button"
@@ -163,19 +162,17 @@ export function PermissionGate({
             disabled={repairing !== null}
             className="rounded-[9px] border-0 bg-[var(--dashboard-accent-color)] px-3 py-1.5 text-[13px] font-semibold text-white outline-none disabled:bg-[rgba(120,120,128,0.20)] disabled:text-[rgba(60,60,67,0.42)]"
           >
-            {repairing ? "Working..." : "Fix All"}
+            {repairing ? t("permission.working") : t("permission.fixAll")}
           </button>
         </div>
 
         <div className="mt-5 flex items-start justify-between gap-4 rounded-[12px] bg-[rgba(120,120,128,0.08)] px-4 py-3">
           <div>
             <div className="text-[13px] font-medium text-[#050505]">
-              Share anonymous usage data
+              {t("permission.shareUsageData")}
             </div>
             <div className="mt-0.5 text-[12px] leading-[1.5] text-[rgba(60,60,67,0.60)]">
-              Helps us understand install counts and which macOS versions are in
-              use. No commands, paths, or personal data are collected. You can
-              change this anytime in About → Privacy.
+              {t("permission.shareUsageDataDescription")}
             </div>
           </div>
           <button

@@ -17,6 +17,7 @@ import {
 import { Card, Row } from "../components/settings-layout";
 import { ThemePicker } from "../components/theme-picker";
 import { useCheckForUpdates } from "../hooks/use-check-for-updates";
+import { type LocalePreference, useI18n } from "../i18n";
 
 const APP_VERSION = __APP_VERSION__;
 const REPO_URL = "https://github.com/chen86860/easy-complete";
@@ -98,27 +99,51 @@ export function AppearanceSection({
   settings: SettingsMap;
   set: SettingSetter;
 }) {
+  const { localePreference, setLocalePreference, t } = useI18n();
+
   return (
     <>
-      <Card title="Theme">
+      <Card title={t("appearance.language")}>
+        <Row
+          label={t("appearance.displayLanguage")}
+          description={t("appearance.displayLanguageDescription")}
+          last
+        >
+          <Select
+            value={localePreference}
+            options={[
+              { value: "system", label: t("appearance.followSystem") },
+              { value: "en", label: t("appearance.english") },
+              { value: "zh-CN", label: t("appearance.simplifiedChinese") },
+            ]}
+            onChange={(value) => setLocalePreference(value as LocalePreference)}
+          />
+        </Row>
+      </Card>
+
+      <Card title={t("theme.title")}>
         <ThemePicker
           value={String(settings[SETTINGS.THEME] ?? "github-dark")}
           onChange={(value) => set(SETTINGS.THEME, value)}
         />
       </Card>
 
-      <Card title="Typography">
+      <Card title={t("appearance.typography")}>
         <Row
-          label="Font Family"
-          description="Font used in the autocomplete popup"
+          label={t("appearance.fontFamily")}
+          description={t("appearance.fontFamilyDescription")}
         >
           <TextInput
             value={String(settings[SETTINGS.FONT_FAMILY] ?? "")}
-            placeholder="System default"
+            placeholder={t("appearance.systemDefault")}
             onChange={(value) => set(SETTINGS.FONT_FAMILY, value || null)}
           />
         </Row>
-        <Row label="Font Size" description="Popup font size in pixels" last>
+        <Row
+          label={t("appearance.fontSize")}
+          description={t("appearance.fontSizeDescription")}
+          last
+        >
           <NumberInput
             value={Number(settings[SETTINGS.FONT_SIZE] ?? 13)}
             min={10}
@@ -128,8 +153,11 @@ export function AppearanceSection({
         </Row>
       </Card>
 
-      <Card title="Dimensions">
-        <Row label="Max Width" description="Maximum popup width in pixels">
+      <Card title={t("appearance.dimensions")}>
+        <Row
+          label={t("appearance.maxWidth")}
+          description={t("appearance.maxWidthDescription")}
+        >
           <NumberInput
             value={Number(settings[SETTINGS.WIDTH] ?? 300)}
             min={150}
@@ -139,8 +167,8 @@ export function AppearanceSection({
           />
         </Row>
         <Row
-          label="Max Height"
-          description="Maximum popup height in pixels"
+          label={t("appearance.maxHeight")}
+          description={t("appearance.maxHeightDescription")}
           last
         >
           <NumberInput
@@ -163,12 +191,14 @@ export function BehaviorSection({
   settings: SettingsMap;
   set: SettingSetter;
 }) {
+  const { t } = useI18n();
+
   return (
     <>
-      <Card title="Startup & Trigger">
+      <Card title={t("behavior.startupAndTrigger")}>
         <Row
-          label="Launch at Login"
-          description="Start Easy Complete automatically when you sign in"
+          label={t("behavior.launchAtLogin")}
+          description={t("behavior.launchAtLoginDescription")}
         >
           <Toggle
             checked={Boolean(settings[SETTINGS.LAUNCH_ON_STARTUP] ?? false)}
@@ -176,8 +206,8 @@ export function BehaviorSection({
           />
         </Row>
         <Row
-          label="Show Suggestions After Tab"
-          description="Wait until you press Tab before opening the suggestion popup"
+          label={t("behavior.showAfterTab")}
+          description={t("behavior.showAfterTabDescription")}
           last
         >
           <Toggle
@@ -187,10 +217,10 @@ export function BehaviorSection({
         </Row>
       </Card>
 
-      <Card title="Suggestions">
+      <Card title={t("behavior.suggestions")}>
         <Row
-          label="Fuzzy Matching"
-          description="Match close character sequences instead of exact prefixes"
+          label={t("behavior.fuzzyMatching")}
+          description={t("behavior.fuzzyMatchingDescription")}
         >
           <Toggle
             checked={Boolean(
@@ -201,25 +231,25 @@ export function BehaviorSection({
           />
         </Row>
         <Row
-          label="Sort Order"
-          description="Choose how suggestions are ranked"
+          label={t("behavior.sortOrder")}
+          description={t("behavior.sortOrderDescription")}
           last
         >
           <Select
             value={String(settings[SETTINGS.SORT_METHOD] ?? "default")}
             options={[
-              { value: "default", label: "By Relevance" },
-              { value: "alphabetical", label: "Alphabetical" },
+              { value: "default", label: t("behavior.byRelevance") },
+              { value: "alphabetical", label: t("behavior.alphabetical") },
             ]}
             onChange={(value) => set(SETTINGS.SORT_METHOD, value)}
           />
         </Row>
       </Card>
 
-      <Card title="Keyboard & Insertion">
+      <Card title={t("behavior.keyboardAndInsertion")}>
         <Row
-          label="Use Up Arrow for History"
-          description="Let Up Arrow switch from suggestions into shell history navigation"
+          label={t("behavior.useUpArrowForHistory")}
+          description={t("behavior.useUpArrowForHistoryDescription")}
         >
           <Toggle
             checked={Boolean(settings[SETTINGS.NAVIGATE_TO_HISTORY])}
@@ -227,9 +257,8 @@ export function BehaviorSection({
           />
         </Row>
         <Row
-          label="Insert Trailing Space"
-          description="Add a space after accepting a suggestion"
-          last
+          label={t("behavior.insertTrailingSpace")}
+          description={t("behavior.insertTrailingSpaceDescription")}
         >
           <Toggle
             checked={Boolean(settings[SETTINGS.INSERT_SPACE_AUTOMATICALLY])}
@@ -238,26 +267,40 @@ export function BehaviorSection({
             }
           />
         </Row>
+        <Row
+          label={t("behavior.executeAfterTrailingSpace")}
+          description={t("behavior.executeAfterTrailingSpaceDescription")}
+          last
+        >
+          <Toggle
+            checked={Boolean(
+              settings[SETTINGS.IMMEDIATELY_EXEC_AFTER_SPACE] ?? false,
+            )}
+            onChange={(value) =>
+              set(SETTINGS.IMMEDIATELY_EXEC_AFTER_SPACE, value)
+            }
+          />
+        </Row>
       </Card>
 
-      <Card title="History">
+      <Card title={t("behavior.history")}>
         <Row
-          label="History Mode"
-          description="How shell history is blended with completions"
+          label={t("behavior.historyMode")}
+          description={t("behavior.historyModeDescription")}
         >
           <Select
             value={String(settings[SETTINGS.HISTORY_MODE] ?? "show")}
             options={[
-              { value: "show", label: "Show with completions" },
-              { value: "history_only", label: "History only" },
-              { value: "off", label: "Off" },
+              { value: "show", label: t("behavior.showWithCompletions") },
+              { value: "history_only", label: t("behavior.historyOnly") },
+              { value: "off", label: t("behavior.off") },
             ]}
             onChange={(value) => set(SETTINGS.HISTORY_MODE, value)}
           />
         </Row>
         <Row
-          label="Merge All Shells"
-          description="Include history from all shells (bash, zsh, fish)"
+          label={t("behavior.mergeAllShells")}
+          description={t("behavior.mergeAllShellsDescription")}
         >
           <Toggle
             checked={Boolean(settings[SETTINGS.HISTORY_MERGE_SHELLS])}
@@ -265,13 +308,13 @@ export function BehaviorSection({
           />
         </Row>
         <Row
-          label="History Command"
-          description="Shell command to use as the history source (leave empty for default)"
+          label={t("behavior.historyCommand")}
+          description={t("behavior.historyCommandDescription")}
           last
         >
           <TextInput
             value={String(settings[SETTINGS.HISTORY_COMMAND] ?? "")}
-            placeholder="e.g. atuin search"
+            placeholder={t("behavior.historyCommandPlaceholder")}
             onChange={(value) => set(SETTINGS.HISTORY_COMMAND, value || null)}
           />
         </Row>
@@ -283,6 +326,7 @@ export function BehaviorSection({
 const DOCTOR_COMMAND = "ec doctor";
 
 function DiagnosticsCard() {
+  const { t } = useI18n();
   const [copyState, setCopyState] = useState<"idle" | "done" | "error">("idle");
 
   async function copyCommand() {
@@ -297,15 +341,13 @@ function DiagnosticsCard() {
   }
 
   return (
-    <Card title="Troubleshooting">
+    <Card title={t("about.troubleshooting")}>
       <div className="px-[18px] py-3.5">
         <div className="text-[14px] font-medium leading-[1.35] text-[#050505]">
-          Something not working?
+          {t("about.somethingNotWorking")}
         </div>
         <div className="mt-1 max-w-[36rem] text-[12px] leading-[1.5] text-[rgba(60,60,67,0.68)]">
-          Run the built-in diagnostic in your terminal — it checks your shell
-          integration, permissions, and background processes, and tells you how
-          to fix any issues.
+          {t("about.diagnosticDescription")}
         </div>
         <div className="mt-3 flex items-center gap-2">
           <code className="flex-1 select-text rounded-[9px] border border-[rgba(60,60,67,0.10)] bg-[rgba(0,0,0,0.04)] px-3 py-2 font-mono text-[12.5px] text-[rgba(0,0,0,0.82)]">
@@ -317,21 +359,21 @@ function DiagnosticsCard() {
             icon={copyState === "done" ? null : <IconCopy size={13} />}
             label={
               copyState === "done"
-                ? "Copied!"
+                ? t("about.copied")
                 : copyState === "error"
-                  ? "Failed"
-                  : "Copy"
+                  ? t("about.failed")
+                  : t("about.copy")
             }
             onClick={() => void copyCommand()}
           />
         </div>
         <div className="mt-3.5 flex items-center justify-between gap-3 border-t border-[rgba(60,60,67,0.08)] pt-3.5">
           <div className="min-w-0 flex-1 text-[12px] leading-[1.5] text-[rgba(60,60,67,0.68)]">
-            Still stuck? Include the diagnostic output in your report.
+            {t("about.stillStuck")}
           </div>
           <AboutLinkButton
             href={ISSUES_URL}
-            label="Report an Issue"
+            label={t("about.reportIssue")}
             icon={<IconExternalLink />}
           />
         </div>
@@ -347,6 +389,7 @@ export function AboutSection({
   settings: SettingsMap;
   set: SettingSetter;
 }) {
+  const { t } = useI18n();
   const { isChecking, check: checkForUpdates } = useCheckForUpdates();
   const [copyState, setCopyState] = useState<"idle" | "done" | "error">("idle");
 
@@ -374,19 +417,19 @@ export function AboutSection({
                 Easy Complete
               </div>
               <div className="mt-0.5 text-[13px] text-[rgba(60,60,67,0.68)]">
-                Terminal autocomplete for macOS
+                {t("about.tagline")}
               </div>
               <div className="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-[rgba(60,60,67,0.68)]">
                 <button
                   onClick={() => void copyVersionInfo()}
-                  title="Copy version info"
+                  title={t("about.copyVersionInfo")}
                   className="cursor-pointer rounded-full border-0 bg-[rgba(60,60,67,0.08)] px-2 py-0.5 font-sans text-[12px] font-medium text-[rgba(0,0,0,0.72)] transition-colors hover:bg-[rgba(60,60,67,0.14)]"
                 >
                   {copyState === "done"
-                    ? "Copied"
+                    ? t("about.copiedShort")
                     : copyState === "error"
-                      ? "Copy failed"
-                      : `Version ${APP_VERSION}`}
+                      ? t("about.copyFailed")
+                      : `${t("about.version")} ${APP_VERSION}`}
                 </button>
               </div>
             </div>
@@ -398,7 +441,7 @@ export function AboutSection({
                   <IconUpdate size={13} />
                 </span>
               }
-              label="Check for Updates"
+              label={t("about.checkForUpdates")}
               onClick={() => void checkForUpdates()}
               disabled={isChecking}
             />
@@ -406,10 +449,10 @@ export function AboutSection({
         </div>
       </Card>
 
-      <Card title="Updates">
+      <Card title={t("about.updates")}>
         <Row
-          label="Check for Updates Automatically"
-          description="Notify when a new version is available"
+          label={t("about.checkAutomatically")}
+          description={t("about.checkAutomaticallyDescription")}
           last
         >
           <Toggle
@@ -421,10 +464,10 @@ export function AboutSection({
 
       <DiagnosticsCard />
 
-      <Card title="Privacy">
+      <Card title={t("about.privacy")}>
         <Row
-          label="Share Anonymous Usage Data"
-          description="Anonymous statistics only, never commands or personal data"
+          label={t("about.shareUsageData")}
+          description={t("about.shareUsageDataDescription")}
         >
           <Toggle
             checked={
@@ -435,13 +478,13 @@ export function AboutSection({
           />
         </Row>
         <Row
-          label="Privacy Policy"
-          description="See what's collected and how to opt out"
+          label={t("about.privacyPolicy")}
+          description={t("about.privacyPolicyDescription")}
           last
         >
           <AboutLinkButton
             href={PRIVACY_URL}
-            label="View Policy"
+            label={t("about.viewPolicy")}
             icon={<IconExternalLink />}
           />
         </Row>
@@ -451,12 +494,12 @@ export function AboutSection({
         <AboutLinkButton href={REPO_URL} label="GitHub" icon={<IconGitHub />} />
         <AboutLinkButton
           href={RELEASES_URL}
-          label="Release Notes"
+          label={t("about.releaseNotes")}
           icon={<IconExternalLink />}
         />
       </div>
       <p className="mt-3 text-center text-[11px] leading-[1.5] text-[rgba(60,60,67,0.55)]">
-        Open source under the MIT and Apache 2.0 licenses · Based on the{" "}
+        {t("about.licensePrefix")}{" "}
         <a
           href={UPSTREAM_REPO_URL}
           onClick={(event) => {
@@ -465,7 +508,7 @@ export function AboutSection({
           }}
           className="text-[rgba(60,60,67,0.55)] underline"
         >
-          Amazon Q Developer CLI
+          {t("about.upstreamName")}
         </a>
       </p>
     </>

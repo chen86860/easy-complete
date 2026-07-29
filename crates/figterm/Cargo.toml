@@ -80,7 +80,7 @@ winapi = { version = "0.3", features = [
     "namedpipeapi",
     "synchapi",
 ] }
-winreg = "0.55.0"
+winreg = "0.56.0"
 
 [dev-dependencies]
 assert_cmd.workspace = true

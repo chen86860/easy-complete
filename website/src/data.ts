@@ -41,7 +41,7 @@ const featureData: Omit<Feature, "glyph">[] = [
   },
   {
     title: "In-IDE terminals",
-    desc: "Completions follow you into the integrated terminals of VS Code and JetBrains IDEs.",
+    desc: "Completions follow you into VS Code, Cursor, ChatGPT, and JetBrains IDE terminals.",
   },
   {
     title: "One-command setup",
@@ -92,6 +92,7 @@ export const terminals: string[] = [
   "iTerm2",
   "Apple Terminal",
   "VS Code",
+  "ChatGPT",
   "JetBrains IDEs",
 ];
 
@@ -119,7 +120,7 @@ export const faqs: Faq[] = [
   {
     question: "Which terminals does Easy Complete support?",
     answer:
-      "Easy Complete supports Ghostty, Kitty, WezTerm, Alacritty, Zed, iTerm2, Apple Terminal, VS Code, and JetBrains IDE terminals.",
+      "Easy Complete supports Ghostty, Kitty, WezTerm, Alacritty, Zed, iTerm2, Apple Terminal, VS Code, ChatGPT (Codex), and JetBrains IDE terminals.",
   },
   {
     question: "How do I install Easy Complete?",

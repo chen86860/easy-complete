@@ -161,9 +161,10 @@ ec settings <key> <value>       # 修改某项设置
 
 ### 受支持的终端
 
-大多数终端通过 PTY 集成开箱即用。少数绕过标准 PTY 路径的终端（**Ghostty、Kitty、
-WezTerm、Zed、Alacritty**）还需要依赖随附的输入法来追踪光标位置——这一项会在安装时自动
-注册。
+大多数终端通过 PTY 集成开箱即用——包括 iTerm2、Apple Terminal、VS Code、Cursor、
+ChatGPT（Codex）以及 JetBrains IDE 终端。少数绕过标准 PTY 路径的终端（**Ghostty、Kitty、
+WezTerm、Zed、Alacritty、Otty**）还需要依赖随附的输入法来追踪光标位置——这一项会在安装时
+自动注册。
 
 ---
 

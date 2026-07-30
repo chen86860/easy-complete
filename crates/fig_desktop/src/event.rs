@@ -29,7 +29,15 @@ pub enum Event {
     ReloadTray {
         is_logged_in: bool,
     },
-    AutocompleteLifecycleChanged,
+    AutocompleteLifecycleChanged {
+        /// The new `autocomplete.keepReady` value, when the sender already knows it.
+        ///
+        /// `fig_desktop` loads settings into a process-global map once at startup and never
+        /// refreshes it from disk, so re-reading the setting here returns the value as of launch
+        /// whenever another process (`ec settings`) wrote the file. Senders that come from a
+        /// settings notification pass the fresh value through instead.
+        keep_ready: Option<bool>,
+    },
     AutocompleteReleaseTimerElapsed {
         generation: u64,
     },

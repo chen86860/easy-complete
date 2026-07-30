@@ -336,6 +336,11 @@ fn release_window(
 
 #[derive(Default)]
 struct AutocompleteLifecycle {
+    /// Last known `autocomplete.keepReady` value.
+    ///
+    /// Seeded from settings at startup and updated from settings notifications after that. It is
+    /// deliberately not re-read on every reconcile: see [`Event::AutocompleteLifecycleChanged`].
+    keep_ready: bool,
     release_generation: u64,
     release_task: Option<tokio::task::JoinHandle<()>>,
     created_at: Option<Instant>,
@@ -347,6 +352,18 @@ struct AutocompleteLifecycle {
 }
 
 impl AutocompleteLifecycle {
+    fn new() -> Self {
+        Self {
+            keep_ready: fig_settings::settings::get_bool_or(AUTOCOMPLETE_KEEP_READY_SETTING, false),
+            ..Default::default()
+        }
+    }
+
+    /// Records a fresh `autocomplete.keepReady` value observed in a settings notification.
+    fn set_keep_ready(&mut self, keep_ready: bool) {
+        self.keep_ready = keep_ready;
+    }
+
     fn ensure_loaded(
         &mut self,
         context: &Arc<Context>,
@@ -443,7 +460,7 @@ impl AutocompleteLifecycle {
         }
         self.release_generation = self.release_generation.wrapping_add(1);
         let active_sessions = figterm_state.inner.lock().linked_sessions.len();
-        let keep_ready = fig_settings::settings::get_bool_or(AUTOCOMPLETE_KEEP_READY_SETTING, false);
+        let keep_ready = self.keep_ready;
 
         if autocomplete_should_be_loaded(active_sessions, keep_ready) {
             self.ensure_loaded(context, fig_id_map, window_id_map, window_target, proxy)?;
@@ -463,6 +480,8 @@ impl AutocompleteLifecycle {
                 delay_seconds = release_delay.as_secs(),
                 "Scheduled autocomplete webview release"
             );
+        } else {
+            debug!(active_sessions, keep_ready, "Autocomplete webview stays unloaded");
         }
 
         Ok(())
@@ -478,7 +497,7 @@ impl AutocompleteLifecycle {
     ) {
         self.release_task = None;
         let active_sessions = figterm_state.inner.lock().linked_sessions.len();
-        let keep_ready = fig_settings::settings::get_bool_or(AUTOCOMPLETE_KEEP_READY_SETTING, false);
+        let keep_ready = self.keep_ready;
         if autocomplete_should_release(timer_generation, self.release_generation, active_sessions, keep_ready) {
             self.release(fig_id_map, window_id_map, notifications_state);
             info!("Released idle autocomplete webview");
@@ -752,7 +771,7 @@ impl WebviewManager {
             .send_event(Event::PlatformBoundEvent(PlatformBoundEvent::InitializePostRun))
             .expect("Failed to send post init event");
 
-        let mut autocomplete_lifecycle = AutocompleteLifecycle::default();
+        let mut autocomplete_lifecycle = AutocompleteLifecycle::new();
 
         self.event_loop.run(move |event, window_target, control_flow| {
             *control_flow = ControlFlow::Wait;
@@ -767,7 +786,9 @@ impl WebviewManager {
             match event {
                 WryEvent::NewEvents(StartCause::Init) => {
                     info!("Fig has started");
-                    proxy.send_event(Event::AutocompleteLifecycleChanged).ok();
+                    proxy
+                        .send_event(Event::AutocompleteLifecycleChanged { keep_ready: None })
+                        .ok();
                     #[cfg(target_os = "macos")]
                     if self.show_dashboard_after_normal_launch && !crate::platform::launched_as_login_item() {
                         proxy
@@ -890,7 +911,9 @@ impl WebviewManager {
                                         error!(%err, "Failed to rebuild autocomplete webview");
                                         return;
                                     }
-                                    proxy.send_event(Event::AutocompleteLifecycleChanged).ok();
+                                    proxy
+                        .send_event(Event::AutocompleteLifecycleChanged { keep_ready: None })
+                        .ok();
                                 }
 
                                 let loaded = self.fig_id_map.contains_key(&AUTOCOMPLETE_ID);
@@ -961,7 +984,10 @@ impl WebviewManager {
                             tray.set_icon_as_template(true);
                             tray.set_menu(Some(Box::new(get_context_menu(is_logged_in))));
                         },
-                        Event::AutocompleteLifecycleChanged => {
+                        Event::AutocompleteLifecycleChanged { keep_ready } => {
+                            if let Some(keep_ready) = keep_ready {
+                                autocomplete_lifecycle.set_keep_ready(keep_ready);
+                            }
                             if let Err(err) = autocomplete_lifecycle.reconcile(
                                 &self.context,
                                 &mut self.fig_id_map,
@@ -1608,8 +1634,13 @@ async fn init_webview_notification_listeners(proxy: EventLoopProxy) {
     watcher!(
         settings,
         AUTOCOMPLETE_KEEP_READY_SETTING,
-        |_notification: JsonNotification, proxy: &EventLoopProxy| {
-            proxy.send_event(Event::AutocompleteLifecycleChanged).unwrap();
+        |notification: JsonNotification, proxy: &EventLoopProxy| {
+            debug!(?notification, "autocomplete.keepReady changed");
+            proxy
+                .send_event(Event::AutocompleteLifecycleChanged {
+                    keep_ready: notification.as_bool(),
+                })
+                .unwrap();
         }
     );
 

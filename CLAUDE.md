@@ -125,7 +125,7 @@ Relevant settings:
 | Key                                          | Default | Effect                                                                          |
 | -------------------------------------------- | ------- | ------------------------------------------------------------------------------- |
 | `autocomplete.keepReady`                     | `false` | Keep the overlay loaded with no terminals connected — faster first suggestion, more memory |
-| `developer.autocomplete.releaseDelaySeconds` | `600`   | Idle delay before releasing the overlay, clamped to 1s–24h. Debug only; low values cause constant rebuilds |
+| `developer.autocomplete.releaseDelaySeconds` | `600`   | Idle delay before releasing the overlay, clamped to 1s–24h. Debug only; low values cause constant rebuilds. Read from the process-global settings map, so an external `ec settings` write only applies after a restart |
 | `dashboard.language`                         | unset   | Dashboard UI language: `system`, `en`, or `zh-CN`                                |
 | `app.silentLaunch`                           | `false` | Start without opening the dashboard, same as `--no-dashboard`. A `ec://` deep link naming a page overrides it |
 

@@ -14,6 +14,7 @@ import {
   IconGitHub,
   IconUpdate,
 } from "../components/icons";
+import { AutoExecuteExample } from "../components/auto-execute-example";
 import { Card, Row } from "../components/settings-layout";
 import { ThemePicker } from "../components/theme-picker";
 import { useCheckForUpdates } from "../hooks/use-check-for-updates";
@@ -192,6 +193,9 @@ export function BehaviorSection({
   set: SettingSetter;
 }) {
   const { t } = useI18n();
+  const hideAutoExecute = Boolean(
+    settings[SETTINGS.HIDE_AUTO_EXECUTE_SUGGESTION] ?? false,
+  );
 
   return (
     <>
@@ -203,6 +207,15 @@ export function BehaviorSection({
           <Toggle
             checked={Boolean(settings[SETTINGS.LAUNCH_ON_STARTUP] ?? false)}
             onChange={(value) => set(SETTINGS.LAUNCH_ON_STARTUP, value)}
+          />
+        </Row>
+        <Row
+          label={t("behavior.silentLaunch")}
+          description={t("behavior.silentLaunchDescription")}
+        >
+          <Toggle
+            checked={Boolean(settings[SETTINGS.SILENT_LAUNCH] ?? false)}
+            onChange={(value) => set(SETTINGS.SILENT_LAUNCH, value)}
           />
         </Row>
         <Row
@@ -239,6 +252,17 @@ export function BehaviorSection({
               getDefaultSetting(SETTINGS.FUZZY_SEARCH),
             )}
             onChange={(value) => set(SETTINGS.FUZZY_SEARCH, value)}
+          />
+        </Row>
+        <Row
+          label={t("behavior.firstTokenCompletion")}
+          description={t("behavior.firstTokenCompletionDescription")}
+        >
+          <Toggle
+            checked={Boolean(
+              settings[SETTINGS.FIRST_COMMAND_COMPLETION] ?? false,
+            )}
+            onChange={(value) => set(SETTINGS.FIRST_COMMAND_COMPLETION, value)}
           />
         </Row>
         <Row
@@ -279,19 +303,52 @@ export function BehaviorSection({
           />
         </Row>
         <Row
-          label={t("behavior.executeAfterTrailingSpace")}
-          description={t("behavior.executeAfterTrailingSpaceDescription")}
-          last
+          label={t("behavior.hideAutoExecuteSuggestion")}
+          description={t("behavior.hideAutoExecuteSuggestionDescription")}
+          preview={<AutoExecuteExample command="git add" />}
+          last={hideAutoExecute}
         >
           <Toggle
-            checked={Boolean(
-              settings[SETTINGS.IMMEDIATELY_EXEC_AFTER_SPACE] ?? false,
-            )}
+            checked={hideAutoExecute}
             onChange={(value) =>
-              set(SETTINGS.IMMEDIATELY_EXEC_AFTER_SPACE, value)
+              set(SETTINGS.HIDE_AUTO_EXECUTE_SUGGESTION, value)
             }
           />
         </Row>
+        {!hideAutoExecute ? (
+          <>
+            <Row
+              label={t("behavior.executeAfterTrailingSpace")}
+              description={t("behavior.executeAfterTrailingSpaceDescription")}
+              preview={<AutoExecuteExample command="git add" />}
+            >
+              <Toggle
+                checked={Boolean(
+                  settings[SETTINGS.IMMEDIATELY_EXEC_AFTER_SPACE] ?? false,
+                )}
+                onChange={(value) =>
+                  set(SETTINGS.IMMEDIATELY_EXEC_AFTER_SPACE, value)
+                }
+              />
+            </Row>
+            <Row
+              label={t("behavior.runDangerousCommands")}
+              description={t("behavior.runDangerousCommandsDescription")}
+              preview={<AutoExecuteExample command="rm -rf" />}
+              last
+            >
+              <Toggle
+                checked={Boolean(
+                  settings[SETTINGS.IMMEDIATELY_RUN_DANGEROUS_COMMANDS] ??
+                  false,
+                )}
+                onChange={(value) =>
+                  set(SETTINGS.IMMEDIATELY_RUN_DANGEROUS_COMMANDS, value)
+                }
+              />
+            </Row>
+          </>
+        ) : null}
       </Card>
 
       <Card title={t("behavior.history")}>

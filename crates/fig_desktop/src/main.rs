@@ -188,12 +188,17 @@ async fn main() -> ExitCode {
     // fig_auth removed - treat as always logged in
     let is_logged_in = true;
 
+    // A deep link names the page to open, so it outranks the setting.
+    let silent_launch = page.is_none() && fig_settings::settings::get_bool_or("app.silentLaunch", false);
+
     #[cfg(target_os = "macos")]
-    let defer_dashboard_for_modern_login_item =
-        !cli.no_dashboard && launch_on_startup && fig_integrations::login_item::supports_modern_login_item();
+    let defer_dashboard_for_modern_login_item = !cli.no_dashboard
+        && !silent_launch
+        && launch_on_startup
+        && fig_integrations::login_item::supports_modern_login_item();
     #[cfg(not(target_os = "macos"))]
     let defer_dashboard_for_modern_login_item = false;
-    let visible = !cli.no_dashboard && !defer_dashboard_for_modern_login_item;
+    let visible = !cli.no_dashboard && !silent_launch && !defer_dashboard_for_modern_login_item;
 
     let mut webview_manager = WebviewManager::new(ctx, visible, defer_dashboard_for_modern_login_item);
     let auto_updates_enabled = !fig_settings::settings::get_bool_or("app.disableAutoupdates", false);

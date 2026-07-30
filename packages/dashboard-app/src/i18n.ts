@@ -38,6 +38,9 @@ const en = {
   "behavior.launchAtLogin": "Launch at Login",
   "behavior.launchAtLoginDescription":
     "Start Easy Complete automatically when you sign in",
+  "behavior.silentLaunch": "Silent Launch",
+  "behavior.silentLaunchDescription":
+    "Start in the background without opening this settings window. Autocomplete still works; reopen settings from the menu bar icon, or by launching Easy Complete again while it is running",
   "behavior.keepAutocompleteReady": "Always Keep Suggestions Ready",
   "behavior.keepAutocompleteReadyDescription":
     "Keep autocomplete loaded when no terminals are connected for faster first suggestions, using more memory",
@@ -48,6 +51,9 @@ const en = {
   "behavior.fuzzyMatching": "Fuzzy Matching",
   "behavior.fuzzyMatchingDescription":
     "Match close character sequences instead of exact prefixes",
+  "behavior.firstTokenCompletion": "Suggest Commands While Typing",
+  "behavior.firstTokenCompletionDescription":
+    "While typing the first word, suggest matching commands from your PATH (for example, typing gi can suggest git). Turn off if the list is empty or slow. Subcommands still need a space after the command",
   "behavior.sortOrder": "Sort Order",
   "behavior.sortOrderDescription": "Choose how suggestions are ranked",
   "behavior.byRelevance": "By Relevance",
@@ -59,10 +65,15 @@ const en = {
   "behavior.insertTrailingSpace": "Insert Trailing Space",
   "behavior.insertTrailingSpaceDescription":
     "Add a space after accepting a suggestion",
-  "behavior.executeAfterTrailingSpace":
-    "Press Enter to Execute After a Trailing Space",
+  "behavior.hideAutoExecuteSuggestion": "Hide Immediately Execute",
+  "behavior.hideAutoExecuteSuggestionDescription":
+    "Hide the red › immediately-run row from the autocomplete list. Turn this off to configure when that row appears",
+  "behavior.executeAfterTrailingSpace": "Run After a Trailing Space",
   "behavior.executeAfterTrailingSpaceDescription":
-    "When a command ends with a space, put Immediately Execute first so Enter runs the command instead of inserting the first suggestion",
+    "When the line already ends with a space, pin this red › row at the top so Enter runs the command",
+  "behavior.runDangerousCommands": "Also for Dangerous Commands",
+  "behavior.runDangerousCommandsDescription":
+    "Also offer the red › run row for suggestions marked dangerous (for example rm -rf)",
   "behavior.history": "History",
   "behavior.historyMode": "History Mode",
   "behavior.historyModeDescription":
@@ -181,6 +192,9 @@ const zhCN: Record<TranslationKey, string> = {
   "behavior.startupAndTrigger": "启动与触发",
   "behavior.launchAtLogin": "登录时启动",
   "behavior.launchAtLoginDescription": "登录系统时自动启动 Easy Complete",
+  "behavior.silentLaunch": "静默启动",
+  "behavior.silentLaunchDescription":
+    "启动时不打开本设置窗口，直接在后台运行。补全功能不受影响；需要设置时可点击菜单栏图标，或在程序运行时再次启动 Easy Complete",
   "behavior.keepAutocompleteReady": "始终保持联想就绪",
   "behavior.keepAutocompleteReadyDescription":
     "没有终端连接时仍保留联想服务，以更高内存占用换取首次建议更快显示",
@@ -189,6 +203,9 @@ const zhCN: Record<TranslationKey, string> = {
   "behavior.suggestions": "补全建议",
   "behavior.fuzzyMatching": "模糊匹配",
   "behavior.fuzzyMatchingDescription": "匹配相近字符序列，而非仅匹配前缀",
+  "behavior.firstTokenCompletion": "输入时提示命令名",
+  "behavior.firstTokenCompletionDescription":
+    "输入第一个词时，从 PATH 中提示匹配的命令（例如输入 gi 可提示 git）。若列表为空或很慢可关掉。要显示子命令仍需先输入空格",
   "behavior.sortOrder": "排序方式",
   "behavior.sortOrderDescription": "选择补全建议的排序方式",
   "behavior.byRelevance": "按相关性",
@@ -199,9 +216,15 @@ const zhCN: Record<TranslationKey, string> = {
     "允许用上方向键从补全建议切换到 Shell 历史记录",
   "behavior.insertTrailingSpace": "自动插入尾随空格",
   "behavior.insertTrailingSpaceDescription": "接受补全建议后自动添加一个空格",
-  "behavior.executeAfterTrailingSpace": "尾随空格后按 Enter 执行",
+  "behavior.hideAutoExecuteSuggestion": "隐藏立即执行",
+  "behavior.hideAutoExecuteSuggestionDescription":
+    "不在补全列表里显示红色 ›「立即运行」行。关掉此项后可继续配置何时出现",
+  "behavior.executeAfterTrailingSpace": "尾随空格后直接运行",
   "behavior.executeAfterTrailingSpaceDescription":
-    "命令末尾为空格时，将“立即执行”置于建议列表顶部；按 Enter 执行当前命令，而不是插入第一条补全建议",
+    "命令已经以空格结尾时，把红色 › 行置顶；按 Enter 会立刻执行当前命令",
+  "behavior.runDangerousCommands": "危险命令也允许立即执行",
+  "behavior.runDangerousCommandsDescription":
+    "对标记为危险的建议（例如 rm -rf）也显示红色 › 立即运行行",
   "behavior.history": "历史记录",
   "behavior.historyMode": "历史记录模式",
   "behavior.historyModeDescription": "选择 Shell 历史记录与补全建议的组合方式",

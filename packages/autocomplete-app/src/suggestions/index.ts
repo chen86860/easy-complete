@@ -430,6 +430,7 @@ export const filterSuggestions = (
   const nonCaseSensitiveMatchArr: Suggestion[] = [];
   const nonExactMatches: Array<{ suggestion: Suggestion; score: number }> = [];
   let autoExecuteAdded = false;
+  let dangerousAutoExecuteBlocked = false;
 
   // try to match either insertValue or any name
   for (const suggestion of suggestions) {
@@ -462,6 +463,13 @@ export const filterSuggestions = (
         (!names[0] || !insertValue || names[0] === insertValue) &&
         (!suggestion.isDangerous || execDangerous) &&
         (!arg || arg.isOptional);
+
+      if (suggestion.isDangerous && !execDangerous) {
+        // `suggestCurrentToken` is handled by a generic fallback below. Remember
+        // that this exact token was classified as dangerous so the fallback
+        // cannot re-add the auto-execute row that this guard intentionally denied.
+        dangerousAutoExecuteBlocked = true;
+      }
 
       if (shouldAddAutoExecute && !shouldHideAutoExecute && !autoExecuteAdded) {
         // replace the current suggestion with an autoexecute suggestion and add it
@@ -505,6 +513,7 @@ export const filterSuggestions = (
   if (
     filteredSuggestions.length > 0 &&
     !autoExecuteAdded &&
+    !dangerousAutoExecuteBlocked &&
     !shouldHideAutoExecute
   ) {
     // Eventually add suggest current token suggestion

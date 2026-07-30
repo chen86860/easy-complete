@@ -29,7 +29,10 @@ pkill -x "${APP_NAME}" 2>/dev/null || true
 sleep 0.5
 
 rm -rf "$APP_BUNDLE"
-cp -r "$STAGING_BUNDLE" /Applications/
+# Preserve framework symlinks and bundle metadata. On macOS, `cp -r` follows
+# symlinks while traversing and expands Sparkle.framework's versioned layout,
+# which makes the installed app fail `codesign --verify --deep --strict`.
+ditto "$STAGING_BUNDLE" "$APP_BUNDLE"
 
 # Reset the stale Accessibility grant. The rebuilt binary carries a new code
 # signature, so macOS invalidates the previous grant but leaves a dead entry that

@@ -97,9 +97,11 @@ Three cooperating native processes communicate via Unix domain sockets (protobuf
 
 `fig_integrations` and `fig_install` inject hooks into shell rc files (`.zshrc`, `.bashrc`, fish config). These hooks report shell state (CWD, command text, cursor position) back to `figterm` via IPC on every prompt and keystroke.
 
+`ec init` stands down entirely when the desktop app is not running (`suppress_without_desktop_app`), so VS Code Terminal Suggest, Otty and friends keep their own completions. This is a point-in-time decision made when the shell starts: a terminal opened while the app is down remains uninstrumented for that session. After launching Easy Complete, open a new terminal to enable its completions.
+
 ### macOS Input Method (IME)
 
-`fig_input_method` is an IMKit helper app (`EasyCompleteInputMethod.app`) bundled inside the main `.app` at `Contents/Helpers/`. It enables cursor position tracking in terminals that bypass the standard PTY path (Ghostty, Kitty, WezTerm, Zed, Alacritty).
+`fig_input_method` is an IMKit helper app (`EasyCompleteInputMethod.app`) bundled inside the main `.app` at `Contents/Helpers/`. It enables cursor position tracking in terminals that bypass the standard PTY path (Ghostty, Otty, Kitty, WezTerm, Zed, Alacritty).
 
 - The IME self-registers with TIS on startup via `TISRegisterInputSource` (requires NSApplication context)
 - Integration install/uninstall is managed via `ec integrations install input-method`
@@ -125,6 +127,7 @@ Relevant settings:
 | `autocomplete.keepReady`                     | `false` | Keep the overlay loaded with no terminals connected — faster first suggestion, more memory |
 | `developer.autocomplete.releaseDelaySeconds` | `600`   | Idle delay before releasing the overlay, clamped to 1s–24h. Debug only; low values cause constant rebuilds |
 | `dashboard.language`                         | unset   | Dashboard UI language: `system`, `en`, or `zh-CN`                                |
+| `app.silentLaunch`                           | `false` | Start without opening the dashboard, same as `--no-dashboard`. A `ec://` deep link naming a page overrides it |
 
 ### Website Tailwind CSS
 

@@ -142,7 +142,7 @@ objc2-app-kit = { workspace = true, features = [
     "NSVisualEffectView",
     "NSWindow",
 ] }
-objc2-foundation.workspace = true
+objc2-foundation = { workspace = true, features = ["NSUserDefaults"] }
 system-configuration = "0.6.0"
 
 [build-dependencies]

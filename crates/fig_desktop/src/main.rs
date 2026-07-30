@@ -75,6 +75,19 @@ async fn main() -> ExitCode {
     })
     .expect("Failed to init logging");
 
+    // macOS Tahoe's autofill heuristic controller attaches an "AutoFill (…)" helper to
+    // any app with text input (including our WKWebViews). SMS / contact autofill is not
+    // useful here, and the helper is pure overhead — same rationale as Ghostty.
+    #[cfg(target_os = "macos")]
+    {
+        use objc2_foundation::{NSUserDefaults, ns_string};
+        // SAFETY: standardUserDefaults and setBool_forKey are thread-safe Foundation APIs.
+        unsafe {
+            NSUserDefaults::standardUserDefaults()
+                .setBool_forKey(false, ns_string!("NSAutoFillHeuristicControllerEnabled"));
+        }
+    }
+
     fig_telemetry::init(
         option_env!("POSTHOG_ENDPOINT").unwrap_or(""),
         option_env!("POSTHOG_API_KEY").unwrap_or(""),

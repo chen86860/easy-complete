@@ -176,6 +176,14 @@ cat > "${STAGING_BUNDLE}/Contents/Info.plist" <<PLIST
     <true/>
     <key>NSSupportsAutomaticGraphicsSwitching</key>
     <true/>
+    <!--
+      macOS Tahoe spawns an "AutoFill (Easy Complete)" helper that heuristically
+      scans text fields for one-time codes. This app never marks fields as
+      one-time-code, so the helper is pure overhead. Documented Apple key:
+      https://developer.apple.com/documentation/bundleresources/information-property-list/nsautofillrequirestextcontenttypeforonetimecodeonmac
+    -->
+    <key>NSAutoFillRequiresTextContentTypeForOneTimeCodeOnMac</key>
+    <true/>
     <key>CFBundleIconFile</key>
     <string>icon</string>
     <key>CFBundleURLTypes</key>

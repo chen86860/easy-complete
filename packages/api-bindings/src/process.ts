@@ -31,7 +31,9 @@ export async function run({
     terminalSessionId,
     timeout: timeout
       ? create(DurationSchema, {
-          nanos: Math.floor((timeout % 1000) * 1_000_000_000),
+          // `timeout` is milliseconds; protobuf Duration stores the fractional
+          // second as nanoseconds. One millisecond is one million nanoseconds.
+          nanos: Math.floor((timeout % 1000) * 1_000_000),
           secs: BigInt(Math.floor(timeout / 1000)),
         })
       : undefined,

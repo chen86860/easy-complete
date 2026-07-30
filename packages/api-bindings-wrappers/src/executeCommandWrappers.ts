@@ -59,9 +59,18 @@ export const executeLoginShell = async ({
   }
   const flags = window.fig.constants?.os === "linux" ? "-lc" : "-lic";
 
+  // When Process.run goes through figterm it does not apply the local
+  // set_fig_vars() path, so without this the child is an interactive login
+  // shell that re-enters Easy Complete hooks and may exec ecterm — hang/empty
+  // output for callers like firstTokenSpec. Marking the process as launched by
+  // us skips the PTY wrap and still emits DoneSourcing from post hooks.
   const process = Process.run({
     executable: exe,
     args: [flags, command],
+    environment: {
+      PROCESS_LAUNCHED_BY_Q: "1",
+      HISTFILE: "",
+    },
     terminalSessionId: window.globalTerminalSessionId,
     timeout,
   });
@@ -83,9 +92,10 @@ export const executeLoginShell = async ({
         return cleanOutput(output.stdout);
       }),
     );
-    const idx =
-      result.lastIndexOf(DONE_SOURCING_OSC) + DONE_SOURCING_OSC.length;
-    const trimmed = result.slice(idx);
+    const marker = result.lastIndexOf(DONE_SOURCING_OSC);
+    // Missing marker used to slice at index 16 and corrupt short/empty output.
+    const trimmed =
+      marker >= 0 ? result.slice(marker + DONE_SOURCING_OSC.length) : result;
     const end = performance.now();
     logger.info(`Result of login shell command '${command}'`, {
       result: trimmed,

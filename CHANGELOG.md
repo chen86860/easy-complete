@@ -1,5 +1,17 @@
 # Changelog
 
+## v2.1.1
+
+- fix: show shell history in the suggestion list again when History Mode is left at its default — the dashboard displayed "Show with completions" while the setting had never been written, and the code treated the unset value as off
+- fix: stop sending an empty terminal session id from `Process.run`, which arrived as `Some("")` and failed UUID parsing host-side, silently leaving the zsh, bash, and fish history sources empty on every launch
+- fix: derive the current shell from the edit buffer context instead of the pre-exec `processDidChange` notification, so history is available before the first command of a session is run
+- fix: recompute suggestions when a history source finishes loading, instead of leaving the list without history until the next keystroke or settings change
+- fix: fall back to the recorded history database when the shell-specific source is unavailable, matching the existing behaviour for history argument suggestions
+- change: replace the history suggestion emoji with a rotate-clock glyph on a rounded tile, matching the icon style of the surrounding suggestions
+- change: turn Hide Immediately Execute into a positive Show Immediately Execute toggle, so enabling it reveals its sub-options rather than hiding them
+- change: render sub-settings as an indented inset group following macOS System Settings, and drop descriptions that only restated their label
+- change: token the dashboard palette into semantic CSS variables so light and dark mode stay in sync
+
 ## v2.1.0
 
 - change: shell integration now stands down entirely when the desktop app is not running, so VS Code Terminal Suggest, Otty, and other terminals keep their own completions. This is decided when the shell starts, so a terminal opened before the app is running stays uninstrumented for that session — open a new terminal after launching Easy Complete

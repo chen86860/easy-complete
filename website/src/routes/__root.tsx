@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import logoUrl from "../assets/logo.png";
+import { PostHogAnalytics } from "../posthog";
 import "../index.css";
 
 export const Route = createRootRoute({
@@ -66,6 +67,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
       </head>
       <body>
         {children}
+        <PostHogAnalytics />
         <Scripts />
       </body>
     </html>

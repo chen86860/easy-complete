@@ -27,17 +27,12 @@ const en = {
   "appearance.fontFamilyDescription": "Font used in the autocomplete popup",
   "appearance.systemDefault": "System default",
   "appearance.fontSize": "Font Size",
-  "appearance.fontSizeDescription": "Popup font size in pixels",
   "appearance.dimensions": "Dimensions",
   "appearance.maxWidth": "Max Width",
-  "appearance.maxWidthDescription": "Maximum popup width in pixels",
   "appearance.maxHeight": "Max Height",
-  "appearance.maxHeightDescription": "Maximum popup height in pixels",
 
   "behavior.startupAndTrigger": "Startup & Trigger",
   "behavior.launchAtLogin": "Launch at Login",
-  "behavior.launchAtLoginDescription":
-    "Start Easy Complete automatically when you sign in",
   "behavior.silentLaunch": "Silent Launch",
   "behavior.silentLaunchDescription":
     "Start in the background without opening this settings window. Autocomplete still works; reopen settings from the menu bar icon, or by launching Easy Complete again while it is running",
@@ -45,8 +40,6 @@ const en = {
   "behavior.keepAutocompleteReadyDescription":
     "Keep autocomplete loaded when no terminals are connected for faster first suggestions, using more memory",
   "behavior.showAfterTab": "Show Suggestions After Tab",
-  "behavior.showAfterTabDescription":
-    "Wait until you press Tab before opening the suggestion popup",
   "behavior.suggestions": "Suggestions",
   "behavior.fuzzyMatching": "Fuzzy Matching",
   "behavior.fuzzyMatchingDescription":
@@ -55,29 +48,22 @@ const en = {
   "behavior.firstTokenCompletionDescription":
     "While typing the first word, suggest matching commands from your PATH (for example, typing gi can suggest git). Turn off if the list is empty or slow. Subcommands still need a space after the command",
   "behavior.sortOrder": "Sort Order",
-  "behavior.sortOrderDescription": "Choose how suggestions are ranked",
   "behavior.byRelevance": "By Relevance",
   "behavior.alphabetical": "Alphabetical",
   "behavior.keyboardAndInsertion": "Keyboard & Insertion",
   "behavior.useUpArrowForHistory": "Use Up Arrow for History",
-  "behavior.useUpArrowForHistoryDescription":
-    "Let Up Arrow switch from suggestions into shell history navigation",
   "behavior.insertTrailingSpace": "Insert Trailing Space",
-  "behavior.insertTrailingSpaceDescription":
-    "Add a space after accepting a suggestion",
-  "behavior.hideAutoExecuteSuggestion": "Hide Immediately Execute",
-  "behavior.hideAutoExecuteSuggestionDescription":
-    "Hide the red › immediately-run row from the autocomplete list. Turn this off to configure when that row appears",
-  "behavior.executeAfterTrailingSpace": "Run After a Trailing Space",
+  "behavior.showAutoExecuteSuggestion": "Show Immediately Execute",
+  "behavior.showAutoExecuteSuggestionDescription":
+    "Add a red-arrow entry to the suggestion list that runs the command as typed when you press Enter",
+  "behavior.executeAfterTrailingSpace": "Pin After a Trailing Space",
   "behavior.executeAfterTrailingSpaceDescription":
-    "When the line already ends with a space, pin this red › row at the top so Enter runs the command",
-  "behavior.runDangerousCommands": "Also for Dangerous Commands",
+    "A trailing space usually means the command is complete, so move it to the top of the list",
+  "behavior.runDangerousCommands": "Include Dangerous Commands",
   "behavior.runDangerousCommandsDescription":
-    "Also offer the red › run row for suggestions marked dangerous (for example rm -rf)",
+    "Show it for suggestions marked dangerous too, such as rm -rf",
   "behavior.history": "History",
   "behavior.historyMode": "History Mode",
-  "behavior.historyModeDescription":
-    "How shell history is blended with completions",
   "behavior.showWithCompletions": "Show with completions",
   "behavior.historyOnly": "History only",
   "behavior.off": "Off",
@@ -182,16 +168,12 @@ const zhCN: Record<TranslationKey, string> = {
   "appearance.fontFamilyDescription": "补全弹窗使用的字体",
   "appearance.systemDefault": "系统默认",
   "appearance.fontSize": "字体大小",
-  "appearance.fontSizeDescription": "补全弹窗的字体大小（像素）",
   "appearance.dimensions": "尺寸",
   "appearance.maxWidth": "最大宽度",
-  "appearance.maxWidthDescription": "补全弹窗的最大宽度（像素）",
   "appearance.maxHeight": "最大高度",
-  "appearance.maxHeightDescription": "补全弹窗的最大高度（像素）",
 
   "behavior.startupAndTrigger": "启动与触发",
   "behavior.launchAtLogin": "登录时启动",
-  "behavior.launchAtLoginDescription": "登录系统时自动启动 Easy Complete",
   "behavior.silentLaunch": "静默启动",
   "behavior.silentLaunchDescription":
     "启动时不打开本设置窗口，直接在后台运行。补全功能不受影响；需要设置时可点击菜单栏图标，或在程序运行时再次启动 Easy Complete",
@@ -199,7 +181,6 @@ const zhCN: Record<TranslationKey, string> = {
   "behavior.keepAutocompleteReadyDescription":
     "没有终端连接时仍保留联想服务，以更高内存占用换取首次建议更快显示",
   "behavior.showAfterTab": "按 Tab 后显示建议",
-  "behavior.showAfterTabDescription": "按下 Tab 后再打开补全建议弹窗",
   "behavior.suggestions": "补全建议",
   "behavior.fuzzyMatching": "模糊匹配",
   "behavior.fuzzyMatchingDescription": "匹配相近字符序列，而非仅匹配前缀",
@@ -207,27 +188,22 @@ const zhCN: Record<TranslationKey, string> = {
   "behavior.firstTokenCompletionDescription":
     "输入第一个词时，从 PATH 中提示匹配的命令（例如输入 gi 可提示 git）。若列表为空或很慢可关掉。要显示子命令仍需先输入空格",
   "behavior.sortOrder": "排序方式",
-  "behavior.sortOrderDescription": "选择补全建议的排序方式",
   "behavior.byRelevance": "按相关性",
   "behavior.alphabetical": "按字母顺序",
   "behavior.keyboardAndInsertion": "键盘与插入",
   "behavior.useUpArrowForHistory": "使用上方向键浏览历史",
-  "behavior.useUpArrowForHistoryDescription":
-    "允许用上方向键从补全建议切换到 Shell 历史记录",
   "behavior.insertTrailingSpace": "自动插入尾随空格",
-  "behavior.insertTrailingSpaceDescription": "接受补全建议后自动添加一个空格",
-  "behavior.hideAutoExecuteSuggestion": "隐藏立即执行",
-  "behavior.hideAutoExecuteSuggestionDescription":
-    "不在补全列表里显示红色 ›「立即运行」行。关掉此项后可继续配置何时出现",
-  "behavior.executeAfterTrailingSpace": "尾随空格后直接运行",
+  "behavior.showAutoExecuteSuggestion": "显示立即执行",
+  "behavior.showAutoExecuteSuggestionDescription":
+    "在补全列表中加入红色箭头的「立即执行」项，选中后按 Enter 直接运行当前命令",
+  "behavior.executeAfterTrailingSpace": "空格结尾时置顶",
   "behavior.executeAfterTrailingSpaceDescription":
-    "命令已经以空格结尾时，把红色 › 行置顶；按 Enter 会立刻执行当前命令",
-  "behavior.runDangerousCommands": "危险命令也允许立即执行",
+    "命令以空格结尾通常意味着已输入完整，此时把它排到列表第一项",
+  "behavior.runDangerousCommands": "包含危险命令",
   "behavior.runDangerousCommandsDescription":
-    "对标记为危险的建议（例如 rm -rf）也显示红色 › 立即运行行",
+    "对标记为危险的建议（例如 rm -rf）也显示",
   "behavior.history": "历史记录",
   "behavior.historyMode": "历史记录模式",
-  "behavior.historyModeDescription": "选择 Shell 历史记录与补全建议的组合方式",
   "behavior.showWithCompletions": "与补全建议一起显示",
   "behavior.historyOnly": "仅显示历史记录",
   "behavior.off": "关闭",

@@ -178,12 +178,12 @@ function ThemeOption({
             "flex h-3.5 w-3.5 flex-shrink-0 items-center justify-center rounded-full border",
             active
               ? "border-[AccentColor] bg-[AccentColor]"
-              : "border-[rgba(60,60,67,0.28)] bg-white",
+              : "border-[var(--ds-radio-border)] bg-[var(--ds-radio-bg)]",
           )}
         >
           {active ? <span className="h-1 w-1 rounded-full bg-white" /> : null}
         </span>
-        <span className="min-w-0 truncate text-[12px] font-medium leading-[17px] text-[#1d1d1f]">
+        <span className="min-w-0 truncate text-[12px] font-medium leading-[17px] text-[var(--ds-label)]">
           {label}
         </span>
       </div>
@@ -223,7 +223,7 @@ export function ThemePicker({
 
         return (
           <section key={group.appearance}>
-            <h3 className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[rgba(60,60,67,0.62)]">
+            <h3 className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--ds-label-secondary)]">
               {groupLabels[group.appearance]}
             </h3>
             <div className="grid grid-cols-3 gap-x-5 gap-y-4">

@@ -2,6 +2,125 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Semantic surface/label tokens. Every hardcoded color in the dashboard goes
+   through one of these so light and dark mode stay in sync. Values follow the
+   macOS System Settings palette. */
+:root {
+  color-scheme: light dark;
+
+  --ds-content-bg: #fbfbfd;
+  --ds-top-rgb: 251 251 253;
+  --ds-top-highlight: rgba(255, 255, 255, 0.62);
+  --ds-sidebar-bg: #f5f5f7;
+  --ds-sidebar-border: rgba(60, 60, 67, 0.12);
+  --ds-sidebar-item: rgba(0, 0, 0, 0.85);
+  --ds-sidebar-icon: rgba(32, 33, 36, 0.92);
+  --ds-sidebar-blurred-bg: rgba(0, 0, 0, 0.08);
+
+  --ds-label: #050505;
+  --ds-label-strong: #000000;
+  --ds-label-muted: rgba(0, 0, 0, 0.78);
+  --ds-label-secondary: rgba(60, 60, 67, 0.68);
+  --ds-label-tertiary: rgba(60, 60, 67, 0.55);
+  --ds-label-quaternary: rgba(60, 60, 67, 0.45);
+
+  --ds-separator: rgba(60, 60, 67, 0.1);
+  --ds-separator-weak: rgba(60, 60, 67, 0.08);
+
+  --ds-card-bg: rgba(246, 246, 247, 0.74);
+  --ds-card-bg-solid: rgba(246, 246, 247, 0.96);
+  --ds-card-border: rgba(255, 255, 255, 0.72);
+  --ds-card-inset: rgba(60, 60, 67, 0.05);
+
+  --ds-control-bg: rgba(120, 120, 128, 0.16);
+  --ds-control-fg: #000000;
+  --ds-control-inset: rgba(60, 60, 67, 0.12);
+  --ds-control-disabled-bg: rgba(120, 120, 128, 0.14);
+  --ds-control-disabled-fg: rgba(60, 60, 67, 0.5);
+  --ds-control-knob: #ffffff;
+
+  --ds-button-bg: rgba(255, 255, 255, 0.6);
+  --ds-button-bg-hover: rgba(255, 255, 255, 0.85);
+  --ds-button-border: rgba(60, 60, 67, 0.1);
+  --ds-button-fg: rgba(0, 0, 0, 0.72);
+
+  --ds-chip-bg: rgba(60, 60, 67, 0.08);
+  --ds-chip-bg-hover: rgba(60, 60, 67, 0.14);
+
+  --ds-code-bg: rgba(0, 0, 0, 0.04);
+  --ds-code-fg: rgba(0, 0, 0, 0.82);
+  --ds-code-prompt: rgba(60, 60, 67, 0.5);
+
+  --ds-radio-bg: #ffffff;
+  --ds-radio-border: rgba(60, 60, 67, 0.28);
+
+  --ds-red: #ff3b30;
+  --ds-red-bg: rgba(255, 59, 48, 0.12);
+  --ds-red-text: #c02b20;
+  --ds-green-bg: rgba(52, 199, 89, 0.12);
+  --ds-green-text: #248a3d;
+  --ds-orange-bg: rgba(255, 149, 0, 0.14);
+  --ds-orange-text: #a05a00;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ds-content-bg: #1e1e1e;
+    --ds-top-rgb: 30 30 30;
+    --ds-top-highlight: rgba(255, 255, 255, 0.06);
+    --ds-sidebar-bg: #1c1c1e;
+    --ds-sidebar-border: rgba(255, 255, 255, 0.1);
+    --ds-sidebar-item: rgba(255, 255, 255, 0.92);
+    --ds-sidebar-icon: rgba(235, 235, 245, 0.82);
+    --ds-sidebar-blurred-bg: rgba(255, 255, 255, 0.12);
+
+    --ds-label: #f2f2f7;
+    --ds-label-strong: #ffffff;
+    --ds-label-muted: rgba(255, 255, 255, 0.82);
+    --ds-label-secondary: rgba(235, 235, 245, 0.6);
+    --ds-label-tertiary: rgba(235, 235, 245, 0.48);
+    --ds-label-quaternary: rgba(235, 235, 245, 0.38);
+
+    --ds-separator: rgba(255, 255, 255, 0.1);
+    --ds-separator-weak: rgba(255, 255, 255, 0.07);
+
+    --ds-card-bg: rgba(255, 255, 255, 0.06);
+    --ds-card-bg-solid: #2c2c2e;
+    --ds-card-border: rgba(255, 255, 255, 0.08);
+    --ds-card-inset: rgba(255, 255, 255, 0.04);
+
+    --ds-control-bg: rgba(120, 120, 128, 0.36);
+    --ds-control-fg: #ffffff;
+    --ds-control-inset: rgba(255, 255, 255, 0.12);
+    --ds-control-disabled-bg: rgba(120, 120, 128, 0.24);
+    --ds-control-disabled-fg: rgba(235, 235, 245, 0.32);
+    --ds-control-knob: #ffffff;
+
+    --ds-button-bg: rgba(255, 255, 255, 0.08);
+    --ds-button-bg-hover: rgba(255, 255, 255, 0.14);
+    --ds-button-border: rgba(255, 255, 255, 0.1);
+    --ds-button-fg: rgba(255, 255, 255, 0.85);
+
+    --ds-chip-bg: rgba(255, 255, 255, 0.1);
+    --ds-chip-bg-hover: rgba(255, 255, 255, 0.16);
+
+    --ds-code-bg: rgba(0, 0, 0, 0.28);
+    --ds-code-fg: rgba(255, 255, 255, 0.86);
+    --ds-code-prompt: rgba(235, 235, 245, 0.45);
+
+    --ds-radio-bg: rgba(255, 255, 255, 0.08);
+    --ds-radio-border: rgba(255, 255, 255, 0.32);
+
+    --ds-red: #ff453a;
+    --ds-red-bg: rgba(255, 69, 58, 0.16);
+    --ds-red-text: #ff6961;
+    --ds-green-bg: rgba(48, 209, 88, 0.16);
+    --ds-green-text: #30d158;
+    --ds-orange-bg: rgba(255, 159, 10, 0.18);
+    --ds-orange-text: #ffb340;
+  }
+}
+
 * {
   box-sizing: border-box;
 }
@@ -19,7 +138,7 @@ body,
 body {
   margin: 0;
   padding: 0;
-  background: #fbfbfd;
+  background: var(--ds-content-bg);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
 }
@@ -33,7 +152,7 @@ html.dashboard-native-vibrancy body {
 
 /* Fallback surface for dev browsers / platforms without the native material. */
 .dashboard-sidebar {
-  background: #f5f5f7;
+  background: var(--ds-sidebar-bg);
 }
 
 html.dashboard-native-vibrancy .dashboard-sidebar {
@@ -52,14 +171,14 @@ html.dashboard-native-vibrancy .dashboard-sidebar {
 /* Like System Settings: the selection falls back to gray and the material
    turns solid while the window is unfocused. */
 html.dashboard-window-blurred .dashboard-sidebar-item-active {
-  background: rgba(0, 0, 0, 0.08);
-  color: rgba(0, 0, 0, 0.85);
+  background: var(--ds-sidebar-blurred-bg);
+  color: var(--ds-sidebar-item);
 }
 
 html.dashboard-window-blurred
   .dashboard-sidebar-item-active
   .dashboard-sidebar-icon {
-  color: rgba(32, 33, 36, 0.92);
+  color: var(--ds-sidebar-icon);
 }
 
 button,
@@ -99,12 +218,12 @@ textarea {
     @apply pointer-events-none sticky inset-x-0 top-0 z-[8] -mb-[60px] h-[60px] backdrop-blur-[18px] backdrop-saturate-[1.35];
     background: linear-gradient(
       180deg,
-      rgb(var(--dashboard-top-rgb) / 0.86) 0%,
-      rgb(var(--dashboard-top-rgb) / 0.58) 48%,
-      rgb(var(--dashboard-top-rgb) / 0) 100%
+      rgb(var(--ds-top-rgb) / 0.86) 0%,
+      rgb(var(--ds-top-rgb) / 0.58) 48%,
+      rgb(var(--ds-top-rgb) / 0) 100%
     );
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.62),
+      inset 0 1px 0 var(--ds-top-highlight),
       inset 0 -1px 0
         color-mix(in srgb, var(--dashboard-accent-color) 10%, transparent);
     -webkit-backdrop-filter: blur(18px) saturate(1.35);

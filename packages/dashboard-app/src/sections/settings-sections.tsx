@@ -52,9 +52,9 @@ function AboutActionButton({
       onClick={onClick}
       disabled={disabled}
       className={clsx(
-        "inline-flex cursor-pointer items-center gap-[6px] whitespace-nowrap rounded-[9px] border border-[rgba(60,60,67,0.10)]",
-        "bg-[rgba(255,255,255,0.6)] px-3 py-1.5 text-[12px] font-medium text-[rgba(0,0,0,0.72)]",
-        "transition-colors hover:bg-[rgba(255,255,255,0.85)] disabled:cursor-default disabled:opacity-60",
+        "inline-flex cursor-pointer items-center gap-[6px] whitespace-nowrap rounded-[9px] border border-[var(--ds-separator)]",
+        "bg-[var(--ds-button-bg)] px-3 py-1.5 text-[12px] font-medium text-[var(--ds-button-fg)]",
+        "transition-colors hover:bg-[var(--ds-button-bg-hover)] disabled:cursor-default disabled:opacity-60",
         className,
       )}
     >
@@ -81,9 +81,9 @@ function AboutLinkButton({
         void openExternalUrl(href);
       }}
       className={clsx(
-        "inline-flex shrink-0 items-center gap-[6px] whitespace-nowrap rounded-[9px] border border-[rgba(60,60,67,0.10)]",
-        "bg-[rgba(255,255,255,0.6)] px-3 py-1.5 text-[12px] font-medium text-[rgba(0,0,0,0.72)] no-underline",
-        "transition-colors hover:bg-[rgba(255,255,255,0.85)]",
+        "inline-flex shrink-0 items-center gap-[6px] whitespace-nowrap rounded-[9px] border border-[var(--ds-separator)]",
+        "bg-[var(--ds-button-bg)] px-3 py-1.5 text-[12px] font-medium text-[var(--ds-button-fg)] no-underline",
+        "transition-colors hover:bg-[var(--ds-button-bg-hover)]",
       )}
     >
       {icon}
@@ -139,43 +139,35 @@ export function AppearanceSection({
             onChange={(value) => set(SETTINGS.FONT_FAMILY, value || null)}
           />
         </Row>
-        <Row
-          label={t("appearance.fontSize")}
-          description={t("appearance.fontSizeDescription")}
-          last
-        >
+        <Row label={t("appearance.fontSize")} last>
           <NumberInput
             value={Number(settings[SETTINGS.FONT_SIZE] ?? 13)}
             min={10}
             max={24}
+            unit="px"
             onChange={(value) => set(SETTINGS.FONT_SIZE, value)}
           />
         </Row>
       </Card>
 
       <Card title={t("appearance.dimensions")}>
-        <Row
-          label={t("appearance.maxWidth")}
-          description={t("appearance.maxWidthDescription")}
-        >
+        <Row label={t("appearance.maxWidth")}>
           <NumberInput
             value={Number(settings[SETTINGS.WIDTH] ?? 300)}
             min={150}
             max={800}
             step={10}
+            unit="px"
             onChange={(value) => set(SETTINGS.WIDTH, value)}
           />
         </Row>
-        <Row
-          label={t("appearance.maxHeight")}
-          description={t("appearance.maxHeightDescription")}
-          last
-        >
+        <Row label={t("appearance.maxHeight")} last>
           <NumberInput
             value={Number(settings[SETTINGS.HEIGHT] ?? 140)}
             min={80}
             max={600}
             step={10}
+            unit="px"
             onChange={(value) => set(SETTINGS.HEIGHT, value)}
           />
         </Row>
@@ -192,17 +184,18 @@ export function BehaviorSection({
   set: SettingSetter;
 }) {
   const { t } = useI18n();
-  const hideAutoExecute = Boolean(
-    settings[SETTINGS.HIDE_AUTO_EXECUTE_SUGGESTION] ?? false,
+  // The stored setting is negative (`hideAutoExecuteSuggestion`) and is read
+  // that way by the autocomplete app and the CLI, so it stays as-is. Only the
+  // UI is flipped, so the toggle reads positively and enabling it reveals the
+  // sub-settings rather than hiding them.
+  const showAutoExecute = !(
+    settings[SETTINGS.HIDE_AUTO_EXECUTE_SUGGESTION] ?? false
   );
 
   return (
     <>
       <Card title={t("behavior.startupAndTrigger")}>
-        <Row
-          label={t("behavior.launchAtLogin")}
-          description={t("behavior.launchAtLoginDescription")}
-        >
+        <Row label={t("behavior.launchAtLogin")}>
           <Toggle
             checked={Boolean(settings[SETTINGS.LAUNCH_ON_STARTUP] ?? false)}
             onChange={(value) => set(SETTINGS.LAUNCH_ON_STARTUP, value)}
@@ -228,11 +221,7 @@ export function BehaviorSection({
             onChange={(value) => set(SETTINGS.KEEP_AUTOCOMPLETE_READY, value)}
           />
         </Row>
-        <Row
-          label={t("behavior.showAfterTab")}
-          description={t("behavior.showAfterTabDescription")}
-          last
-        >
+        <Row label={t("behavior.showAfterTab")} last>
           <Toggle
             checked={Boolean(settings[SETTINGS.ONLY_SHOW_ON_TAB])}
             onChange={(value) => set(SETTINGS.ONLY_SHOW_ON_TAB, value)}
@@ -264,11 +253,7 @@ export function BehaviorSection({
             onChange={(value) => set(SETTINGS.FIRST_COMMAND_COMPLETION, value)}
           />
         </Row>
-        <Row
-          label={t("behavior.sortOrder")}
-          description={t("behavior.sortOrderDescription")}
-          last
-        >
+        <Row label={t("behavior.sortOrder")} last>
           <Select
             value={String(settings[SETTINGS.SORT_METHOD] ?? "default")}
             options={[
@@ -281,19 +266,13 @@ export function BehaviorSection({
       </Card>
 
       <Card title={t("behavior.keyboardAndInsertion")}>
-        <Row
-          label={t("behavior.useUpArrowForHistory")}
-          description={t("behavior.useUpArrowForHistoryDescription")}
-        >
+        <Row label={t("behavior.useUpArrowForHistory")}>
           <Toggle
             checked={Boolean(settings[SETTINGS.NAVIGATE_TO_HISTORY])}
             onChange={(value) => set(SETTINGS.NAVIGATE_TO_HISTORY, value)}
           />
         </Row>
-        <Row
-          label={t("behavior.insertTrailingSpace")}
-          description={t("behavior.insertTrailingSpaceDescription")}
-        >
+        <Row label={t("behavior.insertTrailingSpace")}>
           <Toggle
             checked={Boolean(settings[SETTINGS.INSERT_SPACE_AUTOMATICALLY])}
             onChange={(value) =>
@@ -302,22 +281,23 @@ export function BehaviorSection({
           />
         </Row>
         <Row
-          label={t("behavior.hideAutoExecuteSuggestion")}
-          description={t("behavior.hideAutoExecuteSuggestionDescription")}
-          last={hideAutoExecute}
+          label={t("behavior.showAutoExecuteSuggestion")}
+          description={t("behavior.showAutoExecuteSuggestionDescription")}
+          last={!showAutoExecute}
         >
           <Toggle
-            checked={hideAutoExecute}
+            checked={showAutoExecute}
             onChange={(value) =>
-              set(SETTINGS.HIDE_AUTO_EXECUTE_SUGGESTION, value)
+              set(SETTINGS.HIDE_AUTO_EXECUTE_SUGGESTION, !value)
             }
           />
         </Row>
-        {!hideAutoExecute ? (
+        {showAutoExecute ? (
           <>
             <Row
               label={t("behavior.executeAfterTrailingSpace")}
               description={t("behavior.executeAfterTrailingSpaceDescription")}
+              nested
             >
               <Toggle
                 checked={Boolean(
@@ -332,6 +312,7 @@ export function BehaviorSection({
               label={t("behavior.runDangerousCommands")}
               description={t("behavior.runDangerousCommandsDescription")}
               last
+              nested
             >
               <Toggle
                 checked={Boolean(
@@ -348,10 +329,7 @@ export function BehaviorSection({
       </Card>
 
       <Card title={t("behavior.history")}>
-        <Row
-          label={t("behavior.historyMode")}
-          description={t("behavior.historyModeDescription")}
-        >
+        <Row label={t("behavior.historyMode")}>
           <Select
             value={String(settings[SETTINGS.HISTORY_MODE] ?? "show")}
             options={[
@@ -407,15 +385,15 @@ function DiagnosticsCard() {
   return (
     <Card title={t("about.troubleshooting")}>
       <div className="px-[18px] py-3.5">
-        <div className="text-[14px] font-medium leading-[1.35] text-[#050505]">
+        <div className="text-[14px] font-medium leading-[1.35] text-[var(--ds-label)]">
           {t("about.somethingNotWorking")}
         </div>
-        <div className="mt-1 max-w-[36rem] text-[12px] leading-[1.5] text-[rgba(60,60,67,0.68)]">
+        <div className="mt-1 max-w-[36rem] text-[12px] leading-[1.5] text-[var(--ds-label-secondary)]">
           {t("about.diagnosticDescription")}
         </div>
         <div className="mt-3 flex items-center gap-2">
-          <code className="flex-1 select-text rounded-[9px] border border-[rgba(60,60,67,0.10)] bg-[rgba(0,0,0,0.04)] px-3 py-2 font-mono text-[12.5px] text-[rgba(0,0,0,0.82)]">
-            <span className="mr-1.5 text-[rgba(60,60,67,0.5)]">$</span>
+          <code className="flex-1 select-text rounded-[9px] border border-[var(--ds-separator)] bg-[var(--ds-code-bg)] px-3 py-2 font-mono text-[12.5px] text-[var(--ds-code-fg)]">
+            <span className="mr-1.5 text-[var(--ds-code-prompt)]">$</span>
             {DOCTOR_COMMAND}
           </code>
           <AboutActionButton
@@ -431,8 +409,8 @@ function DiagnosticsCard() {
             onClick={() => void copyCommand()}
           />
         </div>
-        <div className="mt-3.5 flex items-center justify-between gap-3 border-t border-[rgba(60,60,67,0.08)] pt-3.5">
-          <div className="min-w-0 flex-1 text-[12px] leading-[1.5] text-[rgba(60,60,67,0.68)]">
+        <div className="mt-3.5 flex items-center justify-between gap-3 border-t border-[var(--ds-separator-weak)] pt-3.5">
+          <div className="min-w-0 flex-1 text-[12px] leading-[1.5] text-[var(--ds-label-secondary)]">
             {t("about.stillStuck")}
           </div>
           <AboutLinkButton
@@ -477,17 +455,17 @@ export function AboutSection({
           <div className="flex min-w-0 items-center gap-4">
             <AppLogo size={52} />
             <div className="min-w-0">
-              <div className="text-[21px] font-bold tracking-[-0.03em] text-black">
+              <div className="text-[21px] font-bold tracking-[-0.03em] text-[var(--ds-label-strong)]">
                 Easy Complete
               </div>
-              <div className="mt-0.5 text-[13px] text-[rgba(60,60,67,0.68)]">
+              <div className="mt-0.5 text-[13px] text-[var(--ds-label-secondary)]">
                 {t("about.tagline")}
               </div>
-              <div className="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-[rgba(60,60,67,0.68)]">
+              <div className="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-[var(--ds-label-secondary)]">
                 <button
                   onClick={() => void copyVersionInfo()}
                   title={t("about.copyVersionInfo")}
-                  className="cursor-pointer rounded-full border-0 bg-[rgba(60,60,67,0.08)] px-2 py-0.5 font-sans text-[12px] font-medium text-[rgba(0,0,0,0.72)] transition-colors hover:bg-[rgba(60,60,67,0.14)]"
+                  className="cursor-pointer rounded-full border-0 bg-[var(--ds-chip-bg)] px-2 py-0.5 font-sans text-[12px] font-medium text-[var(--ds-button-fg)] transition-colors hover:bg-[var(--ds-chip-bg-hover)]"
                 >
                   {copyState === "done"
                     ? t("about.copiedShort")
@@ -562,7 +540,7 @@ export function AboutSection({
           icon={<IconExternalLink />}
         />
       </div>
-      <p className="mt-3 text-center text-[11px] leading-[1.5] text-[rgba(60,60,67,0.55)]">
+      <p className="mt-3 text-center text-[11px] leading-[1.5] text-[var(--ds-label-tertiary)]">
         {t("about.licensePrefix")}{" "}
         <a
           href={UPSTREAM_REPO_URL}
@@ -570,7 +548,7 @@ export function AboutSection({
             event.preventDefault();
             void openExternalUrl(UPSTREAM_REPO_URL);
           }}
-          className="text-[rgba(60,60,67,0.55)] underline"
+          className="text-[var(--ds-label-tertiary)] underline"
         >
           {t("about.upstreamName")}
         </a>

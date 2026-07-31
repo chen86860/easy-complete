@@ -16,8 +16,8 @@ function StatusBadge({ state }: { state: PermissionState }) {
       className={clsx(
         "inline-flex min-w-[92px] items-center justify-center rounded-full px-2.5 py-1 text-[12px] font-semibold",
         state === "ready"
-          ? "bg-[rgba(52,199,89,0.12)] text-[#248a3d]"
-          : "bg-[rgba(255,149,0,0.14)] text-[#a05a00]",
+          ? "bg-[var(--ds-green-bg)] text-[var(--ds-green-text)]"
+          : "bg-[var(--ds-orange-bg)] text-[var(--ds-orange-text)]",
       )}
     >
       {state === "ready" ? <IconCheck /> : <IconWarning />}
@@ -47,23 +47,23 @@ function PermissionRow({
   const blocked = blockedBy !== undefined;
 
   return (
-    <div className="flex min-h-[78px] items-center justify-between gap-5 border-b border-[rgba(60,60,67,0.10)] px-[18px] py-4 last:border-b-0">
+    <div className="flex min-h-[78px] items-center justify-between gap-5 border-b border-[var(--ds-separator)] px-[18px] py-4 last:border-b-0">
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2.5">
-          <div className="text-[14px] font-semibold leading-5 text-[#050505]">
+          <div className="text-[14px] font-semibold leading-5 text-[var(--ds-label)]">
             {permission.title}
           </div>
           <StatusBadge state={permission.state} />
         </div>
-        <div className="mt-1 text-[12px] leading-[17px] text-[rgba(60,60,67,0.68)]">
+        <div className="mt-1 text-[12px] leading-[17px] text-[var(--ds-label-secondary)]">
           {permission.description}
         </div>
         {blocked ? (
-          <div className="mt-1.5 text-[12px] leading-[17px] text-[rgba(60,60,67,0.45)]">
+          <div className="mt-1.5 text-[12px] leading-[17px] text-[var(--ds-label-quaternary)]">
             {t("permission.accessibilityFirst")}
           </div>
         ) : permission.detail ? (
-          <div className="mt-1.5 text-[12px] leading-[17px] text-[#c02b20]">
+          <div className="mt-1.5 text-[12px] leading-[17px] text-[var(--ds-red-text)]">
             {permission.detail}
           </div>
         ) : null}
@@ -77,7 +77,7 @@ function PermissionRow({
           "min-w-[130px] rounded-[9px] border-0 px-3 py-1.5 text-[13px] font-semibold outline-none",
           canRepair && !busy && !blocked
             ? "bg-[var(--dashboard-accent-color)] text-white"
-            : "bg-[rgba(120,120,128,0.14)] text-[rgba(60,60,67,0.50)]",
+            : "bg-[var(--ds-control-disabled-bg)] text-[var(--ds-control-disabled-fg)]",
         )}
       >
         {busy ? t("permission.working") : permission.repairLabel}
@@ -117,25 +117,25 @@ export function PermissionGate({
 
   if (checking) {
     return (
-      <main className="flex flex-1 items-center justify-center bg-[#fbfbfd]">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-[rgba(60,60,67,0.15)] border-t-[var(--dashboard-accent-color,AccentColor)]" />
+      <main className="flex flex-1 items-center justify-center bg-[var(--ds-content-bg)]">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--ds-separator)] border-t-[var(--dashboard-accent-color,AccentColor)]" />
       </main>
     );
   }
 
   return (
-    <main className="flex flex-1 items-center justify-center bg-[#fbfbfd] px-10">
+    <main className="flex flex-1 items-center justify-center bg-[var(--ds-content-bg)] px-10">
       <div className="w-full max-w-[640px]">
         <div className="mb-4 pl-1">
-          <h1 className="m-0 text-[22px] font-[700] text-[#050505]">
+          <h1 className="m-0 text-[22px] font-[700] text-[var(--ds-label)]">
             {t("permission.finishSetup")}
           </h1>
-          <p className="mb-0 mt-1.5 text-[13px] leading-5 text-[rgba(60,60,67,0.70)]">
+          <p className="mb-0 mt-1.5 text-[13px] leading-5 text-[var(--ds-label-secondary)]">
             {t("permission.finishSetupDescription")}
           </p>
         </div>
 
-        <div className="overflow-hidden rounded-[14px] border border-[rgba(255,255,255,0.70)] bg-[rgba(246,246,247,0.96)] shadow-[inset_0_0_0_0.5px_rgba(60,60,67,0.04)]">
+        <div className="overflow-hidden rounded-[14px] border border-[var(--ds-card-border)] bg-[var(--ds-card-bg-solid)] shadow-[inset_0_0_0_0.5px_var(--ds-card-inset)]">
           {permissions.map((permission) => (
             <PermissionRow
               key={permission.id}
@@ -152,7 +152,7 @@ export function PermissionGate({
             type="button"
             onClick={onRefresh}
             disabled={refreshing || repairing !== null}
-            className="rounded-[9px] border-0 bg-[rgba(120,120,128,0.16)] px-3 py-1.5 text-[13px] font-semibold text-[#050505] outline-none disabled:text-[rgba(60,60,67,0.42)]"
+            className="rounded-[9px] border-0 bg-[var(--ds-control-bg)] px-3 py-1.5 text-[13px] font-semibold text-[var(--ds-label)] outline-none disabled:text-[var(--ds-control-disabled-fg)]"
           >
             {refreshing ? t("permission.checking") : t("permission.checkAgain")}
           </button>
@@ -160,18 +160,18 @@ export function PermissionGate({
             type="button"
             onClick={onRepairAll}
             disabled={repairing !== null}
-            className="rounded-[9px] border-0 bg-[var(--dashboard-accent-color)] px-3 py-1.5 text-[13px] font-semibold text-white outline-none disabled:bg-[rgba(120,120,128,0.20)] disabled:text-[rgba(60,60,67,0.42)]"
+            className="rounded-[9px] border-0 bg-[var(--dashboard-accent-color)] px-3 py-1.5 text-[13px] font-semibold text-white outline-none disabled:bg-[var(--ds-control-disabled-bg)] disabled:text-[var(--ds-control-disabled-fg)]"
           >
             {repairing ? t("permission.working") : t("permission.fixAll")}
           </button>
         </div>
 
-        <div className="mt-5 flex items-start justify-between gap-4 rounded-[12px] bg-[rgba(120,120,128,0.08)] px-4 py-3">
+        <div className="mt-5 flex items-start justify-between gap-4 rounded-[12px] bg-[var(--ds-chip-bg)] px-4 py-3">
           <div>
-            <div className="text-[13px] font-medium text-[#050505]">
+            <div className="text-[13px] font-medium text-[var(--ds-label)]">
               {t("permission.shareUsageData")}
             </div>
-            <div className="mt-0.5 text-[12px] leading-[1.5] text-[rgba(60,60,67,0.60)]">
+            <div className="mt-0.5 text-[12px] leading-[1.5] text-[var(--ds-label-secondary)]">
               {t("permission.shareUsageDataDescription")}
             </div>
           </div>
@@ -182,10 +182,10 @@ export function PermissionGate({
             onClick={() => onTelemetryChange(!telemetryEnabled)}
             className={clsx(
               "mt-0.5 h-5 w-11 flex-shrink-0 rounded-full border-0 p-0",
-              "shadow-[inset_0_0_0_0.5px_rgba(60,60,67,0.12)] transition-colors duration-150",
+              "shadow-[inset_0_0_0_0.5px_var(--ds-control-inset)] transition-colors duration-150",
               telemetryEnabled
                 ? "bg-[var(--dashboard-accent-color)]"
-                : "bg-[rgba(120,120,128,0.16)]",
+                : "bg-[var(--ds-control-bg)]",
             )}
           >
             <span

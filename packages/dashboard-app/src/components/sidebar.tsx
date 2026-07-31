@@ -26,8 +26,8 @@ export function Sidebar({
   ];
 
   return (
-    <aside className="dashboard-sidebar flex w-[228px] flex-shrink-0 flex-col border-r border-[rgba(60,60,67,0.12)] pt-[32px]">
-      <div className="px-5 py-3 text-[17px] font-semibold tracking-[-0.02em] text-[#050505]">
+    <aside className="dashboard-sidebar flex w-[228px] flex-shrink-0 flex-col border-r border-[var(--ds-sidebar-border)] pt-[32px]">
+      <div className="px-5 py-3 text-[17px] font-semibold tracking-[-0.02em] text-[var(--ds-label)]">
         {t("app.settings")}
       </div>
       <nav
@@ -43,13 +43,13 @@ export function Sidebar({
                 "font-sans text-[14px] font-medium tracking-[-0.01em]",
                 active
                   ? "dashboard-sidebar-item-active"
-                  : "bg-transparent text-[rgba(0,0,0,0.85)]",
+                  : "bg-transparent text-[var(--ds-sidebar-item)]",
               )}
               key={item.id}
               onClick={() => onSectionChange(item.id)}
               aria-current={active ? "page" : undefined}
             >
-              <span className="dashboard-sidebar-icon flex h-[20px] w-[20px] flex-shrink-0 items-center justify-center rounded-[6px] leading-none text-[rgba(32,33,36,0.92)]">
+              <span className="dashboard-sidebar-icon flex h-[20px] w-[20px] flex-shrink-0 items-center justify-center rounded-[6px] leading-none text-[var(--ds-sidebar-icon)]">
                 {item.icon}
               </span>
               {item.label}
@@ -60,7 +60,7 @@ export function Sidebar({
 
       <div className="flex h-11 items-center px-[18px] py-3">
         {saving === "Error saving" ? (
-          <span className="flex items-center gap-[5px] rounded-full bg-[rgba(255,59,48,0.12)] px-[9px] py-1 text-[12px] font-semibold text-[#ff3b30]">
+          <span className="flex items-center gap-[5px] rounded-full bg-[var(--ds-red-bg)] px-[9px] py-1 text-[12px] font-semibold text-[var(--ds-red)]">
             <IconWarning />
             {t("nav.saveError")}
           </span>

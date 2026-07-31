@@ -9,6 +9,50 @@ type SuggestionIconProps = {
   style: React.CSSProperties;
 };
 
+// Tint of the rounded tile behind the history glyph. Deliberately neutral so
+// history rows recede next to the saturated tiles specs pick, while staying
+// legible on both the dark row background and the blue selected row.
+const HISTORY_ICON_COLOR = "#6b7280";
+
+// lucide rotate-ccw-clock, drawn into the same rounded-square tile that
+// `fig://template` icons render as (32x32 asset, ~25% corner radius) so history
+// rows match the surrounding icon style instead of reading as a bare outline.
+function HistoryIcon({ size }: { size: number }) {
+  return (
+    <div
+      role="img"
+      aria-label="Icon for past command"
+      style={{
+        width: size,
+        height: size,
+        minWidth: size,
+        minHeight: size,
+        borderRadius: size * 0.25,
+        backgroundColor: HISTORY_ICON_COLOR,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width={size * 0.74}
+        height={size * 0.74}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#fff"
+        strokeWidth={2.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+        <path d="M3 3v5h5" />
+        <path d="M12 7v5l4 2" />
+      </svg>
+    </div>
+  );
+}
+
 function renderIcon(icon: URL, height: string | number, fallbackIcon?: URL) {
   const isFigProtocol = icon.protocol === "fig:";
 
@@ -85,6 +129,15 @@ const SuggestionIcon = ({
   const { icon, name, type } = suggestion;
   let img;
   let { height } = style;
+
+  if (type === "history" && !icon) {
+    // Full height, matching renderIcon — template tiles fill the icon box.
+    return (
+      <div style={style}>
+        <HistoryIcon size={typeof height === "number" ? height : 16} />
+      </div>
+    );
+  }
 
   // The icon is a Emoji or text if it is <4 length
   if (icon && icon.length < 4) {

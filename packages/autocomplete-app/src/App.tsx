@@ -79,6 +79,7 @@ function App() {
     fuzzySearchEnabled,
     setUserFuzzySearchEnabled,
     setFigState,
+    historySourcesLoaded,
   } = useAutocompleteStore();
 
   const [systemTheme] = useSystemTheme();
@@ -214,10 +215,10 @@ function App() {
       .catch(() => undefined)
       .then((res) => {
         if (!JSON.parse(res?.jsonBlob ?? "false")) {
-          loadHistory({});
+          loadHistory({}, historySourcesLoaded);
         }
       });
-  }, []);
+  }, [historySourcesLoaded]);
 
   useEffect(() => {
     let isMostRecentEffect = true;

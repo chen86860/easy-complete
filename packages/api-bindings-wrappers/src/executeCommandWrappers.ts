@@ -71,7 +71,11 @@ export const executeLoginShell = async ({
       PROCESS_LAUNCHED_BY_Q: "1",
       HISTFILE: "",
     },
-    terminalSessionId: window.globalTerminalSessionId,
+    // Must be undefined rather than "" — the field is `optional string` in
+    // proto, so "" arrives as Some("") and Uuid::parse_str fails the whole
+    // request. undefined lets the host fall back to the most recent session.
+    // loadHistory() runs before any edit buffer notification has set this.
+    terminalSessionId: window.globalTerminalSessionId || undefined,
     timeout,
   });
 

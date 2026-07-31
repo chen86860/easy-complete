@@ -14,7 +14,6 @@ import {
   IconGitHub,
   IconUpdate,
 } from "../components/icons";
-import { AutoExecuteExample } from "../components/auto-execute-example";
 import { Card, Row } from "../components/settings-layout";
 import { ThemePicker } from "../components/theme-picker";
 import { useCheckForUpdates } from "../hooks/use-check-for-updates";
@@ -305,7 +304,6 @@ export function BehaviorSection({
         <Row
           label={t("behavior.hideAutoExecuteSuggestion")}
           description={t("behavior.hideAutoExecuteSuggestionDescription")}
-          preview={<AutoExecuteExample command="git add" />}
           last={hideAutoExecute}
         >
           <Toggle
@@ -320,7 +318,6 @@ export function BehaviorSection({
             <Row
               label={t("behavior.executeAfterTrailingSpace")}
               description={t("behavior.executeAfterTrailingSpaceDescription")}
-              preview={<AutoExecuteExample command="git add" />}
             >
               <Toggle
                 checked={Boolean(
@@ -334,7 +331,6 @@ export function BehaviorSection({
             <Row
               label={t("behavior.runDangerousCommands")}
               description={t("behavior.runDangerousCommandsDescription")}
-              preview={<AutoExecuteExample command="rm -rf" />}
               last
             >
               <Toggle

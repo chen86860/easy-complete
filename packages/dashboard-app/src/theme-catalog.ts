@@ -55,6 +55,15 @@ export const THEMES: ThemeEntry[] = [
     accentClassName: "bg-[#fff8c5]",
   },
   {
+    id: "claude-light",
+    label: "Claude Light",
+    appearance: "light",
+    bgClassName: "bg-[#f3f1e9]",
+    textClassName: "bg-[#1a1917] text-[#1a1917]",
+    selectionClassName: "bg-[#efe5db]",
+    accentClassName: "bg-[#cc785c]",
+  },
+  {
     id: "nord",
     label: "Nord",
     appearance: "dark",

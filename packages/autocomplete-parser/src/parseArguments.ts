@@ -1020,6 +1020,116 @@ const parseArgumentsCached = async (
   return state;
 };
 
+const FIRST_TOKEN_LOGIN_TIMEOUT_MS = 1500;
+
+const dedupeCommandSuggestions = (lines: string[]): Fig.Suggestion[] => {
+  const names = new Set<string>();
+  const result: Fig.Suggestion[] = [];
+  for (const raw of lines) {
+    const name = raw.trim();
+    if (!name || names.has(name)) continue;
+    names.add(name);
+    result.push({ name, type: "subcommand" });
+  }
+  return result;
+};
+
+/** Prefer login shell (aliases + user PATH from rc). Short timeout; empty/fail → []. */
+const listFirstTokenViaLogin = async (
+  processName: string,
+): Promise<Fig.Suggestion[]> => {
+  if (!processName) return [];
+
+  try {
+    if (processName.includes("fish")) {
+      const commands = await executeLoginShell({
+        command: 'complete -C ""',
+        executable: processName,
+        timeout: FIRST_TOKEN_LOGIN_TIMEOUT_MS,
+      });
+      return dedupeCommandSuggestions(
+        commands.split("\n").map((commandString) => {
+          const splitIndex = commandString.indexOf("\t");
+          return splitIndex >= 0
+            ? commandString.slice(0, splitIndex)
+            : commandString;
+        }),
+      );
+    }
+    if (processName.includes("bash")) {
+      const commands = await executeLoginShell({
+        command: "compgen -ac",
+        executable: processName,
+        timeout: FIRST_TOKEN_LOGIN_TIMEOUT_MS,
+      });
+      return dedupeCommandSuggestions(commands.split("\n"));
+    }
+    if (processName.includes("zsh")) {
+      const commands = await executeLoginShell({
+        command: `print -rl -- \${(k)commands} \${(k)aliases}`,
+        executable: processName,
+        timeout: FIRST_TOKEN_LOGIN_TIMEOUT_MS,
+      });
+      return dedupeCommandSuggestions(commands.split("\n"));
+    }
+  } catch (err) {
+    logger.warn(
+      "firstTokenSpec login PATH listing failed; will fall back",
+      err,
+    );
+  }
+  return [];
+};
+
+/** Non-login listing: fast PATH commands, but no user aliases from rc. */
+const listFirstTokenViaNonLogin = async (
+  processName: string,
+  exec: Fig.ExecuteCommandFunction,
+): Promise<Fig.Suggestion[]> => {
+  let lines: string[] = [];
+  try {
+    if (processName.includes("fish")) {
+      const commands = await exec({
+        command: processName,
+        args: ["-c", 'complete -C ""'],
+      });
+      lines = commands.stdout.split("\n").map((commandString) => {
+        const splitIndex = commandString.indexOf("\t");
+        return splitIndex >= 0
+          ? commandString.slice(0, splitIndex)
+          : commandString;
+      });
+    } else if (processName.includes("bash")) {
+      const commands = await exec({
+        command: processName,
+        args: ["-c", "compgen -ac"],
+      });
+      lines = commands.stdout.split("\n");
+    } else if (processName.includes("zsh")) {
+      const commands = await exec({
+        command: processName,
+        args: [
+          "-c",
+          // Non-interactive zsh still populates $commands from PATH; aliases
+          // from .zshrc are not loaded here — login path covers those.
+          `print -rl -- \${(k)commands}`,
+        ],
+      });
+      lines = commands.stdout.split("\n");
+    } else {
+      const commands = await exec({
+        command: "/bin/bash",
+        args: ["-c", "compgen -ac"],
+      });
+      lines = commands.stdout.split("\n");
+    }
+  } catch (err) {
+    logger.warn("firstTokenSpec non-login PATH listing failed", err);
+    return [];
+  }
+  return dedupeCommandSuggestions(lines);
+};
+
 const firstTokenSpec: Internal.Subcommand = {
   name: ["firstTokenSpec"],
   subcommands: {},
@@ -1028,48 +1138,22 @@ const firstTokenSpec: Internal.Subcommand = {
   loadSpec: undefined,
   args: [
     {
-      name: "command",
+      // No `name`: a bare name like "command" is what the overlay shows when the
+      // PATH generator is still empty/failed — a black box with no suggestions.
+      // Generators alone are enough for first-token completion.
       generators: [
         {
-          custom: async (_tokens, _exec, context) => {
-            let result: Fig.Suggestion[] = [];
-            if (context?.currentProcess.includes("fish")) {
-              const commands = await executeLoginShell({
-                command: 'complete -C ""',
-                executable: context.currentProcess,
-              });
-              result = commands.split("\n").map((commandString) => {
-                const splitIndex = commandString.indexOf("\t");
-                const name = commandString.slice(0, splitIndex + 1);
-                const description = commandString.slice(splitIndex + 1);
-                return { name, description, type: "subcommand" };
-              });
-            } else if (context?.currentProcess.includes("bash")) {
-              const commands = await executeLoginShell({
-                command: "compgen -c",
-                executable: context.currentProcess,
-              });
-              result = commands
-                .split("\n")
-                .map((name) => ({ name, type: "subcommand" }));
-            } else if (context?.currentProcess.includes("zsh")) {
-              const commands = await executeLoginShell({
-                command: `for key in \${(k)commands}; do echo $key; done && alias +r`,
-                executable: context.currentProcess,
-              });
-              result = commands
-                .split("\n")
-                .map((name) => ({ name, type: "subcommand" }));
-            }
+          custom: async (_tokens, exec, context) => {
+            const processName = context?.currentProcess ?? "";
 
-            const names = new Set();
-            return result.filter((suggestion) => {
-              if (names.has(suggestion.name)) {
-                return false;
-              }
-              names.add(suggestion.name);
-              return true;
-            });
+            // Login first so user aliases / rc PATH win when the shell starts
+            // cleanly. Fall back to non-login if login is slow, empty, or errors
+            // (common when interactive login re-enters shell hooks).
+            const fromLogin = await listFirstTokenViaLogin(processName);
+            if (fromLogin.length > 0) {
+              return fromLogin;
+            }
+            return listFirstTokenViaNonLogin(processName, exec);
           },
           cache: {
             strategy: "stale-while-revalidate",

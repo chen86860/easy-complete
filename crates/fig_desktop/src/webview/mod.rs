@@ -1483,7 +1483,8 @@ pub fn build_autocomplete(
             "api".into(),
             utils::wrap_custom_protocol(Arc::clone(&ctx), "api", AutocompleteId, api::handle),
         )
-        .with_devtools(true)
+        // Local debug builds keep inspector access; release builds stay free of browser UI.
+        .with_devtools(cfg!(debug_assertions))
         .with_transparent(true)
         .with_initialization_script(&javascript_init(true))
         .with_navigation_handler(navigation_handler(AUTOCOMPLETE_ID, &[r"localhost$", r"^127\.0\.0\.1$"]))

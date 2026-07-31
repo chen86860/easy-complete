@@ -75,6 +75,19 @@ async fn main() -> ExitCode {
     })
     .expect("Failed to init logging");
 
+    // macOS Tahoe's autofill heuristic controller attaches an "AutoFill (…)" helper to
+    // any app with text input (including our WKWebViews). SMS / contact autofill is not
+    // useful here, and the helper is pure overhead — same rationale as Ghostty.
+    #[cfg(target_os = "macos")]
+    {
+        use objc2_foundation::{NSUserDefaults, ns_string};
+        // SAFETY: standardUserDefaults and setBool_forKey are thread-safe Foundation APIs.
+        unsafe {
+            NSUserDefaults::standardUserDefaults()
+                .setBool_forKey(false, ns_string!("NSAutoFillHeuristicControllerEnabled"));
+        }
+    }
+
     fig_telemetry::init(
         option_env!("POSTHOG_ENDPOINT").unwrap_or(""),
         option_env!("POSTHOG_API_KEY").unwrap_or(""),
@@ -188,12 +201,17 @@ async fn main() -> ExitCode {
     // fig_auth removed - treat as always logged in
     let is_logged_in = true;
 
+    // A deep link names the page to open, so it outranks the setting.
+    let silent_launch = page.is_none() && fig_settings::settings::get_bool_or("app.silentLaunch", false);
+
     #[cfg(target_os = "macos")]
-    let defer_dashboard_for_modern_login_item =
-        !cli.no_dashboard && launch_on_startup && fig_integrations::login_item::supports_modern_login_item();
+    let defer_dashboard_for_modern_login_item = !cli.no_dashboard
+        && !silent_launch
+        && launch_on_startup
+        && fig_integrations::login_item::supports_modern_login_item();
     #[cfg(not(target_os = "macos"))]
     let defer_dashboard_for_modern_login_item = false;
-    let visible = !cli.no_dashboard && !defer_dashboard_for_modern_login_item;
+    let visible = !cli.no_dashboard && !silent_launch && !defer_dashboard_for_modern_login_item;
 
     let mut webview_manager = WebviewManager::new(ctx, visible, defer_dashboard_for_modern_login_item);
     let auto_updates_enabled = !fig_settings::settings::get_bool_or("app.disableAutoupdates", false);

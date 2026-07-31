@@ -1,7 +1,12 @@
 use std::process::Command;
 
 use eyre::{Result, eyre};
+use fig_os_shim::Env;
+use fig_util::env_var::{Q_PARENT, Q_SET_PARENT};
 use fig_util::{PRODUCT_NAME, directories, manifest, system_info};
+
+/// Escape hatch that forces the pty wrapper to launch regardless of every other check.
+pub const Q_FORCE_FIGTERM_LAUNCH: &str = "Q_FORCE_FIGTERM_LAUNCH";
 
 pub struct LaunchArgs {
     /// Should we wait for the socket to continue execution
@@ -16,27 +21,37 @@ pub struct LaunchArgs {
     pub verbose: bool,
 }
 
+/// Whether shell integration should stand down because the desktop app is not running.
+///
+/// Remote sessions are exempt. They reach the desktop app over the socket named by
+/// `Q_SET_PARENT`/`Q_PARENT` on the user's own machine, so there is never a local
+/// process to find and gating on one would disable SSH autocomplete permanently.
+pub fn suppress_without_desktop_app(env: &Env) -> bool {
+    if env.get_os(Q_FORCE_FIGTERM_LAUNCH).is_some() || is_remote_session(env) {
+        return false;
+    }
+
+    !desktop_app_running()
+}
+
+fn is_remote_session(env: &Env) -> bool {
+    env.in_ssh() || env.get_os(Q_SET_PARENT).is_some() || env.get_os(Q_PARENT).is_some() || system_info::is_remote()
+}
+
 #[cfg(target_os = "macos")]
 pub fn desktop_app_running() -> bool {
-    use std::ffi::OsString;
-
-    use fig_util::consts::{APP_BUNDLE_ID, APP_PROCESS_NAME};
+    use fig_util::consts::APP_BUNDLE_ID;
     use objc2_app_kit::NSRunningApplication;
     use objc2_foundation::ns_string;
-    use sysinfo::{ProcessRefreshKind, RefreshKind, System};
 
+    // Authoritative and cheap: the bundle is registered with the window server for as
+    // long as the app lives. A process-table sweep as a fallback would run on every
+    // shell start in exactly the case that matters — the app being closed — and is not
+    // worth the startup latency.
     let bundle_id = ns_string!(APP_BUNDLE_ID);
     let running_applications = unsafe { NSRunningApplication::runningApplicationsWithBundleIdentifier(bundle_id) };
 
-    if !running_applications.is_empty() {
-        return true;
-    }
-
-    // Fallback to process name check
-    let app_process_name = OsString::from(APP_PROCESS_NAME);
-    let system = System::new_with_specifics(RefreshKind::nothing().with_processes(ProcessRefreshKind::nothing()));
-    let mut processes = system.processes_by_exact_name(&app_process_name);
-    processes.next().is_some()
+    !running_applications.is_empty()
 }
 
 #[cfg(target_os = "windows")]
@@ -212,6 +227,29 @@ fn launch_linux_desktop(ctx: std::sync::Arc<fig_os_shim::Context>, state: &fig_s
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Each of these reaches the desktop app on another machine, or forces the wrapper
+    /// outright, so the gate must let them through without ever asking whether a local
+    /// desktop process exists.
+    #[test]
+    fn remote_and_forced_sessions_bypass_the_desktop_app_gate() {
+        for (label, env) in [
+            ("SSH_CLIENT", Env::from_slice(&[("SSH_CLIENT", "1")])),
+            ("SSH_CONNECTION", Env::from_slice(&[("SSH_CONNECTION", "1")])),
+            ("SSH_TTY", Env::from_slice(&[("SSH_TTY", "/dev/ttys001")])),
+            (Q_SET_PARENT, Env::from_slice(&[(Q_SET_PARENT, "/tmp/parent.sock")])),
+            (Q_PARENT, Env::from_slice(&[(Q_PARENT, "/tmp/parent.sock")])),
+            (
+                Q_FORCE_FIGTERM_LAUNCH,
+                Env::from_slice(&[(Q_FORCE_FIGTERM_LAUNCH, "1")]),
+            ),
+        ] {
+            assert!(
+                !suppress_without_desktop_app(&env),
+                "{label} should exempt the session from the desktop app gate"
+            );
+        }
+    }
 
     #[test]
     #[ignore = "not in ci"]

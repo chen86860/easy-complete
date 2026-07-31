@@ -25,6 +25,8 @@ pub const MACOS_TERMINALS: &[Terminal] = &[
     Terminal::Ghostty,
     Terminal::Positron,
     Terminal::Trae,
+    Terminal::Otty,
+    Terminal::Codex,
 ];
 
 /// Terminals that Linux supports
@@ -168,6 +170,11 @@ pub enum Terminal {
     Positron,
     /// Trae
     Trae,
+    /// Otty <https://docs.otty.sh/>
+    Otty,
+    /// OpenAI's Codex app, shipped as `ChatGPT.app` since the rename. Not to be confused
+    /// with `ChatGPT Classic.app` (`com.openai.chat`), which has no terminal.
+    Codex,
 
     /// Custom terminal to support user/custom entries
     Custom(CustomTerminal),
@@ -211,6 +218,8 @@ impl fmt::Display for Terminal {
             Terminal::Ghostty => write!(f, "Ghostty"),
             Terminal::Positron => write!(f, "Positron"),
             Terminal::Trae => write!(f, "Trae"),
+            Terminal::Otty => write!(f, "Otty"),
+            Terminal::Codex => write!(f, "ChatGPT"),
             Terminal::Custom(custom_terminal) => write!(f, "{}", custom_terminal.name),
         }
     }
@@ -245,6 +254,7 @@ impl Terminal {
             Some("WezTerm") => return Some(Terminal::WezTerm),
             Some("guake") => return Some(Terminal::Guake),
             Some("ghostty") => return Some(Terminal::Ghostty),
+            Some("otty") => return Some(Terminal::Otty),
             _ => (),
         };
 
@@ -378,6 +388,8 @@ impl Terminal {
             Terminal::Ghostty => "ghostty".into(),
             Terminal::Positron => "positron".into(),
             Terminal::Trae => "trae".into(),
+            Terminal::Otty => "otty".into(),
+            Terminal::Codex => "codex".into(),
             Terminal::Custom(custom_terminal) => custom_terminal.id.clone().into(),
         }
     }
@@ -408,6 +420,8 @@ impl Terminal {
             Terminal::Ghostty => Some("com.mitchellh.ghostty".into()),
             Terminal::Positron => Some("co.posit.positron".into()),
             Terminal::Trae => Some("com.trae.app".into()),
+            Terminal::Otty => Some("io.appmakes.otty".into()),
+            Terminal::Codex => Some("com.openai.codex".into()),
             Terminal::Custom(custom_terminal) => custom_terminal.macos.bundle_id.clone().map(Cow::Owned),
             _ => None,
         }
@@ -436,6 +450,8 @@ impl Terminal {
             "com.mitchellh.ghostty" => Terminal::Ghostty,
             "co.posit.positron" => Terminal::Positron,
             "com.trae.app" => Terminal::Trae,
+            "io.appmakes.otty" => Terminal::Otty,
+            "com.openai.codex" => Terminal::Codex,
             // TODO: the following line does not account for Android Studio
             _ if bundle.starts_with("com.jetbrains.") | bundle.starts_with("com.google.") => {
                 Terminal::IntelliJ(IntelliJVariant::from_bundle_id(bundle))
@@ -457,6 +473,7 @@ impl Terminal {
                 | Terminal::Zed
                 | Terminal::Rio
                 | Terminal::Ghostty
+                | Terminal::Otty
         ) || self.as_custom().is_some_and(|c| c.macos.input_method)
     }
 
@@ -486,6 +503,7 @@ impl Terminal {
                 | Terminal::Windsurf
                 | Terminal::WindsurfNext
                 | Terminal::Trae
+                | Terminal::Codex
         ) || self.as_custom().is_some_and(|c| c.macos.xterm)
     }
 
@@ -515,6 +533,9 @@ impl Terminal {
             Terminal::Ghostty => &["ghostty"],
             Terminal::Positron => &["positron"],
             Terminal::Trae => &["trae"],
+            Terminal::Otty => &["Otty", "otty"],
+            // Main binary is ChatGPT; the PTY host is Contents/Resources/codex (lowercase).
+            Terminal::Codex => &["ChatGPT", "Codex", "codex"],
 
             Terminal::Ssh => &["sshd"],
             Terminal::Tmux => &["tmux", "tmux: server"],
@@ -583,6 +604,7 @@ impl Terminal {
                 | Terminal::Windsurf
                 | Terminal::WindsurfNext
                 | Terminal::Trae
+                | Terminal::Codex
         )
     }
 
@@ -855,5 +877,34 @@ mod tests {
             Some(Terminal::Guake),
             "should return guake"
         );
+    }
+
+    #[test]
+    fn test_otty_detection() {
+        assert_eq!(Terminal::from_bundle_id("io.appmakes.otty"), Some(Terminal::Otty));
+        assert_eq!(Terminal::Otty.to_bundle_id().as_deref(), Some("io.appmakes.otty"));
+        assert_eq!(Terminal::Otty.internal_id(), "otty");
+        assert!(Terminal::Otty.supports_macos_input_method());
+        assert!(Terminal::Otty.executable_names().contains(&"Otty"));
+        assert!(MACOS_TERMINALS.contains(&Terminal::Otty));
+    }
+
+    #[test]
+    fn test_codex_detection() {
+        assert_eq!(Terminal::from_bundle_id("com.openai.codex"), Some(Terminal::Codex));
+        assert_eq!(Terminal::Codex.to_bundle_id().as_deref(), Some("com.openai.codex"));
+        assert_eq!(Terminal::Codex.internal_id(), "codex");
+        assert!(MACOS_TERMINALS.contains(&Terminal::Codex));
+
+        // Electron + xterm.js + node-pty, same as VSCode and Cursor: the caret is found by
+        // walking accessibility for the `xterm-helper-textarea` element, not via the IME.
+        assert!(Terminal::Codex.is_xterm());
+        assert!(!Terminal::Codex.supports_macos_input_method());
+        assert!(!Terminal::Codex.supports_fancy_boxes());
+        assert!(Terminal::Codex.executable_names().contains(&"codex"));
+        assert!(Terminal::Codex.executable_names().contains(&"ChatGPT"));
+
+        // ChatGPT Classic is the old chat app under a different bundle id and has no terminal.
+        assert_eq!(Terminal::from_bundle_id("com.openai.chat"), None);
     }
 }

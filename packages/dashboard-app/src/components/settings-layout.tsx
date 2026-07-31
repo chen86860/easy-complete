@@ -4,11 +4,14 @@ import clsx from "clsx";
 export function Row({
   label,
   description,
+  preview,
   children,
   last,
 }: {
   label: string;
   description?: string;
+  /** Optional visual sample under the description (e.g. an autocomplete row chip). */
+  preview?: React.ReactNode;
   children: React.ReactNode;
   last?: boolean;
 }) {
@@ -28,6 +31,7 @@ export function Row({
             {description}
           </div>
         ) : null}
+        {preview ? <div className="min-w-0">{preview}</div> : null}
       </div>
       <div className="flex-shrink-0">{children}</div>
     </div>

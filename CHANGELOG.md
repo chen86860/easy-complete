@@ -1,5 +1,25 @@
 # Changelog
 
+## v2.1.0
+
+- change: shell integration now stands down entirely when the desktop app is not running, so VS Code Terminal Suggest, Otty, and other terminals keep their own completions. This is decided when the shell starts, so a terminal opened before the app is running stays uninstrumented for that session — open a new terminal after launching Easy Complete
+- fix: subscribe to macOS accessibility notifications correctly in release builds, where undefined behaviour previously made every subscription report failure and left the popup unable to follow the focused window
+- fix: keep tracking a window when it rejects only some accessibility notifications, instead of abandoning the whole application
+- fix: stop observing Easy Complete's own windows, which made showing the popup look like an app switch and hid it again immediately
+- fix: restore first-token command completion, sourcing aliases and the full PATH from a login shell with a 1.5s budget and an automatic non-login fallback
+- fix: convert `Process.run` timeouts to protobuf `Duration` with the correct millisecond-to-nanosecond factor
+- fix: preserve framework symlinks when installing to `/Applications` so the bundle passes `codesign --verify --deep --strict` and the Sparkle updater stays valid
+- feat: add Otty and ChatGPT (Codex) terminal support, including input-method cursor tracking for Otty and xterm.js caret detection for Codex
+- feat: coexist with Otty-managed shell rc files instead of reporting the integration as broken when Otty owns the end of the file
+- feat: add a silent launch setting that starts the app in the background without opening the settings window
+- feat: expose the auto-execute row as a parent toggle with trailing-space and dangerous-command sub-options, and add a first-token completion toggle
+- feat: build the autocomplete and dashboard webviews on demand and release them when idle, and apply `autocomplete.keepReady` changes without a restart
+- feat: localize the settings UI with English and Simplified Chinese, and add the Claude Light autocomplete theme
+- fix: prevent dangerous suggestions from reaching the auto-execute row through the current-token fallback path
+- change: disable autocomplete WebView DevTools in release builds and opt out of the macOS AutoFill helper
+- build: honour `CARGO_TARGET_DIR` when assembling the app bundle
+- fix: patch the open npm advisories in both lockfiles and cover the standalone website project with Dependabot
+
 ## v2.0.50
 
 - fix: preserve Sparkle-generated delta files by normalizing their space-based filenames before appcast cleanup, and fail releases when delta assets are missing or mismatched

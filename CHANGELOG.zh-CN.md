@@ -1,5 +1,25 @@
 # Changelog
 
+## v2.1.0
+
+- 变更：桌面端未运行时完全停用 Shell 集成，让 VS Code Terminal Suggest、Otty 等终端保留各自的补全。该判断在 Shell 启动时做出，因此在应用启动前打开的终端本次会话不会被接管——启动 Easy Complete 后新开一个终端即可
+- 修复：修正 Release 构建中 macOS 辅助功能事件的订阅方式，此前的未定义行为会让所有订阅都报告失败，导致浮层无法跟随焦点窗口
+- 修复：某个辅助功能事件被拒绝时继续跟踪该窗口，而不是放弃整个应用的监听
+- 修复：不再监听 Easy Complete 自身窗口，此前这会让浮层的显示被误判为切换应用并立即隐藏
+- 修复：恢复首 token 命令补全，从登录 Shell 读取别名与完整 PATH，限时 1.5 秒并在失败时自动回退到非登录方式
+- 修复：`Process.run` 的超时时间在转换为 protobuf `Duration` 时使用正确的毫秒到纳秒换算系数
+- 修复：安装到 `/Applications` 时保留框架符号链接，使应用包通过 `codesign --verify --deep --strict` 校验，Sparkle 更新器保持有效
+- 功能：新增 Otty 与 ChatGPT（Codex）终端支持，包括 Otty 的输入法光标跟踪与 Codex 的 xterm.js 光标定位
+- 功能：兼容由 Otty 管理的 Shell rc 文件，当 Otty 占据文件末尾时不再将集成状态误报为损坏
+- 功能：新增静默启动设置，应用在后台启动而不打开设置窗口
+- 功能：将「立即执行」行改为父级开关，并提供尾随空格与危险命令两个子选项，同时新增首 token 补全开关
+- 功能：补全浮层与设置窗口改为按需创建、空闲释放，`autocomplete.keepReady` 的修改无需重启即可生效
+- 功能：设置界面支持简体中文与英文，并新增 Claude Light 补全主题
+- 修复：阻止危险命令通过当前 token 的兜底路径进入「立即执行」行
+- 变更：Release 构建关闭补全 WebView 的 DevTools，并停用 macOS AutoFill 辅助进程
+- 构建：装配应用包时遵循 `CARGO_TARGET_DIR` 设置
+- 修复：修补两个 lockfile 中已公开的 npm 安全告警，并将独立的 website 项目纳入 Dependabot 覆盖范围
+
 ## v2.0.50
 
 - 修复：在清理 appcast 前先规范化 Sparkle 生成的含空格 delta 文件名，并在 delta 资产缺失或不匹配时让发布失败

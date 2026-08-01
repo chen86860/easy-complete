@@ -29,7 +29,7 @@
   "devDependencies": {
     "@easy-complete/tsconfig": "workspace:^",
     "@bufbuild/buf": "^1.72.0",
-    "@bufbuild/protoc-gen-es": "2.4.0",
+    "@bufbuild/protoc-gen-es": "2.13.0",
     "typescript": "6.0.3"
   }
 }

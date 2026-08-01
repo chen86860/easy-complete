@@ -50,7 +50,7 @@ const getTitle = (
 
   const queryTerm = getQueryTermForSuggestion(item, searchTerm);
 
-  let out: Text[][] = [];
+  let out: Text[][];
 
   if (queryTerm) {
     if (fuzzySearch) {

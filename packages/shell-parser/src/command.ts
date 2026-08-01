@@ -43,7 +43,7 @@ export const createTextToken = (
 ): Token => {
   const { tree, originalTree, tokens } = command;
 
-  let indexDiff = 0;
+  let indexDiff: number;
   const tokenIndex = tokens.findIndex(
     (token) => index < token.originalNode.startIndex,
   );

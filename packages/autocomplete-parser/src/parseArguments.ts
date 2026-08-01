@@ -1086,7 +1086,7 @@ const listFirstTokenViaNonLogin = async (
   processName: string,
   exec: Fig.ExecuteCommandFunction,
 ): Promise<Fig.Suggestion[]> => {
-  let lines: string[] = [];
+  let lines: string[];
   try {
     if (processName.includes("fish")) {
       const commands = await exec({

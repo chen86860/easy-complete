@@ -621,7 +621,7 @@ function parseStatement(
 ): BaseNode {
   let i = nextWordIndex(str, index);
   i = i === -1 ? index : i;
-  let statement = null;
+  let statement: BaseNode;
   if (["{", "("].includes(str.charAt(i))) {
     // Parse compound statement or subshell
     const isCompound = str.charAt(i) === "{";

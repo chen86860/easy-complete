@@ -59,8 +59,8 @@ importers:
   packages/api-bindings:
     dependencies:
       '@bufbuild/protobuf':
-        specifier: 2.4.0
-        version: 2.4.0
+        specifier: 2.13.0
+        version: 2.13.0
       '@easy-complete/proto':
         specifier: workspace:^
         version: link:../../proto
@@ -136,8 +136,8 @@ importers:
   packages/autocomplete-app:
     dependencies:
       '@bufbuild/protobuf':
-        specifier: 2.4.0
-        version: 2.4.0
+        specifier: 2.13.0
+        version: 2.13.0
       '@easy-complete/api-bindings':
         specifier: workspace:~
         version: link:../api-bindings
@@ -300,8 +300,8 @@ importers:
   packages/dashboard-app:
     dependencies:
       '@bufbuild/protobuf':
-        specifier: 2.4.0
-        version: 2.4.0
+        specifier: 2.13.0
+        version: 2.13.0
       '@easy-complete/api-bindings':
         specifier: workspace:~
         version: link:../api-bindings
@@ -472,15 +472,15 @@ importers:
   proto:
     dependencies:
       '@bufbuild/protobuf':
-        specifier: 2.4.0
-        version: 2.4.0
+        specifier: 2.13.0
+        version: 2.13.0
     devDependencies:
       '@bufbuild/buf':
         specifier: ^1.72.0
         version: 1.72.0
       '@bufbuild/protoc-gen-es':
         specifier: 2.4.0
-        version: 2.4.0(@bufbuild/protobuf@2.4.0)
+        version: 2.4.0(@bufbuild/protobuf@2.13.0)
       '@easy-complete/tsconfig':
         specifier: workspace:^
         version: link:../packages/tsconfig
@@ -618,6 +618,9 @@ packages:
     resolution: {integrity: sha512-BwBKTX/WXkhAhqWJGrEKnqU03/4tK1O0OozSlwUMBCOEo8pLL3xu3M24RT3+umExEeM0wjlANO6axqGWMqtt4Q==}
     engines: {node: '>=12'}
     hasBin: true
+
+  '@bufbuild/protobuf@2.13.0':
+    resolution: {integrity: sha512-acq7c49vxfm1ggJ95P70TX7ABDM0vxr1SYD3BB0o0jnBLB4OAqeHyKuN+cD3w80gXEDQ2zxHpR6CUeA+O/aU9g==}
 
   '@bufbuild/protobuf@2.4.0':
     resolution: {integrity: sha512-RN9M76x7N11QRihKovEglEjjVCQEA9PRBVnDgk9xw8JHLrcUrp4FpAVSPSH91cNbcTft3u2vpLN4GMbiKY9PJw==}
@@ -3481,13 +3484,15 @@ snapshots:
       '@bufbuild/buf-win32-arm64': 1.72.0
       '@bufbuild/buf-win32-x64': 1.72.0
 
+  '@bufbuild/protobuf@2.13.0': {}
+
   '@bufbuild/protobuf@2.4.0': {}
 
-  '@bufbuild/protoc-gen-es@2.4.0(@bufbuild/protobuf@2.4.0)':
+  '@bufbuild/protoc-gen-es@2.4.0(@bufbuild/protobuf@2.13.0)':
     dependencies:
       '@bufbuild/protoplugin': 2.4.0
     optionalDependencies:
-      '@bufbuild/protobuf': 2.4.0
+      '@bufbuild/protobuf': 2.13.0
     transitivePeerDependencies:
       - supports-color
 

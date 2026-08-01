@@ -25,7 +25,7 @@
     "@easy-complete/autocomplete-parser": "workspace:^",
     "@easy-complete/proto": "workspace:^",
     "@easy-complete/shell-parser": "workspace:^",
-    "@bufbuild/protobuf": "2.4.0",
+    "@bufbuild/protobuf": "2.13.0",
     "@fig/autocomplete-helpers": "^2.0.0",
     "@fig/autocomplete-shared": "^1.1.2",
     "deep-object-diff": "^1.1.9",

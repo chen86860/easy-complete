@@ -247,7 +247,7 @@ pub trait FigProtobufEncodable: Debug + Send + Sync {
     fn encode_fig_protobuf(&self) -> Result<Bytes, FigMessageEncodeError>;
 }
 
-impl<T: Message> FigProtobufEncodable for T {
+impl<T: Message + Debug> FigProtobufEncodable for T {
     fn encode_fig_protobuf(&self) -> Result<Bytes, FigMessageEncodeError> {
         FigMessage::encode(FigMessageType::Protobuf, self.encode_to_vec().into())
     }

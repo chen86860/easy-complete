@@ -34,7 +34,7 @@
     "eslint": "^9.39.5",
     "postcss": "^8.5.25",
     "prettier": "^3.9.5",
-    "tailwindcss": "^3.4.19",
+    "tailwindcss": "^4.3.3",
     "typescript": "6.0.3",
     "vite": "^8.1.4"
   }

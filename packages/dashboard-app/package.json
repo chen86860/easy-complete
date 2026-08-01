@@ -26,7 +26,7 @@
   "devDependencies": {
     "@easy-complete/eslint-config": "workspace:^",
     "@easy-complete/types": "workspace:^",
-    "@types/node": "^22.15.20",
+    "@types/node": "^26.1.2",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^6.0.3",

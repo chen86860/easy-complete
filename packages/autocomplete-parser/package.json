@@ -38,7 +38,7 @@
     "@easy-complete/shared": "workspace:^",
     "@types/semver": "^7.7.1",
     "@withfig/autocomplete-types": "^1.31.0",
-    "eslint": "^9.39.5",
+    "eslint": "^10.8.0",
     "typescript": "6.0.3",
     "vitest": "^4.1.10"
   }

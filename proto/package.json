@@ -30,6 +30,6 @@
     "@easy-complete/tsconfig": "workspace:^",
     "@bufbuild/buf": "^1.71.0",
     "@bufbuild/protoc-gen-es": "2.4.0",
-    "typescript": "6.0.3"
+    "typescript": "7.0.2"
   }
 }

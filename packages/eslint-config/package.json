@@ -36,6 +36,6 @@
     "eslint": "^9.39.5",
     "prettier": "^3.9.5",
     "typescript-eslint": "^8.65.0",
-    "typescript": "6.0.3"
+    "typescript": "7.0.2"
   }
 }

@@ -16,8 +16,8 @@ bytes.workspace = true
 fig_util.workspace = true
 flate2.workspace = true
 hex.workspace = true
-prost = "0.13.5"
-prost-reflect = { version = "0.15.2", features = ["serde", "derive"] }
+prost = "0.14.4"
+prost-reflect = { version = "0.16.5", features = ["serde", "derive"] }
 rand.workspace = true
 rmp-serde = "1.3.0"
 serde.workspace = true
@@ -29,6 +29,6 @@ uuid.workspace = true
 nix.workspace = true
 
 [build-dependencies]
-prost-build = "0.13.5"
-prost-reflect-build = "0.15.1"
+prost-build = "0.14.4"
+prost-reflect-build = "0.16.1"
 tempfile.workspace = true

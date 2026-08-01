@@ -209,8 +209,8 @@ importers:
         specifier: ^1.8.8
         version: 1.8.8
       '@vitejs/plugin-react':
-        specifier: ^6.0.3
-        version: 6.0.3(vite@8.1.5(@types/node@22.15.20)(esbuild@0.28.1)(jiti@1.21.7)(terser@5.39.0)(tsx@4.23.1)(yaml@2.8.3))
+        specifier: ^6.0.4
+        version: 6.0.4(vite@8.1.5(@types/node@22.15.20)(esbuild@0.28.1)(jiti@1.21.7)(terser@5.39.0)(tsx@4.23.1)(yaml@2.8.3))
       '@withfig/autocomplete-types':
         specifier: ^1.31.0
         version: 1.31.0
@@ -337,8 +337,8 @@ importers:
         specifier: ^18.3.5
         version: 18.3.7(@types/react@19.2.17)
       '@vitejs/plugin-react':
-        specifier: ^6.0.3
-        version: 6.0.3(vite@8.1.5(@types/node@22.15.20)(esbuild@0.28.1)(jiti@1.21.7)(terser@5.39.0)(tsx@4.23.1)(yaml@2.8.3))
+        specifier: ^6.0.4
+        version: 6.0.4(vite@8.1.5(@types/node@22.15.20)(esbuild@0.28.1)(jiti@1.21.7)(terser@5.39.0)(tsx@4.23.1)(yaml@2.8.3))
       autoprefixer:
         specifier: ^10.5.4
         version: 10.5.4(postcss@8.5.25)
@@ -1231,8 +1231,8 @@ packages:
     peerDependencies:
       typescript: '*'
 
-  '@vitejs/plugin-react@6.0.3':
-    resolution: {integrity: sha512-vmFvco5/QuC2f9Oj+wTk0+9XeDFkHxSamwZKYc7MxYwKICfvUvlMhqKI0VuICPltGqh1neqBKDvO4kes1ya8vg==}
+  '@vitejs/plugin-react@6.0.4':
+    resolution: {integrity: sha512-XcCQz0TBpBgljhj0gMuuDj49i6Ytqh5q1osT/Gp5uAVJUCTWxyskk/l1jwYYiu2xcNHHipdMz40EGfM1VdamVg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     peerDependencies:
       '@rolldown/plugin-babel': ^0.1.7 || ^0.2.0
@@ -4021,7 +4021,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vitejs/plugin-react@6.0.3(vite@8.1.5(@types/node@22.15.20)(esbuild@0.28.1)(jiti@1.21.7)(terser@5.39.0)(tsx@4.23.1)(yaml@2.8.3))':
+  '@vitejs/plugin-react@6.0.4(vite@8.1.5(@types/node@22.15.20)(esbuild@0.28.1)(jiti@1.21.7)(terser@5.39.0)(tsx@4.23.1)(yaml@2.8.3))':
     dependencies:
       '@rolldown/pluginutils': 1.0.1
       vite: 8.1.5(@types/node@22.15.20)(esbuild@0.28.1)(jiti@1.21.7)(terser@5.39.0)(tsx@4.23.1)(yaml@2.8.3)

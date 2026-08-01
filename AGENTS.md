@@ -97,9 +97,11 @@ Three cooperating native processes communicate via Unix domain sockets (protobuf
 
 `fig_integrations` and `fig_install` inject hooks into shell rc files (`.zshrc`, `.bashrc`, fish config). These hooks report shell state (CWD, command text, cursor position) back to `figterm` via IPC on every prompt and keystroke.
 
+`ec init` stands down entirely when the desktop app is not running (`suppress_without_desktop_app`), so VS Code Terminal Suggest, Otty and friends keep their own completions. This is a point-in-time decision made when the shell starts: a terminal opened while the app is down remains uninstrumented for that session. After launching Easy Complete, open a new terminal to enable its completions.
+
 ### macOS Input Method (IME)
 
-`fig_input_method` is an IMKit helper app (`EasyCompleteInputMethod.app`) bundled inside the main `.app` at `Contents/Helpers/`. It enables cursor position tracking in terminals that bypass the standard PTY path (Ghostty, Kitty, WezTerm, Zed, Alacritty).
+`fig_input_method` is an IMKit helper app (`EasyCompleteInputMethod.app`) bundled inside the main `.app` at `Contents/Helpers/`. It enables cursor position tracking in terminals that bypass the standard PTY path (Ghostty, Otty, Kitty, WezTerm, Zed, Alacritty).
 
 - The IME self-registers with TIS on startup via `TISRegisterInputSource` (requires NSApplication context)
 - Integration install/uninstall is managed via `ec integrations install input-method`
@@ -107,7 +109,25 @@ Three cooperating native processes communicate via Unix domain sockets (protobuf
 
 ### WebView UI
 
-The autocomplete overlay and dashboard are React + Tailwind apps in `packages/autocomplete-app` and `packages/dashboard-app`. In production they are served from `Contents/Resources/{autocomplete,dashboard}/`. In dev, Vite serves them on localhost and `fig_desktop` connects to that instead.
+The autocomplete overlay and dashboard are React + Tailwind apps in `packages/autocomplete-app` and `packages/dashboard-app`. In production they are served from `Contents/Resources/{autocomplete,dashboard}/`. In dev, Vite serves them on localhost and `fig_desktop` connects to that instead. Both are served over the `ecresource://localhost` custom protocol (`fig_desktop/src/protocol/resource.rs`), which falls back to `index.html` for extension-less paths so SPA routes like `/about` work.
+
+### WebView Lifecycle
+
+Neither webview is built at startup. `AutocompleteLifecycle` in `fig_desktop/src/webview/mod.rs` creates and releases them on demand:
+
+- **Autocomplete** is built when a `figterm` session connects (`RemoteHookHandler::sessions_changed`) and released after the last session disconnects. Window events that need a live window (`Show`, `Devtools`) rebuild it on the spot.
+- **Dashboard** is built on `Show`/`Devtools` and fully released on close (`WindowEvent::Close`, distinct from `Hide`), so closing the settings window reclaims its memory.
+
+Because a rebuilt overlay starts blank, native window events are deferred until the app posts `__ec_autocomplete_mounted__` over the IPC bridge, then replayed in order. A 5s timeout drains the queue if that signal never arrives. Two more IPC signals feed startup telemetry: `__ec_autocomplete_ready__` (first suggestions rendered) and `__ec_autocomplete_specs_ready__` (spec preload finished).
+
+Relevant settings:
+
+| Key                                          | Default | Effect                                                                          |
+| -------------------------------------------- | ------- | ------------------------------------------------------------------------------- |
+| `autocomplete.keepReady`                     | `false` | Keep the overlay loaded with no terminals connected — faster first suggestion, more memory |
+| `developer.autocomplete.releaseDelaySeconds` | `600`   | Idle delay before releasing the overlay, clamped to 1s–24h. Debug only; low values cause constant rebuilds |
+| `dashboard.language`                         | unset   | Dashboard UI language: `system`, `en`, or `zh-CN`                                |
+| `app.silentLaunch`                           | `false` | Start without opening the dashboard, same as `--no-dashboard`. A `ec://` deep link naming a page overrides it |
 
 ### Website Tailwind CSS
 
@@ -145,7 +165,7 @@ To keep the bundle small, the sync script supports excluding whole namespaces vi
 | `ec_cli`           | CLI binary, all `ec` subcommands                                 |
 | `fig_input_method` | macOS IMKit input method helper                                  |
 | `fig_integrations` | Shell/terminal/editor integration install logic                  |
-| `fig_desktop_api`  | Request/response handlers for WebView↔native bridge              |
+| `fig_desktop_api`  | Request/response handlers for WebView↔native bridge             |
 | `fig_ipc`          | Unix socket IPC primitives                                       |
 | `fig_proto`        | Generated Protobuf message types                                 |
 | `fig_settings`     | Settings persistence (JSON)                                      |

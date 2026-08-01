@@ -363,7 +363,11 @@ impl DotfileShellIntegration {
     fn description(&self, when: When) -> String {
         match when {
             When::Pre => format!("# {PRODUCT_NAME} pre block. Keep at the top of this file."),
-            When::Post => format!("# {PRODUCT_NAME} post block. Keep at the bottom of this file."),
+            When::Post => format!(
+                // "Near" not "at": Otty (and similar) may own the absolute end of bashrc.
+                // See strip_trailing_foreign_integrations / Otty shell-integration docs.
+                "# {PRODUCT_NAME} post block. Keep near the bottom of this file."
+            ),
         }
     }
 
@@ -508,7 +512,23 @@ impl DotfileShellIntegration {
             let message = format!("{} does not source {} integration", dotfile.display(), when);
             return Err(Error::NotInstalled(message.into()));
         }
-        if !self.source_regex(when, true)?.is_match(text) {
+
+        // Position rules differ for pre vs post:
+        //
+        // - Pre must stay first so ecterm can wrap the shell early.
+        // - Post used to require being last. That fights Otty: for bash, Otty
+        //   documents that it appends a managed block to ~/.bashrc and rewrites
+        //   it to the absolute end whenever Shell Integration is (re)enabled /
+        //   the app launches (https://docs.otty.sh/terminal-features/shell-integration).
+        //   The block is inert unless $OTTY_SHELL_INTEGRATION is set, so it does
+        //   not break our hooks — but a strict "must be last" check makes Settings
+        //   forever report "needs setup" and repair loops against Otty's installer.
+        //   When checking post position, strip known inert foreign trailers first.
+        let text_for_position = match when {
+            When::Pre => text.to_owned(),
+            When::Post => strip_trailing_foreign_integrations(text),
+        };
+        if !self.source_regex(when, true)?.is_match(&text_for_position) {
             let position = match when {
                 When::Pre => "first",
                 When::Post => "last",
@@ -558,11 +578,19 @@ impl DotfileShellIntegration {
 
         if self.post {
             self.script_integration(When::Post)?.install().await?;
+            // Sit just above foreign trailers instead of appending past them.
+            // Otty (bash) always wants its block at the absolute end; if repair
+            // shoved post below Otty, the next Otty launch would move Otty back
+            // under us and Settings would flake again. Leaving Otty's trailer
+            // untouched keeps both installers stable.
+            // Docs: https://docs.otty.sh/terminal-features/shell-integration
+            let (body, trailing) = split_trailing_foreign_integrations(&contents);
             contents = format!(
-                "{}\n{}\n{}\n",
-                contents,
+                "{}\n{}\n{}\n{}",
+                body.trim_end(),
                 self.description(When::Post),
                 self.source_text(When::Post)?,
+                trailing,
             );
         }
 
@@ -705,6 +733,89 @@ fn split_shebang(contents: &str) -> (&str, &str) {
     } else {
         ("", contents)
     }
+}
+
+/// Third-party shell hooks that claim the absolute end of a dotfile.
+///
+/// Today this is Otty's bash (and tmux-managed zsh) integration:
+/// https://docs.otty.sh/terminal-features/shell-integration
+///
+/// Otty's block is guarded on `$OTTY_SHELL_INTEGRATION`, so it is a no-op in
+/// every other terminal. It is *not* Otty Autocomplete (a separate Fig-compatible
+/// UI); coexistence here only means "don't treat their rc trailer as a broken
+/// Easy Complete install."
+///
+/// Matched against both:
+/// - raw rc files (with `# >>> otty shell integration >>>` markers), and
+/// - the comment-/blank-stripped form produced by [`DotfileShellIntegration::is_installed`].
+fn trailing_foreign_integration_patterns() -> &'static [&'static str] {
+    &[
+        // Otty — marker form written into ~/.bashrc (and tmux-managed zsh/fish rc).
+        r"(?ms)\n*#\s*>>> otty shell integration >>>.*?\#\s*<<< otty shell integration <<<\s*",
+        // Otty — after is_installed strips comment-only / empty lines, only the
+        // guarded `if … OTTY_SHELL_INTEGRATION …; fi` body remains.
+        r#"(?ms)\n*if\s+\[\s+-n\s+"\$OTTY_SHELL_INTEGRATION"\s*\]\s*&&\s*\[\s+-r\s+"\$OTTY_SHELL_INTEGRATION/otty-integration\.(?:bash|zsh)"\s*\]\s*;\s*then\n\s*\.\s+"\$OTTY_SHELL_INTEGRATION/otty-integration\.(?:bash|zsh)"\nfi\s*"#,
+    ]
+}
+
+fn foreign_integration_regexes() -> Vec<Regex> {
+    trailing_foreign_integration_patterns()
+        .iter()
+        .map(|p| Regex::new(p).expect("foreign integration regex"))
+        .collect()
+}
+
+/// Drop known third-party trailers from the end of `text` (repeat until stable).
+/// Used so post's "must be last" position check ignores Otty's managed block.
+fn strip_trailing_foreign_integrations(text: &str) -> String {
+    let mut result = text.trim_end().to_owned();
+    let patterns = foreign_integration_regexes();
+
+    loop {
+        let before_len = result.len();
+        for re in &patterns {
+            if let Some(m) = re.find(&result) {
+                // Only peel matches that sit at EOF — never mid-file copies.
+                if m.end() == result.len() {
+                    result.truncate(m.start());
+                    let trimmed = result.trim_end();
+                    result.truncate(trimmed.len());
+                }
+            }
+        }
+        if result.len() == before_len {
+            break;
+        }
+    }
+    result
+}
+
+/// Split `(body, trailing_foreign)` so install/repair can place our post block
+/// *above* Otty's trailer without rewriting or deleting Otty's installer output.
+/// `trailing_foreign` keeps the exact suffix from `contents` (blank lines included).
+fn split_trailing_foreign_integrations(contents: &str) -> (String, String) {
+    let trimmed = contents.trim_end();
+    let stripped = strip_trailing_foreign_integrations(trimmed);
+    if stripped.len() == trimmed.len() {
+        return (contents.to_owned(), String::new());
+    }
+
+    // `stripped` is always a prefix of `trimmed` because we only truncate from the end
+    // (then trim whitespace that sat between our block and the foreign trailer).
+    if let Some(rest) = trimmed.strip_prefix(&stripped) {
+        if rest.is_empty() {
+            return (contents.to_owned(), String::new());
+        }
+        let cut = stripped.len();
+        // Prefer cutting inside `contents` at the same prefix length when contents starts
+        // with stripped; otherwise fall back to the trimmed view.
+        if contents.starts_with(&stripped) {
+            return (contents[..cut].to_owned(), contents[cut..].to_owned());
+        }
+        return (stripped, rest.to_owned());
+    }
+
+    (contents.to_owned(), String::new())
 }
 
 #[cfg(test)]
@@ -852,6 +963,76 @@ mod test {
             "split with shebang and no linefeed"
         );
         assert_eq!(("", contents), split_shebang(without_shebang), "split with no shebang");
+    }
+
+    #[test]
+    fn test_strip_trailing_otty_marker_block() {
+        let body = indoc::indoc! {r#"
+            export PATH="$HOME/.local/bin:$PATH"
+            [[ -f "${HOME}/Library/Application Support/easy-complete/shell/bashrc.post.bash" ]] && builtin source "${HOME}/Library/Application Support/easy-complete/shell/bashrc.post.bash"
+        "#};
+        let otty = indoc::indoc! {r#"
+
+            # >>> otty shell integration >>>
+            # Added by Otty — toggle in Settings > Shell > Shell Integration.
+            # Inert unless launched by Otty (it sets $OTTY_SHELL_INTEGRATION).
+            if [ -n "$OTTY_SHELL_INTEGRATION" ] && [ -r "$OTTY_SHELL_INTEGRATION/otty-integration.bash" ]; then
+              . "$OTTY_SHELL_INTEGRATION/otty-integration.bash"
+            fi
+            # <<< otty shell integration <<<
+        "#};
+        let full = format!("{body}{otty}");
+        let stripped = strip_trailing_foreign_integrations(&full);
+        assert_eq!(stripped, body.trim_end());
+
+        let (split_body, trailing) = split_trailing_foreign_integrations(&full);
+        assert_eq!(split_body.trim_end(), body.trim_end());
+        assert!(trailing.contains(">>> otty shell integration >>>"));
+        assert!(trailing.contains("<<< otty shell integration <<<"));
+    }
+
+    #[test]
+    fn test_strip_trailing_otty_comment_stripped_form() {
+        // Mimics DotfileShellIntegration::is_installed after comment/blank-line filtering.
+        let filtered = indoc::indoc! {r#"
+            [[ -f "${HOME}/Library/Application Support/easy-complete/shell/bashrc.post.bash" ]] && builtin source "${HOME}/Library/Application Support/easy-complete/shell/bashrc.post.bash"
+            if [ -n "$OTTY_SHELL_INTEGRATION" ] && [ -r "$OTTY_SHELL_INTEGRATION/otty-integration.bash" ]; then
+              . "$OTTY_SHELL_INTEGRATION/otty-integration.bash"
+            fi
+        "#};
+        let stripped = strip_trailing_foreign_integrations(filtered);
+        assert!(
+            stripped.ends_with("bashrc.post.bash\" ]] && builtin source \"${HOME}/Library/Application Support/easy-complete/shell/bashrc.post.bash\""),
+            "post source should remain: {stripped}"
+        );
+        assert!(
+            !stripped.contains("OTTY_SHELL_INTEGRATION"),
+            "Otty trailer should be ignored for position checks: {stripped}"
+        );
+    }
+
+    #[test]
+    fn test_post_matches_with_otty_trailer() {
+        let home = directories::home_dir().unwrap();
+        let data = directories::fig_data_dir().unwrap();
+        let rel = data.strip_prefix(&home).unwrap().display();
+        let post_line = format!(
+            "[[ -f \"${{HOME}}/{rel}/shell/bashrc.post.bash\" ]] && builtin source \"${{HOME}}/{rel}/shell/bashrc.post.bash\""
+        );
+        let filtered = format!(
+            "{post_line}\nif [ -n \"$OTTY_SHELL_INTEGRATION\" ] && [ -r \"$OTTY_SHELL_INTEGRATION/otty-integration.bash\" ]; then\n  . \"$OTTY_SHELL_INTEGRATION/otty-integration.bash\"\nfi\n"
+        );
+
+        let integration = DotfileShellIntegration {
+            shell: Shell::Bash,
+            pre: false,
+            post: true,
+            dotfile_directory: home,
+            dotfile_name: ".bashrc",
+        };
+        integration
+            .matches_text(&filtered, When::Post)
+            .expect("Otty trailer must not fail post installation status");
     }
 
     #[cfg(target_os = "linux")]

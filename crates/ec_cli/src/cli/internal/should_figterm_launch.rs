@@ -6,7 +6,8 @@ use std::process::ExitCode;
 use fig_os_shim::Context;
 use fig_util::Terminal;
 
-const Q_FORCE_FIGTERM_LAUNCH: &str = "Q_FORCE_FIGTERM_LAUNCH";
+use crate::util::desktop::Q_FORCE_FIGTERM_LAUNCH;
+
 const Q_TERM_DISABLED: &str = "Q_TERM_DISABLED";
 const INSIDE_EMACS: &str = "INSIDE_EMACS";
 const TERM_PROGRAM: &str = "TERM_PROGRAM";
@@ -210,6 +211,16 @@ pub fn should_figterm_launch_exit_status(ctx: &Context, quiet: bool) -> u8 {
             writeln!(stdout(), "✅ {Q_FORCE_FIGTERM_LAUNCH}").ok();
         }
         return 0;
+    }
+
+    // Skip wrapping when the desktop app is not running so VS Code / Otty / etc. keep
+    // their own suggestions. Unit tests opt out: the answer would otherwise depend on
+    // whether the developer happens to have the app open.
+    if !cfg!(test) && crate::util::desktop::suppress_without_desktop_app(env) {
+        if !quiet {
+            writeln!(stdout(), "❌ desktop app is not running").ok();
+        }
+        return 1;
     }
 
     if env.get_os(Q_TERM_DISABLED).is_some() {

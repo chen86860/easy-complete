@@ -43,6 +43,7 @@ import {
   useDynamicResizeObserver,
   useSystemTheme,
 } from "./hooks/helpers";
+import { useReportFirstSuggestions, useReportMounted } from "./hooks/lifecycle";
 
 import Suggestion from "./components/Suggestion";
 import Description, { DescriptionPosition } from "./components/Description";
@@ -78,6 +79,7 @@ function App() {
     fuzzySearchEnabled,
     setUserFuzzySearchEnabled,
     setFigState,
+    historySourcesLoaded,
   } = useAutocompleteStore();
 
   const [systemTheme] = useSystemTheme();
@@ -121,6 +123,9 @@ function App() {
   // }, []);
 
   const isLoading = isLoadingSuggestions;
+
+  useReportMounted();
+  useReportFirstSuggestions(suggestions.length > 0);
 
   useEffect(() => {
     // Default font-size is 12.8px (0.8em) and default row size is 20px = 12.8 * 1.5625
@@ -210,10 +215,10 @@ function App() {
       .catch(() => undefined)
       .then((res) => {
         if (!JSON.parse(res?.jsonBlob ?? "false")) {
-          loadHistory({});
+          loadHistory({}, historySourcesLoaded);
         }
       });
-  }, []);
+  }, [historySourcesLoaded]);
 
   useEffect(() => {
     let isMostRecentEffect = true;
@@ -262,8 +267,9 @@ function App() {
     setFontFamily(fontFamily as string);
   }, [fontFamily]);
   // Scroll when selectedIndex changes.
-  const listRef =
-    useRef<AutoSizedHandleRef>() as MutableRefObject<AutoSizedHandleRef>;
+  const listRef = useRef<AutoSizedHandleRef>(
+    null,
+  ) as MutableRefObject<AutoSizedHandleRef>;
 
   const scrollToItemCallback = useCallback(() => {
     logger.info("Scrolling to", { selectedIndex });

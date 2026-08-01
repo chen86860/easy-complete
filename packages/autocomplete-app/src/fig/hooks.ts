@@ -108,12 +108,19 @@ export const useFigAutocomplete = (
 
         const cwd = notification.context?.currentWorkingDirectory ?? null;
         const shellContext = notification.context;
+        // `Shell.processDidChange` only fires on pre-exec, so relying on it
+        // alone leaves processUserIsIn null until the user runs a command —
+        // which drops every history suggestion in a freshly built overlay.
+        // The edit buffer context carries the shell on every keystroke.
+        const shellPath =
+          shellContext?.shellPath || shellContext?.processName || null;
         setFigState((figState) => ({
           ...figState,
           buffer,
           cursorLocation,
           cwd,
           shellContext,
+          processUserIsIn: shellPath ?? figState.processUserIsIn,
         }));
         return { unsubscribe: false };
       }),

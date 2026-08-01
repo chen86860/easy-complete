@@ -11,6 +11,9 @@ use wry::http::{Request, Response, StatusCode};
 use super::util::{res_400, res_404, res_500};
 use crate::webview::WindowId;
 
+pub const RESOURCE_SCHEME: &str = "ecresource";
+pub const RESOURCE_URL: &str = "ecresource://localhost";
+
 fn relativize(path: &Path) -> &Path {
     match path.strip_prefix("/") {
         Ok(path) => path,
@@ -34,7 +37,7 @@ impl Scope for Autocomplete {
     const PATH: &'static str = "autocomplete";
 }
 
-/// handle `qcliresource://localhost/`
+/// Handle `ecresource://localhost/`.
 pub async fn handle<S: Scope>(
     ctx: Arc<Context>,
     request: Request<Vec<u8>>,

@@ -249,7 +249,15 @@ const loadFigHistory = async (): Promise<HistoryEntry[]> =>
     ),
   );
 
-export const loadHistory = async (aliases: AliasMap) => {
+/**
+ * Sources load serially and each one parses every entry against its spec, so a
+ * full load takes seconds. `onSourceLoaded` fires after each source lands
+ * rather than at the end, letting the UI recompute with whatever is ready.
+ */
+export const loadHistory = async (
+  aliases: AliasMap,
+  onSourceLoaded?: () => void,
+) => {
   const loadHistoryCommand = async (
     command: string,
     shell?: string,
@@ -283,6 +291,7 @@ export const loadHistory = async (aliases: AliasMap) => {
       time: performance.now() - start,
     });
     historySources[key] = result;
+    onSourceLoaded?.();
     return result;
   };
 
@@ -293,6 +302,7 @@ export const loadHistory = async (aliases: AliasMap) => {
     ...historySources.fig,
     time: performance.now() - start,
   });
+  onSourceLoaded?.();
 
   const command = getSetting<string>(SETTINGS.HISTORY_COMMAND);
   if (command) {
@@ -432,6 +442,13 @@ export const getFullHistorySuggestions = (
     historyEntries.push(...historySources[shell].entries);
   }
 
+  // Same fallback as getHistoryArgSuggestions: if we can't tell which shell the
+  // user is in, or that shell's history failed to load, fall back to the
+  // recorded history in the local database rather than showing nothing.
+  if (historyEntries.length === 0) {
+    historyEntries.push(...historySources.fig.entries);
+  }
+
   for (let i = 0; i < historyEntries.length; i += 1) {
     const { text } = historyEntries[i];
     if (text.length >= prefix.length && text.startsWith(prefix)) {
@@ -455,7 +472,6 @@ export const getFullHistorySuggestions = (
       description: "past command",
       name: suggestion,
       insertValue: suggestion,
-      icon: "📚",
       priority: frequency > 1 ? 75 + Math.min(frequency, 10) / 10 : 50,
     };
   });

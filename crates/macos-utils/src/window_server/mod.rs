@@ -6,6 +6,7 @@ use std::boxed::Box;
 use std::ffi::c_void;
 use std::hash::Hash;
 use std::pin::Pin;
+use std::sync::OnceLock;
 
 use accessibility_sys::{
     AXError, AXIsProcessTrusted, AXObserverRef, AXUIElementCreateApplication, AXUIElementRef,
@@ -27,31 +28,62 @@ use objc2_app_kit::{
     NSWorkspaceDidActivateApplicationNotification, NSWorkspaceDidLaunchApplicationNotification,
     NSWorkspaceDidTerminateApplicationNotification,
 };
-use objc2_foundation::{NSNotification, NSObject};
+use objc2_foundation::{NSBundle, NSNotification, NSObject};
 use tracing::{debug, error, info, trace, warn};
 pub use ui_element::{CGWindowLevelForKey, UIElement};
 
 use crate::util::NotificationCenter;
 use crate::util::notification_center::get_app_from_notification;
 
+// The last three are this app and the upstream builds it descends from, listed for the
+// same reason `own_bundle_id` exists. They stay hardcoded because `own_bundle_id` reports
+// nothing for a dev build launched outside an app bundle, and because this crate sits
+// below `fig_util` in the dependency graph so it cannot read `APP_BUNDLE_ID`.
 const BLOCKED_BUNDLE_IDS: &[&str] = &[
     "com.apple.ViewBridgeAuxiliary",
     "com.apple.notificationcenterui",
     "com.apple.WebKit.WebContent",
     "com.apple.WebKit.Networking",
     "com.apple.controlcenter",
+    "dev.emmmm.easy-complete",
     "com.mschrage.fig",
     "com.amazon.codewhisperer",
 ];
 
-// TODO: -- should this use fig_util crate Terminal struct?
+/// The overlay raises the same accessibility notifications a terminal does, so observing
+/// this process makes showing the overlay look like the user focusing another app, which
+/// immediately hides it again. Resolved at runtime so that renaming the app keeps working
+/// even if the hardcoded entry in [`BLOCKED_BUNDLE_IDS`] goes stale.
+fn own_bundle_id() -> Option<&'static str> {
+    static OWN_BUNDLE_ID: OnceLock<Option<String>> = OnceLock::new();
+    OWN_BUNDLE_ID
+        .get_or_init(|| {
+            let bundle = NSBundle::mainBundle();
+            // SAFETY: reads an immutable property of the process's own bundle.
+            unsafe { bundle.bundleIdentifier() }.map(|id| id.to_string())
+        })
+        .as_deref()
+}
+
+/// Electron hosts that only expose their DOM to accessibility once asked, which is what
+/// `find_x_term_caret_tree` needs to locate the xterm.js caret.
+///
+/// Duplicates `fig_util::Terminal::is_xterm`, which cannot be used here: `fig_util`
+/// depends on this crate, so the reverse would be a cycle. Keep the two in sync.
 pub const XTERM_BUNDLE_IDS: &[&str] = &[
     "com.microsoft.VSCodeInsiders",
     "com.microsoft.VSCode",
+    "com.vscodium",
+    "com.visualstudio.code.oss",
     "com.todesktop.230313mzl4w4u92",
     "com.todesktop.23052492jqa5xjo",
+    "com.exafunction.windsurf",
+    "com.exafunction.windsurf-next",
+    "com.trae.app",
     "co.zeit.hyper",
     "org.tabby",
+    // OpenAI Codex, shipped as ChatGPT.app since the rename.
+    "com.openai.codex",
 ];
 
 const TRACKED_NOTIFICATIONS: &[&str] = &[
@@ -266,13 +298,10 @@ impl WindowServerInner {
             },
         };
 
-        let pid = ns_app.processIdentifier();
-        let key = ApplicationSpecifier {
-            pid,
-            bundle_id: bundle_id.clone(),
-        };
-
-        let ax_ref = AXUIElementCreateApplication(pid);
+        if own_bundle_id() == Some(bundle_id.as_str()) {
+            debug!("Ignoring own process {bundle_id:?}");
+            return;
+        }
 
         for blocked_bundle in BLOCKED_BUNDLE_IDS {
             if *blocked_bundle == bundle_id {
@@ -286,6 +315,16 @@ impl WindowServerInner {
             return;
         }
 
+        let pid = ns_app.processIdentifier();
+        let key = ApplicationSpecifier {
+            pid,
+            bundle_id: bundle_id.clone(),
+        };
+
+        // Created only once the app is known to be worth tracking; nothing releases this
+        // ref, so returning early after creating it leaks it.
+        let ax_ref = AXUIElementCreateApplication(pid);
+
         if self.observers.contains_key(&key) {
             debug!("app {} is already registered", key.bundle_id);
             self.deregister(&key.bundle_id)
@@ -296,12 +335,19 @@ impl WindowServerInner {
             let elem = UIElement::from(ax_ref);
             let sender = self.sender.clone();
             let app = key.clone();
+            let activated_bundle_id = key.bundle_id.clone();
             tokio::spawn(async move {
                 tokio::time::sleep(std::time::Duration::from_millis(250)).await;
-                if let Ok(window) = elem.focused_window() {
-                    if let Err(e) = sender.send(WindowServerEvent::FocusChanged { window, app }) {
-                        warn!("Error sending focus changed event: {e:?}");
-                    };
+                match elem.focused_window() {
+                    Ok(window) => {
+                        if let Err(e) = sender.send(WindowServerEvent::FocusChanged { window, app }) {
+                            warn!("Error sending focus changed event: {e:?}");
+                        }
+                    },
+                    Err(err) => warn!(
+                        ?err,
+                        "Could not read focused window of {activated_bundle_id:?} after activation"
+                    ),
                 }
             });
         }
@@ -310,8 +356,8 @@ impl WindowServerInner {
             UIElement::from(ax_ref).enable_screen_reader_accessibility().ok();
         }
 
-        let bundle_id = key.bundle_id.as_str();
-        if let Ok(mut observer) = AXObserver::create(
+        let bundle_id = key.bundle_id.clone();
+        let mut observer = match AXObserver::create(
             key.pid,
             ax_ref,
             AccessibilityCallbackData {
@@ -320,20 +366,37 @@ impl WindowServerInner {
             },
             application_ax_callback,
         ) {
-            let result: Result<Vec<_>, AXError> = TRACKED_NOTIFICATIONS
-                .iter()
-                .map(|notification| observer.subscribe(notification))
-                .collect();
-
-            if result.is_ok() {
-                debug!("Began tracking {bundle_id:?}");
-
-                self.observers.insert(key, observer);
+            Ok(observer) => observer,
+            Err(err) => {
+                warn!(?err, "Could not create accessibility observer for {bundle_id:?}");
                 return;
+            },
+        };
+
+        // Terminals that do not use AppKit views reject some of these, and an app that
+        // rejects one still delivers the rest. Subscribing all-or-nothing would leave
+        // such a terminal with no window tracking at all, which strands the overlay at
+        // whichever window was focused before it.
+        let mut subscribed = Vec::new();
+        let mut rejected: Vec<(&str, AXError)> = Vec::new();
+        for notification in TRACKED_NOTIFICATIONS {
+            match observer.subscribe(notification) {
+                Ok(()) => subscribed.push(*notification),
+                Err(err) => rejected.push((notification, err)),
             }
         }
 
-        warn!("Error setting up tracking for '{bundle_id:?}'");
+        if !rejected.is_empty() {
+            warn!(?rejected, "Notifications rejected by {bundle_id:?}");
+        }
+
+        if subscribed.is_empty() {
+            warn!("Error setting up tracking for '{bundle_id:?}': every notification was rejected");
+            return;
+        }
+
+        debug!(?subscribed, "Began tracking {bundle_id:?}");
+        self.observers.insert(key, observer);
     }
 
     fn deregister(&mut self, bundle_id: &str) {

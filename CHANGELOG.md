@@ -1,5 +1,37 @@
 # Changelog
 
+## v2.1.1
+
+- fix: show shell history in the suggestion list again when History Mode is left at its default — the dashboard displayed "Show with completions" while the setting had never been written, and the code treated the unset value as off
+- fix: stop sending an empty terminal session id from `Process.run`, which arrived as `Some("")` and failed UUID parsing host-side, silently leaving the zsh, bash, and fish history sources empty on every launch
+- fix: derive the current shell from the edit buffer context instead of the pre-exec `processDidChange` notification, so history is available before the first command of a session is run
+- fix: recompute suggestions when a history source finishes loading, instead of leaving the list without history until the next keystroke or settings change
+- fix: fall back to the recorded history database when the shell-specific source is unavailable, matching the existing behaviour for history argument suggestions
+- change: replace the history suggestion emoji with a rotate-clock glyph on a rounded tile, matching the icon style of the surrounding suggestions
+- change: turn Hide Immediately Execute into a positive Show Immediately Execute toggle, so enabling it reveals its sub-options rather than hiding them
+- change: render sub-settings as an indented inset group following macOS System Settings, and drop descriptions that only restated their label
+- change: token the dashboard palette into semantic CSS variables so light and dark mode stay in sync
+
+## v2.1.0
+
+- change: shell integration now stands down entirely when the desktop app is not running, so VS Code Terminal Suggest, Otty, and other terminals keep their own completions. This is decided when the shell starts, so a terminal opened before the app is running stays uninstrumented for that session — open a new terminal after launching Easy Complete
+- fix: subscribe to macOS accessibility notifications correctly in release builds, where undefined behaviour previously made every subscription report failure and left the popup unable to follow the focused window
+- fix: keep tracking a window when it rejects only some accessibility notifications, instead of abandoning the whole application
+- fix: stop observing Easy Complete's own windows, which made showing the popup look like an app switch and hid it again immediately
+- fix: restore first-token command completion, sourcing aliases and the full PATH from a login shell with a 1.5s budget and an automatic non-login fallback
+- fix: convert `Process.run` timeouts to protobuf `Duration` with the correct millisecond-to-nanosecond factor
+- fix: preserve framework symlinks when installing to `/Applications` so the bundle passes `codesign --verify --deep --strict` and the Sparkle updater stays valid
+- feat: add Otty and ChatGPT (Codex) terminal support, including input-method cursor tracking for Otty and xterm.js caret detection for Codex
+- feat: coexist with Otty-managed shell rc files instead of reporting the integration as broken when Otty owns the end of the file
+- feat: add a silent launch setting that starts the app in the background without opening the settings window
+- feat: expose the auto-execute row as a parent toggle with trailing-space and dangerous-command sub-options, and add a first-token completion toggle
+- feat: build the autocomplete and dashboard webviews on demand and release them when idle, and apply `autocomplete.keepReady` changes without a restart
+- feat: localize the settings UI with English and Simplified Chinese, and add the Claude Light autocomplete theme
+- fix: prevent dangerous suggestions from reaching the auto-execute row through the current-token fallback path
+- change: disable autocomplete WebView DevTools in release builds and opt out of the macOS AutoFill helper
+- build: honour `CARGO_TARGET_DIR` when assembling the app bundle
+- fix: patch the open npm advisories in both lockfiles and cover the standalone website project with Dependabot
+
 ## v2.0.50
 
 - fix: preserve Sparkle-generated delta files by normalizing their space-based filenames before appcast cleanup, and fail releases when delta assets are missing or mismatched

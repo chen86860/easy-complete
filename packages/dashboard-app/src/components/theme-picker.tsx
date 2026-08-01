@@ -1,13 +1,13 @@
 import clsx from "clsx";
+import { useI18n } from "../i18n";
 import { THEMES, type ThemeEntry } from "../theme-catalog";
 
 const THEME_GROUPS: Array<{
-  title: string;
   appearance: ThemeEntry["appearance"];
 }> = [
-  { title: "Automatic", appearance: "system" },
-  { title: "Light Themes", appearance: "light" },
-  { title: "Dark Themes", appearance: "dark" },
+  { appearance: "system" },
+  { appearance: "light" },
+  { appearance: "dark" },
 ];
 
 function ThemePreview({ theme }: { theme: ThemeEntry }) {
@@ -146,10 +146,12 @@ function ThemePreview({ theme }: { theme: ThemeEntry }) {
 
 function ThemeOption({
   theme,
+  label,
   active,
   onSelect,
 }: {
   theme: ThemeEntry;
+  label: string;
   active: boolean;
   onSelect: (id: string) => void;
 }) {
@@ -157,7 +159,7 @@ function ThemeOption({
     <button
       type="button"
       onClick={() => onSelect(theme.id)}
-      title={theme.label}
+      title={label}
       className={clsx(
         "group min-w-0 rounded-[13px] text-left outline-none focus-visible:ring-4 focus-visible:ring-[color-mix(in_srgb,AccentColor_22%,transparent)]",
       )}
@@ -176,13 +178,13 @@ function ThemeOption({
             "flex h-3.5 w-3.5 flex-shrink-0 items-center justify-center rounded-full border",
             active
               ? "border-[AccentColor] bg-[AccentColor]"
-              : "border-[rgba(60,60,67,0.28)] bg-white",
+              : "border-[var(--ds-radio-border)] bg-[var(--ds-radio-bg)]",
           )}
         >
           {active ? <span className="h-1 w-1 rounded-full bg-white" /> : null}
         </span>
-        <span className="min-w-0 truncate text-[12px] font-medium leading-[17px] text-[#1d1d1f]">
-          {theme.label}
+        <span className="min-w-0 truncate text-[12px] font-medium leading-[17px] text-[var(--ds-label)]">
+          {label}
         </span>
       </div>
     </button>
@@ -196,6 +198,18 @@ export function ThemePicker({
   value: string;
   onChange: (id: string) => void;
 }) {
+  const { t } = useI18n();
+  const groupLabels: Record<ThemeEntry["appearance"], string> = {
+    system: t("theme.automatic"),
+    light: t("theme.lightThemes"),
+    dark: t("theme.darkThemes"),
+  };
+  const themeLabels: Partial<Record<string, string>> = {
+    dark: t("theme.dark"),
+    light: t("theme.light"),
+    system: t("theme.system"),
+  };
+
   return (
     <div className="space-y-5 px-4 pb-4 pt-3.5">
       {THEME_GROUPS.map((group) => {
@@ -209,14 +223,15 @@ export function ThemePicker({
 
         return (
           <section key={group.appearance}>
-            <h3 className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[rgba(60,60,67,0.62)]">
-              {group.title}
+            <h3 className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--ds-label-secondary)]">
+              {groupLabels[group.appearance]}
             </h3>
             <div className="grid grid-cols-3 gap-x-5 gap-y-4">
               {themes.map((theme) => (
                 <ThemeOption
                   key={theme.id}
                   theme={theme}
+                  label={themeLabels[theme.id] ?? theme.label}
                   active={value === theme.id}
                   onSelect={onChange}
                 />

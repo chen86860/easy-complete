@@ -52,6 +52,7 @@ const initialState: Partial<AutocompleteState> = {
   hasChangedIndex: false,
 
   historyModeEnabled: false,
+  historyRevision: 0,
   fuzzySearchEnabled: false,
   userFuzzySearchEnabled: getSetting(SETTINGS.FUZZY_SEARCH),
   settings: {} as SettingsMap,
@@ -121,7 +122,11 @@ const computeSuggestions = (
   );
 
   let suggestions = specSuggestions;
-  const historyMode = settings[SETTINGS.HISTORY_MODE] as string;
+  // Default to "show" to match the dashboard's Select, which renders
+  // "Show with completions" when the setting is unset. Without this the UI
+  // claims history is on while the setting has never been written, so nothing
+  // is shown until the user toggles the dropdown away and back.
+  const historyMode = (settings[SETTINGS.HISTORY_MODE] as string) ?? "show";
   if (historyMode === "show") {
     const existingNames = new Set();
     suggestions.forEach((suggestion) => {
@@ -212,6 +217,7 @@ const updateSuggestions =
             "parserResult",
             "generatorStates",
             "historyModeEnabled",
+            "historyRevision",
           ]) ||
           !fieldsAreEqual(updatedState.figState, state.figState, [
             "cwd",
@@ -434,6 +440,11 @@ export const useAutocompleteStore = createWithEqualityFn<AutocompleteState>(
               typeof historyModeEnabled === "function"
                 ? historyModeEnabled(state.historyModeEnabled)
                 : historyModeEnabled,
+          })),
+
+        historySourcesLoaded: () =>
+          setNamed("historySourcesLoaded", (state) => ({
+            historyRevision: state.historyRevision + 1,
           })),
 
         setUserFuzzySearchEnabled: (

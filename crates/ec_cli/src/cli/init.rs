@@ -10,13 +10,14 @@ use clap::Args;
 use crossterm::style::Stylize;
 use eyre::Result;
 use fig_integrations::shell::{ShellExt, When};
-use fig_os_shim::Context;
+use fig_os_shim::{Context, Env};
 use fig_util::env_var::Q_SHELL;
 use fig_util::{CLI_BINARY_NAME, PRODUCT_NAME, Shell, Terminal, get_parent_process_exe};
 use indoc::formatdoc;
 
 use super::internal::should_figterm_launch::should_figterm_launch_exit_status;
 use crate::util::app_path_from_bundle_id;
+use crate::util::desktop::suppress_without_desktop_app;
 
 const SHELL_INTEGRATIONS_ENABLED_STATE_KEY: &str = "shell-integrations.enabled";
 
@@ -113,6 +114,14 @@ async fn shell_init(shell: &Shell, when: &When, rcfile: &Option<String>) -> Resu
 
     if !fig_settings::state::get_bool_or(SHELL_INTEGRATIONS_ENABLED_STATE_KEY, true) {
         return Ok(shell_integrations_disabled_code(*shell));
+    }
+
+    // When the desktop app is not running, skip pre/post hooks entirely so other
+    // terminal integrations (VS Code Terminal Suggest, Otty, etc.) keep working.
+    if !*IS_SNAPSHOT_TEST && suppress_without_desktop_app(&Env::new()) {
+        return Ok(format!(
+            "# {PRODUCT_NAME} desktop app is not running; skipping shell integration\n"
+        ));
     }
 
     let mut to_source = Vec::new();

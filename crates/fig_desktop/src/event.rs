@@ -29,6 +29,27 @@ pub enum Event {
     ReloadTray {
         is_logged_in: bool,
     },
+    AutocompleteLifecycleChanged {
+        /// The new `autocomplete.keepReady` value, when the sender already knows it.
+        ///
+        /// `fig_desktop` loads settings into a process-global map once at startup and never
+        /// refreshes it from disk, so re-reading the setting here returns the value as of launch
+        /// whenever another process (`ec settings`) wrote the file. Senders that come from a
+        /// settings notification pass the fresh value through instead.
+        keep_ready: Option<bool>,
+    },
+    AutocompleteReleaseTimerElapsed {
+        generation: u64,
+    },
+    /// The autocomplete webview finished loading and can receive window events.
+    AutocompleteWebviewMounted,
+    /// Fallback for when the autocomplete webview never reports mounting.
+    AutocompleteMountTimeoutElapsed {
+        generation: u64,
+    },
+    /// The autocomplete webview rendered suggestions for the first time.
+    AutocompleteWebviewReady,
+    AutocompleteSpecsReady,
 
     ShowMessageNotification(ShowMessageNotification),
 }
@@ -102,8 +123,10 @@ pub enum WindowEvent {
         dry_run: bool,
         tx: Option<UnboundedSender<WindowGeometryResult>>,
     },
-    /// Hides the window
+    /// Hides the window without releasing its webview.
     Hide,
+    /// Closes the window and releases its webview when supported.
+    Close,
     Show,
     Emit {
         event_name: EmitEventName,
@@ -143,6 +166,7 @@ impl WindowEvent {
         matches!(
             self,
             WindowEvent::Hide
+                | WindowEvent::Close
                 | WindowEvent::SetEnabled(_)
                 // TODO: we really shouldnt need to allow these to be called when disabled,
                 // however we allow them at the moment because notification listeners are

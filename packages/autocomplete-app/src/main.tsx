@@ -28,7 +28,9 @@ window.logger = logger;
 logger.setDefaultLevel("warn");
 
 setTimeout(() => {
-  preloadSpecs();
+  preloadSpecs().finally(() => {
+    window.ipc?.postMessage?.("__ec_autocomplete_specs_ready__");
+  });
 }, 0);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(

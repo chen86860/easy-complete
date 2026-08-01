@@ -5,7 +5,7 @@ use std::pin::Pin;
 use accessibility::util::ax_call;
 use accessibility_sys::{
     AXError, AXObserverAddNotification, AXObserverCallback, AXObserverCreate, AXObserverGetRunLoopSource,
-    AXObserverRef, AXUIElementRef, pid_t,
+    AXObserverRef, AXUIElementRef, kAXErrorSuccess, pid_t,
 };
 use core_foundation::base::TCFType;
 use core_foundation::runloop::{CFRunLoopAddSource, CFRunLoopGetCurrent, CFRunLoopRemoveSource, kCFRunLoopDefaultMode};
@@ -44,16 +44,20 @@ impl<T> AXObserver<T> {
     }
 
     pub unsafe fn subscribe(&mut self, ax_event: &str) -> Result<(), AXError> {
-        ax_call(|_x: *mut c_void| {
-            let callback_data: *const T = &*self.callback_data;
-            AXObserverAddNotification(
-                self.inner,
-                self.ax_ref,
-                CFString::from(ax_event).as_CFTypeRef() as CFStringRef,
-                callback_data as *const _ as *mut c_void,
-            )
-        })
-        .map(|_| ())
+        // Deliberately not `ax_call`: that helper is for APIs that report their result
+        // through an out-parameter, so it ends with `MaybeUninit::<V>::assume_init()`.
+        // `AXObserverAddNotification` writes no such value, and asserting an initialised
+        // `c_void` is undefined behaviour that optimised builds fold into an
+        // unconditional `Err`, leaving every subscription looking rejected.
+        let callback_data: *const T = &*self.callback_data;
+        let err = AXObserverAddNotification(
+            self.inner,
+            self.ax_ref,
+            CFString::from(ax_event).as_CFTypeRef() as CFStringRef,
+            callback_data as *const _ as *mut c_void,
+        );
+
+        if err == kAXErrorSuccess { Ok(()) } else { Err(err) }
     }
 }
 

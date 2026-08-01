@@ -31,7 +31,8 @@ export const executeCommandTimeout = async (
         args: input.args,
         environment: input.env,
         workingDirectory: input.cwd,
-        terminalSessionId: window.globalTerminalSessionId,
+        // "" would arrive as Some("") and fail UUID parsing host-side.
+        terminalSessionId: window.globalTerminalSessionId || undefined,
         timeout: input.timeout,
       }),
     );

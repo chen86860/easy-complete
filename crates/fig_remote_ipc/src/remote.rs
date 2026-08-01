@@ -146,6 +146,8 @@ pub async fn handle_remote_ipc(
                             };
 
                             if matches!(result, Some(clientbound::Packet::HandshakeResponse(HandshakeResponse { success: true }))) {
+                                hook.sessions_changed(&figterm_state).await;
+
                                 if let Some(parent_id) = handshake.parent_id {
                                     let inner = figterm_state.inner.lock();
                                     let sessions = inner.linked_sessions.values();
@@ -287,7 +289,9 @@ pub async fn handle_remote_ipc(
     //     session.writer = None;
     //     session.dead_since = Some(Instant::now());
     // });
-    figterm_state.remove_id(&session_id);
+    if figterm_state.remove_id(&session_id).is_some() {
+        hook.sessions_changed(&figterm_state).await;
+    }
 
     if let Err(err) = ping_task.await {
         error!(%err, "remote ping task join error");

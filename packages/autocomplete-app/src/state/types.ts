@@ -42,6 +42,7 @@ type AutocompleteActions = {
   setHistoryModeEnabled: React.Dispatch<React.SetStateAction<boolean>>;
   setUserFuzzySearchEnabled: React.Dispatch<React.SetStateAction<boolean>>;
   setSettings: React.Dispatch<React.SetStateAction<SettingsMap>>;
+  historySourcesLoaded: () => void;
 };
 
 export type AutocompleteState = {
@@ -59,6 +60,13 @@ export type AutocompleteState = {
   hasChangedIndex: boolean;
 
   historyModeEnabled: boolean;
+  /**
+   * Bumped when an async history source finishes loading. `historySources` is
+   * module-private, so without this the store has no way to know suggestions
+   * are now stale and would keep showing the pre-load (history-less) result
+   * until the next keystroke or settings change.
+   */
+  historyRevision: number;
   /**
    * Store the user preference about fuzzy search
    */

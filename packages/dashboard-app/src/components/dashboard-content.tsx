@@ -4,17 +4,9 @@ import {
   AppearanceSection,
   BehaviorSection,
 } from "../sections/settings-sections";
+import { useI18n } from "../i18n";
 import type { Section, SettingSetter, SettingsMap } from "../types";
 import { preventScrollBounce } from "../utils/prevent-scroll-bounce";
-
-const SECTION_META: Record<Section, { title: string; description?: string }> = {
-  appearance: { title: "Appearance" },
-  behavior: { title: "Behavior" },
-  about: {
-    title: "About",
-    description: "App info, updates, and project links",
-  },
-};
 
 export function DashboardContent({
   section,
@@ -25,8 +17,18 @@ export function DashboardContent({
   settings: SettingsMap;
   set: SettingSetter;
 }) {
+  const { t } = useI18n();
   const scrollRef = useRef<HTMLElement>(null);
-  const meta = SECTION_META[section];
+  const sectionMeta: Record<Section, { title: string; description?: string }> =
+    {
+      appearance: { title: t("nav.appearance") },
+      behavior: { title: t("nav.behavior") },
+      about: {
+        title: t("nav.about"),
+        description: t("section.aboutDescription"),
+      },
+    };
+  const meta = sectionMeta[section];
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0 });
@@ -36,16 +38,16 @@ export function DashboardContent({
     <main
       ref={scrollRef}
       onWheel={preventScrollBounce}
-      className="relative flex-1 overflow-y-auto bg-[#fbfbfd] [overscroll-behavior:none]"
+      className="relative flex-1 overflow-y-auto bg-[var(--ds-content-bg)] [overscroll-behavior:none]"
     >
       <div aria-hidden="true" className="dashboard-top-blur" />
       <div className="box-border w-full px-7 pb-9 pt-[46px]">
         <header className="mb-4">
-          <h2 className="m-0 text-[17px] font-[650] tracking-[-0.02em] text-[#050505]">
+          <h2 className="m-0 text-[17px] font-[650] tracking-[-0.02em] text-[var(--ds-label)]">
             {meta.title}
           </h2>
           {meta.description ? (
-            <p className="mt-1 text-[12px] leading-[1.4] text-[rgba(60,60,67,0.68)]">
+            <p className="mt-1 text-[12px] leading-[1.4] text-[var(--ds-label-secondary)]">
               {meta.description}
             </p>
           ) : null}

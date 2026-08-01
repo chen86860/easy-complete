@@ -42,10 +42,13 @@ fi
 # for a faster local iteration build. cargo writes `dist` output to target/dist/ and
 # `release` to target/release/.
 CARGO_PROFILE="${CARGO_PROFILE:-dist}"
+# Honour CARGO_TARGET_DIR; some editors and CI runners redirect it, and reading from
+# ./target would then bundle whatever stale binaries happen to sit there.
+CARGO_OUT_DIR="${CARGO_TARGET_DIR:-target}"
 if [ "$CARGO_PROFILE" = "dev" ]; then
-  TARGET_DIR="target/debug"
+  TARGET_DIR="${CARGO_OUT_DIR}/debug"
 else
-  TARGET_DIR="target/${CARGO_PROFILE}"
+  TARGET_DIR="${CARGO_OUT_DIR}/${CARGO_PROFILE}"
 fi
 
 info "Building Rust binaries (profile: ${CARGO_PROFILE})..."
@@ -175,6 +178,14 @@ cat > "${STAGING_BUNDLE}/Contents/Info.plist" <<PLIST
     <key>LSUIElement</key>
     <true/>
     <key>NSSupportsAutomaticGraphicsSwitching</key>
+    <true/>
+    <!--
+      macOS Tahoe spawns an "AutoFill (Easy Complete)" helper that heuristically
+      scans text fields for one-time codes. This app never marks fields as
+      one-time-code, so the helper is pure overhead. Documented Apple key:
+      https://developer.apple.com/documentation/bundleresources/information-property-list/nsautofillrequirestextcontenttypeforonetimecodeonmac
+    -->
+    <key>NSAutoFillRequiresTextContentTypeForOneTimeCodeOnMac</key>
     <true/>
     <key>CFBundleIconFile</key>
     <string>icon</string>

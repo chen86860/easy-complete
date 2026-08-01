@@ -137,6 +137,30 @@ describe("filterSuggestions", () => {
     ]);
   });
 
+  it("should not auto-execute dangerous suggestions unless the setting allows it", () => {
+    const suggestions: Suggestion[] = [
+      { name: "rm", description: "remove", isDangerous: true },
+    ];
+    expect(
+      filterSuggestions(suggestions, "rm", false, false, {
+        [SETTINGS.IMMEDIATELY_RUN_DANGEROUS_COMMANDS]: false,
+      }),
+    ).toEqual([{ name: "rm", description: "remove", isDangerous: true }]);
+    expect(
+      filterSuggestions(suggestions, "rm", false, true, {
+        [SETTINGS.IMMEDIATELY_RUN_DANGEROUS_COMMANDS]: false,
+      }),
+    ).toEqual([{ name: "rm", description: "remove", isDangerous: true }]);
+    expect(
+      filterSuggestions(suggestions, "rm", false, false, {
+        [SETTINGS.IMMEDIATELY_RUN_DANGEROUS_COMMANDS]: true,
+      }),
+    ).toEqual([
+      expect.objectContaining({ name: "rm", type: "auto-execute" }),
+      { name: "rm", description: "remove", isDangerous: true },
+    ]);
+  });
+
   it("should not add current token to matching suggestion when `suggestCurrentToken: false`", () => {
     const suggestions: Suggestion[] = [
       { name: "foo", description: "Some description" },

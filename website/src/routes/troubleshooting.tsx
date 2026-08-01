@@ -67,12 +67,12 @@ function TroubleshootingPage() {
 exec $SHELL`}</pre>
 
         <h2 className={GUIDE_HEADING}>
-          The popup is missing or misaligned in Ghostty
+          The popup is missing or misaligned in Ghostty or Otty
         </h2>
         <p className={GUIDE_PARAGRAPH}>
-          Ghostty, Kitty, WezTerm, Zed, and Alacritty use the bundled input
-          method for pixel-accurate cursor tracking. Re-register it, then fully
-          restart the terminal.
+          Ghostty, Otty, Kitty, WezTerm, Zed, and Alacritty use the bundled
+          input method for pixel-accurate cursor tracking. Re-register it, then
+          fully restart the terminal.
         </p>
         <pre className={GUIDE_CODE}>ec integrations install input-method</pre>
 

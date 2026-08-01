@@ -33,6 +33,12 @@ pub struct RemoteHook {
 impl fig_remote_ipc::RemoteHookHandler for RemoteHook {
     type Error = anyhow::Error;
 
+    async fn sessions_changed(&mut self, _figterm_state: &Arc<FigtermState>) {
+        self.proxy
+            .send_event(Event::AutocompleteLifecycleChanged { keep_ready: None })
+            .ok();
+    }
+
     async fn edit_buffer(
         &mut self,
         hook: &EditBufferHook,

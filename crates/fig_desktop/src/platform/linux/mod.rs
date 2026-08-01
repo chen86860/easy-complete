@@ -195,6 +195,9 @@ impl PlatformStateImpl {
             PlatformBoundEvent::AccessibilityUpdateRequested => {
                 trace!("Ignoring accessibility update requested event");
             },
+            PlatformBoundEvent::AutocompleteWindowLevelUpdateRequested => {
+                trace!("Ignoring autocomplete window level update requested event");
+            },
         }
         Ok(())
     }

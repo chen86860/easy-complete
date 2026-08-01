@@ -8,7 +8,10 @@ export enum SETTINGS {
 
   // App settings
   LAUNCH_ON_STARTUP = "app.launchOnStartup",
+  SILENT_LAUNCH = "app.silentLaunch",
   DISABLE_AUTO_UPDATES = "app.disableAutoupdates",
+  KEEP_AUTOCOMPLETE_READY = "autocomplete.keepReady",
+  DASHBOARD_LANGUAGE = "dashboard.language",
 
   // Style settings
   WIDTH = "autocomplete.width",
@@ -23,7 +26,6 @@ export enum SETTINGS {
   DISABLE_FOR_COMMANDS = "autocomplete.disableForCommands",
   IMMEDIATELY_EXEC_AFTER_SPACE = "autocomplete.immediatelyExecuteAfterSpace",
   IMMEDIATELY_RUN_DANGEROUS_COMMANDS = "autocomplete.immediatelyRunDangerousCommands",
-  IMMEDIATELY_RUN_GIT_ALIAS = "autocomplete.immediatelyRunGitAliases",
   INSERT_SPACE_AUTOMATICALLY = "autocomplete.insertSpaceAutomatically",
   SCROLL_WRAP_AROUND = "autocomplete.scrollWrapAround",
   SORT_METHOD = "autocomplete.sortMethod",

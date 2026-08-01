@@ -42,7 +42,7 @@ const AutoSizedList: ForwardRefRenderFunction<
   } = useDynamicResizeObserver({ onResize });
 
   // Scroll when selectedIndex changes.
-  const listRef = useRef<List>() as MutableRefObject<List>;
+  const listRef = useRef<List>(null) as MutableRefObject<List>;
   useImperativeHandle(ref, () => ({
     scrollToItem: (index) => listRef.current.scrollToItem(index, "smart"),
   }));

@@ -267,8 +267,9 @@ function App() {
     setFontFamily(fontFamily as string);
   }, [fontFamily]);
   // Scroll when selectedIndex changes.
-  const listRef =
-    useRef<AutoSizedHandleRef>() as MutableRefObject<AutoSizedHandleRef>;
+  const listRef = useRef<AutoSizedHandleRef>(
+    null,
+  ) as MutableRefObject<AutoSizedHandleRef>;
 
   const scrollToItemCallback = useCallback(() => {
     logger.info("Scrolling to", { selectedIndex });

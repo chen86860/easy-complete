@@ -59,8 +59,8 @@ importers:
   packages/api-bindings:
     dependencies:
       '@bufbuild/protobuf':
-        specifier: 2.4.0
-        version: 2.4.0
+        specifier: 2.13.0
+        version: 2.13.0
       '@easy-complete/proto':
         specifier: workspace:^
         version: link:../../proto
@@ -136,8 +136,8 @@ importers:
   packages/autocomplete-app:
     dependencies:
       '@bufbuild/protobuf':
-        specifier: 2.4.0
-        version: 2.4.0
+        specifier: 2.13.0
+        version: 2.13.0
       '@easy-complete/api-bindings':
         specifier: workspace:~
         version: link:../api-bindings
@@ -300,8 +300,8 @@ importers:
   packages/dashboard-app:
     dependencies:
       '@bufbuild/protobuf':
-        specifier: 2.4.0
-        version: 2.4.0
+        specifier: 2.13.0
+        version: 2.13.0
       '@easy-complete/api-bindings':
         specifier: workspace:~
         version: link:../api-bindings
@@ -469,15 +469,15 @@ importers:
   proto:
     dependencies:
       '@bufbuild/protobuf':
-        specifier: 2.4.0
-        version: 2.4.0
+        specifier: 2.13.0
+        version: 2.13.0
     devDependencies:
       '@bufbuild/buf':
         specifier: ^1.72.0
         version: 1.72.0
       '@bufbuild/protoc-gen-es':
-        specifier: 2.4.0
-        version: 2.4.0(@bufbuild/protobuf@2.4.0)
+        specifier: 2.13.0
+        version: 2.13.0(@bufbuild/protobuf@2.13.0)
       '@easy-complete/tsconfig':
         specifier: workspace:^
         version: link:../packages/tsconfig
@@ -616,21 +616,21 @@ packages:
     engines: {node: '>=12'}
     hasBin: true
 
-  '@bufbuild/protobuf@2.4.0':
-    resolution: {integrity: sha512-RN9M76x7N11QRihKovEglEjjVCQEA9PRBVnDgk9xw8JHLrcUrp4FpAVSPSH91cNbcTft3u2vpLN4GMbiKY9PJw==}
+  '@bufbuild/protobuf@2.13.0':
+    resolution: {integrity: sha512-acq7c49vxfm1ggJ95P70TX7ABDM0vxr1SYD3BB0o0jnBLB4OAqeHyKuN+cD3w80gXEDQ2zxHpR6CUeA+O/aU9g==}
 
-  '@bufbuild/protoc-gen-es@2.4.0':
-    resolution: {integrity: sha512-f5nm7HxXwVJKcAqpUTevKeLJOjy9WWqAuYORx3AnlB7w+XHPo/qrjQgMh4a9Dy1/aixYvBw2CnNK5d0DZ6CRgw==}
-    engines: {node: '>=14'}
+  '@bufbuild/protoc-gen-es@2.13.0':
+    resolution: {integrity: sha512-ylI1vrLksdnXrVZRs9xGxmrQxKGhUm6pPszv26kqBvNiO3qPTktk+hgfwbLISBY4M/reShkT2dFLGT9fbydBXg==}
+    engines: {node: '>=20'}
     hasBin: true
     peerDependencies:
-      '@bufbuild/protobuf': 2.4.0
+      '@bufbuild/protobuf': 2.13.0
     peerDependenciesMeta:
       '@bufbuild/protobuf':
         optional: true
 
-  '@bufbuild/protoplugin@2.4.0':
-    resolution: {integrity: sha512-Y7Wxis00uKM58UOM21aVECsMoPHzKvHJBH05bpmAhlOWXhVjtFDStOwB2gIiUB1rumbwOmjHTDe/bGP5M4HxmA==}
+  '@bufbuild/protoplugin@2.13.0':
+    resolution: {integrity: sha512-32eMChKaL/A8Hh5AfMmXSdnuyznN85uoEjoyWiWeRrvtQOtpqX/v1R9PDe0g9vMIgzznK9inMT3CUaal0kjLUQ==}
 
   '@chen86860/autocomplete-specs@3.0.7':
     resolution: {integrity: sha512-cnfyDsKOGJWSs3H0k32hU2OVpLXhdxOHXoyXNt1QWoUMcAC7L3Oag9IMrxmLXMtkEICx3rpTlkxMuCCiL1sLzA==}
@@ -924,9 +924,6 @@ packages:
 
   '@jridgewell/source-map@0.3.6':
     resolution: {integrity: sha512-1ZJTZebgqllO79ue2bm3rIGud/bOe0pP5BjSRCRxxYkEZS8STV7zN84UBbiYu7jy+eCKSnVIUgoWWE/tt+shMQ==}
-
-  '@jridgewell/sourcemap-codec@1.5.0':
-    resolution: {integrity: sha512-gv3ZRaISU3fjPAgNsriBRqGWQL6quFx04YMPW/zD8XMLsU32mhCCbfbO6KZFLjvYpCZ8zyDEgqsgf+PwPaM7GQ==}
 
   '@jridgewell/sourcemap-codec@1.5.5':
     resolution: {integrity: sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==}
@@ -2996,19 +2993,19 @@ snapshots:
       '@bufbuild/buf-win32-arm64': 1.72.0
       '@bufbuild/buf-win32-x64': 1.72.0
 
-  '@bufbuild/protobuf@2.4.0': {}
+  '@bufbuild/protobuf@2.13.0': {}
 
-  '@bufbuild/protoc-gen-es@2.4.0(@bufbuild/protobuf@2.4.0)':
+  '@bufbuild/protoc-gen-es@2.13.0(@bufbuild/protobuf@2.13.0)':
     dependencies:
-      '@bufbuild/protoplugin': 2.4.0
+      '@bufbuild/protoplugin': 2.13.0
     optionalDependencies:
-      '@bufbuild/protobuf': 2.4.0
+      '@bufbuild/protobuf': 2.13.0
     transitivePeerDependencies:
       - supports-color
 
-  '@bufbuild/protoplugin@2.4.0':
+  '@bufbuild/protoplugin@2.13.0':
     dependencies:
-      '@bufbuild/protobuf': 2.4.0
+      '@bufbuild/protobuf': 2.13.0
       '@typescript/vfs': 1.6.4(typescript@5.4.5)
       typescript: 5.4.5
     transitivePeerDependencies:
@@ -3238,14 +3235,12 @@ snapshots:
       '@jridgewell/trace-mapping': 0.3.31
     optional: true
 
-  '@jridgewell/sourcemap-codec@1.5.0': {}
-
   '@jridgewell/sourcemap-codec@1.5.5': {}
 
   '@jridgewell/trace-mapping@0.3.31':
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/sourcemap-codec': 1.5.5
 
   '@jridgewell/trace-mapping@0.3.9':
     dependencies:

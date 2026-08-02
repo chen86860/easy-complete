@@ -329,13 +329,21 @@ function App() {
   const onResize: (size: { height?: number; width?: number }) => void =
     useCallback(
       ({ height, width }) => {
+        // Keep the last measured native window size while the overlay is hidden or
+        // before ResizeObserver has produced a real measurement. Shrinking the
+        // transparent WKWebView to 1x1 and expanding it again on every visibility
+        // transition causes WebKit to retain large numbers of graphics surfaces.
+        if (isHidden || !height || !width) {
+          return;
+        }
+
         const onLeft =
           !hasSpecialArgDescription &&
           windowState.descriptionPosition === "left";
 
         const frame = {
-          height: height || 1,
-          width: width || 1,
+          height,
+          width,
           anchorX: onLeft ? -POPOUT_WIDTH : 0,
           offsetFromBaseline: -3,
         };
@@ -368,10 +376,6 @@ function App() {
         suggestions[selectedIndex]?.previewComponent,
       ],
     );
-
-  useEffect(() => {
-    onResize({});
-  }, [onResize]);
 
   const { ref: autocompleteWindowRef } = useDynamicResizeObserver({ onResize });
 

@@ -92,6 +92,11 @@ impl WindowState {
         // Lock our atomic state
         let mut state = self.window_geometry_state.lock();
 
+        // `set_inner_size` makes WKWebView replace its backing graphics surfaces on macOS.
+        // Repeating it for an unchanged size can therefore grow the WebContent process even
+        // though the visible autocomplete geometry did not change.
+        let size_changed = size.is_some_and(|requested_size| requested_size != state.size);
+
         // Acquire our position, size, and anchor, and update them if dirty
         let position = match position {
             Some(position) if !dry_run => {
@@ -260,14 +265,17 @@ impl WindowState {
                 Err(err) => tracing::error!(%err, window_id =% self.window_id, "failed to position window"),
             }
 
-            // Apply the diff to atomic state
-            self.window.set_inner_size(size);
+            if size_changed {
+                self.window.set_inner_size(size);
 
-            match platform_state.position_window(&self.window, &self.window_id, position) {
-                Ok(_) => {
-                    tracing::trace!(window_id =% self.window_id,"updated window geometry: second set");
-                },
-                Err(err) => tracing::error!(%err, window_id =% self.window_id, "failed to position window"),
+                // Resizing can move a window on some platforms, so restore the requested
+                // position only when a resize actually occurred.
+                match platform_state.position_window(&self.window, &self.window_id, position) {
+                    Ok(_) => {
+                        tracing::trace!(window_id =% self.window_id,"updated window geometry: second set");
+                    },
+                    Err(err) => tracing::error!(%err, window_id =% self.window_id, "failed to position window"),
+                }
             }
         }
 

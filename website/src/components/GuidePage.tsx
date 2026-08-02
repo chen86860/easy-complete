@@ -1,6 +1,12 @@
 import type { ReactNode } from "react";
-import logoUrl from "../assets/logo.png";
-import { GITHUB_URL } from "../data.ts";
+import {
+  SiteFooter,
+  SiteHeader,
+  type LocaleHrefs,
+} from "./SiteChrome.tsx";
+import { LOCALE_PREFIX, type Locale } from "../i18n/types.ts";
+
+const BREADCRUMB_DOCS: Record<Locale, string> = { en: "Docs", "zh-CN": "文档" };
 
 export const GUIDE_HEADING =
   "m-0 mb-4 mt-12 text-[24px] font-bold tracking-[-.025em] text-[#e6edf3]";
@@ -14,44 +20,41 @@ interface GuidePageProps {
   title: string;
   intro: string;
   children: ReactNode;
+  locale?: Locale;
+  hrefs?: LocaleHrefs;
 }
 
-export function GuidePage({ eyebrow, title, intro, children }: GuidePageProps) {
+export function GuidePage({
+  eyebrow,
+  title,
+  intro,
+  children,
+  locale = "en",
+  hrefs,
+}: GuidePageProps) {
+  const prefix = LOCALE_PREFIX[locale];
+
   return (
     <div className="min-h-screen bg-[#0a0d12] text-[#e6edf3]">
-      <header className="border-b border-[#141a21]">
-        <div className="mx-auto flex max-w-310 items-center justify-between gap-4 px-7 py-3.5">
-          <a
-            href="/"
-            className="flex items-center gap-2.5 font-mono text-[16px] font-bold tracking-[-.01em]"
-          >
-            <img src={logoUrl} alt="" className="h-8 w-8 rounded-[9px]" />
-            <span>easy-complete</span>
-          </a>
-          <nav className="flex items-center gap-3 text-sm">
-            <a
-              href={GITHUB_URL}
-              className="hidden rounded-lg border border-[#2b333d] px-3.25 py-1.75 text-[#cdd6e0] transition-colors hover:border-[#475060] hover:bg-[#141a22] sm:inline-flex"
-            >
-              GitHub
-            </a>
-            <a
-              href="/install"
-              className="inline-flex rounded-lg bg-(--accent) px-4 py-2 font-semibold text-[#06140a] transition hover:brightness-110"
-            >
-              Install
-            </a>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader active="docs" locale={locale} hrefs={hrefs} />
 
       <main className="mx-auto max-w-215 px-7 pb-24 pt-14">
         <nav
           aria-label="Breadcrumb"
           className="mb-10 font-mono text-xs text-[#65707d]"
         >
-          <a href="/" className="transition-colors hover:text-(--accent)">
+          <a
+            href={`${prefix}/`}
+            className="transition-colors hover:text-(--accent)"
+          >
             Easy Complete
+          </a>
+          <span className="px-2">/</span>
+          <a
+            href={`${prefix}/docs`}
+            className="transition-colors hover:text-(--accent)"
+          >
+            {BREADCRUMB_DOCS[locale]}
           </a>
           <span className="px-2">/</span>
           <span>{eyebrow}</span>
@@ -70,24 +73,7 @@ export function GuidePage({ eyebrow, title, intro, children }: GuidePageProps) {
         <article>{children}</article>
       </main>
 
-      <footer className="border-t border-[#161d25] px-7 py-8 text-[13px] text-[#65707d]">
-        <div className="mx-auto flex max-w-295 flex-wrap items-center justify-between gap-4">
-          <span className="font-mono">
-            easy-complete · local terminal autocomplete
-          </span>
-          <span className="flex flex-wrap gap-4">
-            <a href="/install" className="hover:text-[#e6edf3]">
-              Install guide
-            </a>
-            <a href="/troubleshooting" className="hover:text-[#e6edf3]">
-              Troubleshooting
-            </a>
-            <a href="/privacy" className="hover:text-[#e6edf3]">
-              Privacy
-            </a>
-          </span>
-        </div>
-      </footer>
+      <SiteFooter locale={locale} />
     </div>
   );
 }

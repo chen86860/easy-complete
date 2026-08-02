@@ -15,9 +15,20 @@ const TITLE = "Install Easy Complete on macOS — Terminal Autocomplete";
 const DESCRIPTION =
   "Install Easy Complete with Homebrew on Apple Silicon macOS, grant Accessibility permission, reload your shell, and verify it with ec doctor.";
 
+const ALTERNATES = [
+  { locale: "en" as const, path: "/install" },
+  { locale: "zh-CN" as const, path: "/zh/install" },
+];
+
 export const Route = createFileRoute("/install")({
   head: () =>
-    pageHead({ title: TITLE, description: DESCRIPTION, path: "/install" }),
+    pageHead({
+      title: TITLE,
+      description: DESCRIPTION,
+      path: "/install",
+      locale: "en",
+      alternates: ALTERNATES,
+    }),
   component: InstallPage,
 });
 
@@ -29,12 +40,14 @@ function InstallPage() {
           title: TITLE,
           description: DESCRIPTION,
           path: "/install",
+          crumbLabel: "Install guide",
         })}
       />
       <GuidePage
         eyebrow="Install guide"
         title="Terminal autocomplete, installed in five minutes."
         intro="Easy Complete runs locally on Apple Silicon Macs. Install the app, approve one macOS permission, reload your shell, and start typing."
+        hrefs={{ en: "/install", "zh-CN": "/zh/install" }}
       >
         <GuideCallout>
           <strong>Requirements:</strong> macOS 12 or later and an Apple Silicon

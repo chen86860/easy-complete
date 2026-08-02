@@ -149,6 +149,24 @@ export function IconExternalLink() {
   );
 }
 
+export function IconDocument() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M3.5 1.5h5L12.5 5v9.5h-9z" />
+      <path d="M8.5 1.5V5h4M5.5 8h5M5.5 10.5h5" />
+    </svg>
+  );
+}
+
 export function IconCopy({ size = 14 }: { size?: number }) {
   return (
     <svg

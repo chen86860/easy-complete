@@ -31,6 +31,7 @@ shellexpand.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
 tracing.workspace = true
+url.workspace = true
 uuid.workspace = true
 which.workspace = true
 whoami.workspace = true
@@ -41,4 +42,3 @@ tracing-subscriber.workspace = true
 
 [target.'cfg(target_os="macos")'.dependencies]
 macos-utils = { path = "../macos-utils" }
-

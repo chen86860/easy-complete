@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Terminal } from "./components/Terminal.tsx";
+import {
+  SiteFooterLinks,
+  SiteHeader,
+  type LocaleHrefs,
+} from "./components/SiteChrome.tsx";
+import { TerminalMarquee } from "./components/TerminalMarquee.tsx";
+import { AppleIcon, GitHubIcon } from "./components/icons.tsx";
 import logoUrl from "./assets/logo.png";
 import { DOWNLOAD_URL } from "./download.ts";
-import {
-  GITHUB_URL,
-  faqs,
-  features,
-  processes,
-  reasons,
-  terminals,
-} from "./data.ts";
+import { GITHUB_URL } from "./data.ts";
+import { homeCopyEn } from "./i18n/en.ts";
+import { LOCALE_PREFIX, type HomeCopy, type Locale } from "./i18n/types.ts";
 
 const SECTION_LABEL =
   "font-mono text-xs uppercase tracking-[.22em] text-(--accent) mb-3.5";
@@ -54,7 +56,7 @@ function Reveal({ children, className = "", delay = 0 }: RevealProps) {
         setVisible(true);
         observer.unobserve(entry.target);
       },
-      { rootMargin: "0px 0px -12% 0px", threshold: 0.16 }
+      { rootMargin: "0px 0px -12% 0px", threshold: 0.16 },
     );
 
     observer.observe(node);
@@ -69,36 +71,6 @@ function Reveal({ children, className = "", delay = 0 }: RevealProps) {
     >
       {children}
     </div>
-  );
-}
-
-function AppleIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      className="h-[1.1em] w-[1.1em] shrink-0"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-    >
-      <path d="M17.3 12.4c0-2.6 2.1-3.9 2.2-4-1.2-1.8-3.1-2-3.8-2.1-1.6-.2-3.1.9-3.9.9s-2-.9-3.3-.9c-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.8 1.3 10.4.9 1.3 1.9 2.7 3.3 2.6 1.3-.1 1.8-.8 3.4-.8s2 .8 3.4.8c1.4 0 2.3-1.3 3.2-2.6 1-1.5 1.4-2.9 1.4-3-.1-.1-2.9-1.2-3-3.9ZM14.7 4.6c.7-.9 1.2-2.1 1.1-3.3-1.1 0-2.4.7-3.1 1.6-.7.8-1.3 2-1.1 3.2 1.1.1 2.3-.6 3.1-1.5Z" />
-    </svg>
-  );
-}
-
-function GitHubIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      className="h-[1.08em] w-[1.08em] shrink-0"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-    >
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.4-4-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.4-1.3-5.4-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.4 5.9.4.4.8 1.1.8 2.2v3.2c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"
-      />
-    </svg>
   );
 }
 
@@ -150,9 +122,21 @@ async function writeClipboardText(text: string) {
   }
 }
 
-function InstallActions({ className = "" }: { className?: string }) {
+interface InstallActionsProps {
+  className?: string;
+  /** `split` left-aligns from the `lg` breakpoint up, for the split hero. */
+  align?: "center" | "split";
+  copy: HomeCopy;
+}
+
+function InstallActions({
+  className = "",
+  align = "center",
+  copy,
+}: InstallActionsProps) {
+  const split = align === "split";
   const [copyState, setCopyState] = useState<"idle" | "copied" | "error">(
-    "idle"
+    "idle",
   );
   const resetTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -160,7 +144,7 @@ function InstallActions({ className = "" }: { className?: string }) {
     () => () => {
       if (resetTimer.current) clearTimeout(resetTimer.current);
     },
-    []
+    [],
   );
 
   const copyBrewCommand = async () => {
@@ -176,36 +160,44 @@ function InstallActions({ className = "" }: { className?: string }) {
   };
 
   return (
-    <div className={`flex flex-col items-center ${className}`}>
-      <div className="flex flex-wrap justify-center gap-3.25">
+    <div
+      className={`flex flex-col items-center ${
+        split ? "lg:items-start" : ""
+      } ${className}`}
+    >
+      <div
+        className={`flex flex-wrap justify-center gap-3.25 lg:gap-4 ${
+          split ? "lg:justify-start" : ""
+        }`}
+      >
         <a
           href={DOWNLOAD_URL}
           className={`${ACTION_SURFACE} inline-flex items-center gap-2.25 rounded-[11px] bg-(--accent) px-6.5 py-3.25 text-[16px] font-semibold text-[#06140a] hover:brightness-110 hover:shadow-[0_14px_34px_-12px_var(--accent-line)]`}
         >
           <AppleIcon />
-          Download DMG
+          {copy.downloadCta}
         </a>
         <a
           href={GITHUB_URL}
           className={`${ACTION_SURFACE} inline-flex items-center gap-2.25 rounded-[11px] border border-[#2c343e] px-6.5 py-3.25 text-[16px] font-medium text-[#e6edf3] hover:border-[#475060] hover:bg-[#141a22]`}
         >
           <GitHubIcon />
-          View on GitHub
+          {copy.githubCta}
         </a>
       </div>
 
       <div
-        className="mt-4 flex w-full max-w-120 items-center gap-2.5"
+        className="mt-4 flex w-full max-w-120 items-center gap-2.5 lg:mt-6"
         aria-hidden="true"
       >
         <span className="h-px flex-1 bg-[#202832]" />
         <span className="font-mono text-[10px] tracking-wider text-[#596472] uppercase">
-          Or install with Homebrew
+          {copy.brewDivider}
         </span>
         <span className="h-px flex-1 bg-[#202832]" />
       </div>
 
-      <div className="group mt-2 inline-flex max-w-full items-stretch overflow-hidden rounded-md border border-[#232c36] bg-[#0c1117] font-mono text-[11px] text-[#8793a1] transition-[background-color,border-color,color] hover:border-[#37424f] hover:bg-[#11171e] hover:text-[#b5c0cc] sm:text-xs">
+      <div className="group mt-2 inline-flex max-w-full items-stretch lg:mt-3 overflow-hidden rounded-md border border-[#232c36] bg-[#0c1117] font-mono text-[11px] text-[#8793a1] transition-[background-color,border-color,color] hover:border-[#37424f] hover:bg-[#11171e] hover:text-[#b5c0cc] sm:text-xs">
         <code className="min-w-0 cursor-text px-3 py-2 leading-5 whitespace-normal select-text sm:whitespace-nowrap">
           {BREW_INSTALL_COMMAND}
         </code>
@@ -215,15 +207,15 @@ function InstallActions({ className = "" }: { className?: string }) {
           className={`inline-flex min-w-24 shrink-0 items-center justify-center gap-1.5 border-l border-[#232c36] px-3 transition-colors hover:bg-[#17202a] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--accent) ${
             copyState === "copied" ? "text-(--accent)" : ""
           }`}
-          aria-label={`Copy Homebrew install command: ${BREW_INSTALL_COMMAND}`}
+          aria-label={copy.copyAriaLabel(BREW_INSTALL_COMMAND)}
         >
           <CopyIcon copied={copyState === "copied"} />
           <span aria-live="polite">
             {copyState === "copied"
-              ? "Copied"
+              ? copy.copiedLabel
               : copyState === "error"
-              ? "Try again"
-              : "Copy"}
+                ? copy.copyErrorLabel
+                : copy.copyLabel}
           </span>
         </button>
       </div>
@@ -231,126 +223,73 @@ function InstallActions({ className = "" }: { className?: string }) {
   );
 }
 
-export function App() {
+export function App({
+  copy = homeCopyEn,
+  locale = "en",
+  hrefs,
+}: {
+  copy?: HomeCopy;
+  locale?: Locale;
+  hrefs?: LocaleHrefs;
+} = {}) {
+  const prefix = LOCALE_PREFIX[locale];
+  const docsHref = `${prefix}/docs`;
+
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#0a0d12]">
-      <div className="relative overflow-hidden">
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(95% 70% at 50% 0%, var(--accent-glow), transparent 56%)",
-          }}
-        />
+    <div className="relative min-h-screen overflow-x-clip bg-[#0a0d12]">
+      {/* The hero glow is anchored to the page, not to a wrapper around the
+          header — a sticky element only sticks within its own parent's box. */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-200"
+        style={{
+          background:
+            "radial-gradient(95% 70% at 50% 0%, var(--accent-glow), transparent 56%)",
+        }}
+      />
 
-        {/* ===== HEADER ===== */}
-        <header className="relative z-50 bg-transparent">
-          <div className="mx-auto flex max-w-310 items-center justify-between gap-5 px-7 py-3.5">
-            <a
-              href="/"
-              className="flex items-center gap-2.5 font-mono text-[16px] font-bold tracking-[-.01em]"
-            >
-              <img
-                src={logoUrl}
-                alt=""
-                className="h-8 w-8 rounded-[9px] shadow-[0_0_24px_-12px_var(--accent)]"
-              />
-              <span>easy-complete</span>
-            </a>
-            <nav className="flex items-center gap-6.5 text-sm text-[#9aa4b0]">
-              <a
-                href="#features"
-                className="hidden transition-colors hover:text-[#e6edf3] sm:inline"
-              >
-                Features
-              </a>
-              <a
-                href="#why"
-                className="hidden transition-colors hover:text-[#e6edf3] sm:inline"
-              >
-                Why
-              </a>
-              <a
-                href="#how"
-                className="hidden transition-colors hover:text-[#e6edf3] md:inline"
-              >
-                How it works
-              </a>
-              <a
-                href="#faq"
-                className="hidden transition-colors hover:text-[#e6edf3] lg:inline"
-              >
-                FAQ
-              </a>
-              <a
-                href={GITHUB_URL}
-                className="inline-flex items-center gap-1.75 rounded-lg border border-[#2b333d] px-3.25 py-1.75 text-[#e6edf3] transition-colors hover:border-[#475060] hover:bg-[#141a22]"
-              >
-                <GitHubIcon />
-                GitHub
-              </a>
-              <a
-                href="/install"
-                className="inline-flex items-center gap-1.75 rounded-lg bg-(--accent) px-4 py-2 font-semibold text-[#06140a] transition hover:brightness-110 hover:shadow-[0_8px_24px_-8px_var(--accent-line)]"
-              >
-                <AppleIcon />
-                Install
-              </a>
-            </nav>
-          </div>
-        </header>
+      {/* ===== HEADER ===== */}
+      <SiteHeader variant="transparent" locale={locale} hrefs={hrefs} />
 
+      <div className="relative">
         {/* ===== HERO ===== */}
-        <section className="relative px-7 pb-7.5 pt-10">
-          <div className="relative mx-auto flex max-w-195 flex-col items-center text-center">
-            <div className="ec-hero-step mb-6.5 inline-flex items-center gap-2 rounded-full border border-[#232c36] px-3.75 py-1.5 font-mono text-[12.5px] text-[#9aa4b0]">
-              <span className="h-1.5 w-1.5 rounded-full bg-(--accent)" />
-              macOS · 100% local · open source
+        <section className="relative px-7 pb-12 pt-10 lg:pb-20 lg:pt-16">
+          <div className="relative mx-auto grid max-w-310 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] lg:gap-18">
+            <div className="flex min-w-0 flex-col items-center text-center lg:items-start lg:text-left">
+              <div className="mb-6.5 inline-flex items-center gap-2 rounded-full border border-[#232c36] px-3.75 py-1.5 font-mono text-[12.5px] text-[#9aa4b0] lg:mb-8">
+                <span className="h-1.5 w-1.5 rounded-full bg-(--accent)" />
+                {copy.badge}
+              </div>
+              <h1 className="m-0 mb-4.5 max-w-155 text-[40px] font-bold leading-[1.03] tracking-[-.035em] text-balance [overflow-wrap:anywhere] sm:text-[54px] lg:mb-6 lg:leading-[1.06]">
+                {copy.heroHeading}
+              </h1>
+              <p className="m-0 mb-7.5 max-w-132.5 text-[18px] leading-[1.6] text-[#909aa6] lg:mb-10 lg:text-[19px] lg:leading-[1.72]">
+                {copy.heroSubheading}
+              </p>
+              <InstallActions align="split" copy={copy} />
             </div>
-            <h1
-              className="ec-hero-step m-0 mb-4.5 max-w-155 text-[40px] font-bold leading-[1.03] tracking-[-.035em] text-balance sm:text-[54px]"
-              style={{ animationDelay: "90ms" }}
-            >
-              Autocomplete for your macOS terminal.
-            </h1>
-            <p
-              className="ec-hero-step m-0 mb-7.5 max-w-132.5 text-[18px] leading-[1.6] text-[#909aa6]"
-              style={{ animationDelay: "180ms" }}
-            >
-              Fish-shell-style suggestions for hundreds of CLIs — git, npm,
-              docker, cargo. Native, fast, and entirely on-device.
-            </p>
-            <div
-              className="ec-hero-step mb-11"
-              style={{ animationDelay: "270ms" }}
-            >
-              <InstallActions />
-            </div>
-            <div
-              className="ec-hero-terminal w-full max-w-150"
-              style={{ animationDelay: "380ms" }}
-            >
+
+            <div className="w-full min-w-0">
               <Terminal showKeys demoSpeed={1} />
             </div>
           </div>
         </section>
       </div>
 
+      {/* ===== TERMINAL MARQUEE ===== */}
+      <TerminalMarquee label={copy.marqueeLabel} />
+
       {/* ===== FEATURES ===== */}
-      <section
-        id="features"
-        className="mt-10 border-t border-[#141a21] px-7 py-20"
-      >
-        <Reveal className="mx-auto max-w-295">
-          <div className={SECTION_LABEL}>Features</div>
+      <section id="features" className="scroll-mt-20 px-7 py-20">
+        <div className="mx-auto max-w-295">
+          <div className={SECTION_LABEL}>{copy.featuresLabel}</div>
           <h2 className="m-0 mb-2 max-w-160 text-[30px] font-bold leading-[1.15] tracking-[-.02em] text-pretty">
-            Everything you need to complete a command. Nothing you don't.
+            {copy.featuresHeading}
           </h2>
           <p className="m-0 mb-10 max-w-140 text-[16px] text-[#8b95a1]">
-            One job, done well — no chat, no AI calls, no cloud completions.
+            {copy.featuresSubheading}
           </p>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {features.map((f) => (
+            {copy.features.map((f) => (
               <div
                 key={f.title}
                 className={`${CARD_SURFACE} rounded-[14px] border border-[#1c232d] bg-[#0d1219] px-5 py-5.5 hover:-translate-y-1 hover:border-(--accent-line) hover:shadow-[0_18px_44px_-24px_var(--accent-glow)]`}
@@ -367,21 +306,21 @@ export function App() {
               </div>
             ))}
           </div>
-        </Reveal>
+        </div>
       </section>
 
       {/* ===== WHY ===== */}
       <section
         id="why"
-        className="border-t border-[#141a21] bg-[#090c11] px-7 py-20"
+        className="scroll-mt-20 border-t border-[#141a21] bg-[#090c11] px-7 py-20"
       >
         <Reveal className="mx-auto max-w-295">
-          <div className={SECTION_LABEL}>Why Easy Complete</div>
+          <div className={SECTION_LABEL}>{copy.whyLabel}</div>
           <h2 className="m-0 mb-11 max-w-140 text-[30px] font-bold leading-[1.15] tracking-[-.02em]">
-            Opinionated, on purpose.
+            {copy.whyHeading}
           </h2>
           <div className="grid grid-cols-1 gap-4.5 md:grid-cols-2">
-            {reasons.map((r) => (
+            {copy.reasons.map((r) => (
               <div
                 key={r.num}
                 className={`${CARD_SURFACE} flex gap-5 rounded-[14px] border border-[#1a212a] bg-[#0c1118] px-6 py-6.5 hover:-translate-y-0.5 hover:border-[#2a3340]`}
@@ -406,26 +345,60 @@ export function App() {
       {/* ===== TERMINALS ===== */}
       <section className="border-t border-[#141a21] px-7 py-18.5">
         <Reveal className="mx-auto max-w-295">
-          <div className={SECTION_LABEL}>Supported terminals</div>
+          <div className={SECTION_LABEL}>{copy.terminalsLabel}</div>
           <h2 className="m-0 mb-6.5 max-w-155 text-[30px] font-bold leading-[1.15] tracking-[-.02em]">
-            Works everywhere you type.
+            {copy.terminalsHeading}
           </h2>
           <div className="mb-4.5 flex flex-wrap gap-2.75">
-            {terminals.map((t) => (
-              <span
-                key={t}
-                className={`${ACTION_SURFACE} inline-flex items-center gap-2.25 rounded-full border border-[#232c36] bg-[#0d1219] px-4 py-2.25 font-mono text-sm text-[#cdd6e0] hover:-translate-y-0.5 hover:border-(--accent-line) hover:text-white`}
-              >
-                <span className="font-bold text-(--accent)">✓</span>
-                {t}
-              </span>
-            ))}
+            {copy.terminalSupport.map((t) => {
+              const chipClass = `${ACTION_SURFACE} inline-flex items-center gap-2.25 rounded-full border bg-[#0d1219] px-4 py-2.25 font-mono text-sm hover:-translate-y-0.5 hover:border-(--accent-line) hover:text-white ${
+                t.isNew
+                  ? "border-(--accent-line) text-[#e6edf3]"
+                  : "border-[#232c36] text-[#cdd6e0]"
+              }`;
+              const body = (
+                <>
+                  <span className="font-bold text-(--accent)">✓</span>
+                  {t.name}
+                  {t.isNew && (
+                    <span className="rounded-full bg-(--accent-soft) px-1.75 py-0.5 text-[10px] font-bold uppercase tracking-wider text-(--accent)">
+                      {copy.newBadge}
+                    </span>
+                  )}
+                </>
+              );
+
+              return t.slug ? (
+                <a
+                  key={t.name}
+                  href={`/terminals/${t.slug}`}
+                  className={chipClass}
+                  title={copy.terminalGuideTitle(t.name)}
+                >
+                  {body}
+                </a>
+              ) : (
+                <span key={t.name} className={chipClass}>
+                  {body}
+                </span>
+              );
+            })}
           </div>
           <p className="m-0 max-w-170 text-sm leading-[1.6] text-[#6e7884]">
-            Most terminals work out of the box via the PTY integration. Ghostty,
-            Kitty, WezTerm, Zed and Alacritty add a bundled input method for
-            pixel-accurate cursor tracking — registered automatically at
-            install.
+            <strong className="font-semibold text-[#cdd6e0]">
+              New in v2.1.0:
+            </strong>{" "}
+            Otty joins the input-method terminals with pixel-accurate cursor
+            tracking, and ChatGPT (Codex) sessions are located through the
+            xterm.js caret. Everything else keeps working through the shell
+            integration installed automatically on first launch.{" "}
+            <a
+              href={`${docsHref}#terminals`}
+              className="text-(--accent) underline underline-offset-4 transition-colors hover:brightness-125"
+            >
+              {copy.terminalsLinkLabel}
+            </a>
+            .
           </p>
         </Reveal>
       </section>
@@ -433,20 +406,19 @@ export function App() {
       {/* ===== ARCHITECTURE ===== */}
       <section
         id="how"
-        className="border-t border-[#141a21] bg-[#090c11] px-7 py-20"
+        className="scroll-mt-20 border-t border-[#141a21] bg-[#090c11] px-7 py-20"
       >
         <Reveal className="mx-auto max-w-295">
-          <div className={SECTION_LABEL}>How it works</div>
+          <div className={SECTION_LABEL}>{copy.howLabel}</div>
           <h2 className="m-0 mb-2.5 max-w-160 text-[30px] font-bold leading-[1.15] tracking-[-.02em]">
-            Three processes, talking over sockets.
+            {copy.howHeading}
           </h2>
           <p className="m-0 mb-10 max-w-150 text-[16px] leading-[1.6] text-[#8b95a1]">
-            Native and lightweight, built in Rust. Each process owns one job and
-            they coordinate over Unix domain sockets with Protobuf messages.
+            {copy.howSubheading}
           </p>
 
           <div className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-3">
-            {processes.map((p) => (
+            {copy.processes.map((p) => (
               <div
                 key={p.bin}
                 className={`${CARD_SURFACE} flex flex-col rounded-[14px] border border-[#1c232d] bg-[#0c1118] px-5.5 py-6 hover:-translate-y-0.5 hover:border-[#2a3340]`}
@@ -455,7 +427,7 @@ export function App() {
                   {p.bin}
                 </div>
                 <div className="mb-3.5 font-mono text-xs text-[#5d6773]">
-                  crate · {p.crate}
+                  {copy.crateLabel} · {p.crate}
                 </div>
                 <p className="m-0 text-sm leading-[1.6] text-[#9099a5]">
                   {p.role}
@@ -466,29 +438,32 @@ export function App() {
 
           <div className="mt-4.5 flex flex-wrap items-center gap-2.5 font-mono text-[12.5px] text-[#6e7884]">
             <span className="inline-flex items-center gap-2 rounded-lg border border-dashed border-[#2a333e] px-3.25 py-2">
-              shell hooks → CWD · command text · cursor
+              {copy.flowShellHooks}
             </span>
             <span className="text-(--accent)">⇄</span>
             <span className="inline-flex items-center gap-2 rounded-lg border border-dashed border-[#2a333e] px-3.25 py-2">
-              input-method helper → caret position (macOS)
+              {copy.flowInputMethod}
             </span>
             <span className="text-(--accent)">⇄</span>
             <span className="inline-flex items-center gap-2 rounded-lg border border-dashed border-[#2a333e] px-3.25 py-2">
-              Protobuf over Unix sockets
+              {copy.flowProtobuf}
             </span>
           </div>
         </Reveal>
       </section>
 
       {/* ===== FAQ ===== */}
-      <section id="faq" className="border-t border-[#141a21] px-7 py-20">
+      <section
+        id="faq"
+        className="scroll-mt-20 border-t border-[#141a21] px-7 py-20"
+      >
         <Reveal className="mx-auto max-w-225">
-          <div className={SECTION_LABEL}>FAQ</div>
+          <div className={SECTION_LABEL}>{copy.faqLabel}</div>
           <h2 className="m-0 mb-7 max-w-155 text-[30px] font-bold leading-[1.15] tracking-[-.02em]">
-            Answers before you install.
+            {copy.faqHeading}
           </h2>
           <div className="grid grid-cols-1 gap-4">
-            {faqs.map((faq) => (
+            {copy.faqs.map((faq) => (
               <div
                 key={faq.question}
                 className={`${CARD_SURFACE} rounded-[14px] border border-[#1c232d] bg-[#0d1219] px-6 py-5 hover:-translate-y-0.5 hover:border-[#2a3340]`}
@@ -505,59 +480,52 @@ export function App() {
         </Reveal>
       </section>
 
-      {/* ===== GUIDES ===== */}
+      {/* ===== DOCS ===== */}
       <section className="border-t border-[#141a21] bg-[#090c11] px-7 py-18.5">
         <Reveal className="mx-auto max-w-295">
-          <div className={SECTION_LABEL}>Guides</div>
+          <div className={SECTION_LABEL}>{copy.docsLabel}</div>
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:items-start">
             <div>
               <h2 className="m-0 mb-3 max-w-130 text-[30px] font-bold leading-[1.15] tracking-[-.02em]">
-                Get from download to first completion.
+                {copy.docsHeading}
               </h2>
-              <p className="m-0 max-w-130 text-[16px] leading-[1.65] text-[#828d99]">
-                Install Easy Complete, set up cursor tracking for Ghostty, or
-                fix a shell integration without digging through the repository.
+              <p className="m-0 mb-6 max-w-130 text-[16px] leading-[1.65] text-[#828d99]">
+                {copy.docsSubheading}
               </p>
+              <a
+                href={docsHref}
+                className={`${ACTION_SURFACE} inline-flex items-center gap-2 rounded-[10px] border border-(--accent-line) bg-(--accent-soft) px-5 py-2.75 text-sm font-semibold text-(--accent) hover:bg-(--accent-soft) hover:brightness-125`}
+              >
+                {copy.docsCta}
+                <span aria-hidden="true" className="font-mono">
+                  →
+                </span>
+              </a>
             </div>
             <div className="divide-y divide-[#1c232d] border-y border-[#1c232d]">
-              {[
-                [
-                  "/install",
-                  "Install on macOS",
-                  "DMG, Accessibility permission, shell reload, and verification.",
-                ],
-                [
-                  "/terminals/ghostty",
-                  "Ghostty autocomplete",
-                  "Keep the native suggestion window aligned with the cursor.",
-                ],
-                [
-                  "/fig-alternative",
-                  "Looking for a Fig alternative?",
-                  "See what the focused, local completion engine includes.",
-                ],
-                [
-                  "/troubleshooting",
-                  "Troubleshooting",
-                  "Diagnose missing suggestions and terminal integrations.",
-                ],
-              ].map(([href, title, description]) => (
-                <a
-                  key={href}
-                  href={href}
-                  className="group grid gap-1 py-4 transition-colors sm:grid-cols-[minmax(0,0.75fr)_minmax(0,1fr)_auto] sm:items-center sm:gap-5"
-                >
-                  <span className="font-semibold text-[#d8e0e9] group-hover:text-(--accent)">
-                    {title}
-                  </span>
-                  <span className="text-sm leading-[1.55] text-[#737e8b]">
-                    {description}
-                  </span>
-                  <span className="hidden font-mono text-(--accent) sm:inline">
-                    →
-                  </span>
-                </a>
-              ))}
+              {copy.docSections
+                .flatMap((section) => section.links)
+                .filter((link) => !link.external)
+                .map((link) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    className="group grid gap-1 py-4 transition-colors sm:grid-cols-[minmax(0,0.75fr)_minmax(0,1fr)_auto] sm:items-center sm:gap-5"
+                  >
+                    <span className="font-semibold text-[#d8e0e9] group-hover:text-(--accent)">
+                      {link.label}
+                    </span>
+                    <span className="text-sm leading-[1.55] text-[#737e8b]">
+                      {link.description}
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      className="hidden font-mono text-(--accent) sm:inline"
+                    >
+                      →
+                    </span>
+                  </a>
+                ))}
             </div>
           </div>
         </Reveal>
@@ -577,43 +545,25 @@ export function App() {
         />
         <Reveal className="relative mx-auto max-w-180">
           <h2 className="m-0 mb-3.5 text-[34px] font-bold leading-[1.05] tracking-[-.03em] sm:text-[46px]">
-            Stop memorizing flags.
+            {copy.ctaHeading}
           </h2>
           <p className="m-0 mb-7.5 text-[18px] text-[#909aa6]">
-            Let your terminal remember them for you.
+            {copy.ctaSubheading}
           </p>
-          <InstallActions className="mb-7.5" />
+          <InstallActions className="mb-7.5" copy={copy} />
           <p className="m-0 font-mono text-[13px] leading-[1.7] text-[#5d6773]">
-            Requires macOS 12+ · Apple Silicon (ARM64) · MIT / Apache-2.0
-            <br />A focused local completion engine built for fast terminal
-            autocomplete.
+            {copy.ctaFootnote}
+            <br />
+            {copy.ctaTagline}
           </p>
         </Reveal>
         <div className="relative mx-auto mt-16 flex max-w-295 flex-wrap items-center justify-between gap-4 border-t border-[#161d25] pt-6.5 text-[13px] text-[#5d6773]">
           <span className="inline-flex items-center gap-2 font-mono">
             <img src={logoUrl} alt="" className="h-5 w-5 rounded-md" />
-            easy-complete
+            Easy Complete
           </span>
-          <span className="inline-flex items-center gap-4">
-            <a
-              href="/install"
-              className="transition-colors hover:text-[#e6edf3]"
-            >
-              Install guide
-            </a>
-            <a
-              href="/troubleshooting"
-              className="transition-colors hover:text-[#e6edf3]"
-            >
-              Help
-            </a>
-            <a
-              href="/privacy"
-              className="transition-colors hover:text-[#e6edf3]"
-            >
-              Privacy
-            </a>
-            <span>cli · terminal · macOS</span>
+          <span className="inline-flex flex-wrap items-center gap-4">
+            <SiteFooterLinks locale={locale} />
           </span>
         </div>
       </section>

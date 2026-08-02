@@ -10,6 +10,7 @@ import { AppLogo } from "../components/app-logo";
 import { NumberInput, Select, TextInput, Toggle } from "../components/controls";
 import {
   IconCopy,
+  IconDocument,
   IconExternalLink,
   IconGitHub,
   IconUpdate,
@@ -25,6 +26,7 @@ const RELEASES_URL = `${REPO_URL}/releases`;
 const ISSUES_URL = `${REPO_URL}/issues`;
 const PRIVACY_URL = "https://easy-complete.emmmm.dev/privacy";
 const UPSTREAM_REPO_URL = "https://github.com/aws/amazon-q-developer-cli";
+const OPEN_SOURCE_LICENSES_URL = "ec-internal://open-source-licenses";
 
 async function openExternalUrl(url: string) {
   try {
@@ -538,6 +540,11 @@ export function AboutSection({
           href={RELEASES_URL}
           label={t("about.releaseNotes")}
           icon={<IconExternalLink />}
+        />
+        <AboutActionButton
+          label={t("about.openSourceLicenses")}
+          icon={<IconDocument />}
+          onClick={() => void Native.open(OPEN_SOURCE_LICENSES_URL)}
         />
       </div>
       <p className="mt-3 text-center text-[11px] leading-[1.5] text-[var(--ds-label-tertiary)]">

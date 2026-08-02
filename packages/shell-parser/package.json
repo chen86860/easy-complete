@@ -1,7 +1,7 @@
 {
   "name": "@easy-complete/shell-parser",
   "version": "0.1.0",
-  "license": "MIT OR Apache-2.0",
+  "license": "MIT",
   "author": "Easy Complete Contributors",
   "repository": "https://github.com/chen86860/easy-complete",
   "type": "module",

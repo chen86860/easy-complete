@@ -32,6 +32,7 @@ function FigAlternativePage() {
           title: TITLE,
           description: DESCRIPTION,
           path: "/fig-alternative",
+          crumbLabel: "Fig alternative",
         })}
       />
       <GuidePage
@@ -80,7 +81,7 @@ function FigAlternativePage() {
                 ["AI or cloud completions", "None"],
                 ["Source code", "Open source"],
                 ["Published build", "Apple Silicon / ARM64"],
-                ["License", "MIT OR Apache-2.0"],
+                ["License", "MIT"],
               ].map(([label, value]) => (
                 <tr
                   key={label}

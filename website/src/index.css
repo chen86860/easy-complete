@@ -61,30 +61,6 @@ body {
   }
 }
 
-@keyframes ec-hero-in {
-  0% {
-    opacity: 0;
-    transform: translate3d(0, 18px, 0) scale(0.985);
-  }
-  100% {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-}
-
-@keyframes ec-terminal-in {
-  0% {
-    opacity: 0;
-    transform: translate3d(0, 24px, 0) scale(0.97);
-    filter: blur(8px);
-  }
-  100% {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-    filter: blur(0);
-  }
-}
-
 .ec-blink {
   animation: ec-blink 1s steps(1) infinite;
 }
@@ -93,12 +69,41 @@ body {
   animation: ec-pop 0.16s var(--ease-out-quart);
 }
 
-.ec-hero-step {
-  animation: ec-hero-in 0.62s var(--ease-out-quint) both;
+@keyframes ec-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    /* Exactly one copy of the track — the loop point is invisible. */
+    transform: translate3d(-50%, 0, 0);
+  }
 }
 
-.ec-hero-terminal {
-  animation: ec-terminal-in 0.76s var(--ease-out-quint) both;
+.ec-marquee-track {
+  animation: ec-marquee 42s linear infinite;
+  will-change: transform;
+}
+
+.ec-marquee:hover .ec-marquee-track {
+  animation-play-state: paused;
+}
+
+/* Fade the logos out at both edges instead of cutting them off. */
+.ec-marquee {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 9%,
+    #000 91%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 9%,
+    #000 91%,
+    transparent
+  );
 }
 
 .ec-reveal {
@@ -138,8 +143,6 @@ body {
     transition-duration: 0.01ms !important;
   }
 
-  .ec-hero-step,
-  .ec-hero-terminal,
   .ec-reveal {
     opacity: 1;
     transform: none;
@@ -147,6 +150,10 @@ body {
   }
 
   .ec-blink {
+    animation: none;
+  }
+
+  .ec-marquee-track {
     animation: none;
   }
 }

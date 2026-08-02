@@ -3,7 +3,7 @@
   "private": true,
   "author": "Easy Complete Contributors",
   "repository": "https://github.com/chen86860/easy-complete",
-  "license": "MIT OR Apache-2.0",
+  "license": "MIT",
   "packageManager": "pnpm@11.14.0",
   "type": "module",
   "engines": {
@@ -20,6 +20,8 @@
     "coverage": "vitest run --coverage",
     "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",
+    "licenses:generate": "node scripts/generate-third-party-notices.mjs",
+    "licenses:check": "node scripts/generate-third-party-notices.mjs --check THIRD_PARTY_NOTICES.txt",
     "dev": "turbo dev",
     "dev:autocomplete": "pnpm -C packages/autocomplete-app dev",
     "preview:autocomplete": "pnpm -C packages/autocomplete-app preview",

@@ -8,10 +8,18 @@ SPARKLE_FRAMEWORK="${SPARKLE_ROOT}/Sparkle.framework"
 ARCHIVE="${SPARKLE_ROOT}/Sparkle-${SPARKLE_VERSION}.tar.xz"
 URL="https://github.com/sparkle-project/Sparkle/releases/download/${SPARKLE_VERSION}/Sparkle-${SPARKLE_VERSION}.tar.xz"
 
-if [ ! -d "$SPARKLE_FRAMEWORK" ]; then
-  mkdir -p "$SPARKLE_ROOT"
+mkdir -p "$SPARKLE_ROOT"
+
+if [ ! -f "$ARCHIVE" ]; then
   curl -L --fail --retry 3 "$URL" -o "$ARCHIVE"
+fi
+
+if [ ! -d "$SPARKLE_FRAMEWORK" ]; then
   tar -xf "$ARCHIVE" -C "$SPARKLE_ROOT" ./Sparkle.framework ./bin/generate_appcast ./bin/generate_keys ./bin/sign_update
+fi
+
+if [ ! -f "${SPARKLE_ROOT}/LICENSE" ]; then
+  tar -xf "$ARCHIVE" -C "$SPARKLE_ROOT" ./LICENSE
 fi
 
 printf '%s\n' "$SPARKLE_FRAMEWORK"

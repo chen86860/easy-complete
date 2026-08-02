@@ -28,6 +28,8 @@ info() { echo -e "${GREEN}==>${NC} $*"; }
 [ -d "$APP" ] || { echo "error: $APP not found — run scripts/build-app.sh first" >&2; exit 1; }
 [ -f "$BG" ]  || { echo "error: $BG not found — run: swift scripts/make-dmg-background.swift" >&2; exit 1; }
 
+"${REPO_DIR}/scripts/verify-license-bundle.sh" "$APP"
+
 while IFS= read -r -d '' binary; do
   if file -b "$binary" | grep -q "Mach-O"; then
     archs="$(lipo -archs "$binary")"

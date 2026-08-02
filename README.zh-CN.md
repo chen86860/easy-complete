@@ -261,4 +261,7 @@ pnpm test                                   # 运行 Vitest
 
 ## 📜 许可证
 
-继承上游 Amazon Q Developer CLI，采用 MIT 与 Apache 2.0 双许可证。
+采用 MIT 许可证。Easy Complete 基于上游 Amazon Q Developer CLI，并在
+[LICENSE](./LICENSE) 中保留其原始版权声明。
+第三方版权与许可证条款集中收录于
+[THIRD_PARTY_NOTICES.txt](./THIRD_PARTY_NOTICES.txt)。

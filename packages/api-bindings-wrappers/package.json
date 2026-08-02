@@ -1,7 +1,7 @@
 {
   "name": "@easy-complete/api-bindings-wrappers",
   "version": "0.2.0",
-  "license": "MIT OR Apache-2.0",
+  "license": "MIT",
   "author": "Easy Complete Contributors",
   "repository": "https://github.com/chen86860/easy-complete",
   "type": "module",

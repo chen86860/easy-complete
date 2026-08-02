@@ -32,6 +32,7 @@ function GhosttyPage() {
           title: TITLE,
           description: DESCRIPTION,
           path: "/terminals/ghostty",
+          crumbLabel: "Ghostty autocomplete",
         })}
       />
       <GuidePage

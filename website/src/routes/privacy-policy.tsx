@@ -1,17 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
-import logoUrl from "../assets/logo.png";
+import { SiteFooter, SiteHeader } from "../components/SiteChrome.tsx";
 import { GITHUB_URL } from "../data.ts";
-import { pageHead } from "../seo.tsx";
+import { SeoJsonLd, guideSchema, pageHead } from "../seo.tsx";
 
 const PRIVACY_DESCRIPTION =
   "What anonymous usage data Easy Complete collects, what it never collects, and how to turn telemetry off.";
 
-export const Route = createFileRoute("/privacy")({
+export const Route = createFileRoute("/privacy-policy")({
   head: () =>
     pageHead({
-      title: "Privacy — Easy Complete",
+      title: "Privacy Policy — Easy Complete",
       description: PRIVACY_DESCRIPTION,
-      path: "/privacy",
+      path: "/privacy-policy",
     }),
   component: PrivacyPage,
 });
@@ -69,27 +69,33 @@ const COLLECTED: Array<{ event: string; when: string; extra: string }> = [
 function PrivacyPage() {
   return (
     <div className="min-h-screen bg-[#0a0d12] text-[#e6edf3]">
-      <header className="border-b border-[#141a21]">
-        <div className="mx-auto flex max-w-310 items-center justify-between gap-5 px-7 py-3.5">
-          <a
-            href="/"
-            className="flex items-center gap-2.5 font-mono text-[16px] font-bold tracking-[-.01em]"
-          >
-            <img src={logoUrl} alt="" className="h-8 w-8 rounded-[9px]" />
-            <span>easy-complete</span>
-          </a>
-          <a
-            href="/"
-            className="text-sm text-[#9aa4b0] transition-colors hover:text-[#e6edf3]"
-          >
-            ← Back to home
-          </a>
-        </div>
-      </header>
+      <SeoJsonLd
+        data={guideSchema({
+          title: "Privacy Policy — Easy Complete",
+          description: PRIVACY_DESCRIPTION,
+          path: "/privacy-policy",
+          crumbLabel: "Privacy Policy",
+        })}
+      />
+      <SiteHeader active="docs" />
 
       <main className="mx-auto max-w-190 px-7 pb-24 pt-14">
+        <nav
+          aria-label="Breadcrumb"
+          className="mb-10 font-mono text-xs text-[#65707d]"
+        >
+          <a href="/" className="transition-colors hover:text-(--accent)">
+            Easy Complete
+          </a>
+          <span className="px-2">/</span>
+          <a href="/docs" className="transition-colors hover:text-(--accent)">
+            Docs
+          </a>
+          <span className="px-2">/</span>
+          <span>Privacy Policy</span>
+        </nav>
         <p className="mb-3 font-mono text-xs uppercase tracking-[.22em] text-(--accent)">
-          Privacy
+          Privacy Policy
         </p>
         <h1 className="m-0 mb-4 text-[36px] font-bold leading-[1.1] tracking-[-.03em]">
           Your commands never leave your Mac.
@@ -213,6 +219,8 @@ function PrivacyPage() {
           Last updated: July 2026 · Applies to Easy Complete v2.0.41 and later
         </p>
       </main>
+
+      <SiteFooter />
     </div>
   );
 }

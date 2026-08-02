@@ -9,26 +9,31 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TroubleshootingRouteImport } from './routes/troubleshooting'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as InstallRouteImport } from './routes/install'
-import { Route as FigAlternativeRouteImport } from './routes/fig-alternative'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DocsRouteImport } from './routes/docs'
+import { Route as FigAlternativeRouteImport } from './routes/fig-alternative'
+import { Route as InstallRouteImport } from './routes/install'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
+import { Route as TroubleshootingRouteImport } from './routes/troubleshooting'
+import { Route as TerminalsAlacrittyRouteImport } from './routes/terminals.alacritty'
 import { Route as TerminalsGhosttyRouteImport } from './routes/terminals.ghostty'
+import { Route as TerminalsIterm2RouteImport } from './routes/terminals.iterm2'
+import { Route as TerminalsKittyRouteImport } from './routes/terminals.kitty'
+import { Route as TerminalsOttyRouteImport } from './routes/terminals.otty'
+import { Route as TerminalsWeztermRouteImport } from './routes/terminals.wezterm'
+import { Route as TerminalsZedRouteImport } from './routes/terminals.zed'
+import { Route as ZhIndexRouteImport } from './routes/zh.index'
+import { Route as ZhDocsRouteImport } from './routes/zh.docs'
+import { Route as ZhInstallRouteImport } from './routes/zh.install'
 
-const TroubleshootingRoute = TroubleshootingRouteImport.update({
-  id: '/troubleshooting',
-  path: '/troubleshooting',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InstallRoute = InstallRouteImport.update({
-  id: '/install',
-  path: '/install',
+const DocsRoute = DocsRouteImport.update({
+  id: '/docs',
+  path: '/docs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FigAlternativeRoute = FigAlternativeRouteImport.update({
@@ -36,9 +41,24 @@ const FigAlternativeRoute = FigAlternativeRouteImport.update({
   path: '/fig-alternative',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const InstallRoute = InstallRouteImport.update({
+  id: '/install',
+  path: '/install',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TroubleshootingRoute = TroubleshootingRouteImport.update({
+  id: '/troubleshooting',
+  path: '/troubleshooting',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TerminalsAlacrittyRoute = TerminalsAlacrittyRouteImport.update({
+  id: '/terminals/alacritty',
+  path: '/terminals/alacritty',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TerminalsGhosttyRoute = TerminalsGhosttyRouteImport.update({
@@ -46,89 +66,192 @@ const TerminalsGhosttyRoute = TerminalsGhosttyRouteImport.update({
   path: '/terminals/ghostty',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TerminalsIterm2Route = TerminalsIterm2RouteImport.update({
+  id: '/terminals/iterm2',
+  path: '/terminals/iterm2',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TerminalsKittyRoute = TerminalsKittyRouteImport.update({
+  id: '/terminals/kitty',
+  path: '/terminals/kitty',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TerminalsOttyRoute = TerminalsOttyRouteImport.update({
+  id: '/terminals/otty',
+  path: '/terminals/otty',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TerminalsWeztermRoute = TerminalsWeztermRouteImport.update({
+  id: '/terminals/wezterm',
+  path: '/terminals/wezterm',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TerminalsZedRoute = TerminalsZedRouteImport.update({
+  id: '/terminals/zed',
+  path: '/terminals/zed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ZhIndexRoute = ZhIndexRouteImport.update({
+  id: '/zh/',
+  path: '/zh/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ZhDocsRoute = ZhDocsRouteImport.update({
+  id: '/zh/docs',
+  path: '/zh/docs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ZhInstallRoute = ZhInstallRouteImport.update({
+  id: '/zh/install',
+  path: '/zh/install',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/docs': typeof DocsRoute
   '/fig-alternative': typeof FigAlternativeRoute
   '/install': typeof InstallRoute
-  '/privacy': typeof PrivacyRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/troubleshooting': typeof TroubleshootingRoute
+  '/terminals/alacritty': typeof TerminalsAlacrittyRoute
   '/terminals/ghostty': typeof TerminalsGhosttyRoute
+  '/terminals/iterm2': typeof TerminalsIterm2Route
+  '/terminals/kitty': typeof TerminalsKittyRoute
+  '/terminals/otty': typeof TerminalsOttyRoute
+  '/terminals/wezterm': typeof TerminalsWeztermRoute
+  '/terminals/zed': typeof TerminalsZedRoute
+  '/zh/docs': typeof ZhDocsRoute
+  '/zh/install': typeof ZhInstallRoute
+  '/zh/': typeof ZhIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/docs': typeof DocsRoute
   '/fig-alternative': typeof FigAlternativeRoute
   '/install': typeof InstallRoute
-  '/privacy': typeof PrivacyRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/troubleshooting': typeof TroubleshootingRoute
+  '/terminals/alacritty': typeof TerminalsAlacrittyRoute
   '/terminals/ghostty': typeof TerminalsGhosttyRoute
+  '/terminals/iterm2': typeof TerminalsIterm2Route
+  '/terminals/kitty': typeof TerminalsKittyRoute
+  '/terminals/otty': typeof TerminalsOttyRoute
+  '/terminals/wezterm': typeof TerminalsWeztermRoute
+  '/terminals/zed': typeof TerminalsZedRoute
+  '/zh/docs': typeof ZhDocsRoute
+  '/zh/install': typeof ZhInstallRoute
+  '/zh': typeof ZhIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/docs': typeof DocsRoute
   '/fig-alternative': typeof FigAlternativeRoute
   '/install': typeof InstallRoute
-  '/privacy': typeof PrivacyRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/troubleshooting': typeof TroubleshootingRoute
+  '/terminals/alacritty': typeof TerminalsAlacrittyRoute
   '/terminals/ghostty': typeof TerminalsGhosttyRoute
+  '/terminals/iterm2': typeof TerminalsIterm2Route
+  '/terminals/kitty': typeof TerminalsKittyRoute
+  '/terminals/otty': typeof TerminalsOttyRoute
+  '/terminals/wezterm': typeof TerminalsWeztermRoute
+  '/terminals/zed': typeof TerminalsZedRoute
+  '/zh/docs': typeof ZhDocsRoute
+  '/zh/install': typeof ZhInstallRoute
+  '/zh/': typeof ZhIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/docs'
     | '/fig-alternative'
     | '/install'
-    | '/privacy'
+    | '/privacy-policy'
     | '/troubleshooting'
+    | '/terminals/alacritty'
     | '/terminals/ghostty'
+    | '/terminals/iterm2'
+    | '/terminals/kitty'
+    | '/terminals/otty'
+    | '/terminals/wezterm'
+    | '/terminals/zed'
+    | '/zh/docs'
+    | '/zh/install'
+    | '/zh/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/docs'
     | '/fig-alternative'
     | '/install'
-    | '/privacy'
+    | '/privacy-policy'
     | '/troubleshooting'
+    | '/terminals/alacritty'
     | '/terminals/ghostty'
+    | '/terminals/iterm2'
+    | '/terminals/kitty'
+    | '/terminals/otty'
+    | '/terminals/wezterm'
+    | '/terminals/zed'
+    | '/zh/docs'
+    | '/zh/install'
+    | '/zh'
   id:
     | '__root__'
     | '/'
+    | '/docs'
     | '/fig-alternative'
     | '/install'
-    | '/privacy'
+    | '/privacy-policy'
     | '/troubleshooting'
+    | '/terminals/alacritty'
     | '/terminals/ghostty'
+    | '/terminals/iterm2'
+    | '/terminals/kitty'
+    | '/terminals/otty'
+    | '/terminals/wezterm'
+    | '/terminals/zed'
+    | '/zh/docs'
+    | '/zh/install'
+    | '/zh/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DocsRoute: typeof DocsRoute
   FigAlternativeRoute: typeof FigAlternativeRoute
   InstallRoute: typeof InstallRoute
-  PrivacyRoute: typeof PrivacyRoute
+  PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   TroubleshootingRoute: typeof TroubleshootingRoute
+  TerminalsAlacrittyRoute: typeof TerminalsAlacrittyRoute
   TerminalsGhosttyRoute: typeof TerminalsGhosttyRoute
+  TerminalsIterm2Route: typeof TerminalsIterm2Route
+  TerminalsKittyRoute: typeof TerminalsKittyRoute
+  TerminalsOttyRoute: typeof TerminalsOttyRoute
+  TerminalsWeztermRoute: typeof TerminalsWeztermRoute
+  TerminalsZedRoute: typeof TerminalsZedRoute
+  ZhDocsRoute: typeof ZhDocsRoute
+  ZhInstallRoute: typeof ZhInstallRoute
+  ZhIndexRoute: typeof ZhIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/troubleshooting': {
-      id: '/troubleshooting'
-      path: '/troubleshooting'
-      fullPath: '/troubleshooting'
-      preLoaderRoute: typeof TroubleshootingRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/install': {
-      id: '/install'
-      path: '/install'
-      fullPath: '/install'
-      preLoaderRoute: typeof InstallRouteImport
+    '/docs': {
+      id: '/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/fig-alternative': {
@@ -138,11 +261,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FigAlternativeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/install': {
+      id: '/install'
+      path: '/install'
+      fullPath: '/install'
+      preLoaderRoute: typeof InstallRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/troubleshooting': {
+      id: '/troubleshooting'
+      path: '/troubleshooting'
+      fullPath: '/troubleshooting'
+      preLoaderRoute: typeof TroubleshootingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terminals/alacritty': {
+      id: '/terminals/alacritty'
+      path: '/terminals/alacritty'
+      fullPath: '/terminals/alacritty'
+      preLoaderRoute: typeof TerminalsAlacrittyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/terminals/ghostty': {
@@ -152,16 +296,82 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TerminalsGhosttyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/terminals/iterm2': {
+      id: '/terminals/iterm2'
+      path: '/terminals/iterm2'
+      fullPath: '/terminals/iterm2'
+      preLoaderRoute: typeof TerminalsIterm2RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terminals/kitty': {
+      id: '/terminals/kitty'
+      path: '/terminals/kitty'
+      fullPath: '/terminals/kitty'
+      preLoaderRoute: typeof TerminalsKittyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terminals/otty': {
+      id: '/terminals/otty'
+      path: '/terminals/otty'
+      fullPath: '/terminals/otty'
+      preLoaderRoute: typeof TerminalsOttyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terminals/wezterm': {
+      id: '/terminals/wezterm'
+      path: '/terminals/wezterm'
+      fullPath: '/terminals/wezterm'
+      preLoaderRoute: typeof TerminalsWeztermRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terminals/zed': {
+      id: '/terminals/zed'
+      path: '/terminals/zed'
+      fullPath: '/terminals/zed'
+      preLoaderRoute: typeof TerminalsZedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/zh/': {
+      id: '/zh/'
+      path: '/zh'
+      fullPath: '/zh/'
+      preLoaderRoute: typeof ZhIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/zh/docs': {
+      id: '/zh/docs'
+      path: '/zh/docs'
+      fullPath: '/zh/docs'
+      preLoaderRoute: typeof ZhDocsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/zh/install': {
+      id: '/zh/install'
+      path: '/zh/install'
+      fullPath: '/zh/install'
+      preLoaderRoute: typeof ZhInstallRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DocsRoute: DocsRoute,
   FigAlternativeRoute: FigAlternativeRoute,
   InstallRoute: InstallRoute,
-  PrivacyRoute: PrivacyRoute,
+  PrivacyPolicyRoute: PrivacyPolicyRoute,
   TroubleshootingRoute: TroubleshootingRoute,
+  TerminalsAlacrittyRoute: TerminalsAlacrittyRoute,
   TerminalsGhosttyRoute: TerminalsGhosttyRoute,
+  TerminalsIterm2Route: TerminalsIterm2Route,
+  TerminalsKittyRoute: TerminalsKittyRoute,
+  TerminalsOttyRoute: TerminalsOttyRoute,
+  TerminalsWeztermRoute: TerminalsWeztermRoute,
+  TerminalsZedRoute: TerminalsZedRoute,
+  ZhDocsRoute: ZhDocsRoute,
+  ZhInstallRoute: ZhInstallRoute,
+  ZhIndexRoute: ZhIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

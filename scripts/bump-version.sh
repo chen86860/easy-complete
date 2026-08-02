@@ -26,6 +26,13 @@ for pkg in dashboard-app autocomplete-app; do
   sed -i '' "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" "$PKG_JSON"
 done
 
+# App version published in the website's SoftwareApplication structured data.
+sed -i '' \
+  "s/^export const APP_VERSION = \".*\";$/export const APP_VERSION = \"$VERSION\";/" \
+  "$REPO_DIR/website/src/seo.tsx"
+grep -qxF "export const APP_VERSION = \"$VERSION\";" "$REPO_DIR/website/src/seo.tsx" \
+  || { echo "Failed to update website/src/seo.tsx" >&2; exit 1; }
+
 # Refresh Cargo.lock so the bumped workspace versions are reflected there too.
 # Without this the release commit ships a stale lock and CI's
 # `cargo clippy/test --locked` fails. --workspace only touches our own crates

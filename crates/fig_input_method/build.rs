@@ -135,10 +135,7 @@ fn main() {
                 bundle_version: Some(env!("CARGO_PKG_VERSION").to_string()),
                 bundle_info_dictionary_version: Some("6.0".to_string()),
                 bundle_short_version_string: Some(env!("CARGO_PKG_VERSION").to_string()),
-                human_readable_copyright: Some(format!(
-                    "Copyright © 2022 {} All rights reserved.",
-                    env!("CARGO_PKG_AUTHORS")
-                )),
+                human_readable_copyright: Some("Copyright © 2026 Easy Complete contributors".to_owned()),
             },
             naming: Naming {
                 bundle_name: Some(bundle.bundle_name),

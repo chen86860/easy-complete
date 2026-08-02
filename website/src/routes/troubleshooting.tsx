@@ -32,6 +32,7 @@ function TroubleshootingPage() {
           title: TITLE,
           description: DESCRIPTION,
           path: "/troubleshooting",
+          crumbLabel: "Troubleshooting",
         })}
       />
       <GuidePage

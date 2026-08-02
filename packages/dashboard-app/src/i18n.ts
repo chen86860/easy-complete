@@ -103,8 +103,8 @@ const en = {
   "about.privacyPolicyDescription": "See what's collected and how to opt out",
   "about.viewPolicy": "View Policy",
   "about.releaseNotes": "Release Notes",
-  "about.licensePrefix":
-    "Open source under the MIT and Apache 2.0 licenses · Based on the",
+  "about.openSourceLicenses": "Open Source Licenses",
+  "about.licensePrefix": "Open source under the MIT License · Based on the",
   "about.upstreamName": "Amazon Q Developer CLI",
 
   "permission.status.checking": "Checking",
@@ -240,7 +240,8 @@ const zhCN: Record<TranslationKey, string> = {
   "about.privacyPolicyDescription": "查看收集的数据以及如何选择退出",
   "about.viewPolicy": "查看政策",
   "about.releaseNotes": "发行说明",
-  "about.licensePrefix": "基于 MIT 和 Apache 2.0 许可证开源 · 项目基于",
+  "about.openSourceLicenses": "开源许可证",
+  "about.licensePrefix": "基于 MIT 许可证开源 · 项目基于",
   "about.upstreamName": "Amazon Q Developer CLI",
 
   "permission.status.checking": "检查中",

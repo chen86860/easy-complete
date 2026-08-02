@@ -14,7 +14,7 @@ APP_NAME="easy-complete"          # binary / process name (no spaces)
 APP_DISPLAY="Easy Complete"       # human-readable / bundle directory name
 BUNDLE_ID="dev.emmmm.easy-complete"
 APP_CATEGORY="public.app-category.productivity"   # Finder / Launchpad "Developer Tools"
-COPYRIGHT="${COPYRIGHT:-© $(date +%Y) emmmm.dev. All rights reserved.}"
+COPYRIGHT="${COPYRIGHT:-© 2026 Easy Complete contributors}"
 DEFAULT_SPARKLE_APPCAST_URL="https://github.com/chen86860/easy-complete/releases/latest/download/appcast.xml"
 export MACOSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET:-12.0}"
 
@@ -81,6 +81,9 @@ fi
 info "Embedding Sparkle.framework..."
 SPARKLE_FRAMEWORK="${SPARKLE_FRAMEWORK:-$("${REPO_DIR}/scripts/fetch-sparkle.sh")}"
 [ -d "$SPARKLE_FRAMEWORK" ] || { echo "error: Sparkle framework not found: $SPARKLE_FRAMEWORK" >&2; exit 1; }
+
+node "${REPO_DIR}/scripts/generate-third-party-notices.mjs" --check "${REPO_DIR}/THIRD_PARTY_NOTICES.txt"
+
 mkdir -p "$FRAMEWORKS_DIR"
 cp -R "$SPARKLE_FRAMEWORK" "$FRAMEWORKS_DIR/"
 
@@ -129,6 +132,12 @@ cp -r packages/autocomplete-app/dist/* "${RESOURCES_DIR}/autocomplete/"
 cp -r packages/dashboard-app/dist/*    "${RESOURCES_DIR}/dashboard/"
 cp themes/*.json                       "${RESOURCES_DIR}/themes/"
 cp -R bundle/specs                     "${RESOURCES_DIR}/specs"
+
+LICENSES_DIR="${RESOURCES_DIR}/Licenses"
+mkdir -p "$LICENSES_DIR"
+cp LICENSE NOTICE THIRD_PARTY_NOTICES.txt "$LICENSES_DIR/"
+
+"${REPO_DIR}/scripts/verify-license-bundle.sh" "$STAGING_BUNDLE"
 
 # Input Method helper app
 IM_APP="${STAGING_BUNDLE}/Contents/Helpers/EasyCompleteInputMethod.app"

@@ -273,5 +273,7 @@ instead of the bundled `Contents/Resources/`.
 
 ## 📜 License
 
-Dual licensed under the MIT and Apache 2.0 licenses, inherited from the upstream Amazon
-Q Developer CLI.
+Licensed under the MIT License. Easy Complete is based on the upstream Amazon Q
+Developer CLI; its original copyright notice is retained in [LICENSE](./LICENSE).
+Third-party copyright and license terms are collected in
+[THIRD_PARTY_NOTICES.txt](./THIRD_PARTY_NOTICES.txt).

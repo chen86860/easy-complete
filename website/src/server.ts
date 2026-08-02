@@ -4,14 +4,32 @@ interface Env {
   SITE_ORIGIN?: string;
 }
 
+/**
+ * `lastmod` must reflect the last real content change for the URL — Google
+ * ignores the signal entirely once it looks unreliable, so bump a date only
+ * when that page's copy actually changes.
+ */
 const INDEXABLE_ROUTES = [
-  "/",
-  "/install",
-  "/terminals/ghostty",
-  "/fig-alternative",
-  "/troubleshooting",
-  "/privacy",
+  { path: "/", lastmod: "2026-08-02" },
+  { path: "/docs", lastmod: "2026-08-02" },
+  { path: "/install", lastmod: "2026-07-18" },
+  { path: "/terminals/ghostty", lastmod: "2026-07-16" },
+  { path: "/terminals/otty", lastmod: "2026-08-02" },
+  { path: "/terminals/kitty", lastmod: "2026-08-02" },
+  { path: "/terminals/wezterm", lastmod: "2026-08-02" },
+  { path: "/terminals/alacritty", lastmod: "2026-08-02" },
+  { path: "/terminals/zed", lastmod: "2026-08-02" },
+  { path: "/terminals/iterm2", lastmod: "2026-08-02" },
+  { path: "/fig-alternative", lastmod: "2026-07-16" },
+  { path: "/troubleshooting", lastmod: "2026-07-30" },
+  { path: "/privacy-policy", lastmod: "2026-08-02" },
+  // Simplified Chinese: only the pages that are actually translated.
+  { path: "/zh", lastmod: "2026-08-02" },
+  { path: "/zh/docs", lastmod: "2026-08-02" },
+  { path: "/zh/install", lastmod: "2026-08-02" },
 ] as const;
+
+const INDEXABLE_PATHS = INDEXABLE_ROUTES.map((route) => route.path);
 
 function siteOrigin(request: Request, env: Env): string {
   const configuredOrigin = env.SITE_ORIGIN?.trim().replace(/\/$/, "");
@@ -23,6 +41,11 @@ function siteOrigin(request: Request, env: Env): string {
  * permanent redirect, so crawlers consolidate them instead of treating each
  * variant as its own URL.
  */
+/** Retired URLs kept alive with a permanent redirect so link equity carries. */
+const MOVED_ROUTES: Record<string, string> = {
+  "/privacy": "/privacy-policy",
+};
+
 function canonicalRedirect(url: URL, origin: string): Response | undefined {
   const pathname = url.pathname;
 
@@ -30,9 +53,14 @@ function canonicalRedirect(url: URL, origin: string): Response | undefined {
     return undefined;
   }
 
+  const moved = MOVED_ROUTES[pathname.replace(/\/+$/, "").toLowerCase()];
+  if (moved) {
+    return Response.redirect(`${origin}${moved}${url.search}`, 301);
+  }
+
   const trimmed = pathname.replace(/\/+$/, "") || "/";
   const canonical =
-    INDEXABLE_ROUTES.find(
+    INDEXABLE_PATHS.find(
       (route) => route.toLowerCase() === trimmed.toLowerCase()
     ) ?? trimmed;
 
@@ -79,11 +107,10 @@ export default {
     }
 
     if (url.pathname === "/sitemap.xml") {
-      const lastModified = "2026-07-16";
-      const urls = INDEXABLE_ROUTES.flatMap((path) => [
+      const urls = INDEXABLE_ROUTES.flatMap((route) => [
         "  <url>",
-        `    <loc>${origin}${path}</loc>`,
-        `    <lastmod>${lastModified}</lastmod>`,
+        `    <loc>${origin}${route.path}</loc>`,
+        `    <lastmod>${route.lastmod}</lastmod>`,
         "  </url>",
       ]);
 

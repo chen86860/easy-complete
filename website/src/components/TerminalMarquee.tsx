@@ -10,7 +10,7 @@ function MarkItem({ mark }: { mark: TerminalMark }) {
           fill="currentColor"
           className="h-6 w-6 shrink-0 sm:h-7 sm:w-7"
         >
-          <path d={mark.path} />
+          <path d={mark.path} fillRule={mark.fillRule} />
         </svg>
       )}
       <span className="text-[17px] font-semibold tracking-tight whitespace-nowrap sm:text-[19px]">

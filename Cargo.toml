@@ -138,7 +138,7 @@ time = { version = "0.3.39", features = [
 tokio = { version = "1.47.1", features = ["full"] }
 tokio-tungstenite = "0.30.0"
 tokio-util = { version = "0.7.16", features = ["codec", "compat"] }
-toml = "0.9.6"
+toml = "1.1.0"
 tracing = { version = "0.1.40", features = ["log"] }
 tracing-subscriber = { version = "0.3.19", features = [
     "env-filter",

@@ -13,6 +13,10 @@ import { SeoJsonLd, guideSchema, pageHead } from "../seo.tsx";
 const TITLE = "Open-Source Fig Alternative for macOS — Easy Complete";
 const DESCRIPTION =
   "Easy Complete is a free, open-source, fully local Fig-style terminal autocomplete app for zsh, bash, and fish on Apple Silicon Macs.";
+const ALTERNATES = [
+  { locale: "en" as const, path: "/fig-alternative" },
+  { locale: "zh-CN" as const, path: "/zh/fig-alternative" },
+];
 
 export const Route = createFileRoute("/fig-alternative")({
   head: () =>
@@ -20,6 +24,7 @@ export const Route = createFileRoute("/fig-alternative")({
       title: TITLE,
       description: DESCRIPTION,
       path: "/fig-alternative",
+      alternates: ALTERNATES,
     }),
   component: FigAlternativePage,
 });

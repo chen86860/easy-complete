@@ -127,6 +127,7 @@ cd easy-complete
 ./install.sh`}</pre>
 
         <RelatedGuides
+          locale="zh-CN"
           links={[
             {
               href: "/zh/docs",
@@ -134,8 +135,8 @@ cd easy-complete
               description: "终端支持列表、快速开始与参考资料。",
             },
             {
-              href: "/troubleshooting",
-              label: "故障排查(英文)",
+              href: "/zh/troubleshooting",
+              label: "故障排查",
               description: "排查权限、Shell 钩子与终端集成问题。",
             },
           ]}

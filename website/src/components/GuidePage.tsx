@@ -7,6 +7,10 @@ import {
 import { LOCALE_PREFIX, type Locale } from "../i18n/types.ts";
 
 const BREADCRUMB_DOCS: Record<Locale, string> = { en: "Docs", "zh-CN": "文档" };
+const RELATED_GUIDES_HEADING: Record<Locale, string> = {
+  en: "Keep going",
+  "zh-CN": "继续阅读",
+};
 
 export const GUIDE_HEADING =
   "m-0 mb-4 mt-12 text-[24px] font-bold tracking-[-.025em] text-[#e6edf3]";
@@ -33,6 +37,7 @@ export function GuidePage({
   hrefs,
 }: GuidePageProps) {
   const prefix = LOCALE_PREFIX[locale];
+  const homePath = prefix || "/";
 
   return (
     <div className="min-h-screen bg-[#0a0d12] text-[#e6edf3]">
@@ -44,7 +49,7 @@ export function GuidePage({
           className="mb-10 font-mono text-xs text-[#65707d]"
         >
           <a
-            href={`${prefix}/`}
+            href={homePath}
             className="transition-colors hover:text-(--accent)"
           >
             Easy Complete
@@ -96,12 +101,16 @@ export function GuideCallout({ children }: { children: ReactNode }) {
 
 export function RelatedGuides({
   links,
+  locale = "en",
 }: {
   links: Array<{ href: string; label: string; description: string }>;
+  locale?: Locale;
 }) {
   return (
     <section className="mt-16 border-t border-[#1c232d] pt-9">
-      <h2 className="m-0 mb-5 text-[22px] font-bold">Keep going</h2>
+      <h2 className="m-0 mb-5 text-[22px] font-bold">
+        {RELATED_GUIDES_HEADING[locale]}
+      </h2>
       <div className="grid gap-3 sm:grid-cols-2">
         {links.map((link) => (
           <a

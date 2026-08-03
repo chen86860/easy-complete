@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import logoUrl from "../assets/logo.png";
 import { GITHUB_URL } from "../data.ts";
 import { DOWNLOAD_URL } from "../download.ts";
+import { captureEvent } from "../posthog.tsx";
 import { LOCALE_PREFIX, type Locale } from "../i18n/types.ts";
 import { AppleIcon, ChevronDownIcon, GitHubIcon, GlobeIcon } from "./icons.tsx";
 
@@ -170,8 +171,9 @@ const DOWNLOAD_LABEL: Record<Locale, string> = {
 function navLinks(locale: Locale) {
   const prefix = LOCALE_PREFIX[locale];
   const labels = NAV_LABELS[locale];
+  const homePath = prefix || "/";
   return [
-    { href: `${prefix}/#features`, label: labels.features, key: "features" },
+    { href: `${homePath}#features`, label: labels.features, key: "features" },
     { href: `${prefix}/docs`, label: labels.docs, key: "docs" },
   ] as const;
 }
@@ -179,12 +181,12 @@ function navLinks(locale: Locale) {
 function footerLinks(locale: Locale) {
   const prefix = LOCALE_PREFIX[locale];
   const labels = FOOTER_LABELS[locale];
-  // Only the docs hub and install guide are translated; the rest stay English
-  // and are linked at their canonical English URLs rather than 404-ing.
+  const troubleshootingPath =
+    locale === "zh-CN" ? "/zh/troubleshooting" : "/troubleshooting";
   return [
     { href: `${prefix}/docs`, label: labels.docs },
     { href: `${prefix}/install`, label: labels.install },
-    { href: "/troubleshooting", label: labels.troubleshooting },
+    { href: troubleshootingPath, label: labels.troubleshooting },
     { href: "/privacy-policy", label: labels.privacy },
   ];
 }
@@ -229,7 +231,7 @@ export function SiteHeader({
     >
       <div className="mx-auto flex max-w-310 items-center gap-5 px-7 py-3.5">
         <a
-          href={`${LOCALE_PREFIX[locale]}/`}
+          href={LOCALE_PREFIX[locale] || "/"}
           className="flex items-center gap-2.5 font-mono text-[16px] font-bold tracking-tight"
         >
           <img
@@ -260,6 +262,12 @@ export function SiteHeader({
 
           <a
             href={GITHUB_URL}
+            onClick={() =>
+              captureEvent("website_github_clicked", {
+                locale,
+                placement: "header",
+              })
+            }
             aria-label="Easy Complete on GitHub"
             className="inline-flex items-center gap-1.75 rounded-lg border border-[#2b333d] px-3.25 py-1.75 text-[#e6edf3] transition-colors hover:border-[#475060] hover:bg-[#141a22]"
           >
@@ -268,6 +276,12 @@ export function SiteHeader({
           </a>
           <a
             href={DOWNLOAD_URL}
+            onClick={() =>
+              captureEvent("website_download_clicked", {
+                locale,
+                placement: "header",
+              })
+            }
             className="inline-flex items-center gap-1.75 rounded-lg bg-(--accent) px-4 py-2 font-semibold text-[#06140a] transition hover:brightness-110 hover:shadow-[0_8px_24px_-8px_var(--accent-line)]"
           >
             <AppleIcon />

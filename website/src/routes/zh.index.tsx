@@ -5,7 +5,7 @@ import { SeoJsonLd, faqSchema, homeSchema, pageHead } from "../seo.tsx";
 
 const TITLE = "Easy Complete — macOS 终端自动补全";
 const DESCRIPTION =
-  "Easy Complete 为 macOS 终端带来 IDE 风格的行内自动补全:快速、本地、开源,支持 git、npm、docker、cargo 等数百种命令行工具。";
+  "Easy Complete 是开源、完全本地运行的 macOS 终端自动补全工具，提供 IDE 风格行内建议，支持 Ghostty、iTerm2、Kitty 等终端及 git、npm、docker、cargo 等数百种 CLI，可通过 Homebrew 或 DMG 安装。";
 
 const ALTERNATES = [
   { locale: "en" as const, path: "/" },

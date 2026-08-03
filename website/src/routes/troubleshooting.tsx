@@ -13,6 +13,10 @@ import { SeoJsonLd, guideSchema, pageHead } from "../seo.tsx";
 const TITLE = "Fix macOS Terminal Autocomplete — Easy Complete";
 const DESCRIPTION =
   "Troubleshoot missing or misaligned Easy Complete suggestions on macOS by checking Accessibility permission, shell hooks, and terminal integrations.";
+const ALTERNATES = [
+  { locale: "en" as const, path: "/troubleshooting" },
+  { locale: "zh-CN" as const, path: "/zh/troubleshooting" },
+];
 
 export const Route = createFileRoute("/troubleshooting")({
   head: () =>
@@ -20,6 +24,7 @@ export const Route = createFileRoute("/troubleshooting")({
       title: TITLE,
       description: DESCRIPTION,
       path: "/troubleshooting",
+      alternates: ALTERNATES,
     }),
   component: TroubleshootingPage,
 });

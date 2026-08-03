@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 
 const POSTHOG_PROJECT_TOKEN = "phc_9biiBNdgbqZlxcJdISohgz7VWJnC83jCexzXhrMKnd";
+const POSTHOG_IDLE_DELAY_MS = 2_000;
 
 type PostHogClient = (typeof import("posthog-js"))["default"];
 
@@ -40,7 +41,57 @@ export function captureEvent(
 
 export function PostHogAnalytics() {
   useEffect(() => {
-    initPostHog();
+    // Keep the analytics SDK off the critical rendering path. A real user
+    // interaction still initializes it immediately so intentional visits and
+    // events are captured without waiting for the idle fallback.
+    let delayId: number | undefined;
+    let idleId: number | undefined;
+
+    const removeInteractionListeners = () => {
+      window.removeEventListener("pointerdown", initialize);
+      window.removeEventListener("keydown", initialize);
+      window.removeEventListener("touchstart", initialize);
+    };
+
+    const cancelScheduledInitialization = () => {
+      if (delayId !== undefined) window.clearTimeout(delayId);
+      if (idleId !== undefined) window.cancelIdleCallback(idleId);
+      window.removeEventListener("load", scheduleWhenIdle);
+      removeInteractionListeners();
+    };
+
+    function initialize() {
+      cancelScheduledInitialization();
+      initPostHog();
+    }
+
+    function scheduleWhenIdle() {
+      delayId = window.setTimeout(() => {
+        if ("requestIdleCallback" in window) {
+          idleId = window.requestIdleCallback(initialize, { timeout: 2_000 });
+        } else {
+          initialize();
+        }
+      }, POSTHOG_IDLE_DELAY_MS);
+    }
+
+    window.addEventListener("pointerdown", initialize, {
+      once: true,
+      passive: true,
+    });
+    window.addEventListener("keydown", initialize, { once: true });
+    window.addEventListener("touchstart", initialize, {
+      once: true,
+      passive: true,
+    });
+
+    if (document.readyState === "complete") {
+      scheduleWhenIdle();
+    } else {
+      window.addEventListener("load", scheduleWhenIdle, { once: true });
+    }
+
+    return cancelScheduledInitialization;
   }, []);
 
   return null;

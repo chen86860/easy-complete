@@ -156,8 +156,8 @@ const docSectionsZh: DocSection[] = [
           "Homebrew 或 DMG、辅助功能权限、重载 Shell,以及用 ec doctor 验证。",
       },
       {
-        href: "/troubleshooting",
-        label: "故障排查(英文)",
+        href: "/zh/troubleshooting",
+        label: "故障排查",
         description: "排查建议不出现、Shell 钩子失效和终端集成损坏的问题。",
       },
     ],
@@ -169,8 +169,8 @@ const docSectionsZh: DocSection[] = [
       "所有终端都通过同一套 Shell 集成读取你输入的命令——区别在于 Easy Complete 用什么方式定位光标来摆放浮层。",
     links: [
       {
-        href: "/terminals/ghostty",
-        label: "Ghostty 自动补全(英文)",
+        href: "/zh/terminals/ghostty",
+        label: "Ghostty 自动补全",
         description: "Ghostty 为什么需要输入法,以及建议偏移时如何重新注册。",
       },
       {
@@ -195,6 +195,11 @@ const docSectionsZh: DocSection[] = [
         href: "/privacy-policy",
         label: "隐私政策与遥测(英文)",
         description: "匿名事件的完整清单,以及关闭它们的那一条命令。",
+      },
+      {
+        href: "/zh/fig-alternative",
+        label: "在找 Fig 替代方案？",
+        description: "了解专注、本地的补全引擎包含什么，以及它刻意省略了什么。",
       },
       {
         href: GITHUB_URL,

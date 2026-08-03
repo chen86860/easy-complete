@@ -24,9 +24,12 @@ const INDEXABLE_ROUTES = [
   { path: "/troubleshooting", lastmod: "2026-07-30" },
   { path: "/privacy-policy", lastmod: "2026-08-02" },
   // Simplified Chinese: only the pages that are actually translated.
-  { path: "/zh", lastmod: "2026-08-02" },
-  { path: "/zh/docs", lastmod: "2026-08-02" },
-  { path: "/zh/install", lastmod: "2026-08-02" },
+  { path: "/zh", lastmod: "2026-08-03" },
+  { path: "/zh/docs", lastmod: "2026-08-03" },
+  { path: "/zh/install", lastmod: "2026-08-03" },
+  { path: "/zh/fig-alternative", lastmod: "2026-08-03" },
+  { path: "/zh/troubleshooting", lastmod: "2026-08-03" },
+  { path: "/zh/terminals/ghostty", lastmod: "2026-08-03" },
 ] as const;
 
 const INDEXABLE_PATHS = INDEXABLE_ROUTES.map((route) => route.path);

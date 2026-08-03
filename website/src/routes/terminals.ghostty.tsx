@@ -13,6 +13,10 @@ import { SeoJsonLd, guideSchema, pageHead } from "../seo.tsx";
 const TITLE = "Ghostty Autocomplete on macOS — Easy Complete";
 const DESCRIPTION =
   "Add IDE-style autocomplete to Ghostty on macOS with Easy Complete. Learn how the shell integration and bundled input method keep suggestions aligned.";
+const ALTERNATES = [
+  { locale: "en" as const, path: "/terminals/ghostty" },
+  { locale: "zh-CN" as const, path: "/zh/terminals/ghostty" },
+];
 
 export const Route = createFileRoute("/terminals/ghostty")({
   head: () =>
@@ -20,6 +24,7 @@ export const Route = createFileRoute("/terminals/ghostty")({
       title: TITLE,
       description: DESCRIPTION,
       path: "/terminals/ghostty",
+      alternates: ALTERNATES,
     }),
   component: GhosttyPage,
 });

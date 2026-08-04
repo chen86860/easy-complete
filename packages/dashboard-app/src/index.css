@@ -159,9 +159,25 @@ html.dashboard-native-vibrancy .dashboard-sidebar {
   background: transparent;
 }
 
+/* No hover or pressed feedback on nav rows — only the selected row is tinted. */
+.dashboard-sidebar-item {
+  outline: none;
+}
+
+.dashboard-sidebar-item:focus-visible {
+  outline: 3px solid
+    color-mix(
+      in srgb,
+      var(--dashboard-accent-color, AccentColor) 28%,
+      transparent
+    );
+  outline-offset: 1px;
+}
+
 .dashboard-sidebar-item-active {
   background: var(--dashboard-accent-color, #0a60ff);
   color: #fff;
+  box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.14);
 }
 
 .dashboard-sidebar-item-active .dashboard-sidebar-icon {
@@ -173,6 +189,7 @@ html.dashboard-native-vibrancy .dashboard-sidebar {
 html.dashboard-window-blurred .dashboard-sidebar-item-active {
   background: var(--ds-sidebar-blurred-bg);
   color: var(--ds-sidebar-item);
+  box-shadow: none;
 }
 
 html.dashboard-window-blurred

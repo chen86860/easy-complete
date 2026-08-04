@@ -6,6 +6,7 @@ import type {
   PermissionStatus,
 } from "../hooks/use-permission-check";
 import { useI18n } from "../i18n";
+import { Toggle } from "./controls";
 import { IconCheck, IconWarning } from "./icons";
 
 function StatusBadge({ state }: { state: PermissionState }) {
@@ -175,28 +176,9 @@ export function PermissionGate({
               {t("permission.shareUsageDataDescription")}
             </div>
           </div>
-          <button
-            type="button"
-            role="switch"
-            aria-checked={telemetryEnabled}
-            onClick={() => onTelemetryChange(!telemetryEnabled)}
-            className={clsx(
-              "mt-0.5 h-5 w-11 flex-shrink-0 rounded-full border-0 p-0",
-              "shadow-[inset_0_0_0_0.5px_var(--ds-control-inset)] transition-colors duration-150",
-              telemetryEnabled
-                ? "bg-[var(--dashboard-accent-color)]"
-                : "bg-[var(--ds-control-bg)]",
-            )}
-          >
-            <span
-              className={clsx(
-                "block h-3.5 w-6 translate-x-[3px] rounded-full bg-white",
-                "shadow-[0_0_0_0.5px_rgba(0,0,0,0.04),0_0.5px_1px_rgba(0,0,0,0.08)]",
-                "transition-transform duration-150 ease-[cubic-bezier(0.28,0.11,0.32,1)]",
-                telemetryEnabled ? "translate-x-[17px]" : "translate-x-[3px]",
-              )}
-            />
-          </button>
+          <div className="mt-0.5">
+            <Toggle checked={telemetryEnabled} onChange={onTelemetryChange} />
+          </div>
         </div>
       </div>
     </main>

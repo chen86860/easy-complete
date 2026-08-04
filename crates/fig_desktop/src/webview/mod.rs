@@ -23,7 +23,7 @@ use fig_util::{URL_SCHEMA, directories};
 use fnv::FnvBuildHasher;
 use muda::MenuEvent;
 use regex::RegexSet;
-use tao::dpi::{LogicalPosition, LogicalSize};
+use tao::dpi::LogicalSize;
 use tao::event::{Event as WryEvent, StartCause, WindowEvent as WryWindowEvent};
 use tao::event_loop::{ControlFlow, EventLoopBuilder};
 use tao::window::{Theme as TaoTheme, Window, WindowBuilder, WindowId as WryWindowId};
@@ -514,18 +514,14 @@ impl AutocompleteLifecycle {
 
     fn recycle(
         &mut self,
-        context: &Arc<Context>,
         fig_id_map: &mut FigIdMap,
         window_id_map: &mut WryIdMap,
         notifications_state: &WebviewNotificationsState,
-        figterm_state: &FigtermState,
-        window_target: &EventLoopWindowTarget,
-        proxy: &EventLoopProxy,
         age_seconds: u64,
         resize_count: u64,
-    ) -> anyhow::Result<()> {
+    ) -> bool {
         if !fig_id_map.contains_key(&AUTOCOMPLETE_ID) {
-            return Ok(());
+            return false;
         }
 
         self.release(fig_id_map, window_id_map, notifications_state);
@@ -533,7 +529,7 @@ impl AutocompleteLifecycle {
             age_seconds,
             resize_count, "Recycling autocomplete webview to release graphics surfaces"
         );
-        self.reconcile(context, fig_id_map, window_id_map, figterm_state, window_target, proxy)
+        true
     }
 
     /// Tears down the webview and forgets everything tied to that instance.
@@ -1036,18 +1032,24 @@ impl WebviewManager {
                             age_seconds,
                             resize_count,
                         } => {
-                            if let Err(err) = autocomplete_lifecycle.recycle(
-                                &self.context,
+                            let recycled = autocomplete_lifecycle.recycle(
                                 &mut self.fig_id_map,
                                 &mut self.window_id_map,
                                 &self.notifications_state,
-                                &self.figterm_state,
-                                window_target,
-                                &proxy,
                                 age_seconds,
                                 resize_count,
-                            ) {
-                                error!(%err, "Failed to recycle autocomplete webview");
+                            );
+                            if recycled {
+                                if let Err(err) = autocomplete_lifecycle.reconcile(
+                                    &self.context,
+                                    &mut self.fig_id_map,
+                                    &mut self.window_id_map,
+                                    &self.figterm_state,
+                                    window_target,
+                                    &proxy,
+                                ) {
+                                    error!(%err, "Failed to rebuild recycled autocomplete webview");
+                                }
                             }
                         },
                         Event::AutocompleteWebviewMounted => {
@@ -1289,9 +1291,9 @@ fn system_accent_css_color() -> String {
     "AccentColor".to_string()
 }
 
-/// Must match the sidebar width in `packages/dashboard-app` (`w-[228px]`).
+/// Must match the sidebar width in `packages/dashboard-app` (`w-[226px]`).
 #[cfg(target_os = "macos")]
-const DASHBOARD_SIDEBAR_WIDTH: f64 = 228.0;
+const DASHBOARD_SIDEBAR_WIDTH: f64 = 226.0;
 
 /// Installs an `NSVisualEffectView` (sidebar material) beneath the dashboard webview so the
 /// sidebar region shows the native macOS translucent material — blurred while the window is
@@ -1358,11 +1360,12 @@ pub fn build_dashboard(
     let window_builder = {
         use tao::platform::macos::WindowBuilderExtMacOS;
 
+        // Keep AppKit's native traffic-light placement. A custom inset shifts the
+        // controls too close to the corner when using a full-size content view.
         window_builder
             .with_titlebar_transparent(true)
             .with_title_hidden(true)
             .with_fullsize_content_view(true)
-            .with_traffic_light_inset(LogicalPosition::new(16.0, 16.0))
     };
 
     let window = window_builder.build(event_loop)?;

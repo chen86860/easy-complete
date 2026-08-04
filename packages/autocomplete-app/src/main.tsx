@@ -8,14 +8,6 @@ import ErrorBoundary from "./components/ErrorBoundary";
 
 State.watch();
 
-// Reload autocomplete every 24 hours
-setTimeout(
-  () => {
-    window.location.reload();
-  },
-  1000 * 60 * 60 * 24,
-);
-
 window.onerror = (message, source, lineno, colno, error) => {
   logger.error(error ?? new Error(`${source}:${lineno}:${colno}: ${message}`));
 };

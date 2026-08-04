@@ -41,6 +41,12 @@ pub enum Event {
     AutocompleteReleaseTimerElapsed {
         generation: u64,
     },
+    /// The hidden autocomplete webview exceeded its age or resize budget and should be rebuilt
+    /// before it can accumulate more retained WebKit graphics surfaces.
+    AutocompleteRecycleRequested {
+        age_seconds: u64,
+        resize_count: u64,
+    },
     /// The autocomplete webview finished loading and can receive window events.
     AutocompleteWebviewMounted,
     /// Fallback for when the autocomplete webview never reports mounting.

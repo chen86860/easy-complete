@@ -1,5 +1,6 @@
 use std::fmt::Display;
-use std::sync::atomic::AtomicBool;
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
+use std::time::{Duration, Instant};
 
 use base64::prelude::*;
 use bytes::BytesMut;
@@ -17,14 +18,22 @@ use tracing::{debug, error, info, instrument, warn};
 use url::Url;
 use wry::{Theme, WebContext, WebView};
 
+use super::GLOBAL_PROXY;
 use super::notification::WebviewNotificationsState;
 use super::to_tao_theme;
 use super::window_id::WindowId;
-use crate::event::{EmitEventName, WindowEvent, WindowGeometryResult, WindowPosition};
+use crate::event::{EmitEventName, Event, WindowEvent, WindowGeometryResult, WindowPosition};
 use crate::platform::{self, PlatformState};
 use crate::utils::Rect;
 #[allow(unused_imports)]
 use crate::{AUTOCOMPLETE_ID, DASHBOARD_ID, EventLoopWindowTarget};
+
+const AUTOCOMPLETE_MAX_WEBVIEW_AGE: Duration = Duration::from_secs(4 * 60 * 60);
+const AUTOCOMPLETE_MAX_RESIZES: u64 = 64;
+
+fn autocomplete_should_recycle(age: Duration, resize_count: u64) -> bool {
+    age >= AUTOCOMPLETE_MAX_WEBVIEW_AGE || resize_count >= AUTOCOMPLETE_MAX_RESIZES
+}
 
 pub struct WindowGeometryState {
     /// The outer position of the window by positioning scheme
@@ -45,6 +54,8 @@ pub struct WindowState {
     pub window_geometry_state: Mutex<WindowGeometryState>,
     pub enabled: AtomicBool,
     pub url: Mutex<Url>,
+    created_at: Instant,
+    resize_count: AtomicU64,
 }
 
 impl WindowState {
@@ -77,6 +88,8 @@ impl WindowState {
             }),
             enabled: enabled.into(),
             url: Mutex::new(url),
+            created_at: Instant::now(),
+            resize_count: AtomicU64::new(0),
         }
     }
 
@@ -267,6 +280,9 @@ impl WindowState {
 
             if size_changed {
                 self.window.set_inner_size(size);
+                if self.window_id == AUTOCOMPLETE_ID {
+                    self.resize_count.fetch_add(1, Ordering::Relaxed);
+                }
 
                 // Resizing can move a window on some platforms, so restore the requested
                 // position only when a resize actually occurred.
@@ -329,6 +345,19 @@ impl WindowState {
 
                     #[cfg(not(target_os = "linux"))]
                     self.window.set_resizable(false);
+
+                    let age = self.created_at.elapsed();
+                    let resize_count = self.resize_count.load(Ordering::Relaxed);
+                    if autocomplete_should_recycle(age, resize_count) {
+                        GLOBAL_PROXY
+                            .get()
+                            .expect("event loop proxy is initialized")
+                            .send_event(Event::AutocompleteRecycleRequested {
+                                age_seconds: age.as_secs(),
+                                resize_count,
+                            })
+                            .ok();
+                    }
                 }
 
                 #[cfg(target_os = "macos")]
@@ -557,5 +586,24 @@ impl WindowState {
 
     pub fn set_theme(&self, theme: Option<Theme>) {
         self.window.set_theme(theme.and_then(to_tao_theme));
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{AUTOCOMPLETE_MAX_RESIZES, AUTOCOMPLETE_MAX_WEBVIEW_AGE, autocomplete_should_recycle};
+    use std::time::Duration;
+
+    #[test]
+    fn autocomplete_recycles_at_age_or_resize_limit() {
+        assert!(!autocomplete_should_recycle(
+            AUTOCOMPLETE_MAX_WEBVIEW_AGE - Duration::from_secs(1),
+            AUTOCOMPLETE_MAX_RESIZES - 1,
+        ));
+        assert!(autocomplete_should_recycle(
+            AUTOCOMPLETE_MAX_WEBVIEW_AGE,
+            AUTOCOMPLETE_MAX_RESIZES - 1,
+        ));
+        assert!(autocomplete_should_recycle(Duration::ZERO, AUTOCOMPLETE_MAX_RESIZES,));
     }
 }

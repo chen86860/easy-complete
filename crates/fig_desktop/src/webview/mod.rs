@@ -512,6 +512,30 @@ impl AutocompleteLifecycle {
         }
     }
 
+    fn recycle(
+        &mut self,
+        context: &Arc<Context>,
+        fig_id_map: &mut FigIdMap,
+        window_id_map: &mut WryIdMap,
+        notifications_state: &WebviewNotificationsState,
+        figterm_state: &FigtermState,
+        window_target: &EventLoopWindowTarget,
+        proxy: &EventLoopProxy,
+        age_seconds: u64,
+        resize_count: u64,
+    ) -> anyhow::Result<()> {
+        if !fig_id_map.contains_key(&AUTOCOMPLETE_ID) {
+            return Ok(());
+        }
+
+        self.release(fig_id_map, window_id_map, notifications_state);
+        info!(
+            age_seconds,
+            resize_count, "Recycling autocomplete webview to release graphics surfaces"
+        );
+        self.reconcile(context, fig_id_map, window_id_map, figterm_state, window_target, proxy)
+    }
+
     /// Tears down the webview and forgets everything tied to that instance.
     fn release(
         &mut self,
@@ -1007,6 +1031,24 @@ impl WebviewManager {
                                 &self.notifications_state,
                                 &self.figterm_state,
                             );
+                        },
+                        Event::AutocompleteRecycleRequested {
+                            age_seconds,
+                            resize_count,
+                        } => {
+                            if let Err(err) = autocomplete_lifecycle.recycle(
+                                &self.context,
+                                &mut self.fig_id_map,
+                                &mut self.window_id_map,
+                                &self.notifications_state,
+                                &self.figterm_state,
+                                window_target,
+                                &proxy,
+                                age_seconds,
+                                resize_count,
+                            ) {
+                                error!(%err, "Failed to recycle autocomplete webview");
+                            }
                         },
                         Event::AutocompleteWebviewMounted => {
                             dispatch_deferred_autocomplete_events(

@@ -13,7 +13,7 @@
   <a href="https://github.com/chen86860/easy-complete/releases"><img alt="Release" src="https://img.shields.io/github/v/release/chen86860/easy-complete?color=brightgreen"></a>
   <img alt="Platform" src="https://img.shields.io/badge/platform-macOS-lightgrey">
   <img alt="Built with Rust" src="https://img.shields.io/badge/built%20with-Rust-orange">
-  <a href="#-license"><img alt="License" src="https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue"></a>
+  <a href="#-license"><img alt="License" src="https://img.shields.io/badge/license-MIT-blue"></a>
   <a href="https://github.com/chen86860/easy-complete/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/chen86860/easy-complete?style=social"></a>
 </p>
 
@@ -31,7 +31,7 @@ You get fish-shell-style suggestions for hundreds of CLIs (`git`, `npm`, `docker
 Autocomplete runs fully on-device — no account, no cloud calls, no AI requests, and
 your commands never leave your Mac. The app collects anonymous usage statistics
 (app opens, daily completion counts — never command content), which you can disable
-any time with `ec telemetry disable`. See the [Privacy page](https://easy-complete.emmmm.dev/privacy)
+any time with `ec telemetry disable`. See the [Privacy page](https://easy-complete.emmmm.dev/privacy-policy)
 for the full list of what is and isn't collected.
 
 <p align="center">

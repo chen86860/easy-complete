@@ -13,7 +13,7 @@
   <a href="https://github.com/chen86860/easy-complete/releases"><img alt="Release" src="https://img.shields.io/github/v/release/chen86860/easy-complete?color=brightgreen"></a>
   <img alt="Platform" src="https://img.shields.io/badge/platform-macOS-lightgrey">
   <img alt="Built with Rust" src="https://img.shields.io/badge/built%20with-Rust-orange">
-  <a href="#-许可证"><img alt="License" src="https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue"></a>
+  <a href="#-许可证"><img alt="License" src="https://img.shields.io/badge/license-MIT-blue"></a>
   <a href="https://github.com/chen86860/easy-complete/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/chen86860/easy-complete?style=social"></a>
 </p>
 
@@ -29,7 +29,7 @@
 建议：参数、子命令、文件路径、选项，边打边补。
 自动补全完全在本机运行——无需账号、无云端调用、无 AI 请求，你的命令内容永远不会离开你的
 Mac。应用会收集匿名使用统计（打开次数、每日补全次数——绝不包含命令内容），可随时通过
-`ec telemetry disable` 关闭。完整的采集清单见[隐私页面](https://easy-complete.emmmm.dev/privacy)。
+`ec telemetry disable` 关闭。完整的采集清单见[隐私页面](https://easy-complete.emmmm.dev/privacy-policy)。
 
 <p align="center">
   <img src="./.github/media/screenshot.png" alt="Easy Complete 自动补全效果">

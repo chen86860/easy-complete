@@ -24,7 +24,7 @@ const APP_VERSION = __APP_VERSION__;
 const REPO_URL = "https://github.com/chen86860/easy-complete";
 const RELEASES_URL = `${REPO_URL}/releases`;
 const ISSUES_URL = `${REPO_URL}/issues`;
-const PRIVACY_URL = "https://easy-complete.emmmm.dev/privacy";
+const PRIVACY_URL = "https://easy-complete.emmmm.dev/privacy-policy";
 const UPSTREAM_REPO_URL = "https://github.com/aws/amazon-q-developer-cli";
 const OPEN_SOURCE_LICENSES_URL = "ec-internal://open-source-licenses";
 

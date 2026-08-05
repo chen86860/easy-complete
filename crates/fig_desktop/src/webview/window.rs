@@ -29,10 +29,16 @@ use crate::utils::Rect;
 use crate::{AUTOCOMPLETE_ID, DASHBOARD_ID, EventLoopWindowTarget};
 
 const AUTOCOMPLETE_MAX_WEBVIEW_AGE: Duration = Duration::from_secs(4 * 60 * 60);
-const AUTOCOMPLETE_MAX_RESIZES: u64 = 64;
+/// The overlay resizes on nearly every keystroke, so this budget has to sit far above a
+/// single session's worth of typing — otherwise the webview is torn down every few commands.
+const AUTOCOMPLETE_MAX_RESIZES: u64 = 1024;
+/// Floor on how often a resize budget may trigger a rebuild. A rebuild costs a full app load
+/// plus spec preload before the next suggestion can render, so it must stay rare.
+const AUTOCOMPLETE_MIN_RECYCLE_AGE: Duration = Duration::from_secs(30 * 60);
 
 fn autocomplete_should_recycle(age: Duration, resize_count: u64) -> bool {
-    age >= AUTOCOMPLETE_MAX_WEBVIEW_AGE || resize_count >= AUTOCOMPLETE_MAX_RESIZES
+    age >= AUTOCOMPLETE_MAX_WEBVIEW_AGE
+        || (resize_count >= AUTOCOMPLETE_MAX_RESIZES && age >= AUTOCOMPLETE_MIN_RECYCLE_AGE)
 }
 
 pub struct WindowGeometryState {
@@ -349,14 +355,14 @@ impl WindowState {
                     let age = self.created_at.elapsed();
                     let resize_count = self.resize_count.load(Ordering::Relaxed);
                     if autocomplete_should_recycle(age, resize_count) {
-                        GLOBAL_PROXY
-                            .get()
-                            .expect("event loop proxy is initialized")
-                            .send_event(Event::AutocompleteRecycleRequested {
-                                age_seconds: age.as_secs(),
-                                resize_count,
-                            })
-                            .ok();
+                        if let Some(proxy) = GLOBAL_PROXY.get() {
+                            proxy
+                                .send_event(Event::AutocompleteRecycleRequested {
+                                    age_seconds: age.as_secs(),
+                                    resize_count,
+                                })
+                                .ok();
+                        }
                     }
                 }
 
@@ -591,7 +597,12 @@ impl WindowState {
 
 #[cfg(test)]
 mod tests {
-    use super::{AUTOCOMPLETE_MAX_RESIZES, AUTOCOMPLETE_MAX_WEBVIEW_AGE, autocomplete_should_recycle};
+    use super::{
+        AUTOCOMPLETE_MAX_RESIZES,
+        AUTOCOMPLETE_MAX_WEBVIEW_AGE,
+        AUTOCOMPLETE_MIN_RECYCLE_AGE,
+        autocomplete_should_recycle,
+    };
     use std::time::Duration;
 
     #[test]
@@ -604,6 +615,17 @@ mod tests {
             AUTOCOMPLETE_MAX_WEBVIEW_AGE,
             AUTOCOMPLETE_MAX_RESIZES - 1,
         ));
-        assert!(autocomplete_should_recycle(Duration::ZERO, AUTOCOMPLETE_MAX_RESIZES,));
+        assert!(autocomplete_should_recycle(
+            AUTOCOMPLETE_MIN_RECYCLE_AGE,
+            AUTOCOMPLETE_MAX_RESIZES,
+        ));
+    }
+
+    #[test]
+    fn autocomplete_keeps_a_young_webview_however_often_it_resized() {
+        assert!(!autocomplete_should_recycle(
+            AUTOCOMPLETE_MIN_RECYCLE_AGE - Duration::from_secs(1),
+            AUTOCOMPLETE_MAX_RESIZES * 10,
+        ));
     }
 }

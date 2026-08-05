@@ -326,17 +326,13 @@ function App() {
     suggestions.length === 0 &&
     Boolean(currentArg?.name || currentArg?.description);
 
-  const onResize: (size: { height?: number; width?: number }) => void =
+  // The last size ResizeObserver actually measured, so the frame can be resent when
+  // only the anchor changes.
+  const measuredSize = useRef<{ height: number; width: number } | null>(null);
+
+  const setFrame: (size: { height: number; width: number }) => void =
     useCallback(
       ({ height, width }) => {
-        // Keep the last measured native window size while the overlay is hidden or
-        // before ResizeObserver has produced a real measurement. Shrinking the
-        // transparent WKWebView to 1x1 and expanding it again on every visibility
-        // transition causes WebKit to retain large numbers of graphics surfaces.
-        if (isHidden || !height || !width) {
-          return;
-        }
-
         const onLeft =
           !hasSpecialArgDescription &&
           windowState.descriptionPosition === "left";
@@ -371,11 +367,38 @@ function App() {
       [
         windowState.descriptionPosition,
         hasSpecialArgDescription,
-        isHidden,
         // eslint-disable-next-line react-hooks/exhaustive-deps
         suggestions[selectedIndex]?.previewComponent,
       ],
     );
+
+  const onResize: (size: { height?: number; width?: number }) => void =
+    useCallback(
+      ({ height, width }) => {
+        // Keep the last measured native window size while the overlay is hidden or
+        // before ResizeObserver has produced a real measurement. Shrinking the
+        // transparent WKWebView to 1x1 and expanding it again on every visibility
+        // transition causes WebKit to retain large numbers of graphics surfaces.
+        if (isHidden || !height || !width) {
+          return;
+        }
+
+        measuredSize.current = { height, width };
+        setFrame({ height, width });
+      },
+      [isHidden, setFrame],
+    );
+
+  // `anchorX` depends on where the description sits, which can flip while the
+  // rendered size stays identical — ResizeObserver would never fire for that, so
+  // resend the frame from the last measurement instead.
+  useEffect(() => {
+    const size = measuredSize.current;
+    if (isHidden || !size) {
+      return;
+    }
+    setFrame(size);
+  }, [isHidden, setFrame]);
 
   const { ref: autocompleteWindowRef } = useDynamicResizeObserver({ onResize });
 

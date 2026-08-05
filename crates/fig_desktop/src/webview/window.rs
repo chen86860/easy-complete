@@ -598,9 +598,7 @@ impl WindowState {
 #[cfg(test)]
 mod tests {
     use super::{
-        AUTOCOMPLETE_MAX_RESIZES,
-        AUTOCOMPLETE_MAX_WEBVIEW_AGE,
-        AUTOCOMPLETE_MIN_RECYCLE_AGE,
+        AUTOCOMPLETE_MAX_RESIZES, AUTOCOMPLETE_MAX_WEBVIEW_AGE, AUTOCOMPLETE_MIN_RECYCLE_AGE,
         autocomplete_should_recycle,
     };
     use std::time::Duration;

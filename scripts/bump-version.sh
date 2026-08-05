@@ -40,6 +40,11 @@ grep -qxF "export const APP_VERSION = \"$VERSION\";" "$REPO_DIR/website/src/seo.
 echo "Refreshing Cargo.lock..."
 (cd "$REPO_DIR" && cargo update --workspace --offline)
 
+# The vendored crates carry the workspace version, so every bump makes the generated
+# notices stale — and `build-app.sh` refuses to assemble the bundle until they match.
+echo "Regenerating THIRD_PARTY_NOTICES.txt..."
+(cd "$REPO_DIR" && node scripts/generate-third-party-notices.mjs)
+
 echo "Done. Next steps:"
 echo "  1. Add a ## v${VERSION} entry to both CHANGELOG.md (English) and CHANGELOG.zh-CN.md (Chinese)"
 echo "  2. git add -A && git commit -m \"chore: bump version to v${VERSION}\"  # includes Cargo.lock"

@@ -1,5 +1,16 @@
 # Changelog
 
+## v2.2.0
+
+- fix: stop resizing the autocomplete window when the requested size is unchanged, and stop collapsing it to 1x1 while hidden — both made WKWebView replace its backing graphics surfaces, so memory grew with every keystroke and every show/hide cycle
+- fix: rebuild the hidden autocomplete webview once it gets old or has absorbed a very large number of resizes, releasing the graphics surfaces WebKit retains, and drop the fixed 24-hour page reload it replaces
+- change: relicense the project under the MIT License alone, ship `LICENSE`, `NOTICE`, and a generated `THIRD_PARTY_NOTICES.txt` inside the app bundle, and verify that payload during the release build
+- feat: add an Open Source Licenses entry to the dashboard's About section that opens the bundled license files
+- change: restore AppKit's native traffic-light placement and realign the dashboard sidebar around it, with tighter nav rows and macOS-style section labels
+- build: upgrade React to 19, zustand to 5, ESLint to 10, the Protobuf stack to Buf 2.13 / Prost 0.14, and the rest of the Rust and TypeScript dependency tree
+- docs: add a documentation hub, per-terminal setup guides for Ghostty, Otty, kitty, WezTerm, Alacritty, Zed, and iTerm2, and Simplified Chinese versions of the main site pages
+- change: move the privacy policy to `/privacy-policy` (the old URL redirects), give each page its own sitemap `lastmod`, and declare hreflang alternates for the translated pages
+
 ## v2.1.1
 
 - fix: show shell history in the suggestion list again when History Mode is left at its default — the dashboard displayed "Show with completions" while the setting had never been written, and the code treated the unset value as off

@@ -1451,7 +1451,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ================================================================================
-alacritty_terminal 2.1.1
+alacritty_terminal 2.2.0
 License: Apache-2.0
 Authors: Christian Duerr <contact@christianduerr.com>, Joe Wilm <joe@jwilm.com>
 Source: https://github.com/alacritty/alacritty

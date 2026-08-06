@@ -36,7 +36,7 @@
     "@easy-complete/tsconfig": "workspace:^",
     "@easy-complete/types": "workspace:^",
     "@easy-complete/shared": "workspace:^",
-    "@types/semver": "^7.7.1",
+    "@types/semver": "^7.8.0",
     "@withfig/autocomplete-types": "^1.31.0",
     "eslint": "^10.8.0",
     "typescript": "6.0.3",

@@ -486,7 +486,7 @@ async fn run_linux_install(ctx: Arc<Context>, settings: Arc<fig_settings::Settin
     // launch_ibus().await;
 }
 
-/// Installs the correct version of the Amazon Q for CLI GNOME Shell extension, if required.
+/// Installs the correct version of the GNOME Shell extension, if required.
 #[cfg(target_os = "linux")]
 async fn install_gnome_shell_extension<Ctx, ExtensionsCtx>(
     ctx: &Ctx,

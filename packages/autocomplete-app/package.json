@@ -6,8 +6,8 @@
   "repository": "https://github.com/chen86860/easy-complete",
   "type": "module",
   "scripts": {
-    "set-host": "fig settings developer.autocomplete.host http://localhost:3124",
-    "remove-host": "fig settings developer.autocomplete.host --delete",
+    "set-host": "ec settings developer.autocomplete.host http://localhost:3124",
+    "remove-host": "ec settings developer.autocomplete.host --delete",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",

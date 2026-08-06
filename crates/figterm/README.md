@@ -13,23 +13,23 @@ prompts (precmd), and right before a command is executed (preexec)
 
 ## Installation/Usage
 
-First, make sure shell integrations are installed. You can use the `q_cli` to do
+First, make sure shell integrations are installed. You can use `ec_cli` to do
 this:
 
 ```
-q integrations install dotfiles
+ec integrations install dotfiles
 ```
 
-The run `make install` to build the binary and move to the right location.
+Then run `./scripts/install.sh` from the repo root to build the binaries and
+install them.
 
 The shell integrations will then launch figterm on each terminal session.
 
 You can verify figterm is running by:
 
-1. Running `pstree -p $$` and checking, e.g. for a `figterm` process with a
+1. Running `pstree -p $$` and checking, e.g. for an `ecterm` process with a
    child `zsh` process.
-2. Running `env | grep FIG` and checking the `Q_TERM` variable is set to
-3.
+2. Running `env | grep '^Q_'` and checking that `Q_TERM` is set.
 
 ## How does it work?
 

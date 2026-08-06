@@ -93,6 +93,6 @@ mod tests {
     #[ignore]
     #[test]
     fn test_open_url() {
-        open_url("https://fig.io").unwrap();
+        open_url("https://easy-complete.emmmm.dev").unwrap();
     }
 }

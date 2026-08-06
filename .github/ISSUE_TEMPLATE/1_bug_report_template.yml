@@ -1,42 +1,99 @@
 name: "Bug report"
-description: "File an issue related to Amazon Q Developer CLI"
+description: "Report something that is broken in Easy Complete / 报告 Easy Complete 的问题"
 
 title: "bug: "
-labels: ["NEED_TO_LABEL"]
+labels: ["bug"]
 
 body:
+- type: markdown
+  attributes:
+    value: |
+      Thanks for taking the time to file a report. English or 中文 are both fine.
+
+      **Please file one problem per issue.** Separate reports can be closed, labelled and
+      tracked independently; a single issue covering several unrelated problems cannot.
+
+      感谢反馈，中英文皆可。**请一个 issue 只描述一个问题** —— 独立的报告才能分别标记、追踪和关闭。
+
 - type: checkboxes
   id: "checks"
   attributes:
     label: "Checks"
     options:
-    - label: "I have searched [github.com/aws/amazon-q-developer-cli/issues](https://github.com/aws/amazon-q-developer-cli/issues?q=) and there are no duplicates of my issue"
+    - label: "I have searched [existing issues](https://github.com/chen86860/easy-complete/issues?q=) and found no duplicate / 我已搜索过现有 issue，没有重复"
       required: true
-    - label: "I have run `q doctor` in the affected terminal session"
+    - label: "I have run `ec doctor` in the affected terminal / 我已在出问题的终端里运行过 `ec doctor`"
       required: true
-    - label: "I have run `q restart` and replicated the issue again"
+    - label: "I have run `ec restart` and the problem still happens / 我已运行过 `ec restart`，问题依旧"
       required: true
+
+- type: input
+  id: "app-version"
+  attributes:
+    label: "Easy Complete version"
+    description: "Output of `ec --version` / `ec --version` 的输出"
+    placeholder: "2.2.1"
+  validations:
+    required: true
 
 - type: input
   id: "os"
   attributes:
-    label: "Operating system"
+    label: "macOS version"
+    description: "Apple menu → About This Mac / 苹果菜单 → 关于本机"
+    placeholder: "26.6 (25G72)"
   validations:
     required: true
-    
+
+- type: dropdown
+  id: "terminal"
+  attributes:
+    label: "Terminal"
+    description: |
+      Easy Complete tracks the cursor differently per terminal — through the input method, the
+      accessibility API, or the pseudoterminal — so this usually decides where a bug lives.
+
+      不同终端的光标追踪方式不同（输入法 / 辅助功能 API / 伪终端），这一项往往直接决定问题出在哪。
+    options:
+      - "Ghostty"
+      - "Otty"
+      - "kitty"
+      - "WezTerm"
+      - "Alacritty"
+      - "Zed"
+      - "iTerm2"
+      - "Terminal.app"
+      - "VS Code"
+      - "Cursor"
+      - "Windsurf"
+      - "Trae"
+      - "Codex (ChatGPT.app)"
+      - "Rio"
+      - "Tabby"
+      - "Hyper"
+      - "Other (please say which in the description)"
+  validations:
+    required: true
+
+- type: input
+  id: "terminal-version"
+  attributes:
+    label: "Terminal version"
+    placeholder: "1.3.1 (15212)"
+
 - type: textarea
   id: "expected"
   attributes:
     label: "Expected behaviour"
-    description: "What did you expect to happen?"
+    description: "What did you expect to happen? / 你期望发生什么？"
   validations:
     required: true
-    
+
 - type: textarea
   id: "actual"
   attributes:
     label: "Actual behaviour"
-    description: "What actually happened? Please provide a screenshot or video if possible."
+    description: "What actually happened? A screenshot or short video helps a lot. / 实际发生了什么？截图或短视频会很有帮助。"
   validations:
     required: true
 
@@ -44,11 +101,29 @@ body:
   id: "reproduce"
   attributes:
     label: "Steps to reproduce"
-    description: "Are you able to reproduce this issue? If so, how?"
+    description: |
+      How can we make it happen? If it is intermittent, say so and describe what you were doing
+      when it appeared — that is still useful.
+
+      怎样能复现？如果是偶发的，请说明这一点并描述出现时你在做什么 —— 这同样很有价值。
+    placeholder: |
+      1.
+      2.
+      3.
 
 - type: textarea
   id: "environment"
   attributes:
-    label: "Environment"
-    description: "If possible, run `q diagnostic` and paste the output below."
+    label: "Diagnostics"
+    description: "Paste the output of `ec diagnostic` / 粘贴 `ec diagnostic` 的输出"
     render: yaml
+
+- type: textarea
+  id: "context"
+  attributes:
+    label: "Anything else?"
+    description: |
+      Multiple monitors, tmux or SSH, a non-standard shell setup, whether a restart fixes it —
+      anything that might matter.
+
+      多显示器、tmux 或 SSH、特殊的 shell 配置、重启后是否恢复 —— 任何你觉得相关的信息。

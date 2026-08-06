@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "Documentation / 文档"
+    url: "https://easy-complete.emmmm.dev/docs"
+    about: "Setup guides, per-terminal instructions and troubleshooting. / 安装指南、各终端配置说明与故障排查。"
+  - name: "Terminal setup / 终端配置"
+    url: "https://easy-complete.emmmm.dev/docs#terminals"
+    about: "Completions not appearing in your terminal? Check its setup guide first. / 补全没出现？先看看对应终端的配置指南。"
+  - name: "Questions & ideas / 提问与讨论"
+    url: "https://github.com/chen86860/easy-complete/discussions"
+    about: "For usage questions and open-ended discussion. / 使用问题和开放式讨论请到这里。"

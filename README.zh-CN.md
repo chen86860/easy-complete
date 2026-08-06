@@ -187,7 +187,7 @@ Easy Complete 由三个相互协作的原生进程组成，通过 Unix 域套接
 | --------------- | ------------- | ---------------------------------------------------------------------------------------------- |
 | `easy-complete` | `fig_desktop` | 原生应用宿主——承载补全浮层与设置面板（运行于 `wry` WebView 的 React 应用）、系统托盘、窗口管理 |
 | `ecterm`        | `figterm`     | 介于 shell 与终端模拟器之间的伪终端；拦截 shell 编辑缓冲区以驱动补全                           |
-| `ec`            | `ec_cli`      | CLI 入口——`setup`、`integrations`、`diagnostic`、`settings` 等                                |
+| `ec`            | `ec_cli`      | CLI 入口——`setup`、`integrations`、`diagnostic`、`settings` 等                                 |
 
 Shell 钩子（`.zshrc`、`.bashrc`、fish 配置）在每次提示符和按键时，把 shell 状态（当前目
 录、命令文本、光标位置）回报给 `ecterm`。在 macOS 上，`fig_input_method` 辅助应用负责为绕

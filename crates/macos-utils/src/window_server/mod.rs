@@ -10,9 +10,9 @@ use std::sync::OnceLock;
 
 use accessibility_sys::{
     AXError, AXIsProcessTrusted, AXObserverRef, AXUIElementCreateApplication, AXUIElementRef,
-    kAXApplicationActivatedNotification, kAXApplicationShownNotification, kAXFocusedWindowChangedNotification,
-    kAXMainWindowChangedNotification, kAXUIElementDestroyedNotification, kAXWindowCreatedNotification,
-    kAXWindowMovedNotification, kAXWindowResizedNotification, pid_t,
+    kAXApplicationActivatedNotification, kAXApplicationShownNotification, kAXFocusedUIElementChangedNotification,
+    kAXFocusedWindowChangedNotification, kAXMainWindowChangedNotification, kAXUIElementDestroyedNotification,
+    kAXWindowCreatedNotification, kAXWindowMovedNotification, kAXWindowResizedNotification, pid_t,
 };
 use ax_observer::AXObserver;
 use core_foundation::base::TCFType;
@@ -97,6 +97,25 @@ const TRACKED_NOTIFICATIONS: &[&str] = &[
     kAXUIElementDestroyedNotification,
 ];
 
+/// Electron terminals put the terminal, the editor and the sidebar in one window, so moving
+/// between them changes neither the focused window nor the active app and fires none of
+/// [`TRACKED_NOTIFICATIONS`] — the overlay would sit there until something else happened to hide
+/// it. Only these apps need element-level focus tracking, and restricting it to them keeps the
+/// notification (which is chatty in web content) away from native terminals that do not need it.
+const XTERM_TRACKED_NOTIFICATIONS: &[&str] = &[kAXFocusedUIElementChangedNotification];
+
+/// Which AX notifications to subscribe for an app. Kept separate from the subscribe loop so the
+/// element-level notification cannot quietly grow to every tracked app.
+fn tracked_notifications(bundle_id: &str) -> Vec<&'static str> {
+    let extra: &[&str] = if XTERM_BUNDLE_IDS.contains(&bundle_id) {
+        XTERM_TRACKED_NOTIFICATIONS
+    } else {
+        &[]
+    };
+
+    TRACKED_NOTIFICATIONS.iter().chain(extra).copied().collect()
+}
+
 #[derive(PartialEq, Eq, Hash, Clone, Debug)]
 pub struct ApplicationSpecifier {
     pub pid: pid_t,
@@ -106,6 +125,12 @@ pub struct ApplicationSpecifier {
 pub enum WindowServerEvent {
     FocusChanged {
         window: UIElement,
+        app: ApplicationSpecifier,
+    },
+    /// Keyboard focus moved to a different element inside the same window. Only emitted for
+    /// [`XTERM_BUNDLE_IDS`]; see [`XTERM_TRACKED_NOTIFICATIONS`].
+    FocusedElementChanged {
+        element: UIElement,
         app: ApplicationSpecifier,
     },
     WindowDestroyed {
@@ -120,6 +145,9 @@ pub enum WindowServerEvent {
 pub struct AccessibilityCallbackData {
     pub app: ApplicationSpecifier,
     pub sender: Sender<WindowServerEvent>,
+    /// Web content re-announces focus for an element that already had it. Remembering the last
+    /// one keeps those repeats from hiding the overlay while the user is still typing into it.
+    pub last_focused_element: Option<UIElement>,
 }
 
 unsafe fn app_bundle_id(app: &NSRunningApplication) -> Option<String> {
@@ -352,7 +380,8 @@ impl WindowServerInner {
             });
         }
 
-        if XTERM_BUNDLE_IDS.contains(&key.bundle_id.as_str()) {
+        let is_xterm = XTERM_BUNDLE_IDS.contains(&key.bundle_id.as_str());
+        if is_xterm {
             UIElement::from(ax_ref).enable_screen_reader_accessibility().ok();
         }
 
@@ -363,6 +392,7 @@ impl WindowServerInner {
             AccessibilityCallbackData {
                 app: key.clone(),
                 sender: self.sender.clone(),
+                last_focused_element: None,
             },
             application_ax_callback,
         ) {
@@ -379,9 +409,9 @@ impl WindowServerInner {
         // whichever window was focused before it.
         let mut subscribed = Vec::new();
         let mut rejected: Vec<(&str, AXError)> = Vec::new();
-        for notification in TRACKED_NOTIFICATIONS {
+        for notification in tracked_notifications(&key.bundle_id) {
             match observer.subscribe(notification) {
-                Ok(()) => subscribed.push(*notification),
+                Ok(()) => subscribed.push(notification),
                 Err(err) => rejected.push((notification, err)),
             }
         }
@@ -514,7 +544,7 @@ unsafe extern "C" fn application_ax_callback(
     let element = UIElement::from(element);
 
     let name = CFString::wrap_under_get_rule(notification_name);
-    let app = &cb_data.app;
+    let app = cb_data.app.clone();
 
     let event_name = name.to_string();
 
@@ -533,6 +563,17 @@ unsafe extern "C" fn application_ax_callback(
                     window,
                     app: app.clone(),
                 })
+        },
+        kAXFocusedUIElementChangedNotification => {
+            if cb_data.last_focused_element.as_ref() == Some(&element) {
+                None
+            } else {
+                cb_data.last_focused_element = Some(element.clone());
+                Some(WindowServerEvent::FocusedElementChanged {
+                    element,
+                    app: app.clone(),
+                })
+            }
         },
         kAXWindowResizedNotification | kAXWindowMovedNotification => {
             Some(WindowServerEvent::RequestCaretPositionUpdate)
@@ -558,6 +599,32 @@ unsafe extern "C" fn application_ax_callback(
     if let Some(event) = event {
         if let Err(e) = cb_data.sender.send(event) {
             warn!("Error sending focus changed event: {e:?}");
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn element_focus_is_tracked_only_for_electron_terminals() {
+        let vscode = tracked_notifications("com.microsoft.VSCode");
+        assert!(vscode.contains(&kAXFocusedUIElementChangedNotification));
+
+        // Native terminals switch windows, not panes, and the notification is noisy enough that
+        // subscribing it everywhere risks hiding the overlay mid-keystroke.
+        let ghostty = tracked_notifications("com.mitchellh.ghostty");
+        assert!(!ghostty.contains(&kAXFocusedUIElementChangedNotification));
+    }
+
+    #[test]
+    fn window_level_notifications_are_tracked_everywhere() {
+        for bundle_id in ["com.microsoft.VSCode", "com.mitchellh.ghostty", "com.apple.Terminal"] {
+            let tracked = tracked_notifications(bundle_id);
+            for notification in TRACKED_NOTIFICATIONS {
+                assert!(tracked.contains(notification), "{bundle_id} is missing {notification}");
+            }
         }
     }
 }

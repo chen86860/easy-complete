@@ -35,6 +35,20 @@ use crate::{AUTOCOMPLETE_ID, DASHBOARD_ID, EventLoopProxy, EventLoopWindowTarget
 // }
 
 const LOGIN_MENU_ID: &str = "onboarding";
+const ACCESSIBILITY_MENU_ID: &str = "accessibility";
+
+/// Autocomplete is fully inert without Accessibility, so the tray is the one surface that can say
+/// so no matter how the app was launched — a silent launch never opens the dashboard, where the
+/// permission gate lives.
+#[cfg(target_os = "macos")]
+fn accessibility_is_missing() -> bool {
+    !macos_utils::accessibility::accessibility_is_enabled()
+}
+
+#[cfg(not(target_os = "macos"))]
+fn accessibility_is_missing() -> bool {
+    false
+}
 
 fn tray_update(proxy: &EventLoopProxy) {
     let proxy = proxy.clone();
@@ -134,6 +148,21 @@ pub fn handle_event(menu_event: &MenuEvent, proxy: &EventLoopProxy) {
                 #[allow(clippy::exit)]
                 std::process::exit(0);
             });
+        },
+        ACCESSIBILITY_MENU_ID => {
+            #[cfg(target_os = "macos")]
+            {
+                use macos_utils::accessibility::{open_accessibility, prompt_for_accessibility};
+
+                // `prompt_for_accessibility` only raises the system dialog while macOS still
+                // considers the app un-prompted; once the bundle is listed — even with a stale
+                // entry that no longer grants anything — it returns silently. Always open the
+                // settings pane too so the user has somewhere to go in that case.
+                prompt_for_accessibility();
+                if !open_accessibility() {
+                    error!("Failed to open Accessibility settings");
+                }
+            }
         },
         "user-manual" => {
             if let Err(err) = fig_util::open_url(USER_MANUAL) {
@@ -383,6 +412,17 @@ fn menu(is_logged_in: bool) -> Vec<MenuElement> {
     } else {
         vec![settings, check_for_updates]
     };
+
+    if accessibility_is_missing() {
+        let warning_img = get_image_rgba(include_bytes!("../icons/yellow-circle.png"));
+        let mut warning = vec![
+            MenuElement::info(Some(warning_img), "Accessibility permission is missing"),
+            MenuElement::entry(None, None, "Enable Accessibility…", ACCESSIBILITY_MENU_ID),
+            MenuElement::Separator,
+        ];
+        warning.append(&mut menu);
+        menu = warning;
+    }
 
     menu.extend(vec![MenuElement::Separator, quit]);
 

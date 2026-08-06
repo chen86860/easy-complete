@@ -185,6 +185,12 @@ impl PlatformWindowImpl {
         self.x_term_tree_cache = tree;
         self.x_term_tree_cache.as_ref()?.first().cloned()
     }
+
+    /// The cached tree points at one specific terminal pane's caret element. Once focus moves it
+    /// is stale, and reusing it would anchor the overlay to the pane the user just left.
+    pub fn invalidate_x_term_cache(&mut self) {
+        self.x_term_tree_cache = None;
+    }
 }
 
 /// Pins the autocomplete overlay above the focused terminal.
@@ -330,6 +336,12 @@ impl PlatformStateImpl {
                                         PlatformBoundEvent::ExternalWindowFocusChanged { window },
                                     ));
                                 }
+                            },
+                            WindowServerEvent::FocusedElementChanged { element, app } => {
+                                events.push(Event::PlatformBoundEvent(PlatformBoundEvent::FocusedElementChanged {
+                                    element,
+                                    app,
+                                }));
                             },
                             WindowServerEvent::WindowDestroyed { app } => {
                                 events.push(Event::PlatformBoundEvent(PlatformBoundEvent::WindowDestroyed { app }));
@@ -573,6 +585,13 @@ impl PlatformStateImpl {
             },
             PlatformBoundEvent::AccessibilityUpdated { enabled } => {
                 let _was_enabled = ACCESSIBILITY_ENABLED.swap(enabled, Ordering::SeqCst);
+
+                // Recorded here as well as at launch: a user who grants the permission and never
+                // restarts before reinstalling would otherwise look like one who never granted it,
+                // and the reinstall that invalidates the grant would pass unnoticed.
+                if enabled {
+                    crate::install::record_accessibility_grant();
+                }
                 // if enabled && !was_enabled {
                 //     tokio::runtime::Handle::current().spawn(async move {
                 //         fig_telemetry::emit_track(fig_telemetry::TrackEvent::new(
@@ -625,6 +644,34 @@ impl PlatformStateImpl {
                         }))
                         .ok();
                 }
+                Ok(())
+            },
+            PlatformBoundEvent::FocusedElementChanged { element, app } => {
+                let mut focused = self.focused_window.lock().unwrap();
+                let Some(focused_window) = focused.as_mut() else {
+                    return Ok(());
+                };
+
+                // Focus can move inside a window we are not following, e.g. a second VS Code
+                // window in the background.
+                if focused_window.bundle_id() != app.bundle_id {
+                    return Ok(());
+                }
+
+                // The overlay is anchored to the caret of one specific pane, so any element-level
+                // focus move invalidates it. Hiding is safe even when focus landed on another
+                // terminal pane: the next keystroke re-shows the overlay against the new caret,
+                // whereas leaving it up would strand it over the pane the user just left.
+                focused_window.invalidate_x_term_cache();
+                debug!(?element, "Focused element changed, hiding autocomplete");
+
+                self.proxy
+                    .send_event(Event::WindowEvent {
+                        window_id: AUTOCOMPLETE_ID,
+                        window_event: WindowEvent::Hide,
+                    })
+                    .ok();
+
                 Ok(())
             },
             PlatformBoundEvent::WindowDestroyed { app } => {

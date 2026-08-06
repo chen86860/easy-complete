@@ -122,6 +122,13 @@ pub enum PlatformBoundEvent {
         #[cfg(target_os = "macos")]
         app: ApplicationSpecifier,
     },
+    /// Keyboard focus moved between elements of one window, e.g. from a VS Code terminal pane to
+    /// the editor. Only raised on macOS, and only for the Electron terminals that need it.
+    #[cfg(target_os = "macos")]
+    FocusedElementChanged {
+        element: macos_utils::window_server::UIElement,
+        app: ApplicationSpecifier,
+    },
     ExternalWindowFocusChanged {
         window: PlatformWindowImpl,
     },

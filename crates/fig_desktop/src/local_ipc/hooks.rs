@@ -9,12 +9,26 @@ use crate::platform::PlatformState;
 use crate::webview::WindowId;
 use crate::{AUTOCOMPLETE_ID, Event, EventLoopProxy};
 
+/// The overlay is positioned relative to the caret, so a degenerate rect is not a small error —
+/// an all-zero rect resolves to the screen-space origin and gets clamped to the corner of the
+/// primary monitor, which on a multi-monitor setup is a different screen than the terminal.
+/// Input method clients that no longer back a live window report exactly that, so drop it here
+/// rather than move the window somewhere the user is not looking.
+fn is_valid_caret_rect(x: f64, y: f64, width: f64, height: f64) -> bool {
+    x.is_finite() && y.is_finite() && width.is_finite() && height.is_finite() && height > 0.0
+}
+
 pub async fn caret_position(
     hook @ CaretPositionHook {
         x, y, width, height, ..
     }: CaretPositionHook,
     proxy: &EventLoopProxy,
 ) -> Result<()> {
+    if !is_valid_caret_rect(x, y, width, height) {
+        tracing::warn!(x, y, width, height, "ignoring invalid caret position hook");
+        return Ok(());
+    }
+
     proxy
         .send_event(Event::WindowEvent {
             window_id: AUTOCOMPLETE_ID,
@@ -96,4 +110,32 @@ pub async fn clear_autocomplete_cache(hook: ClearAutocompleteCacheHook, proxy: &
     })?;
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn rejects_zeroed_caret_rect() {
+        assert!(!is_valid_caret_rect(0.0, 0.0, 0.0, 0.0));
+    }
+
+    #[test]
+    fn rejects_caret_rect_without_height() {
+        assert!(!is_valid_caret_rect(1200.0, 800.0, 8.0, 0.0));
+        assert!(!is_valid_caret_rect(1200.0, 800.0, 8.0, -16.0));
+    }
+
+    #[test]
+    fn rejects_non_finite_caret_rect() {
+        assert!(!is_valid_caret_rect(f64::NAN, 800.0, 8.0, 16.0));
+        assert!(!is_valid_caret_rect(1200.0, f64::INFINITY, 8.0, 16.0));
+    }
+
+    #[test]
+    fn accepts_caret_rect_on_a_secondary_monitor() {
+        assert!(is_valid_caret_rect(-1920.0, -450.0, 0.0, 16.0));
+        assert!(is_valid_caret_rect(1200.0, 800.0, 8.0, 16.0));
+    }
 }

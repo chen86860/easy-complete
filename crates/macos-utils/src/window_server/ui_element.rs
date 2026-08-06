@@ -53,6 +53,14 @@ impl fmt::Debug for UIElement {
 unsafe impl Send for UIElement {}
 unsafe impl Sync for UIElement {}
 
+impl PartialEq for UIElement {
+    /// `CFEqual` is the only supported way to compare accessibility elements — two refs to the
+    /// same UI element are not necessarily the same pointer.
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
+    }
+}
+
 impl From<AXUIElement> for UIElement {
     fn from(ax_ref: AXUIElement) -> Self {
         UIElement(ax_ref)

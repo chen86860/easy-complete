@@ -20,6 +20,19 @@ fn bundle_identifier(client: &AnyObject) -> Option<String> {
     Some(bundle_id.to_string())
 }
 
+/// A client that no longer backs a live window — a closed Ghostty window whose input controller
+/// is still registered, for example — leaves `attributesForCharacterIndex:lineHeightRectangle:`
+/// untouched, so the caret rect stays at its zeroed default. Sending that on would place the
+/// overlay at the screen-space origin, which the desktop then clamps to the bottom-left corner of
+/// the primary monitor — on multi-monitor setups that is a different screen than the terminal.
+fn is_valid_caret_rect(rect: NSRect) -> bool {
+    rect.origin.x.is_finite()
+        && rect.origin.y.is_finite()
+        && rect.size.width.is_finite()
+        && rect.size.height.is_finite()
+        && rect.size.height > 0.0
+}
+
 struct Ivars {
     is_active: Cell<bool>,
 }
@@ -113,6 +126,11 @@ declare_class!(
                         };
                         let _: () = unsafe { msg_send![client, attributesForCharacterIndex: 0 lineHeightRectangle: &mut rect] };
 
+                        if !is_valid_caret_rect(rect) {
+                            warn!("Instance {bundle_id:?} reported an invalid caret rect {rect:?}, ignoring request");
+                            return;
+                        }
+
                         let hook = new_caret_position_hook(
                             rect.origin.x,
                             rect.origin.y,
@@ -154,6 +172,42 @@ pub fn connect_imkserver(name: &NSString, identifier: Option<&NSString>) {
     let server_alloc = IMKServer::alloc();
     unsafe { IMKServer::initWithName_bundleIdentifier(server_alloc, Some(name), identifier) };
     info!("connected to imkserver");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn rect(x: f64, y: f64, width: f64, height: f64) -> NSRect {
+        NSRect {
+            origin: NSPoint { x, y },
+            size: NSSize { width, height },
+        }
+    }
+
+    #[test]
+    fn zeroed_caret_rect_is_rejected() {
+        assert!(!is_valid_caret_rect(rect(0.0, 0.0, 0.0, 0.0)));
+    }
+
+    #[test]
+    fn caret_rect_without_height_is_rejected() {
+        assert!(!is_valid_caret_rect(rect(1200.0, 800.0, 8.0, 0.0)));
+        assert!(!is_valid_caret_rect(rect(1200.0, 800.0, 8.0, -16.0)));
+    }
+
+    #[test]
+    fn non_finite_caret_rect_is_rejected() {
+        assert!(!is_valid_caret_rect(rect(f64::NAN, 800.0, 8.0, 16.0)));
+        assert!(!is_valid_caret_rect(rect(1200.0, f64::INFINITY, 8.0, 16.0)));
+    }
+
+    #[test]
+    fn caret_rect_on_a_secondary_monitor_is_accepted() {
+        // Screens left of or below the primary one report negative Cocoa origins.
+        assert!(is_valid_caret_rect(rect(-1920.0, -450.0, 0.0, 16.0)));
+        assert!(is_valid_caret_rect(rect(1200.0, 800.0, 8.0, 16.0)));
+    }
 }
 
 pub fn register_controller() {

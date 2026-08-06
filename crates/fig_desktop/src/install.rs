@@ -77,6 +77,69 @@ fn prompt_for_accessibility_permission() {
     }
 }
 
+/// Tracks whether macOS has ever actually granted us Accessibility, so a grant that silently stops
+/// working can be told apart from one that was never given.
+#[cfg(target_os = "macos")]
+const ACCESSIBILITY_GRANTED_KEY: &str = "desktop.accessibilityGranted";
+
+/// Notes that macOS has actually granted Accessibility. Idempotent, and safe to call from the
+/// runtime permission-change handler as well as at launch.
+#[cfg(target_os = "macos")]
+pub fn record_accessibility_grant() {
+    use tracing::warn;
+
+    if fig_settings::state::get_bool_or(ACCESSIBILITY_GRANTED_KEY, false) {
+        return;
+    }
+
+    if let Err(err) = fig_settings::state::set_value(ACCESSIBILITY_GRANTED_KEY, true) {
+        warn!(%err, "Failed to record Accessibility grant");
+    }
+}
+
+/// Replacing the app bundle invalidates its TCC entry while leaving the checkbox in System Settings
+/// ticked, so a reinstall can leave autocomplete inert with nothing to indicate why. The
+/// once-per-version install script never re-runs for a same-version reinstall, so this check has to
+/// live outside it and run on every launch.
+///
+/// Only a granted -> revoked transition prompts, and it does so even for a silent launch: at that
+/// point the app is known-broken and has no other way to reach the user. A permission that was
+/// never granted is left to the normal launch prompt and the tray warning, so users who
+/// deliberately withhold it are not nagged on every start.
+///
+/// Returns whether it raised the prompt itself, so the once-per-version install script does not
+/// raise a second one on the same launch.
+#[cfg(target_os = "macos")]
+fn reconcile_accessibility_permission(prompt_for_permissions: bool) -> bool {
+    use macos_utils::accessibility::accessibility_is_enabled;
+    use tracing::{info, warn};
+
+    let enabled = accessibility_is_enabled();
+    let previously_granted = fig_settings::state::get_bool_or(ACCESSIBILITY_GRANTED_KEY, false);
+
+    if enabled {
+        record_accessibility_grant();
+        return false;
+    }
+
+    if previously_granted {
+        info!("Accessibility permission was granted before but is no longer in effect, re-prompting");
+        // Clear it first so the next launch treats this as a plain missing permission and falls
+        // back to the tray warning rather than prompting again.
+        if let Err(err) = fig_settings::state::set_value(ACCESSIBILITY_GRANTED_KEY, false) {
+            warn!(%err, "Failed to clear Accessibility grant");
+        }
+        prompt_for_accessibility_permission();
+        return true;
+    }
+
+    if !prompt_for_permissions {
+        info!("Accessibility permission is missing on a background launch, surfacing via the tray only");
+    }
+
+    false
+}
+
 #[cfg(target_os = "macos")]
 fn run_macos_post_install_permission_tasks(prompt_for_permissions: bool) {
     use fig_integrations::Integration;
@@ -128,9 +191,13 @@ pub async fn run_install(
         run_input_method_migration();
     }
 
+    // Runs on every launch, unlike the once-per-version install script below.
+    #[cfg(target_os = "macos")]
+    let already_prompted_for_accessibility = reconcile_accessibility_permission(prompt_for_permissions);
+
     #[cfg(target_os = "macos")]
     if should_run_macos_install {
-        run_macos_post_install_permission_tasks(prompt_for_permissions);
+        run_macos_post_install_permission_tasks(prompt_for_permissions && !already_prompted_for_accessibility);
         // First run (no previous_version) = fresh install; otherwise = update.
         if previous_version().is_none() {
             fig_telemetry::track("app_installed");

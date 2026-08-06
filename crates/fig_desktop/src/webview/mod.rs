@@ -1096,7 +1096,9 @@ impl WebviewManager {
                                 .unwrap();
                         },
                         Event::ReloadAccessibility => {
-                            // tray.set_menu(Some(Box::new(get_context_menu())));
+                            // The tray carries the "permission is missing" warning, so it has to be
+                            // rebuilt whenever the grant is given or taken away.
+                            tray.set_menu(Some(Box::new(get_context_menu(true))));
 
                             let autocomplete_enabled =
                                 !fig_settings::settings::get_bool_or("autocomplete.disable", false)

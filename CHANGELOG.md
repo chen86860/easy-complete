@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.2.1
+
+- fix: ignore caret positions reported without a usable rectangle, which input method clients send once their window is gone — the all-zero rectangle resolved to the screen origin and pinned the suggestion popup to the corner of the primary display, so on a multi-monitor setup it appeared on a different screen than the terminal
+- fix: hide the suggestion popup when focus moves between elements of one window in VS Code, Cursor, Windsurf, and other Electron terminals — clicking the editor, the sidebar, another terminal pane, or closing a terminal tab changes neither the focused window nor the active application, so the popup used to stay on screen until something else happened to hide it
+- fix: drop the cached terminal caret element when focus moves, so the popup no longer anchors itself to the pane the user just left
+- fix: check the Accessibility permission on every launch instead of once per version, so a same-version reinstall no longer leaves the app silently inert — replacing the bundle invalidates the grant while leaving the checkbox in System Settings ticked
+- feat: show a warning and a repair entry in the menu bar when the Accessibility permission is missing, which is the only surface a silent launch has, and refresh it as soon as the permission is granted or revoked
+
 ## v2.2.0
 
 - fix: stop resizing the autocomplete window when the requested size is unchanged, and stop collapsing it to 1x1 while hidden — both made WKWebView replace its backing graphics surfaces, so memory grew with every keystroke and every show/hide cycle

@@ -1,21 +1,36 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 
-import useResizeObserver from "use-resize-observer";
+import { useResizeObserver } from "use-resize-observer";
 
 type Dimensions = {
   height?: number;
   width?: number;
 };
 
+// Callers only care about the size, not the `ResizeObserverEntry` that
+// use-resize-observer hands to its own `onResize`.
+type DynamicResizeObserverOpts<T extends Element> = Omit<
+  NonNullable<Parameters<typeof useResizeObserver<T>>[0]>,
+  "onResize"
+> & {
+  onResize?: (size: Dimensions) => void;
+};
+
 // Like resizeObserver but re-calls onResize callback when onResize changes.
-export const useDynamicResizeObserver: typeof useResizeObserver = (opts) => {
+export const useDynamicResizeObserver = <T extends Element>(
+  opts?: DynamicResizeObserverOpts<T>,
+) => {
   const { onResize, ...otherOpts } = opts || {};
   const [{ height, width }, setDimensions] = useState<Dimensions>({
     height: 0,
     width: 0,
   });
 
-  const { ref } = useResizeObserver({ ...otherOpts, onResize: setDimensions });
+  const { ref } = useResizeObserver<T>({
+    ...otherOpts,
+    onResize: ({ height: nextHeight, width: nextWidth }) =>
+      setDimensions({ height: nextHeight, width: nextWidth }),
+  });
 
   useEffect(() => {
     if (onResize) {

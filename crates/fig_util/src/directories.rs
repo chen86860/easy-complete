@@ -631,8 +631,9 @@ mod tests {
             path = path.replace(home, "$HOME");
         }
 
-        let user = whoami::username();
-        path = path.replace(&user, "$USER");
+        if let Ok(user) = whoami::username() {
+            path = path.replace(&user, "$USER");
+        }
 
         if let Ok(tmpdir) = std::env::var("TMPDIR") {
             let tmpdir = tmpdir.strip_suffix('/').unwrap_or(&tmpdir);

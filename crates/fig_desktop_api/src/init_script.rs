@@ -92,7 +92,7 @@ impl Constants {
             fig_data_dir: directories::fig_data_dir_utf8().ok(),
             backups_dir: directories::backups_dir_utf8().ok(),
             logs_dir: directories::logs_dir_utf8().ok(),
-            user: whoami::username(),
+            user: whoami::username().unwrap_or_default(),
             default_path: var("PATH").ok(),
             themes_folder,
             themes,

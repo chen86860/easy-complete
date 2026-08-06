@@ -56,3 +56,4 @@ packages/dashboard-app/dist/
 dist/
 .codex-audit
 .claude/settings.local.json
+.secrets/

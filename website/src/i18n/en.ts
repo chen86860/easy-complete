@@ -11,7 +11,7 @@ import type { DocsCopy, HomeCopy } from "./types.ts";
 
 export const homeCopyEn: HomeCopy = {
   badge: "macOS · 100% local · open source",
-  heroHeading: "Autocomplete for your macOS terminal.",
+  heroHeading: "Autocomplete for your macOS terminal",
   heroSubheading:
     "Fish-shell-style suggestions for hundreds of CLIs — git, npm, docker, cargo. Native, fast, and entirely on-device.",
   downloadCta: "Download DMG",
@@ -25,15 +25,15 @@ export const homeCopyEn: HomeCopy = {
   marqueeLabel: "Runs in the terminal you already use",
   featuresLabel: "Features",
   featuresHeading:
-    "Everything you need to complete a command. Nothing you don't.",
+    "Everything you need to complete a command. Nothing you don't",
   featuresSubheading:
     "One job, done well — no chat, no AI calls, no cloud completions.",
 
   whyLabel: "Why Easy Complete",
-  whyHeading: "Opinionated, on purpose.",
+  whyHeading: "Opinionated, on purpose",
 
   terminalsLabel: "Supported terminals",
-  terminalsHeading: "Works everywhere you type.",
+  terminalsHeading: "Works everywhere you type",
   terminalsNewPrefix: "New in v2.1.0:",
   terminalsBody:
     "Otty joins the input-method terminals with pixel-accurate cursor tracking, and ChatGPT (Codex) sessions are located through the xterm.js caret. Everything else keeps working through the shell integration installed automatically on first launch.",
@@ -59,8 +59,8 @@ export const homeCopyEn: HomeCopy = {
     "Install Easy Complete, check which terminals are supported, set up cursor tracking for Ghostty, or fix a shell integration — without digging through the repository.",
   docsCta: "Browse the docs",
 
-  ctaHeading: "Stop memorizing flags.",
-  ctaSubheading: "Let your terminal remember them for you.",
+  ctaHeading: "Stop memorizing flags",
+  ctaSubheading: "Let your terminal remember them for you",
   ctaFootnote: "Requires macOS 12+ · Apple Silicon (ARM64) · MIT",
   ctaTagline:
     "A focused local completion engine built for fast terminal autocomplete.",

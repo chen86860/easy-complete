@@ -3,3 +3,6 @@ dist
 .wrangler
 *.log
 .dev.vars
+
+# Search Console service account JSON, read by scripts/notify-search-engines.ts
+.secrets/

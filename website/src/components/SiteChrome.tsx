@@ -14,21 +14,39 @@ const NAV_LABELS: Record<Locale, { features: string; docs: string }> = {
 
 const FOOTER_LABELS: Record<
   Locale,
-  { docs: string; install: string; troubleshooting: string; privacy: string }
+  {
+    docs: string;
+    install: string;
+    troubleshooting: string;
+    privacy: string;
+    moreTools: string;
+  }
 > = {
   en: {
     docs: "Docs",
     install: "Install",
     troubleshooting: "Troubleshooting",
     privacy: "Privacy Policy",
+    moreTools: "EMMMM.DEV Tools",
   },
   "zh-CN": {
     docs: "文档",
     install: "安装",
     troubleshooting: "故障排查",
     privacy: "隐私政策",
+    moreTools: "EMMMM.DEV 工具集",
   },
 };
+
+/**
+ * The sibling site that publishes this one. The link is deliberately plain and
+ * followable — `rel="noreferrer"` would still pass link equity, but there's no
+ * reason to hide the referrer between two properties we own. Paired with the
+ * `Organization` node in `seo.tsx`, it lets crawlers confirm that
+ * easy-complete.emmmm.dev and tools.emmmm.dev are the same publisher instead of
+ * guessing from a one-way link.
+ */
+const PUBLISHER_SITE_URL = "https://tools.emmmm.dev/";
 
 const FOOTER_TAGLINE: Record<Locale, string> = {
   en: "Easy Complete · local terminal autocomplete",
@@ -178,7 +196,14 @@ function navLinks(locale: Locale) {
   ] as const;
 }
 
-function footerLinks(locale: Locale) {
+interface FooterLink {
+  href: string;
+  label: string;
+  /** Off-site, so it needs target/rel — see `PUBLISHER_SITE_URL`. */
+  external?: boolean;
+}
+
+function footerLinks(locale: Locale): FooterLink[] {
   const prefix = LOCALE_PREFIX[locale];
   const labels = FOOTER_LABELS[locale];
   const troubleshootingPath =
@@ -188,6 +213,7 @@ function footerLinks(locale: Locale) {
     { href: `${prefix}/install`, label: labels.install },
     { href: troubleshootingPath, label: labels.troubleshooting },
     { href: "/privacy-policy", label: labels.privacy },
+    { href: PUBLISHER_SITE_URL, label: labels.moreTools, external: true },
   ];
 }
 
@@ -306,6 +332,8 @@ export function SiteFooterLinks({
         <a
           key={link.href}
           href={link.href}
+          target={link.external ? "_blank" : undefined}
+          rel={link.external ? "noopener" : undefined}
           className="transition-colors hover:text-[#e6edf3]"
         >
           {link.label}

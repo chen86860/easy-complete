@@ -106,6 +106,34 @@ export function pageHead({
   };
 }
 
+/**
+ * Stable identifier for the publisher, shared verbatim with the `Organization`
+ * node on tools.emmmm.dev. Both sites emitting the same `@id` is what lets a
+ * crawler merge them into one entity — pick a different URL on either side and
+ * they stay two unrelated organisations that happen to share a name.
+ */
+const PUBLISHER_ID = "https://tools.emmmm.dev/#organization";
+
+/**
+ * The publisher entity. `sameAs` lists the other properties that belong to it,
+ * which is the structured-data half of the footer link back to
+ * tools.emmmm.dev — a link says "related", `sameAs` says "same owner".
+ */
+function publisherSchema() {
+  return {
+    "@type": "Organization",
+    "@id": PUBLISHER_ID,
+    name: "EMMMM.DEV",
+    url: "https://tools.emmmm.dev",
+    email: "help@emmmm.dev",
+    sameAs: [
+      "https://easy-complete.emmmm.dev/",
+      "https://github.com/chen86860",
+      "https://x.com/chen86860",
+    ],
+  };
+}
+
 export function homeSchema(locale: Locale = "en") {
   const origin = siteOrigin();
   const homePath = locale === "en" ? "/" : "/zh";
@@ -113,6 +141,7 @@ export function homeSchema(locale: Locale = "en") {
   return {
     "@context": "https://schema.org",
     "@graph": [
+      publisherSchema(),
       {
         "@type": "WebSite",
         "@id": `${origin}/#website`,
@@ -120,6 +149,7 @@ export function homeSchema(locale: Locale = "en") {
         name: SITE_NAME,
         description: "IDE-style inline autocomplete for macOS terminals.",
         inLanguage: HREFLANG[locale],
+        publisher: { "@id": PUBLISHER_ID },
       },
       {
         "@type": "SoftwareApplication",
@@ -139,6 +169,7 @@ export function homeSchema(locale: Locale = "en") {
         codeRepository: "https://github.com/chen86860/easy-complete",
         softwareRequirements: "macOS 12 or later; Apple Silicon (ARM64)",
         license: "https://opensource.org/license/mit",
+        publisher: { "@id": PUBLISHER_ID },
         offers: {
           "@type": "Offer",
           price: "0",
@@ -186,6 +217,10 @@ export function guideSchema({
   return {
     "@context": "https://schema.org",
     "@graph": [
+      // Repeated on every guide, not just the home page: the guides are the
+      // pages most likely to be crawled in isolation, so they each need to
+      // carry the publisher link themselves.
+      publisherSchema(),
       {
         "@type": "WebPage",
         "@id": `${url}#webpage`,
@@ -194,6 +229,7 @@ export function guideSchema({
         description,
         inLanguage: HREFLANG[locale],
         isPartOf: { "@id": `${origin}/#website` },
+        publisher: { "@id": PUBLISHER_ID },
       },
       {
         "@type": "BreadcrumbList",

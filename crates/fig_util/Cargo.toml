@@ -27,7 +27,7 @@ rand.workspace = true
 regex.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-sha2 = "0.10.9"
+sha2 = "0.11.0"
 strum = { version = "0.28.0", features = ["derive"] }
 thiserror.workspace = true
 time.workspace = true

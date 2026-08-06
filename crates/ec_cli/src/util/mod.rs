@@ -241,8 +241,11 @@ pub fn choose(prompt: impl Display, options: &[impl ToString]) -> Result<Option<
         return Ok(Some(0));
     }
 
+    // dialoguer 0.12 requires the items to be `Display`, which `&impl ToString` is not.
+    let items: Vec<String> = options.iter().map(ToString::to_string).collect();
+
     match Select::with_theme(&dialoguer_theme())
-        .items(options)
+        .items(&items)
         .default(0)
         .with_prompt(prompt.to_string())
         .interact_opt()

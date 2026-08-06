@@ -340,7 +340,7 @@ pub fn get_system_id() -> Option<&'static str> {
             let hwid = raw_system_id().ok()?;
             let mut hasher = Sha256::new();
             hasher.update(hwid);
-            Some(format!("{:x}", hasher.finalize()))
+            Some(hex::encode(hasher.finalize()))
         })
         .as_deref()
 }

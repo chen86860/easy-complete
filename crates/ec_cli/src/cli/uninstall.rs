@@ -16,7 +16,7 @@ pub async fn uninstall_command(no_confirm: bool) -> Result<ExitCode> {
         );
         let should_continue = dialoguer::Select::with_theme(&dialoguer_theme())
             .with_prompt(format!("Are you sure want to continue uninstalling {PRODUCT_NAME}?"))
-            .items(&["Yes", "No"])
+            .items(["Yes", "No"])
             .default(0)
             .interact_opt()?;
 

@@ -16,7 +16,7 @@ use std::path::{Path, PathBuf};
 pub use consts::*;
 pub use open::{open_url, open_url_async};
 pub use process_info::get_parent_process_exe;
-use rand::Rng;
+use rand::RngExt;
 pub use shell::Shell;
 pub use terminal::Terminal;
 use thiserror::Error;

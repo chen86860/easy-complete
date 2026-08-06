@@ -26,6 +26,12 @@ fn is_false(value: &bool) -> bool {
     !value
 }
 
+/// `/<username>` for scrubbing the current user out of paths, or `None` if the username can't be
+/// determined — in which case we leave the path alone rather than replace something else.
+fn username_path_prefix() -> Option<String> {
+    whoami::username().ok().map(|username| format!("/{username}"))
+}
+
 #[derive(Debug, Clone, Serialize, Default)]
 #[serde(rename_all = "kebab-case")]
 pub struct BuildDetails {
@@ -88,7 +94,7 @@ impl SystemInfo {
         let mut hardware_info = SystemInfo {
             os: os_version(),
             chip: None,
-            total_cores: system.physical_core_count(),
+            total_cores: sysinfo::System::physical_core_count(),
             memory: Some(format!("{:0.2} GB", system.total_memory() as f32 / 2.0_f32.powi(30))),
         };
 
@@ -108,6 +114,7 @@ pub struct EnvVarDiagnostic {
 
 impl EnvVarDiagnostic {
     fn new() -> EnvVarDiagnostic {
+        let username = username_path_prefix();
         let env_vars = std::env::vars()
             .filter(|(key, _)| {
                 let fig_var = fig_util::env_var::ALL.contains(&key.as_str());
@@ -135,8 +142,10 @@ impl EnvVarDiagnostic {
             })
             .map(|(key, value)| {
                 // sanitize username from values
-                let username = format!("/{}", whoami::username());
-                (key, value.replace(&username, "/USER"))
+                match &username {
+                    Some(username) => (key, value.replace(username, "/USER")),
+                    None => (key, value),
+                }
             })
             .collect();
 
@@ -171,25 +180,18 @@ impl CurrentEnvironment {
         use fig_util::process_info::{Pid, PidExt};
         let ctx = Context::new();
 
-        let username = format!("/{}", whoami::username());
+        let username = username_path_prefix();
+        let scrub = |path: std::path::PathBuf| match &username {
+            Some(username) => path.to_string_lossy().replace(username, "/USER"),
+            None => path.to_string_lossy().into_owned(),
+        };
 
-        let shell_path = Pid::current()
-            .parent()
-            .and_then(|pid| pid.exe())
-            .map(|p| p.to_string_lossy().replace(&username, "/USER"));
+        let shell_path = Pid::current().parent().and_then(|pid| pid.exe()).map(scrub);
         let shell_version = Shell::current_shell_version().await.map(|(_, v)| v).ok();
 
-        let cwd = ctx
-            .env()
-            .current_dir()
-            .ok()
-            .map(|path| path.to_string_lossy().replace(&username, "/USER"));
+        let cwd = ctx.env().current_dir().ok().map(scrub);
 
-        let cli_path = ctx
-            .env()
-            .current_dir()
-            .ok()
-            .map(|path| path.to_string_lossy().replace(&username, "/USER"));
+        let cli_path = ctx.env().current_dir().ok().map(scrub);
 
         let os = ctx.platform().os();
         let terminal = Terminal::parent_terminal(&ctx);

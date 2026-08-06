@@ -17,7 +17,7 @@ jobs:
       - name: Install protobuf compiler and libglib2.0
         run: sudo apt-get update && sudo apt-get install -y -qq protobuf-compiler libglib2.0-dev-bin
       - name: Install pnpm
-        uses: pnpm/action-setup@v6.0.9
+        uses: pnpm/action-setup@v6.0.10
         with:
           run_install: false
       - name: Install Node.js

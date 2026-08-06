@@ -32,7 +32,7 @@
     "@types/node": "^22.15.20",
     "@typescript/analyze-trace": "^0.11.1",
     "eslint": "^10.8.0",
-    "lint-staged": "^17.2.0",
+    "lint-staged": "^17.3.0",
     "prettier": "^3.9.6",
     "ts-morph": "^28.0.0",
     "tsx": "^4.23.4",

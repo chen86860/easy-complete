@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.2.2
+
+- fix: order shell history suggestions most-recent-first — history is read oldest-first and deduplication kept the earliest occurrence, so typing `git` put a long-forgotten command at the top of the list instead of the `git status` run a minute earlier. History argument values now follow the same order
+
 ## v2.2.1
 
 - fix: ignore caret positions reported without a usable rectangle, which input method clients send once their window is gone — the all-zero rectangle resolved to the screen origin and pinned the suggestion popup to the corner of the primary display, so on a multi-monitor setup it appeared on a different screen than the terminal

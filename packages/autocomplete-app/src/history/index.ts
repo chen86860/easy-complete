@@ -230,7 +230,10 @@ export const loadHistorySource = async (
 
 const loadFigHistory = async (): Promise<HistoryEntry[]> =>
   History.query(
-    "SELECT command, shell, session_id, cwd, start_time, exit_code FROM history",
+    // Explicit oldest-first ordering: suggestion ranking walks these entries
+    // backwards to surface the most recent match, so it must not rely on
+    // sqlite's default row order.
+    "SELECT command, shell, session_id, cwd, start_time, exit_code FROM history ORDER BY id ASC",
     [],
   ).then((history) =>
     history.map(
@@ -364,6 +367,12 @@ export const getHistoryArgSuggestions = (
         return (
           result.arg?.values
             ?.filter((item) => item.value)
+            // Values are indexed oldest-first as history is parsed. Show the
+            // most recently used value first — downstream sorting is stable and
+            // dedup keeps the first occurrence, so this order is what the user
+            // sees.
+            .slice()
+            .reverse()
             .map((item) => {
               const { historyEntryIndex, value } = item;
               const { context } = source.entries[historyEntryIndex];
@@ -449,11 +458,18 @@ export const getFullHistorySuggestions = (
     historyEntries.push(...historySources.fig.entries);
   }
 
-  for (let i = 0; i < historyEntries.length; i += 1) {
+  // History sources are ordered oldest-first. Walk them backwards so the most
+  // recently run command wins deduplication and lands first: sorting downstream
+  // is stable, so entries of equal priority keep this order in the UI.
+  const seen = new Set<string>();
+  for (let i = historyEntries.length - 1; i >= 0; i -= 1) {
     const { text } = historyEntries[i];
     if (text.length >= prefix.length && text.startsWith(prefix)) {
       const name = text.slice(prefix.length).trimEnd();
-      suggestions.push(name);
+      if (!seen.has(name)) {
+        seen.add(name);
+        suggestions.push(name);
+      }
 
       const firstWord = getFirstWord(name);
       if (firstWord) {
@@ -465,7 +481,7 @@ export const getFullHistorySuggestions = (
     }
   }
 
-  return [...new Set(suggestions)].map((suggestion) => {
+  return suggestions.map((suggestion) => {
     const frequency = frequencies[getFirstWord(suggestion)] || 0;
     return {
       type: "history",

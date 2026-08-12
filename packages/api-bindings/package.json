@@ -29,7 +29,7 @@
     "@easy-complete/eslint-config": "workspace:^",
     "@easy-complete/tsconfig": "workspace:^",
     "@tsconfig/recommended": "^1.0.13",
-    "@types/node": "^22.15.20",
+    "@types/node": "^26.2.0",
     "@typescript/analyze-trace": "^0.11.1",
     "eslint": "^10.8.1",
     "lint-staged": "^17.3.0",

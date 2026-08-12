@@ -138,7 +138,7 @@ const insertString = (
     insertionLengthFull: `${inserted.insertedCharsFull}`,
     app: fig.constants?.version || "",
     terminal: state.figState.shellContext?.terminal ?? null,
-    shell: state.figState.shellContext?.shellPath?.split("/")?.at(-1) ?? null,
+    shell: state.figState.shellContext?.shellPath?.split("/").pop() ?? null,
   });
 
   logger.info("Inserted string, updating visibility");

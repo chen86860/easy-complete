@@ -17,8 +17,8 @@
   "dependencies": {
     "@fontsource/jetbrains-mono": "^5.3.0",
     "@fontsource/space-grotesk": "^5.3.0",
-    "@tanstack/react-router": "^1.170.18",
-    "@tanstack/react-start": "^1.168.32",
+    "@tanstack/react-router": "^1.170.24",
+    "@tanstack/react-start": "^1.168.41",
     "posthog-js": "^1.409.5",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"

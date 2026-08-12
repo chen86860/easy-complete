@@ -18,7 +18,11 @@ use core_foundation::dictionary::CFDictionary;
 use core_foundation::number::CFNumber;
 use core_foundation::string::{CFString, CFStringRef};
 use core_graphics::display::{self, CGRect};
-use core_graphics::window::{CGWindowID, kCGWindowBounds, kCGWindowLayer, kCGWindowNumber, kCGWindowOwnerPID};
+use core_graphics::window::{
+    CGWindowID, kCGNullWindowID, kCGWindowBounds, kCGWindowLayer, kCGWindowListExcludeDesktopElements,
+    kCGWindowListOptionAll, kCGWindowListOptionIncludingWindow, kCGWindowListOptionOnScreenOnly, kCGWindowNumber,
+    kCGWindowOwnerPID,
+};
 use tracing::warn;
 
 use crate::util::{NSArrayRef, NSStringRef};
@@ -266,14 +270,14 @@ impl UIElement {
             let window_id = self.get_window_id().ok()?;
             let windows = if all_windows {
                 CFArray::<CFDictionary>::wrap_under_create_rule(display::CGWindowListCopyWindowInfo(
-                    display::kCGWindowListOptionAll,
-                    display::kCGNullWindowID,
+                    kCGWindowListOptionAll,
+                    kCGNullWindowID,
                 ))
             } else {
                 CFArray::<CFDictionary>::wrap_under_create_rule(display::CGWindowListCopyWindowInfo(
-                    display::kCGWindowListOptionOnScreenOnly
-                        | display::kCGWindowListExcludeDesktopElements
-                        | display::kCGWindowListOptionIncludingWindow,
+                    kCGWindowListOptionOnScreenOnly
+                        | kCGWindowListExcludeDesktopElements
+                        | kCGWindowListOptionIncludingWindow,
                     window_id,
                 ))
             };

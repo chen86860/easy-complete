@@ -4,6 +4,8 @@
 //! return true if the item represents a terminal.
 #[cfg(unix)]
 use std::os::unix::io::AsRawFd;
+#[cfg(unix)]
+use std::os::unix::io::BorrowedFd;
 #[cfg(windows)]
 use std::os::windows::io::AsRawHandle;
 
@@ -24,7 +26,9 @@ pub trait IsTty {
 impl<S: AsRawFd> IsTty for S {
     fn is_tty(&self) -> bool {
         let fd = self.as_raw_fd();
-        nix::unistd::isatty(fd).unwrap_or_default()
+        // SAFETY: `fd` stays valid for the lifetime of `self` and the borrow
+        // does not escape this call.
+        nix::unistd::isatty(unsafe { BorrowedFd::borrow_raw(fd) }).unwrap_or_default()
     }
 }
 

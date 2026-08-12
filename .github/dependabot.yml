@@ -3,26 +3,23 @@
 
 version: 2
 updates:
+  # Keep Dependabot security updates enabled, but disable routine version-update PRs.
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
-    assignees:
-      - "chaynabors"
-    open-pull-requests-limit: 100
+    open-pull-requests-limit: 0
     commit-message:
       prefix: ci
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "daily"
-    assignees:
-      - "chaynabors"
     commit-message:
       prefix: fix
       prefix-development: chore
       include: scope
-    open-pull-requests-limit: 100
+    open-pull-requests-limit: 0
     groups:
       eslint:
         patterns: ["eslint", "@eslint/*"]
@@ -32,8 +29,8 @@ updates:
         patterns: ["vitest", "@vitest/*"]
       radix-ui:
         patterns: ["@radix-ui/*"]
-  # The website is a standalone pnpm project with its own lockfile, so the "/" entry above does
-  # not cover it. Without this, its advisories never get an update PR.
+  # The website is a standalone pnpm project with its own lockfile, so keep its entry for
+  # Dependabot security updates while routine version-update PRs remain disabled.
   - package-ecosystem: "npm"
     directory: "/website"
     schedule:
@@ -42,7 +39,7 @@ updates:
       prefix: fix
       prefix-development: chore
       include: scope
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 0
     groups:
       cloudflare:
         patterns: ["@cloudflare/*", "wrangler", "miniflare"]
@@ -52,9 +49,7 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    assignees:
-      - "chaynabors"
-    open-pull-requests-limit: 100
+    open-pull-requests-limit: 0
     commit-message:
       prefix: fix
       prefix-development: chore

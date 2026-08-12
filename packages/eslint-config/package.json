@@ -27,14 +27,14 @@
   "devDependencies": {
     "@easy-complete/tsconfig": "workspace:^",
     "@eslint/js": "^10.0.1",
-    "@typescript-eslint/utils": "^8.65.0",
+    "@typescript-eslint/utils": "^8.66.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.3",
     "eslint-plugin-unicorn": "^73.0.0",
     "eslint": "^10.8.1",
     "prettier": "^3.9.6",
-    "typescript-eslint": "^8.65.0",
+    "typescript-eslint": "^8.66.0",
     "typescript": "6.0.3"
   }
 }

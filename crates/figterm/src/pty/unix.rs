@@ -1,5 +1,5 @@
 use std::io::{self, Read, Write};
-use std::os::unix::io::{AsRawFd, FromRawFd, RawFd};
+use std::os::unix::io::{AsFd, AsRawFd, RawFd};
 use std::os::unix::process::CommandExt;
 use std::path::Path;
 
@@ -33,10 +33,10 @@ struct UnixAsyncMasterPty {
 }
 
 /// Helper function to set the close-on-exec flag for a raw descriptor
-fn cloexec(fd: RawFd) -> Result<()> {
-    let flags = fcntl(fd, FcntlArg::F_GETFD)?;
+fn cloexec(fd: impl AsFd) -> Result<()> {
+    let flags = fcntl(&fd, FcntlArg::F_GETFD)?;
     fcntl(
-        fd,
+        &fd,
         FcntlArg::F_SETFD(FdFlag::from_bits_truncate(flags) | FdFlag::FD_CLOEXEC),
     )?;
     Ok(())
@@ -76,23 +76,23 @@ pub fn open_pty(pty_size: &PtySize) -> Result<PtyPair> {
         ws_xpixel: pty_size.pixel_width,
         ws_ypixel: pty_size.pixel_height,
     };
-    unsafe { ioctl_tiocswinsz(slave_pty, &winsize) }?;
+    unsafe { ioctl_tiocswinsz(slave_pty.as_raw_fd(), &winsize) }?;
 
     #[cfg(target_os = "freebsd")]
-    set_nonblocking(master_pty.as_raw_fd()).context("Failed to set nonblocking")?;
+    set_nonblocking(&master_pty).context("Failed to set nonblocking")?;
 
     let master = UnixMasterPty { fd: master_pty };
     let slave = UnixSlavePty {
         name: pty_name,
-        fd: unsafe { FileDescriptor::from_raw_fd(slave_pty) },
+        fd: FileDescriptor::new(slave_pty),
     };
 
     // Ensure that these descriptors will get closed when we execute
     // the child process. This is done after constructing the Pty
     // instances so that we ensure that the Ptys get drop()'d if
     // the cloexec() functions fail (unlikely!).
-    cloexec(master.fd.as_raw_fd())?;
-    cloexec(slave.fd.as_raw_fd())?;
+    cloexec(&master.fd)?;
+    cloexec(&slave.fd)?;
 
     Ok(PtyPair {
         master: Box::new(master),
@@ -230,16 +230,14 @@ impl AsRawFd for UnixMasterPty {
 
 /// Set `fd` into non-blocking mode using `O_NONBLOCKING`
 #[cfg(target_os = "freebsd")]
-fn set_nonblocking(fd: RawFd) -> Result<()> {
+fn set_nonblocking(fd: impl AsFd) -> Result<()> {
     use nix::fcntl;
 
-    let old_oflag_c_int =
-        fcntl::fcntl(fd, FcntlArg::F_GETFL).with_context(|| format!("Failed to get flags for fd {fd:?}"))?;
+    let old_oflag_c_int = fcntl::fcntl(&fd, FcntlArg::F_GETFL).context("Failed to get flags for fd")?;
 
     let old_oflag = OFlag::from_bits_truncate(old_oflag_c_int);
 
-    fcntl::fcntl(fd, FcntlArg::F_SETFL(old_oflag | OFlag::O_NONBLOCK))
-        .with_context(|| format!("Failed to set O_NONBLOCK for fd {fd:?}"))?;
+    fcntl::fcntl(&fd, FcntlArg::F_SETFL(old_oflag | OFlag::O_NONBLOCK)).context("Failed to set O_NONBLOCK for fd")?;
 
     Ok(())
 }

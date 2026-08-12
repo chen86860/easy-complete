@@ -58,7 +58,7 @@ jobs:
           key: arm64-dmg
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v6.0.9
+        uses: pnpm/action-setup@v6.0.10
 
       - name: Set up Node
         uses: actions/setup-node@v7

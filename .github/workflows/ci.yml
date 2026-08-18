@@ -53,7 +53,9 @@ jobs:
 
   rust:
     name: Rust
-    runs-on: macos-15
+    # Match the release runner (see release.yml) so clippy and tests exercise
+    # the same macOS 26 SDK the shipped binaries are linked against.
+    runs-on: macos-26
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v7

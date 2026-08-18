@@ -16,7 +16,10 @@ env:
 jobs:
   build-arm-dmg:
     name: Build ARM DMG
-    runs-on: macos-15
+    # macOS 26 SDK is required: the system only grants Liquid Glass window
+    # chrome (traffic lights, materials) to binaries linked against it. A
+    # macos-15 runner links the 15.x SDK and silently ships the legacy look.
+    runs-on: macos-26
     timeout-minutes: 90
     steps:
       - name: Record start time

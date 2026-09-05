@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.3.0
+
+- feat: add a Show Menu Bar Icon toggle to Settings → Behavior, so the menu bar icon can be hidden without a third-party menu bar manager — the app already applied the underlying `app.hideMenubarIcon` setting live, it just had no switch in the dashboard
+- change: update the bundled completion specs to `@chen86860/autocomplete-specs` 3.1.0, adding 19 specs (`glab`, `grok`, `herdr`, `hf`, `llama-cli`, `llama-server`, `markitdown`, `mise`, `mkcert`, `ninja`, `protoc`, `swiftlint`, `tesseract`, `whisper-cli`, `xcbeautify`, `xz`, `yq`, `yt-dlp`, `zstd`) and refreshing the `claude`, `codex`, and `copilot` specs
+
 ## v2.2.2
 
 - fix: order shell history suggestions most-recent-first — history is read oldest-first and deduplication kept the earliest occurrence, so typing `git` put a long-forgotten command at the top of the list instead of the `git status` run a minute earlier. History argument values now follow the same order

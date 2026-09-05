@@ -247,7 +247,7 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ================================================================================
-@chen86860/autocomplete-specs 3.0.7
+@chen86860/autocomplete-specs 3.1.0
 License: MIT (license file; package metadata declares ISC)
 Authors: @chen86860
 Source: github:chen86860/autocomplete-specs
@@ -1241,7 +1241,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ================================================================================
-alacritty_terminal 2.2.2
+alacritty_terminal 2.3.0
 License: Apache-2.0
 Authors: Christian Duerr <contact@christianduerr.com>, Joe Wilm <joe@jwilm.com>
 Source: https://github.com/alacritty/alacritty

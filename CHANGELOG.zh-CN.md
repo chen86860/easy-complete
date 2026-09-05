@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.3.0
+
+- 新增：设置面板「行为」中新增「显示菜单栏图标」开关，无需借助第三方菜单栏管理工具即可隐藏菜单栏图标——底层的 `app.hideMenubarIcon` 设置本就会实时生效，只是设置界面里一直缺少入口
+- 变更：内置补全规则升级至 `@chen86860/autocomplete-specs` 3.1.0，新增 19 个规则（`glab`、`grok`、`herdr`、`hf`、`llama-cli`、`llama-server`、`markitdown`、`mise`、`mkcert`、`ninja`、`protoc`、`swiftlint`、`tesseract`、`whisper-cli`、`xcbeautify`、`xz`、`yq`、`yt-dlp`、`zstd`），并更新 `claude`、`codex`、`copilot` 规则
+
 ## v2.2.2
 
 - 修复：Shell 历史建议改为按最近使用倒序排列——历史记录本身是从旧到新读取的，去重时又保留了最早出现的那条，因此输入 `git` 时排在最前面的是很久以前用过的命令，而不是一分钟前刚执行的 `git status`。历史参数值的顺序同样调整

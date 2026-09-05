@@ -18,6 +18,13 @@
 </p>
 
 <p align="center">
+  <a href="https://easy-complete.emmmm.dev">官网</a> ·
+  <a href="https://github.com/chen86860/easy-complete/releases/latest">下载</a> ·
+  <a href="./CHANGELOG.zh-CN.md">更新日志</a> ·
+  <a href="./AGENTS.md">参与贡献</a>
+</p>
+
+<p align="center">
   <a href="./README.md">English</a> · <b>简体中文</b>
 </p>
 
@@ -35,67 +42,62 @@ Mac。应用会收集匿名使用统计（打开次数、每日补全次数—�
   <img src="./.github/media/screenshot.png" alt="Easy Complete 自动补全效果">
 </p>
 
-> **平台：** 仅支持 macOS。当前发布的 DMG 仅支持 Apple Silicon / ARM64。
-
 ## 目录
 
+- [功能特性](#-功能特性)
+- [系统要求](#-系统要求)
 - [安装](#-安装)
 - [使用](#-使用)
 - [卸载](#-卸载)
 - [工作原理](#-工作原理)
 - [开发](#-开发)
+- [参与贡献](#-参与贡献)
 - [许可证](#-许可证)
 
 ---
 
-## ⚡️ 安装
+## ✨ 功能特性
+
+- **IDE 风格的行内补全** —— 为数百种 CLI 提供子命令、参数、选项和文件路径补全，以跟随
+  终端光标的原生浮层呈现。
+- **完全离线** —— 补全 spec 在构建时打包进 `.app`，运行时直接从本地读取，**没有**网络
+  回退，无需账号，也不发起任何 AI 请求。
+- **兼容你正在用的终端** —— iTerm2、Apple Terminal、VS Code、Cursor、JetBrains 系列
+  通过 PTY 集成工作；Ghostty、Kitty、WezTerm、Zed、Alacritty、Otty 则通过随附的输入法
+  追踪光标。
+- **支持 `zsh`、`bash` 与 `fish`** —— shell 集成由应用自动安装与维护。
+
+---
+
+## 💻 系统要求
+
+| 项目     | 说明                                                 |
+| -------- | ---------------------------------------------------- |
+| 操作系统 | macOS 12.0（Monterey）及以上                         |
+| 架构     | Apple Silicon（arm64）—— 当前发布的 DMG 仅支持 arm64 |
+| Shell    | `zsh`、`bash`、`fish`                                |
+| 权限     | **辅助功能**（必需，见[下文](#授予辅助功能权限)）    |
+
+---
+
+## ⚡ 安装
 
 ### Homebrew（推荐）
-
-使用一条命令安装 Easy Complete：
 
 ```bash
 brew install --cask chen86860/tap/easy-complete
 ```
 
-安装完成后，从 `/Applications` 启动 **Easy Complete**，按提示授予**辅助功能**权限，
-然后重新加载 shell：
-
-```bash
-exec $SHELL
-```
-
-首次启动时，Easy Complete 会设置随附的 CLI 二进制、shell 集成、输入法和登录启动项。可以
-运行下面的命令确认安装状态：
-
-```bash
-ec doctor
-```
+然后从 `/Applications` 启动 **Easy Complete**，按设置面板的引导操作即可——它会检查
+辅助功能权限、shell 集成和输入法，缺什么可一键修复。
 
 ### 手动下载 DMG
-
-下载最新的 Apple Silicon DMG：
 
 [下载最新版 DMG](https://github.com/chen86860/easy-complete/releases/latest/download/Easy-Complete-arm64.dmg) ·
 [所有 Releases](https://github.com/chen86860/easy-complete/releases)
 
-然后：
-
-1. 打开 `Easy-Complete-arm64.dmg`。
-2. 把 **Easy Complete.app** 拖到 `/Applications`。
-3. 从 `/Applications` 启动 **Easy Complete**。
-4. 按提示授予**辅助功能**权限。
-5. 重新加载你的 shell：
-
-   ```bash
-   exec $SHELL
-   ```
-
-可以运行下面的命令确认安装状态：
-
-```bash
-ec doctor
-```
+打开 DMG，把 **Easy Complete.app** 拖到 `/Applications`，启动它，然后按上面同样的设置面板
+引导完成配置。
 
 ### 从源码构建
 
@@ -104,7 +106,7 @@ ec doctor
 ```bash
 git clone https://github.com/chen86860/easy-complete.git
 cd easy-complete
-./install.sh
+./scripts/install.sh
 ```
 
 源码安装脚本会：
@@ -129,7 +131,8 @@ Easy Complete 需要把补全浮层定位到你当前聚焦的终端窗口，这
 
 > 系统设置 → 隐私与安全性 → 辅助功能
 
-**如果补全始终不出现，几乎都是这个权限没授予。** 可用下面的命令重新触发授权弹窗：
+**如果补全始终不出现，几乎都是这个权限没授予。** 可先用 `ec doctor` 检查，再用下面的命令
+重新触发授权弹窗：
 
 ```bash
 ec debug prompt-accessibility
@@ -168,14 +171,25 @@ WezTerm、Zed、Alacritty、Otty**）还需要依赖随附的输入法来追踪�
 
 ---
 
-## 🗑️ 卸载
+## 🗑 卸载
+
+先移除集成与应用数据——无论你用哪种方式安装，这一步都适用：
 
 ```bash
-./scripts/uninstall.sh
+ec uninstall
 ```
 
-该脚本会移除应用包、CLI 软链、LaunchAgent、输入法、shell 集成以及全部应用数据。它只会
-精确移除 Easy Complete 自己的输入源，**不会动**你其它的键盘布局和输入法。
+它会移除 shell 集成、终端集成、输入法注册、LaunchAgent 以及全部应用数据；只会精确移除
+Easy Complete 自己的输入源，**不会动**你其它的键盘布局和输入法。该命令**不会**删除应用
+包本身，所以请按你的安装方式执行对应的收尾步骤：
+
+| 安装方式 | 收尾命令                                                      |
+| -------- | ------------------------------------------------------------- |
+| Homebrew | `brew uninstall --cask chen86860/tap/easy-complete`           |
+| DMG      | 把 `/Applications/Easy Complete.app` 移到废纸篓               |
+| 源码     | 在仓库中执行 `./scripts/uninstall.sh`（一步完成上述全部清理） |
+
+最后执行 `exec $SHELL` 重新加载 shell。
 
 ---
 
@@ -201,12 +215,15 @@ Shell 钩子（`.zshrc`、`.bashrc`、fish 配置）在每次提示符和按键�
 
 ---
 
-## 🛠️ 开发
+## 🛠 开发
+
+> [AGENTS.md](./AGENTS.md) 是完整的架构与贡献指南——crate 索引、IPC 结构、WebView 生命
+> 周期、内置 spec 与发布流程都在其中。下面只列出跑通本地构建所需的最少命令。
 
 ### 工具链
 
 - Rust `1.87.0`（在 `rust-toolchain.toml` 中固定），edition 2024
-- Node `>=22.13 <23`，pnpm `11.13`
+- Node `>=22.13 <23`，pnpm `11.14`（由 `package.json` 的 `packageManager` 字段固定）
 - TypeScript 构建图由 Turborepo 管理
 
 ### Rust
@@ -236,26 +253,33 @@ pnpm test                                   # 运行 Vitest
 开发模式下，Vite 在 localhost 提供 WebView UI，`fig_desktop` 会连接到它，而不是包内
 `Contents/Resources/` 下的产物。
 
-### 核心 crate
+### 目录结构
 
-| Crate                   | 职责                                                    |
-| ----------------------- | ------------------------------------------------------- |
-| `fig_desktop`           | 原生应用宿主：窗口（`tao`）、WebView（`wry`）、系统托盘 |
-| `figterm`               | PTY 拦截、shell 编辑缓冲区追踪                          |
-| `ec_cli`                | CLI crate，提供 `ec` 二进制及其所有子命令               |
-| `fig_input_method`      | macOS 输入法辅助应用（光标追踪）                        |
-| `fig_integrations`      | shell / 终端 / 编辑器集成的安装逻辑                     |
-| `fig_ipc` / `fig_proto` | Unix 套接字 IPC 原语与生成的 Protobuf 类型              |
+| 路径        | 内容                                                                |
+| ----------- | ------------------------------------------------------------------- |
+| `crates/`   | Rust workspace——桌面应用、PTY、CLI、输入法、IPC、集成逻辑           |
+| `packages/` | TypeScript workspace——补全浮层 UI、设置面板 UI、spec 解析、IPC 绑定 |
+| `proto/`    | Rust 与 TypeScript 两侧共用的 Protobuf 定义                         |
+| `scripts/`  | 安装、卸载、打包 `.app`、DMG、发布与 spec 同步脚本                  |
+| `website/`  | 产品官网                                                            |
 
-### 核心 TypeScript 包
+逐个 crate 与包的职责说明见 [AGENTS.md](./AGENTS.md)。
 
-| 包                    | 职责                        |
-| --------------------- | --------------------------- |
-| `autocomplete-app`    | 补全浮层 React UI           |
-| `dashboard-app`       | 设置 / 引导 React UI        |
-| `autocomplete-parser` | CLI spec 解析、建议生成     |
-| `shell-parser`        | shell 命令行分词器          |
-| `api-bindings`        | 生成的 TS Protobuf IPC 绑定 |
+---
+
+## 🤝 参与贡献
+
+欢迎提交 Issue 和 Pull Request。
+
+- **反馈问题** —— 运行 `ec issue` 会打开一个已自动附带诊断信息的 Issue 表单，也可以直接
+  使用 [Issue 模板](https://github.com/chen86860/easy-complete/issues/new/choose)。
+  请附上 `ec doctor` 的输出。
+- **提 PR 之前** —— 请先阅读 [AGENTS.md](./AGENTS.md)，并确认
+  `cargo clippy --locked --workspace -- -D warnings`、`cargo fmt`、`pnpm lint`
+  和 `pnpm test` 全部通过。
+- **提交信息**遵循 [Conventional Commits](https://www.conventionalcommits.org/)
+  （`feat:`、`fix:`、`refactor:`、`chore:`）。
+- **安全问题**请按 [SECURITY.md](./SECURITY.md) 的流程反馈，不要提交公开 Issue。
 
 ---
 

@@ -31,7 +31,7 @@
     "setup": "bash scripts/setup.sh"
   },
   "devDependencies": {
-    "@chen86860/autocomplete-specs": "3.0.7",
+    "@chen86860/autocomplete-specs": "3.1.0",
     "@vitest/coverage-v8": "^4.1.10",
     "@vitest/ui": "^4.1.10",
     "husky": "^9.1.7",

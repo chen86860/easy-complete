@@ -37,7 +37,7 @@ use crate::event::{Event, WindowEvent, WindowPosition};
 use crate::protocol::icons::{AssetKind, AssetSpecifier, ProcessedAsset};
 use crate::utils::Rect;
 use crate::webview::notification::WebviewNotificationsState;
-use crate::webview::{FigIdMap, GLOBAL_PROXY, WindowId};
+use crate::webview::{FigIdMap, WindowId};
 use crate::{AUTOCOMPLETE_ID, AUTOCOMPLETE_WINDOW_TITLE, DASHBOARD_ID, EventLoopProxy, EventLoopWindowTarget};
 
 pub const DEFAULT_CARET_WIDTH: f64 = 10.0;
@@ -246,14 +246,6 @@ impl PlatformStateImpl {
         Self::override_objc_class_method("WryWebView", sel, func);
     }
 
-    fn override_app_delegate_method<F>(sel: Sel, func: F)
-    where
-        F: MethodImplementation<Callee = Object>,
-    {
-        // https://github.com/tauri-apps/tao/blob/75eb0c1e7e83a766af0e083ce09c761d1974cde4/src/platform_impl/macos/app_delegate.rs#L42
-        Self::override_objc_class_method("TaoAppDelegateParent", sel, func);
-    }
-
     fn override_objc_class_method<F>(class: &str, sel: Sel, func: F)
     where
         F: MethodImplementation<Callee = Object>,
@@ -434,30 +426,9 @@ impl PlatformStateImpl {
                 );
                 Self::override_webview_method(sel!(mouseDown:), mouse_down as extern "C" fn(&Object, Sel, id));
 
-                extern "C" fn application_should_handle_reopen(
-                    _this: &Object,
-                    _cmd: Sel,
-                    _sender: id,
-                    _visible_windows: BOOL,
-                ) -> BOOL {
-                    trace!("application_should_handle_reopen");
-
-                    let proxy = GLOBAL_PROXY.get().unwrap();
-
-                    if let Err(err) = proxy.send_event(Event::WindowEvent {
-                        window_id: DASHBOARD_ID,
-                        window_event: WindowEvent::Show,
-                    }) {
-                        warn!(%err, "Error sending event");
-                    }
-
-                    YES
-                }
-
-                Self::override_app_delegate_method(
-                    sel!(applicationShouldHandleReopen:hasVisibleWindows:),
-                    application_should_handle_reopen as extern "C" fn(&Object, Sel, id, BOOL) -> BOOL,
-                );
+                // Reopen is not overridden here: tao's own app delegate already implements
+                // `applicationShouldHandleReopen:hasVisibleWindows:`, so `class_addMethod` would
+                // be a no-op. It is handled as `Event::Reopen` in the main event loop instead.
 
                 Ok(())
             },

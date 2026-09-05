@@ -819,6 +819,18 @@ impl WebviewManager {
                             .ok();
                     }
                 },
+                // Launching the app again while it is running (Finder, Spotlight, `open -a`) does
+                // not spawn a second process on macOS — LaunchServices reopens this one. With the
+                // menu bar icon hidden that is the only way back to the dashboard.
+                #[cfg(target_os = "macos")]
+                WryEvent::Reopen { .. } => {
+                    proxy
+                        .send_event(Event::WindowEvent {
+                            window_id: DASHBOARD_ID,
+                            window_event: WindowEvent::Show,
+                        })
+                        .ok();
+                },
                 WryEvent::WindowEvent { event, window_id, .. } => {
                     let should_close_dashboard = self
                         .window_id_map

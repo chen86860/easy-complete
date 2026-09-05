@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.3.1
+
+- fix: launching Easy Complete while it is already running now reopens the settings window on macOS — LaunchServices reopens the existing process instead of starting a second one, so the "already running" path never ran, and the app's own reopen handler was dead code because tao's app delegate already implements that selector. This is the only way back to the dashboard once the menu bar icon is hidden
+
 ## v2.3.0
 
 - feat: add a Show Menu Bar Icon toggle to Settings → Behavior, so the menu bar icon can be hidden without a third-party menu bar manager — the app already applied the underlying `app.hideMenubarIcon` setting live, it just had no switch in the dashboard

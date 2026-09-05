@@ -9,7 +9,7 @@ const HREFLANG: Record<Locale, string> = {
 
 export const SITE_NAME = "Easy Complete";
 /** Keep in sync with the workspace `Cargo.toml` version on each release. */
-export const APP_VERSION = "2.3.0";
+export const APP_VERSION = "2.3.1";
 export const HOME_TITLE = "Easy Complete — macOS Terminal Autocomplete";
 export const HOME_DESCRIPTION =
   "Easy Complete adds IDE-style inline autocomplete to your macOS terminal. Fast, local, open source, and built for git, npm, docker, cargo, and more.";

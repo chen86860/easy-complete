@@ -36,6 +36,9 @@ const en = {
   "behavior.silentLaunch": "Silent Launch",
   "behavior.silentLaunchDescription":
     "Start in the background without opening this settings window. Autocomplete still works; reopen settings from the menu bar icon, or by launching Easy Complete again while it is running",
+  "behavior.showMenubarIcon": "Show Menu Bar Icon",
+  "behavior.showMenubarIconDescription":
+    "Show the Easy Complete icon in the menu bar. When hidden, reopen settings by launching Easy Complete again while it is running",
   "behavior.keepAutocompleteReady": "Always Keep Suggestions Ready",
   "behavior.keepAutocompleteReadyDescription":
     "Keep autocomplete loaded when no terminals are connected for faster first suggestions, using more memory",
@@ -177,6 +180,9 @@ const zhCN: Record<TranslationKey, string> = {
   "behavior.silentLaunch": "静默启动",
   "behavior.silentLaunchDescription":
     "启动时不打开本设置窗口，直接在后台运行。补全功能不受影响；需要设置时可点击菜单栏图标，或在程序运行时再次启动 Easy Complete",
+  "behavior.showMenubarIcon": "显示菜单栏图标",
+  "behavior.showMenubarIconDescription":
+    "在菜单栏中显示 Easy Complete 图标。隐藏后，可在程序运行时再次启动 Easy Complete 打开设置",
   "behavior.keepAutocompleteReady": "始终保持联想就绪",
   "behavior.keepAutocompleteReadyDescription":
     "没有终端连接时仍保留联想服务，以更高内存占用换取首次建议更快显示",

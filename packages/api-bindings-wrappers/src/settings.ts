@@ -9,6 +9,7 @@ export enum SETTINGS {
   // App settings
   LAUNCH_ON_STARTUP = "app.launchOnStartup",
   SILENT_LAUNCH = "app.silentLaunch",
+  HIDE_MENUBAR_ICON = "app.hideMenubarIcon",
   DISABLE_AUTO_UPDATES = "app.disableAutoupdates",
   KEEP_AUTOCOMPLETE_READY = "autocomplete.keepReady",
   DASHBOARD_LANGUAGE = "dashboard.language",

@@ -213,6 +213,15 @@ export function BehaviorSection({
           />
         </Row>
         <Row
+          label={t("behavior.showMenubarIcon")}
+          description={t("behavior.showMenubarIconDescription")}
+        >
+          <Toggle
+            checked={!(settings[SETTINGS.HIDE_MENUBAR_ICON] ?? false)}
+            onChange={(value) => set(SETTINGS.HIDE_MENUBAR_ICON, !value)}
+          />
+        </Row>
+        <Row
           label={t("behavior.keepAutocompleteReady")}
           description={t("behavior.keepAutocompleteReadyDescription")}
         >

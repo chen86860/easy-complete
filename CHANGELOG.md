@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.3.2
+
+- fix: render the menu bar icon at Retina resolution with smooth edges while preserving its original shape (#187)
+- fix: add transparent margins to the app icon so its size matches neighboring icons in the Dock and Finder (#186)
+
 ## v2.3.1
 
 - fix: launching Easy Complete while it is already running now reopens the settings window on macOS — LaunchServices reopens the existing process instead of starting a second one, so the "already running" path never ran, and the app's own reopen handler was dead code because tao's app delegate already implements that selector. This is the only way back to the dashboard once the menu bar icon is hidden

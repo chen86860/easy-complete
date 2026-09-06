@@ -9,7 +9,7 @@ const HREFLANG: Record<Locale, string> = {
 
 export const SITE_NAME = "Easy Complete";
 /** Keep in sync with the workspace `Cargo.toml` version on each release. */
-export const APP_VERSION = "2.3.1";
+export const APP_VERSION = "2.3.2";
 export const HOME_TITLE = "Easy Complete — macOS Terminal Autocomplete";
 export const HOME_DESCRIPTION =
   "Easy Complete adds IDE-style inline autocomplete to your macOS terminal. Fast, local, open source, and built for git, npm, docker, cargo, and more.";
@@ -180,8 +180,10 @@ export function homeSchema(locale: Locale = "en") {
   };
 }
 
-interface GuideSchemaOptions
-  extends Pick<PageHeadOptions, "title" | "description" | "path"> {
+interface GuideSchemaOptions extends Pick<
+  PageHeadOptions,
+  "title" | "description" | "path"
+> {
   /**
    * Short label for the final breadcrumb crumb. Must match the crumb rendered
    * by `GuidePage`, since Google requires the markup and the visible trail to
@@ -244,7 +246,9 @@ export function guideSchema({
   };
 }
 
-export function faqSchema(faqs: ReadonlyArray<{ question: string; answer: string }>) {
+export function faqSchema(
+  faqs: ReadonlyArray<{ question: string; answer: string }>,
+) {
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",

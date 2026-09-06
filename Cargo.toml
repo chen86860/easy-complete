@@ -15,7 +15,7 @@ authors = ["Easy Complete Contributors"]
 edition = "2024"
 homepage = "https://easy-complete.emmmm.dev/"
 publish = false
-version = "2.3.1"
+version = "2.3.2"
 license = "MIT"
 
 [workspace.dependencies]

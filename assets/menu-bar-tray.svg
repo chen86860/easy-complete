@@ -1,0 +1,6 @@
+<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Matches the geometry of the original 22 px tray bitmap, including its
+       tall chevron and low underline. assets/menu-bar.svg is a different mark. -->
+  <path d="M2.8 4.5L9.5 11L2.5 18.2" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M12.8 17.5H20.2" stroke="black" stroke-width="3" stroke-linecap="round"/>
+</svg>

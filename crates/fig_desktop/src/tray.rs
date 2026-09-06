@@ -204,6 +204,9 @@ pub fn get_icon(is_logged_in: bool) -> Icon {
             cfg_if! {
                 if #[cfg(target_os = "linux")] {
                     include_bytes!("../icons/icon-monochrome-light.png").to_vec()
+                } else if #[cfg(target_os = "macos")] {
+                    // tray-icon displays this at 18 pt; provide 36 px for Retina.
+                    include_bytes!("../icons/icon-monochrome@2x.png").to_vec()
                 } else {
                     include_bytes!("../icons/icon-monochrome.png").to_vec()
                 }
@@ -214,6 +217,8 @@ pub fn get_icon(is_logged_in: bool) -> Icon {
                     // This is intentionally the same as when logged in since Linux tray icons
                     // don't really seem to work that well when multiple choices are available.
                     include_bytes!("../icons/icon-monochrome-light.png").to_vec()
+                } else if #[cfg(target_os = "macos")] {
+                    include_bytes!("../icons/not-logged-in@2x.png").to_vec()
                 } else {
                     include_bytes!("../icons/not-logged-in.png").to_vec()
                 }

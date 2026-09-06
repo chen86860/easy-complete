@@ -57,6 +57,10 @@ jobs:
     # the same macOS 26 SDK the shipped binaries are linked against.
     runs-on: macos-26
     timeout-minutes: 45
+    env:
+      # Keep these aligned with release.yml so cached dist dependencies are reusable.
+      CARGO_TERM_COLOR: always
+      MACOSX_DEPLOYMENT_TARGET: "12.0"
     steps:
       - uses: actions/checkout@v7
 
@@ -73,7 +77,10 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
         with:
-          key: ci
+          # Tags can restore main's cache; caches from other tags are isolated.
+          shared-key: macos-26-arm64
+          env-vars: MACOSX_DEPLOYMENT_TARGET
+          save-if: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Check formatting
         run: cargo fmt --check

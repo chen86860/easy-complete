@@ -57,8 +57,25 @@ delta when possible and fall back to the versioned full DMG when no delta is
 available or applying the delta fails.
 
 The published appcast keeps only the latest update item, but it may include up
-to eight deltas from recent previous versions. Older DMGs are inputs for delta
+to five deltas from recent previous versions. Older DMGs are inputs for delta
 generation; they are not re-published in the latest release.
+
+The release workflow uses `SPARKLE_MAXIMUM_DELTAS` for both the archive history
+limit and delta generation, so it downloads at most five previous releases.
+
+## Rust Build Cache
+
+CI on `main` builds the distribution profile and saves its dependency cache under
+the shared `macos-26-arm64` key. Release jobs restore that cache without saving a
+tag-specific copy. PR jobs also restore it, but only `main` writes shared caches.
+
+Keep the runner, `CARGO_TERM_COLOR`, `MACOSX_DEPLOYMENT_TARGET`, and the Rust cache
+inputs aligned between the two workflows. The deployment target is set before
+cache restoration and included in the cache key.
+
+After changing the cache configuration, let CI on `main` finish successfully
+before pushing the next release tag so the new cache is available. A cold cache
+still builds normally; actual speedups must be measured on GitHub Actions.
 
 ## Local Commands
 
@@ -109,7 +126,7 @@ SPARKLE_PRIVATE_ED_KEY="..." \
 SPARKLE_DOWNLOAD_URL_PREFIX="https://github.com/chen86860/easy-complete/releases/download/v2.0.6/" \
 SPARKLE_BUNDLE_VERSION="2.0.6" \
 SPARKLE_MAXIMUM_VERSIONS=1 \
-SPARKLE_MAXIMUM_DELTAS=8 \
+SPARKLE_MAXIMUM_DELTAS=5 \
 ./scripts/generate-sparkle-appcast.sh dist/Easy-Complete-2.0.6-arm64.dmg
 ```
 

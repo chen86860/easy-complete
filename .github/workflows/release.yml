@@ -11,7 +11,9 @@ permissions:
 
 env:
   CARGO_TERM_COLOR: always
+  MACOSX_DEPLOYMENT_TARGET: "12.0"
   SPARKLE_VERSION: 2.9.3
+  SPARKLE_MAXIMUM_DELTAS: "5"
 
 jobs:
   build-arm-dmg:
@@ -58,7 +60,10 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
         with:
-          key: arm64-dmg
+          # Reuse the dist dependencies warmed by CI on main instead of a tag-only cache.
+          shared-key: macos-26-arm64
+          env-vars: MACOSX_DEPLOYMENT_TARGET
+          save-if: "false"
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v6.0.10
@@ -144,7 +149,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           CURRENT_TAG: ${{ github.ref_name }}
-          HISTORY_LIMIT: 8
+          HISTORY_LIMIT: ${{ env.SPARKLE_MAXIMUM_DELTAS }}
           APPCAST_DIR: dist/sparkle
         run: |
           set -euo pipefail
@@ -218,12 +223,16 @@ jobs:
           if [ -z "$NOTES" ]; then
             NOTES="See the [GitHub release](https://github.com/${{ github.repository }}/releases/tag/${VERSION}) for details."
           fi
-          echo "SPARKLE_RELEASE_NOTES<<EOF" >> "$GITHUB_ENV"
-          echo "$NOTES" >> "$GITHUB_ENV"
-          echo "EOF" >> "$GITHUB_ENV"
-          echo "notes<<EOF" >> "$GITHUB_OUTPUT"
-          echo "$NOTES" >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
+          {
+            echo "SPARKLE_RELEASE_NOTES<<EOF"
+            echo "$NOTES"
+            echo "EOF"
+          } >> "$GITHUB_ENV"
+          {
+            echo "notes<<EOF"
+            echo "$NOTES"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Generate Sparkle appcast
         if: startsWith(github.ref, 'refs/tags/')

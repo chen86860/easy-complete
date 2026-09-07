@@ -75,8 +75,13 @@ mkdir -p "${RESOURCES_DIR}/themes"
 
 if [ ! -f "${REPO_DIR}/bundle/specs/index.json" ]; then
   info "Bundled specs are missing; syncing them now..."
-  node "${REPO_DIR}/scripts/sync-bundled-specs.mjs"
+  EC_SPEC_SKIP=1 node "${REPO_DIR}/scripts/sync-bundled-specs.mjs"
 fi
+
+# The `ec` spec is generated from the clap definitions of the binary we just
+# built, so it always matches the CLI being shipped.
+info "Generating bundled 'ec' completion spec..."
+EC_BINARY="${TARGET_DIR}/ec" node "${REPO_DIR}/scripts/generate-ec-spec.mjs"
 
 info "Embedding Sparkle.framework..."
 SPARKLE_FRAMEWORK="${SPARKLE_FRAMEWORK:-$("${REPO_DIR}/scripts/fetch-sparkle.sh")}"

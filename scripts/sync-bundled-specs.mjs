@@ -7,6 +7,7 @@ import { execFile } from "node:child_process";
 import { createRequire } from "node:module";
 import { promisify } from "node:util";
 import { createHash } from "node:crypto";
+import { generateEcSpec } from "./generate-ec-spec.mjs";
 
 const execFileAsync = promisify(execFile);
 const require = createRequire(import.meta.url);
@@ -434,3 +435,8 @@ if (sourceMode === "dependency") {
 } else {
   throw new Error(`Unsupported BUNDLED_SPECS_SOURCE: ${sourceMode}`);
 }
+
+// The upstream package has no spec for our own CLI, so generate it from clap and
+// append it to the freshly written bundle. Must run last: the sync modes above
+// wipe outDir. Set EC_SPEC_SKIP=1 to opt out.
+await generateEcSpec();

@@ -156,6 +156,8 @@ To keep the bundle small, the sync script supports excluding whole namespaces vi
 
 `build-app.sh` only auto-syncs when `bundle/specs/index.json` is missing, so it reuses whatever filtered set is already on disk. Re-run the sync script after changing the exclusion list.
 
+**Our own CLI (`ec`).** The upstream package only ships third-party specs, so `bundle/specs/ec.js` is generated from clap by `scripts/generate-ec-spec.mjs`: it runs `ec completion fig` (clap_complete_fig), strips the TS type annotation, writes `ec.js`, and adds `ec` to `index.json`. Never hand-edit `bundle/specs/ec.js` — regenerate it. `sync-bundled-specs.mjs` calls it at the end of every sync (the sync wipes `bundle/specs` first), and `build-app.sh` re-runs it with `EC_BINARY=${TARGET_DIR}/ec` so the bundled spec always matches the binary being shipped. Standalone: `EC_BINARY=target/dist/ec node scripts/generate-ec-spec.mjs`; with no `EC_BINARY` it picks `target/{dist,release,debug}/ec` or falls back to `cargo run`. `EC_SPEC_SKIP=1` opts out.
+
 ## Key Crates
 
 | Crate              | Role                                                             |

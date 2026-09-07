@@ -11,7 +11,6 @@ use fig_proto::remote::clientbound::request::Request;
 use fig_proto::remote::clientbound::{self, HandshakeResponse};
 use fig_proto::remote::{Clientbound, Hostbound, RunProcessRequest, hostbound};
 use fig_util::PTY_BINARY_NAME;
-use time::OffsetDateTime;
 use tokio::net::{UnixListener, UnixStream};
 use tokio::select;
 use tokio::sync::Notify;
@@ -133,7 +132,6 @@ pub async fn handle_remote_ipc(
                                     },
                                     context: None,
                                     terminal_cursor_coordinates: None,
-                                    current_session_metrics: None,
                                     response_map: HashMap::new(),
                                     nonce_counter: Arc::new(AtomicU64::new(0)),
                                     on_close_tx: on_close_tx.clone(),
@@ -416,7 +414,6 @@ async fn handle_commands(
             None
         };
 
-        let is_insert_request = matches!(request, Request::InsertText(_));
         figterm_state.with(&session_id, |session| {
             if let Some(writer) = &session.writer {
                 if writer
@@ -428,13 +425,6 @@ async fn handle_commands(
                     })
                     .is_ok()
                 {
-                    if is_insert_request {
-                        if let Some(ref mut metrics) = session.current_session_metrics {
-                            metrics.num_insertions += 1;
-                            metrics.end_time =
-                                OffsetDateTime::now_local().unwrap_or_else(|_| OffsetDateTime::now_utc());
-                        }
-                    }
                     session.last_receive = Instant::now();
                 };
             }

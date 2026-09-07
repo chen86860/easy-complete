@@ -5,9 +5,9 @@ use fig_os_shim::{ContextArcProvider, ContextProvider, EnvProvider, FsProvider};
 pub use fig_proto::fig::client_originated_message::Submessage as ClientOriginatedSubMessage;
 pub use fig_proto::fig::server_originated_message::Submessage as ServerOriginatedSubMessage;
 use fig_proto::fig::{
-    AggregateSessionMetricActionRequest, CheckForUpdatesRequest, ClientOriginatedMessage, DragWindowRequest,
-    InsertTextRequest, NotificationRequest, OnboardingRequest, PositionWindowRequest, RunProcessRequest,
-    ServerOriginatedMessage, UpdateApplicationPropertiesRequest, UserLogoutRequest, WindowFocusRequest,
+    CheckForUpdatesRequest, ClientOriginatedMessage, DragWindowRequest, InsertTextRequest, NotificationRequest,
+    OnboardingRequest, PositionWindowRequest, RunProcessRequest, ServerOriginatedMessage,
+    UpdateApplicationPropertiesRequest, WindowFocusRequest,
 };
 use fig_proto::prost::Message;
 use fig_settings::settings::SettingsProvider;
@@ -36,13 +36,6 @@ pub trait EventHandler {
         RequestResult::unimplemented(request.request)
     }
 
-    async fn aggregate_session_metric_action(
-        &self,
-        request: Wrapped<Self::Ctx, AggregateSessionMetricActionRequest>,
-    ) -> RequestResult {
-        RequestResult::unimplemented(request.request)
-    }
-
     async fn position_window(&self, request: Wrapped<Self::Ctx, PositionWindowRequest>) -> RequestResult {
         RequestResult::unimplemented(request.request)
     }
@@ -63,14 +56,6 @@ pub trait EventHandler {
         &self,
         request: Wrapped<Self::Ctx, UpdateApplicationPropertiesRequest>,
     ) -> RequestResult {
-        RequestResult::unimplemented(request.request)
-    }
-
-    // TODO: rename EventHandler to RequestHandler, and move this callback out
-    // to a separate trait.
-    async fn user_logged_in_callback(&self, _context: Self::Ctx) {}
-
-    async fn user_logout(&self, request: Wrapped<Self::Ctx, UserLogoutRequest>) -> RequestResult {
         RequestResult::unimplemented(request.request)
     }
 
@@ -148,17 +133,13 @@ where
     match message.submessage {
         Some(submessage) => {
             use ClientOriginatedSubMessage::{
-                AggregateSessionMetricActionRequest, AppendToFileRequest, AuthBuilderIdPollCreateTokenRequest,
-                AuthBuilderIdStartDeviceAuthorizationRequest, AuthCancelPkceAuthorizationRequest,
-                AuthFinishPkceAuthorizationRequest, AuthStartPkceAuthorizationRequest, AuthStatusRequest,
-                CheckForUpdatesRequest, CodewhispererListCustomizationRequest, ContentsOfDirectoryRequest,
-                CreateDirectoryRequest, DestinationOfSymbolicLinkRequest, DragWindowRequest, GetLocalStateRequest,
-                GetPlatformInfoRequest, GetSettingsPropertyRequest, HistoryQueryRequest, InsertTextRequest,
-                InstallRequest, ListAvailableProfilesRequest, NotificationRequest, OnboardingRequest,
-                OpenInExternalApplicationRequest, PingRequest, PositionWindowRequest, ReadFileRequest,
-                RunProcessRequest, SetProfileRequest, TelemetryPageRequest, TelemetryTrackRequest,
-                UpdateApplicationPropertiesRequest, UpdateApplicationRequest, UpdateLocalStateRequest,
-                UpdateSettingsPropertyRequest, UserLogoutRequest, WindowFocusRequest, WriteFileRequest,
+                AppendToFileRequest, CheckForUpdatesRequest, ContentsOfDirectoryRequest, CreateDirectoryRequest,
+                DestinationOfSymbolicLinkRequest, DragWindowRequest, GetLocalStateRequest, GetPlatformInfoRequest,
+                GetSettingsPropertyRequest, HistoryQueryRequest, InsertTextRequest, InstallRequest,
+                NotificationRequest, OnboardingRequest, OpenInExternalApplicationRequest, PingRequest,
+                PositionWindowRequest, ReadFileRequest, RunProcessRequest, UpdateApplicationPropertiesRequest,
+                UpdateApplicationRequest, UpdateLocalStateRequest, UpdateSettingsPropertyRequest, WindowFocusRequest,
+                WriteFileRequest,
             };
             #[allow(unused_imports)]
             use requests::*;
@@ -189,12 +170,6 @@ where
                 // settings
                 GetSettingsPropertyRequest(request) => settings::get(request).await,
                 UpdateSettingsPropertyRequest(request) => settings::update(request).await,
-                // telemetry (removed)
-                TelemetryTrackRequest(_request) => RequestResult::deprecated(_request),
-                TelemetryPageRequest(_request) => RequestResult::deprecated(_request),
-                AggregateSessionMetricActionRequest(request) => {
-                    event_handler.aggregate_session_metric_action(request!(request)).await
-                },
                 // window
                 PositionWindowRequest(request) => event_handler.position_window(request!(request)).await,
                 WindowFocusRequest(request) => event_handler.window_focus(request!(request)).await,
@@ -205,24 +180,12 @@ where
                 InstallRequest(request) => install::install(request, &ctx).await,
                 // history
                 HistoryQueryRequest(request) => history::query(request).await,
-                // auth (removed)
-                AuthStatusRequest(_request) => RequestResult::deprecated(_request),
-                AuthStartPkceAuthorizationRequest(_request) => RequestResult::deprecated(_request),
-                AuthFinishPkceAuthorizationRequest(_request) => RequestResult::deprecated(_request),
-                AuthCancelPkceAuthorizationRequest(_request) => RequestResult::deprecated(_request),
-                AuthBuilderIdStartDeviceAuthorizationRequest(_request) => RequestResult::deprecated(_request),
-                AuthBuilderIdPollCreateTokenRequest(_request) => RequestResult::deprecated(_request),
-                // codewhisperer api (removed)
-                CodewhispererListCustomizationRequest(_request) => RequestResult::deprecated(_request),
                 // other
                 OpenInExternalApplicationRequest(request) => other::open_in_external_application(request).await,
                 PingRequest(request) => other::ping(request),
                 UpdateApplicationRequest(request) => update::update_application(request).await,
                 CheckForUpdatesRequest(request) => event_handler.check_for_updates(request!(request)).await,
                 GetPlatformInfoRequest(request) => platform::get_platform_info(request, &ctx).await,
-                UserLogoutRequest(request) => event_handler.user_logout(request!(request)).await,
-                ListAvailableProfilesRequest(_request) => RequestResult::deprecated(_request),
-                SetProfileRequest(_request) => RequestResult::deprecated(_request),
             }
         },
         None => {

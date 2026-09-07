@@ -18,7 +18,6 @@ use tracing::{debug, error, trace, warn};
 
 use crate::event::Event;
 use crate::platform::PlatformState;
-use crate::webview::notification::WebviewNotificationsState;
 use crate::{AUTOCOMPLETE_ID, DASHBOARD_ID, EventLoopProxy};
 
 pub enum LocalResponse {
@@ -73,7 +72,6 @@ impl ContextArcProvider for LocalIpcContext {
 pub async fn start_local_ipc(
     platform_state: Arc<PlatformState>,
     figterm_state: Arc<FigtermState>,
-    webview_notifications_state: Arc<WebviewNotificationsState>,
     proxy: EventLoopProxy,
 ) -> Result<()> {
     let socket_path = directories::desktop_socket_path()?;
@@ -99,7 +97,6 @@ pub async fn start_local_ipc(
             BufferedUnixStream::new(stream),
             platform_state.clone(),
             figterm_state.clone(),
-            webview_notifications_state.clone(),
             proxy.clone(),
             LocalIpcContext::new(),
         ));
@@ -112,7 +109,6 @@ async fn handle_local_ipc<Ctx>(
     mut stream: BufferedUnixStream,
     platform_state: Arc<PlatformState>,
     figterm_state: Arc<FigtermState>,
-    webview_notifications_state: Arc<WebviewNotificationsState>,
     proxy: EventLoopProxy,
     ctx: Ctx,
 ) where
@@ -134,10 +130,10 @@ async fn handle_local_ipc<Ctx>(
                     },
                     Some(command) => {
                         use fig_proto::local::command::Command::{
-                            BundleMetadata, ConnectToIbus, DebugMode, Devtools, Diagnostics, DumpState, InputMethod,
-                            ListTerminalIntegrations, LogLevel, Login, Logout, OpenBrowser, OpenUiElement,
-                            PromptAccessibility, Quit, ReportWindow, ResetCache, Restart, RestartSettingsListener,
-                            RunInstallScript, TerminalIntegration, Update,
+                            BundleMetadata, ConnectToIbus, DebugMode, Devtools, Diagnostics, InputMethod,
+                            ListTerminalIntegrations, LogLevel, OpenBrowser, OpenUiElement, PromptAccessibility, Quit,
+                            ReportWindow, ResetCache, Restart, RestartSettingsListener, RunInstallScript,
+                            TerminalIntegration, Update,
                         };
 
                         match command {
@@ -148,14 +144,6 @@ async fn handle_local_ipc<Ctx>(
                             OpenBrowser(command) => commands::open_browser(command).await,
                             PromptAccessibility(_) => commands::prompt_for_accessibility_permission(&ctx).await,
                             LogLevel(command) => commands::log_level(command),
-                            Login(_) => commands::login(&proxy).await,
-                            Logout(_) => commands::logout(&proxy).await,
-                            DumpState(command) => commands::dump_state(
-                                command,
-                                &figterm_state,
-                                &webview_notifications_state,
-                                &platform_state,
-                            ),
                             ConnectToIbus(_) => commands::connect_to_ibus(proxy.clone(), &platform_state).await,
                             BundleMetadata(_) => commands::bundle_metadata(&ctx.context_arc()).await,
                             Update(_) => {
@@ -232,8 +220,8 @@ async fn handle_local_ipc<Ctx>(
                 use fig_proto::ReflectMessage;
                 use fig_proto::local::hook::Hook::{
                     Callback, CaretPosition, ClearAutocompleteCache, EditBuffer, Event, FileChanged, FocusChange,
-                    FocusedWindowData, Hide, Init, IntegrationReady, InterceptedKey, KeyboardFocusChanged,
-                    OpenedSshConnection, PostExec, PreExec, Prompt, TmuxPaneChanged,
+                    FocusedWindowData, Hide, Init, IntegrationReady, InterceptedKey, KeyboardFocusChanged, PostExec,
+                    PreExec, Prompt, TmuxPaneChanged,
                 };
 
                 if let Err(err) = match hook.hook {
@@ -247,17 +235,8 @@ async fn handle_local_ipc<Ctx>(
                     Some(Event(event)) => hooks::event(event, &proxy).await,
                     Some(ClearAutocompleteCache(event)) => hooks::clear_autocomplete_cache(event, &proxy).await,
                     Some(
-                        Init(_)
-                        | PostExec(_)
-                        | TmuxPaneChanged(_)
-                        | OpenedSshConnection(_)
-                        | Callback(_)
-                        | IntegrationReady(_)
-                        | Hide(_)
-                        | PreExec(_)
-                        | InterceptedKey(_)
-                        | EditBuffer(_)
-                        | Prompt(_),
+                        Init(_) | PostExec(_) | TmuxPaneChanged(_) | Callback(_) | IntegrationReady(_) | Hide(_)
+                        | PreExec(_) | InterceptedKey(_) | EditBuffer(_) | Prompt(_),
                     ) => {
                         warn!("received legacy hook `{}`", hook.descriptor().name());
                         Ok(())

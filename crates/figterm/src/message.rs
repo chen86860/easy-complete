@@ -119,7 +119,7 @@ fn create_command(executable: impl AsRef<Path>, working_directory: impl AsRef<Pa
 /// Process the inner figterm request enum, shared between local and remote
 pub async fn process_figterm_request(
     figterm_request: FigtermRequest,
-    main_loop_tx: Sender<MainLoopEvent>,
+    _main_loop_tx: Sender<MainLoopEvent>,
     term: &Term<EventHandler>,
     pty_master: &mut Box<dyn AsyncMasterPty + Send + Sync>,
     key_interceptor: &mut KeyInterceptor,
@@ -240,15 +240,6 @@ pub async fn process_figterm_request(
             if request.update_alias {
                 *SHELL_ALIAS.lock().unwrap() = request.alias;
             }
-            Ok(None)
-        },
-        FigtermRequest::NotifySshSessionStarted(notification) => {
-            main_loop_tx
-                .send(MainLoopEvent::PromptSSH {
-                    uuid: notification.uuid,
-                    remote_host: notification.remote_host,
-                })
-                .ok();
             Ok(None)
         },
         FigtermRequest::Telemtety(_) => anyhow::bail!("Telemetry is not supported over remote"),

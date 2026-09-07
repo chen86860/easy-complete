@@ -10,21 +10,21 @@ use std::future::Future;
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
 
 use anstream::{eprintln, println};
 use async_trait::async_trait;
-use checks::{BashVersionCheck, FishVersionCheck, SshdConfigCheck};
+use checks::{BashVersionCheck, FishVersionCheck};
 use clap::Args;
 use crossterm::style::Stylize;
 use crossterm::terminal::{Clear, ClearType, disable_raw_mode, enable_raw_mode};
 use crossterm::{cursor, execute};
 use eyre::{ContextCompat, Result, WrapErr};
+use fig_integrations::Error as InstallationError;
 #[cfg(target_os = "macos")]
 use fig_integrations::input_method::InputMethodError;
 use fig_integrations::shell::{ShellExt, ShellIntegration};
-use fig_integrations::ssh::SshIntegration;
-use fig_integrations::{Error as InstallationError, Integration};
 use fig_ipc::{BufferedUnixStream, SendMessage, SendRecvMessage};
 use fig_os_shim::{Context, Env, Os};
 use fig_proto::local::DiagnosticsResponse;
@@ -976,41 +976,6 @@ impl DoctorCheck<DiagnosticsResponse> for ShellCompatibilityCheck {
     }
 }
 
-struct SshIntegrationCheck;
-
-#[async_trait]
-impl DoctorCheck<()> for SshIntegrationCheck {
-    fn name(&self) -> Cow<'static, str> {
-        "SSH integration".into()
-    }
-
-    async fn check(&self, _: &()) -> Result<(), DoctorError> {
-        match SshIntegration::new() {
-            Ok(integration) => match integration.is_installed().await {
-                Ok(()) => Ok(()),
-                Err(err) => Err(DoctorError::Error {
-                    reason: err.to_string().into(),
-                    info: vec![],
-                    fix: Some(DoctorFix::Async(
-                        async move {
-                            integration.install().await?;
-                            Ok(())
-                        }
-                        .boxed(),
-                    )),
-                    error: Some(eyre::Report::new(err)),
-                }),
-            },
-            Err(err) => Err(DoctorError::Error {
-                reason: err.to_string().into(),
-                info: vec![],
-                fix: None,
-                error: Some(eyre::Report::new(err)),
-            }),
-        }
-    }
-}
-
 struct BundlePathCheck;
 
 #[async_trait]
@@ -1550,14 +1515,11 @@ impl DoctorCheck<SupportedTerminalCheckContext> for ImeStatusCheck {
     }
 
     async fn check(&self, context: &SupportedTerminalCheckContext) -> Result<(), DoctorError> {
-        use fig_integrations::Integration;
         use fig_integrations::input_method::InputMethod;
         use macos_utils::applications::running_applications;
 
         let input_method = InputMethod::default();
-        if let Err(e) = input_method.is_installed().await {
-            fig_settings::state::set_value("input-method.enabled", true).ok();
-
+        if let Err(e) = input_method.installation_status().await {
             match e {
                 InstallationError::InputMethod(InputMethodError::NotRunning) => {
                     return Err(doctor_fix!({
@@ -1717,20 +1679,6 @@ impl DoctorCheck for WindowsConsoleCheck {
     }
 }
 
-struct LoginStatusCheck;
-
-#[async_trait]
-impl DoctorCheck for LoginStatusCheck {
-    fn name(&self) -> Cow<'static, str> {
-        "Auth".into()
-    }
-
-    async fn check(&self, _: &()) -> Result<(), DoctorError> {
-        // Auth check removed (fig_auth deleted)
-        Ok(())
-    }
-}
-
 struct DashboardHostCheck;
 
 #[async_trait]
@@ -1814,7 +1762,7 @@ async fn run_checks_with_context<T, Fut>(
     header: impl AsRef<str>,
     checks: Vec<&dyn DoctorCheck<T>>,
     get_context: impl Fn() -> Fut,
-    config: CheckConfiguration,
+    config: CheckConfiguration<'_>,
     spinner: &mut Option<Spinner>,
 ) -> Result<()>
 where
@@ -1828,6 +1776,10 @@ where
         Ok(c) => c,
         Err(e) => {
             println!("Failed to get context: {e:?}");
+            if config.all {
+                config.failed.store(true, Ordering::Relaxed);
+                return Ok(());
+            }
             eyre::bail!(e);
         },
     };
@@ -1847,12 +1799,21 @@ where
             }
         }
 
+        if config.strict {
+            if let Err(DoctorError::Warning(reason)) = result {
+                result = Err(DoctorError::error(reason));
+            }
+        }
+
         if config.all || result.is_err() {
             stop_spinner(spinner.take())?;
             print_status_result(&name, &result, config.all);
         }
 
         if config.all {
+            if matches!(result, Err(DoctorError::Error { .. })) {
+                config.failed.store(true, Ordering::Relaxed);
+            }
             continue;
         }
 
@@ -1876,6 +1837,7 @@ where
                     print_status_result(&name, &fix_result, config.all);
                     match fix_result {
                         Err(DoctorError::Error { .. }) => {},
+                        Err(DoctorError::Warning(_)) if config.strict => {},
                         _ => {
                             continue;
                         },
@@ -1919,7 +1881,7 @@ async fn get_null_context() -> Result<()> {
 async fn run_checks(
     header: String,
     checks: Vec<&dyn DoctorCheck>,
-    config: CheckConfiguration,
+    config: CheckConfiguration<'_>,
     spinner: &mut Option<Spinner>,
 ) -> Result<()> {
     run_checks_with_context(header, checks, get_null_context, config, spinner).await
@@ -1936,9 +1898,10 @@ fn stop_spinner(spinner: Option<Spinner>) -> Result<()> {
 }
 
 #[derive(Copy, Clone)]
-struct CheckConfiguration {
+struct CheckConfiguration<'a> {
     all: bool,
     strict: bool,
+    failed: &'a AtomicBool,
 }
 
 // Doctor
@@ -1958,7 +1921,12 @@ pub async fn doctor_cli(all: bool, strict: bool) -> Result<ExitCode> {
         }
     }
 
-    let config = CheckConfiguration { all, strict };
+    let failed = AtomicBool::new(false);
+    let config = CheckConfiguration {
+        all,
+        strict,
+        failed: &failed,
+    };
 
     let mut spinner: Option<Spinner> = None;
     if !config.all {
@@ -1972,29 +1940,16 @@ pub async fn doctor_cli(all: bool, strict: bool) -> Result<ExitCode> {
         })?;
     }
 
-    // Remove update lock on doctor runs to fix bad state if update crashed.
-    if let Ok(update_lock) = fig_util::directories::update_lock_path(&Context::new()) {
-        if update_lock.exists() {
-            std::fs::remove_file(update_lock).ok();
-        }
+    // The all mode is observational: no recovery actions or application launch.
+    if !all {
+        launch_fig_desktop(LaunchArgs {
+            wait_for_socket: true,
+            open_dashboard: false,
+            immediate_update: true,
+            verbose: false,
+        })
+        .ok();
     }
-
-    run_checks(
-        "Let's check if you're logged in...".into(),
-        vec![&LoginStatusCheck {}],
-        config,
-        &mut spinner,
-    )
-    .await?;
-
-    // If user is logged in, try to launch fig
-    launch_fig_desktop(LaunchArgs {
-        wait_for_socket: true,
-        open_dashboard: false,
-        immediate_update: true,
-        verbose: false,
-    })
-    .ok();
 
     let shell_integrations: Vec<_> = [Shell::Bash, Shell::Zsh, Shell::Fish]
         .into_iter()
@@ -2027,9 +1982,7 @@ pub async fn doctor_cli(all: bool, strict: bool) -> Result<ExitCode> {
                 #[cfg(target_os = "windows")]
                 &WindowsConsoleCheck,
                 &SettingsCorruptionCheck,
-                &SshdConfigCheck,
                 &FigIntegrationsCheck,
-                // &SshIntegrationCheck,
             ],
             config,
             &mut spinner,
@@ -2073,8 +2026,7 @@ pub async fn doctor_cli(all: bool, strict: bool) -> Result<ExitCode> {
             config,
             &mut spinner,
         )
-        .await
-        .ok();
+        .await?;
 
         if fig_util::manifest::is_minimal() {
             return Ok(());
@@ -2164,7 +2116,7 @@ pub async fn doctor_cli(all: bool, strict: bool) -> Result<ExitCode> {
     }
     .await;
 
-    let is_error = status.is_err();
+    let is_error = status.is_err() || failed.load(Ordering::Relaxed);
 
     stop_spinner(spinner)?;
 
@@ -2178,7 +2130,6 @@ pub async fn doctor_cli(all: bool, strict: bool) -> Result<ExitCode> {
         );
         println!();
     } else {
-        // If early exit is disabled, no errors are thrown
         if !config.all {
             println!("{} Everything looks good!", CHECKMARK.green());
         }
@@ -2197,8 +2148,115 @@ pub async fn doctor_cli(all: bool, strict: bool) -> Result<ExitCode> {
             "only new ones.".bold().italic()
         );
         println!("  (You might want to restart your terminal emulator)");
-        fig_settings::state::set_value("doctor.prompt-restart-terminal", false)?;
+        if !all {
+            fig_settings::state::set_value("doctor.prompt-restart-terminal", false)?;
+        }
     }
 
-    Ok(ExitCode::SUCCESS)
+    Ok(if is_error { ExitCode::FAILURE } else { ExitCode::SUCCESS })
+}
+
+#[cfg(test)]
+mod command_tests {
+    use super::*;
+
+    struct FailingCheck {
+        fixed: Arc<AtomicBool>,
+        checked: Arc<AtomicBool>,
+    }
+
+    #[async_trait]
+    impl DoctorCheck for FailingCheck {
+        fn name(&self) -> Cow<'static, str> {
+            "test failure".into()
+        }
+
+        async fn check(&self, _: &()) -> Result<(), DoctorError> {
+            self.checked.store(true, Ordering::Relaxed);
+            let fixed = self.fixed.clone();
+            Err(DoctorError::Error {
+                reason: "test failure".into(),
+                info: vec![],
+                fix: Some(DoctorFix::Sync(Box::new(move || {
+                    fixed.store(true, Ordering::Relaxed);
+                    Ok(())
+                }))),
+                error: None,
+            })
+        }
+    }
+
+    struct WarningCheck;
+
+    #[async_trait]
+    impl DoctorCheck for WarningCheck {
+        fn name(&self) -> Cow<'static, str> {
+            "test warning".into()
+        }
+        async fn check(&self, _: &()) -> Result<(), DoctorError> {
+            Err(DoctorError::warning("test warning"))
+        }
+    }
+
+    #[tokio::test]
+    async fn all_records_failures_continues_checks_and_never_fixes() {
+        let failed = AtomicBool::new(false);
+        let fixed = Arc::new(AtomicBool::new(false));
+        let first = FailingCheck {
+            fixed: fixed.clone(),
+            checked: Arc::new(AtomicBool::new(false)),
+        };
+        let second = FailingCheck {
+            fixed: fixed.clone(),
+            checked: Arc::new(AtomicBool::new(false)),
+        };
+        let config = CheckConfiguration {
+            all: true,
+            strict: false,
+            failed: &failed,
+        };
+        run_checks("test".into(), vec![&first, &second], config, &mut None)
+            .await
+            .unwrap();
+        assert!(failed.load(Ordering::Relaxed));
+        assert!(first.checked.load(Ordering::Relaxed));
+        assert!(second.checked.load(Ordering::Relaxed));
+        assert!(!fixed.load(Ordering::Relaxed));
+    }
+
+    #[tokio::test]
+    async fn strict_warnings_fail_in_both_modes() {
+        for all in [false, true] {
+            for strict in [false, true] {
+                let failed = AtomicBool::new(false);
+                let config = CheckConfiguration {
+                    all,
+                    strict,
+                    failed: &failed,
+                };
+                let result = run_checks("test".into(), vec![&WarningCheck], config, &mut None).await;
+                assert_eq!(result.is_err() || failed.load(Ordering::Relaxed), strict);
+            }
+        }
+    }
+
+    #[tokio::test]
+    async fn all_records_context_errors_without_aborting_later_groups() {
+        let failed = AtomicBool::new(false);
+        let config = CheckConfiguration {
+            all: true,
+            strict: false,
+            failed: &failed,
+        };
+        run_checks_with_context(
+            "test",
+            vec![&WarningCheck],
+            || async { eyre::bail!("context unavailable") },
+            config,
+            &mut None,
+        )
+        .await
+        .unwrap();
+        assert!(failed.load(Ordering::Relaxed));
+    }
 }

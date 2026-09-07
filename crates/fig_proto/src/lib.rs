@@ -5,7 +5,6 @@ pub mod fig_common;
 pub mod figterm;
 pub mod hooks;
 pub mod local;
-pub mod mux;
 pub(crate) mod proto;
 pub mod remote_hooks;
 pub mod util;

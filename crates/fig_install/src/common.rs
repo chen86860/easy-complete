@@ -3,11 +3,8 @@ use std::sync::Arc;
 
 use fig_integrations::Integration;
 use fig_integrations::shell::ShellExt;
-use fig_integrations::ssh::SshIntegration;
 use fig_os_shim::{Context, Env};
-use fig_util::{
-    CHAT_BINARY_NAME, CLI_BINARY_NAME, OLD_CLI_BINARY_NAMES, OLD_PTY_BINARY_NAMES, PTY_BINARY_NAME, Shell, directories,
-};
+use fig_util::{CLI_BINARY_NAME, OLD_CLI_BINARY_NAMES, OLD_PTY_BINARY_NAMES, PTY_BINARY_NAME, Shell, directories};
 
 use crate::Error;
 
@@ -19,8 +16,6 @@ bitflags::bitflags! {
         const SHELL_INTEGRATIONS    = 0b00000001;
         /// This handles the removal of the CLI and pty binaries as well as legacy copies
         const BINARY                = 0b00000010;
-        /// Removal of the ssh integration from the ~/.ssh/config file
-        const SSH                   = 0b00000100;
         const DESKTOP_APP           = 0b00001000;
         const INPUT_METHOD          = 0b00010000;
         const DESKTOP_ENTRY         = 0b00100000;
@@ -31,17 +26,11 @@ bitflags::bitflags! {
 #[cfg(target_os = "linux")]
 impl InstallComponents {
     pub fn all_linux_minimal() -> Self {
-        Self::SHELL_INTEGRATIONS | Self::BINARY | Self::SSH
+        Self::SHELL_INTEGRATIONS | Self::BINARY
     }
 }
 
 pub async fn uninstall(components: InstallComponents, ctx: Arc<Context>) -> Result<(), Error> {
-    let ssh_result = if components.contains(InstallComponents::SSH) {
-        SshIntegration::new()?.uninstall().await
-    } else {
-        Ok(())
-    };
-
     let shell_integration_result = {
         for shell in [Shell::Bash, Shell::Zsh, Shell::Fish] {
             for integration in shell.get_shell_integrations(ctx.env())? {
@@ -63,7 +52,8 @@ pub async fn uninstall(components: InstallComponents, ctx: Arc<Context>) -> Resu
         // let folders = [directories::home_local_bin()?, Path::new("/usr/local/bin").into()];
         let folders = [directories::home_local_bin()?];
 
-        let mut all_binary_names = vec![CLI_BINARY_NAME, CHAT_BINARY_NAME, PTY_BINARY_NAME];
+        // Include the retired chat binary only to clean up older installations.
+        let mut all_binary_names = vec![CLI_BINARY_NAME, PTY_BINARY_NAME, "ec-chat"];
         all_binary_names.extend(OLD_CLI_BINARY_NAMES);
         all_binary_names.extend(OLD_PTY_BINARY_NAMES);
 
@@ -122,9 +112,7 @@ pub async fn uninstall(components: InstallComponents, ctx: Arc<Context>) -> Resu
         }
     }
 
-    daemon_result
-        .and(shell_integration_result)
-        .and(ssh_result.map_err(|e| e.into()))
+    daemon_result.and(shell_integration_result)
 }
 
 pub async fn install(components: InstallComponents, env: &Env) -> Result<(), Error> {
@@ -148,10 +136,6 @@ pub async fn install(components: InstallComponents, env: &Env) -> Result<(), Err
         if let Some(err) = errs.pop() {
             return Err(err);
         }
-    }
-
-    if components.contains(InstallComponents::SSH) {
-        SshIntegration::new()?.install().await?;
     }
 
     #[cfg(target_os = "macos")]

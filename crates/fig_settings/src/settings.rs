@@ -36,6 +36,14 @@ impl Settings {
         ))))
     }
 
+    /// Returns configured values without adding implicit defaults.
+    pub fn all(&self) -> Result<Map<String, Value>> {
+        match &self.0 {
+            inner::Inner::Real => Ok(OldSettings::load()?.map().clone()),
+            inner::Inner::Fake(map) => Ok(map.lock()?.clone()),
+        }
+    }
+
     pub fn set_value(&self, key: impl Into<String>, value: impl Into<serde_json::Value>) -> Result<()> {
         match &self.0 {
             inner::Inner::Real => {
@@ -196,6 +204,24 @@ pub fn get_int_or(key: impl AsRef<str>, default: i64) -> i64 {
 #[cfg(test)]
 mod test {
     use super::{Result, Settings};
+
+    #[test]
+    fn all_returns_only_configured_values_and_does_not_mutate_the_store() {
+        let values = [
+            ("enabled", serde_json::json!(false)),
+            ("count", serde_json::json!(0)),
+            ("unset", serde_json::Value::Null),
+            ("label", serde_json::json!("中文")),
+        ];
+        let settings = Settings::from_slice(&values);
+        assert_eq!(
+            settings.all().unwrap(),
+            values.into_iter().map(|(k, v)| (k.to_owned(), v)).collect()
+        );
+        settings.all().unwrap().clear();
+        assert_eq!(settings.all().unwrap().len(), 4);
+        assert!(Settings::new_fake().all().unwrap().is_empty());
+    }
 
     /// General read/write settings test
     #[test]

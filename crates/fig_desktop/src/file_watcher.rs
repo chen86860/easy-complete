@@ -4,7 +4,6 @@ use fig_proto::fig::notification::Type as NotificationEnum;
 use fig_proto::fig::{NotificationType, SettingsChangedNotification};
 use fig_settings::JsonStore;
 use fig_util::directories;
-use notify::event::ModifyKind;
 use notify::{EventKind, RecursiveMode, Watcher};
 use serde_json::{Map, Value};
 use tracing::{debug, error, trace};
@@ -45,29 +44,6 @@ pub async fn setup_listeners(notifications_state: Arc<WebviewNotificationsState>
         },
         Err(err) => {
             error!(%err, "failed to get settings file path");
-            None
-        },
-    };
-
-    let midway_path = match directories::midway_cookie_path() {
-        Ok(macos_utils) => match macos_utils.parent() {
-            Some(midway_dir) => match watcher.watch(midway_dir, RecursiveMode::NonRecursive) {
-                Ok(()) => {
-                    trace!("watching midway file at {midway_dir:?}");
-                    Some(macos_utils)
-                },
-                Err(err) => {
-                    error!(%err, "failed to watch midway dir");
-                    None
-                },
-            },
-            None => {
-                error!("failed to get midway file dir");
-                None
-            },
-        },
-        Err(err) => {
-            error!(%err, "failed to get midway file path");
             None
         },
     };
@@ -149,19 +125,6 @@ pub async fn setup_listeners(notifications_state: Arc<WebviewNotificationsState>
                             Err(err) => error!(%err, "Failed to get settings"),
                         }
                     }
-                }
-            }
-
-            if let Some(midway_path) = &midway_path {
-                if event.paths.contains(midway_path)
-                    && matches!(
-                        event.kind,
-                        EventKind::Create(_)
-                            | EventKind::Modify(ModifyKind::Any | ModifyKind::Data(_) | ModifyKind::Name(_))
-                    )
-                {
-                    debug!("Midway file changed");
-                    NOTIFICATION_BUS.send_midway();
                 }
             }
         }

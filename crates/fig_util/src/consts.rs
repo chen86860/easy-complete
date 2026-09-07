@@ -12,7 +12,6 @@ pub const TAURI_PRODUCT_NAME: &str = "Easy Complete";
 
 pub const CLI_BINARY_NAME: &str = "ec";
 pub const CLI_BINARY_NAME_MINIMAL: &str = "ec-minimal";
-pub const CHAT_BINARY_NAME: &str = "ec-chat";
 pub const PTY_BINARY_NAME: &str = "ecterm";
 
 pub const CLI_CRATE_NAME: &str = "ec_cli";

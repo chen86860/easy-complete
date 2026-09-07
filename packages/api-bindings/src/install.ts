@@ -17,8 +17,7 @@ export type Component =
   | "accessibility"
   | "desktopEntry"
   | "autostartEntry"
-  | "gnomeExtension"
-  | "ssh";
+  | "gnomeExtension";
 
 function componentToProto(component: Component) {
   switch (component) {
@@ -30,8 +29,6 @@ function componentToProto(component: Component) {
       return InstallComponent.ACCESSIBILITY;
     case "inputMethod":
       return InstallComponent.INPUT_METHOD;
-    case "ssh":
-      return InstallComponent.SSH;
     case "desktopEntry":
       return InstallComponent.DESKTOP_ENTRY;
     case "autostartEntry":

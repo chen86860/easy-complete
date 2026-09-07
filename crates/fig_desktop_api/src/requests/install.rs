@@ -1,11 +1,9 @@
 use std::fmt::Display;
 
 use anstream::adapter::strip_str;
-use fig_integrations::Integration;
 #[cfg(target_os = "linux")]
 use fig_integrations::desktop_entry::{AutostartIntegration, DesktopEntryIntegration};
 use fig_integrations::shell::ShellExt;
-use fig_integrations::ssh::SshIntegration;
 use fig_os_shim::{ContextArcProvider, ContextProvider, EnvProvider};
 use fig_proto::fig::install_response::{InstallationStatus, Response};
 use fig_proto::fig::result::Result as ProtoResultEnum;
@@ -98,14 +96,6 @@ where
                     )),
                 }),
             }
-        },
-        (InstallComponent::Ssh, action) => match SshIntegration::new() {
-            Ok(ssh_integration) => match action {
-                InstallAction::Install => integration_result(ssh_integration.install().await),
-                InstallAction::Uninstall => integration_result(ssh_integration.uninstall().await),
-                InstallAction::Status => integration_status(ssh_integration).await,
-            },
-            Err(err) => integration_result(Err(err)),
         },
         (InstallComponent::Ibus, _) => integration_result(Err("IBus install is legacy")),
         (InstallComponent::Accessibility, InstallAction::Install) => {
@@ -322,7 +312,7 @@ where
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, target_os = "linux"))]
 mod tests {
     use std::sync::Arc;
 

@@ -52,7 +52,7 @@ fi
 
 info "Uninstalling shell integration..."
 if command -v ec &>/dev/null; then
-  ec integrations uninstall shell 2>/dev/null || true
+  ec integrations uninstall dotfiles 2>/dev/null || true
 fi
 
 # ── 2. Kill running processes ─────────────────────────────────────────────────
@@ -116,9 +116,11 @@ rm -rf "$APP_BUNDLE"
 info "Removing CLI symlinks..."
 rm -f "${LOCAL_BIN}/ec"
 rm -f "${LOCAL_BIN}/ecterm"
+# Remove the retired chat binary left by older installations.
+rm -f "${LOCAL_BIN}/ec-chat"
 
 # ── 7. Fallback shell integration cleanup (in case ec was already removed) ────
-# ec integrations uninstall shell was already called in step 1.
+# ec integrations uninstall dotfiles was already called in step 1.
 # This fallback removes any remaining lines using targeted patterns only.
 info "Verifying shell integration removal..."
 

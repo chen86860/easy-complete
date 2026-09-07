@@ -50,8 +50,6 @@ export enum SETTINGS {
   HISTORY_MODE = "beta.history.mode",
   HISTORY_COMMAND = "beta.history.customCommand",
   HISTORY_MERGE_SHELLS = "beta.history.allShells",
-  HISTORY_CTRL_R_TOGGLE = "beta.history.ctrl-r",
-
   FIRST_COMMAND_COMPLETION = "autocomplete.firstTokenCompletion",
 
   TELEMETRY_ENABLED = "telemetry.enabled",

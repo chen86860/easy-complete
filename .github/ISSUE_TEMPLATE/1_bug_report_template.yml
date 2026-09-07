@@ -1,3 +1,4 @@
+# Keep this filename and field IDs stable: `ec issue` uses them for URL prefills.
 name: "Bug report"
 description: "Report something that is broken in Easy Complete / 报告 Easy Complete 的问题"
 
@@ -14,6 +15,10 @@ body:
       tracked independently; a single issue covering several unrelated problems cannot.
 
       感谢反馈，中英文皆可。**请一个 issue 只描述一个问题** —— 独立的报告才能分别标记、追踪和关闭。
+
+      This issue is public. Review diagnostics and remove personal or sensitive information before submitting.
+
+      此 issue 会公开显示。提交前请检查诊断信息，并移除个人或敏感信息。
 
 - type: checkboxes
   id: "checks"
@@ -116,7 +121,7 @@ body:
   attributes:
     label: "Diagnostics"
     description: "Paste the output of `ec diagnostic` / 粘贴 `ec diagnostic` 的输出"
-    render: yaml
+    render: toml
 
 - type: textarea
   id: "context"

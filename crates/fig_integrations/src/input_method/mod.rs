@@ -390,31 +390,7 @@ fn str_to_nsstring(str: &str) -> &Object {
 #[async_trait]
 impl Integration for InputMethod {
     async fn is_installed(&self) -> Result<()> {
-        // let attr = fs::metadata(&self.bundle_path)?;
-        let destination = self.target_bundle_path()?;
-
-        // check that symlink to input method exists in input_methods_directory
-        let symlink = fs::read_link(destination).await;
-
-        match symlink {
-            Ok(symlink) => {
-                // does it point to the correct location
-                if symlink != self.bundle_path {
-                    return Err(InputMethodError::InvalidBundle {
-                        inner: "Symbolic link is incorrect".into(),
-                    }
-                    .into());
-                }
-            },
-            Err(err) if err.kind() == ErrorKind::NotFound => return Err(InputMethodError::NotInstalled.into()),
-            Err(err) => return Err(err.into()),
-        }
-
-        // check that the input method is running (NSRunning application)
-        let bundle_id = self.bundle_id()?;
-        if applications::running_applications_matching(bundle_id.as_str()).is_empty() {
-            return Err(InputMethodError::NotRunning.into());
-        }
+        self.check_link_and_process().await?;
 
         // Can we load input source?
 
@@ -658,6 +634,47 @@ impl Integration for InputMethod {
 }
 
 impl InputMethod {
+    async fn check_link_and_process(&self) -> Result<String> {
+        let destination = self.target_bundle_path()?;
+
+        // check that symlink to input method exists in input_methods_directory
+        let symlink = fs::read_link(destination).await;
+
+        match symlink {
+            Ok(symlink) => {
+                // does it point to the correct location
+                if symlink != self.bundle_path {
+                    return Err(InputMethodError::InvalidBundle {
+                        inner: "Symbolic link is incorrect".into(),
+                    }
+                    .into());
+                }
+            },
+            Err(err) if err.kind() == ErrorKind::NotFound => return Err(InputMethodError::NotInstalled.into()),
+            Err(err) => return Err(err.into()),
+        }
+
+        // check that the input method is running (NSRunning application)
+        let bundle_id = self.bundle_id()?;
+        if applications::running_applications_matching(bundle_id.as_str()).is_empty() {
+            return Err(InputMethodError::NotRunning.into());
+        }
+
+        Ok(bundle_id)
+    }
+
+    /// Check installation without selecting the input source or updating persisted state.
+    pub async fn installation_status(&self) -> Result<()> {
+        let bundle_id = self.check_link_and_process().await?;
+        // Read the system preferences: CLI processes cannot reliably query TIS without
+        // an NSApplication run loop. Do not invoke the installation helper here.
+        if is_bundle_in_hitoolbox_sources(&bundle_id) {
+            Ok(())
+        } else {
+            Err(InputMethodError::NotEnabled.into())
+        }
+    }
+
     // Called from separate process in order to check status of Input Method
     pub fn finish_input_method_installation(bundle_path: Option<PathBuf>) -> Result<(), InputMethodError> {
         let input_method = match bundle_path {
@@ -695,13 +712,7 @@ impl InputMethod {
         let key = self.terminal_instance_requires_restart_key(terminal, process_identifier);
         let requires_restart = state::get_bool_or(&key, false);
 
-        let enabled = !requires_restart;
-
-        if enabled {
-            state::remove_value(key).ok();
-        }
-
-        enabled
+        !requires_restart
     }
 
     fn input_method_is_enabled_key(&self) -> String {

@@ -26,7 +26,6 @@ declare global {
           macosVersion?: string;
           // TODO: add actual types
           linux?: unknown;
-          midway?: boolean;
         }
       | undefined;
     let settings: Record<string, unknown>;

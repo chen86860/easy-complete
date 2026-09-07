@@ -13,7 +13,6 @@ use tracing::{error, trace};
 use tray_icon::{Icon, TrayIcon, TrayIconBuilder};
 
 use crate::event::{Event, ShowMessageNotification, WindowEvent};
-use crate::webview::LOGIN_PATH;
 use crate::{AUTOCOMPLETE_ID, DASHBOARD_ID, EventLoopProxy, EventLoopWindowTarget};
 
 // macro_rules! icon {
@@ -34,7 +33,6 @@ use crate::{AUTOCOMPLETE_ID, DASHBOARD_ID, EventLoopProxy, EventLoopWindowTarget
 //     }};
 // }
 
-const LOGIN_MENU_ID: &str = "onboarding";
 const ACCESSIBILITY_MENU_ID: &str = "accessibility";
 
 /// Autocomplete is fully inert without Accessibility, so the tray is the one surface that can say
@@ -98,19 +96,6 @@ pub fn handle_event(menu_event: &MenuEvent, proxy: &EventLoopProxy) {
                     window_id: DASHBOARD_ID.clone(),
                     window_event: WindowEvent::Batch(vec![
                         WindowEvent::NavigateRelative { path: "/".into() },
-                        WindowEvent::Show,
-                    ]),
-                })
-                .unwrap();
-        },
-        LOGIN_MENU_ID => {
-            proxy
-                .send_event(Event::WindowEvent {
-                    window_id: DASHBOARD_ID.clone(),
-                    window_event: WindowEvent::Batch(vec![
-                        WindowEvent::NavigateRelative {
-                            path: LOGIN_PATH.into(),
-                        },
                         WindowEvent::Show,
                     ]),
                 })
@@ -190,17 +175,16 @@ pub async fn build_tray(
     _event_loop_window_target: &EventLoopWindowTarget,
     _figterm_state: &FigtermState,
 ) -> tray_icon::Result<TrayIcon> {
-    let is_logged_in = true; // fig_auth removed
     TrayIconBuilder::new()
-        .with_icon(get_icon(is_logged_in))
+        .with_icon(get_icon())
         .with_icon_as_template(true)
-        .with_menu(Box::new(get_context_menu(is_logged_in)))
+        .with_menu(Box::new(get_context_menu()))
         .build()
 }
 
-pub fn get_icon(is_logged_in: bool) -> Icon {
+pub fn get_icon() -> Icon {
     let (icon_rgba, icon_width, icon_height) = {
-        let bytes = if is_logged_in {
+        let bytes = {
             cfg_if! {
                 if #[cfg(target_os = "linux")] {
                     include_bytes!("../icons/icon-monochrome-light.png").to_vec()
@@ -209,18 +193,6 @@ pub fn get_icon(is_logged_in: bool) -> Icon {
                     include_bytes!("../icons/icon-monochrome@2x.png").to_vec()
                 } else {
                     include_bytes!("../icons/icon-monochrome.png").to_vec()
-                }
-            }
-        } else {
-            cfg_if! {
-                if #[cfg(target_os = "linux")] {
-                    // This is intentionally the same as when logged in since Linux tray icons
-                    // don't really seem to work that well when multiple choices are available.
-                    include_bytes!("../icons/icon-monochrome-light.png").to_vec()
-                } else if #[cfg(target_os = "macos")] {
-                    include_bytes!("../icons/not-logged-in@2x.png").to_vec()
-                } else {
-                    include_bytes!("../icons/not-logged-in.png").to_vec()
                 }
             }
         };
@@ -243,10 +215,10 @@ fn get_image_rgba(image_bytes: &[u8]) -> (Vec<u8>, u32, u32) {
     (rgba, width, height)
 }
 
-pub fn get_context_menu(is_logged_in: bool) -> Menu {
+pub fn get_context_menu() -> Menu {
     let mut tray_menu = Menu::new();
 
-    let elements = menu(is_logged_in);
+    let elements = menu();
     for elem in elements {
         elem.add_to_menu(&mut tray_menu);
     }
@@ -394,29 +366,12 @@ impl MenuElement {
     }
 }
 
-fn menu(is_logged_in: bool) -> Vec<MenuElement> {
+fn menu() -> Vec<MenuElement> {
     let quit = MenuElement::entry(None, None, "Quit", "quit").with_accelerator("super+KeyQ");
     let settings = MenuElement::entry(None, None, "Settings", "settings").with_accelerator("super+Comma");
     let check_for_updates = MenuElement::entry(None, None, "Check for Updates…", "update");
 
-    let onboarded_completed = fig_settings::state::get_bool_or("desktop.completedOnboarding", false);
-    let yellow_circle_img = get_image_rgba(include_bytes!("../icons/yellow-circle.png"));
-    let mut menu = if !is_logged_in && !onboarded_completed {
-        vec![
-            MenuElement::info(
-                Some(yellow_circle_img),
-                format!("{PRODUCT_NAME} hasn't been set up yet..."),
-            ),
-            MenuElement::entry(None, None, "Get Started", LOGIN_MENU_ID),
-        ]
-    } else if !is_logged_in {
-        vec![
-            MenuElement::info(Some(yellow_circle_img), "Your session has expired"),
-            MenuElement::entry(None, None, "Log back in", LOGIN_MENU_ID),
-        ]
-    } else {
-        vec![settings, check_for_updates]
-    };
+    let mut menu = vec![settings, check_for_updates];
 
     if accessibility_is_missing() {
         let warning_img = get_image_rgba(include_bytes!("../icons/yellow-circle.png"));

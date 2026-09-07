@@ -38,14 +38,6 @@ pub enum HookSubcommand {
         pid: i32,
         tty: String,
     },
-    Ssh {
-        pid: i32,
-        tty: String,
-        control_path: String,
-        remote_dest: String,
-        #[arg(long)]
-        prompt: bool,
-    },
     ClearAutocompleteCache {
         #[arg(long)]
         cli: Vec<String>,
@@ -97,16 +89,6 @@ impl HookSubcommand {
             HookSubcommand::Prompt { pid, tty } => {
                 let context = hooks::generate_shell_context(*pid, tty, session_id)?;
                 Ok(hooks::new_prompt_hook(context))
-            },
-            HookSubcommand::Ssh {
-                control_path,
-                pid,
-                tty,
-                remote_dest,
-                ..
-            } => {
-                let context = hooks::generate_shell_context(*pid, tty, session_id)?;
-                hooks::new_ssh_hook(context, control_path, remote_dest)
             },
             HookSubcommand::ClearAutocompleteCache { cli } => Ok(hooks::new_clear_autocomplete_cache(cli.clone())),
         };

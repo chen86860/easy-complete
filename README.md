@@ -214,7 +214,7 @@ sockets (Protobuf messages):
 | --------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | `easy-complete` | `fig_desktop` | Native app host — owns the autocomplete overlay and dashboard (React apps in `wry` WebViews), system tray, and window management |
 | `ecterm`        | `figterm`     | Pseudoterminal between your shell and terminal emulator; intercepts the shell edit buffer to drive completions                   |
-| `ec`            | `ec_cli`      | CLI entry point — `setup`, `integrations`, `diagnostic`, `settings`, and more                                                    |
+| `ec`            | `ec_cli`      | CLI entry point — `doctor`, `integrations`, `diagnostic`, `settings`, and more                                                    |
 
 Shell hooks (`.zshrc`, `.bashrc`, fish config) report shell state — CWD, command text,
 cursor position — back to `ecterm` on every prompt and keystroke. On macOS, the

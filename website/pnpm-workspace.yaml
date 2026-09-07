@@ -4,8 +4,9 @@ packages: []
 # asked for, so vite/wrangler/miniflare keep working. Drop an entry once the parent ships a
 # version that already resolves past it.
 overrides:
-  'postcss@8': 8.5.22
-  'js-yaml@4': 4.3.0
+  'postcss@8': 8.5.26
+  'js-yaml@4': 4.3.1
+  'nanoid@3': 3.3.18
   'undici@7': 7.29.0
   'ws@8': 8.21.1
   'esbuild@0.27': 0.28.1

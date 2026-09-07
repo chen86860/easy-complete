@@ -12,8 +12,6 @@ use wry::http::{Request, Response};
 use super::util::{res_400, res_404, res_500};
 use crate::webview::WindowId;
 
-pub async fn clear_index_cache() {}
-
 fn relativize(path: &Path) -> &Path {
     match path.strip_prefix("/") {
         Ok(path) => path,

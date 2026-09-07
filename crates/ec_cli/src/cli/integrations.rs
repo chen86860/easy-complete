@@ -6,10 +6,9 @@ use crossterm::style::Stylize;
 use eyre::Result;
 use fig_integrations::Integration as _;
 use fig_integrations::shell::ShellExt;
-use fig_integrations::ssh::SshIntegration;
 use fig_os_shim::Env;
 use fig_util::Shell;
-use serde_json::json;
+use serde_json::{Map, Value, json};
 use tracing::debug;
 
 use super::OutputFormat;
@@ -53,15 +52,16 @@ pub enum IntegrationsSubcommands {
 #[non_exhaustive]
 pub enum Integration {
     Dotfiles {
-        /// Only install the integrations for a single shell
+        /// Limit the operation to a single shell
         #[arg(value_enum)]
         shell: Option<Shell>,
     },
-    Ssh,
     InputMethod,
+    #[cfg(target_os = "linux")]
     AutostartEntry,
+    #[cfg(target_os = "linux")]
     GnomeShellExtension,
-    #[doc(hidden)]
+    /// All supported integrations
     All,
 }
 
@@ -71,7 +71,6 @@ impl IntegrationsSubcommands {
             IntegrationsSubcommands::Install { integration, silent } => {
                 if let Integration::All = integration {
                     install(Integration::Dotfiles { shell: None }, silent).await?;
-                    install(Integration::Ssh, silent).await?;
                     #[cfg(target_os = "macos")]
                     install(Integration::InputMethod, silent).await?;
                 } else {
@@ -82,7 +81,6 @@ impl IntegrationsSubcommands {
             IntegrationsSubcommands::Uninstall { integration, silent } => {
                 if let Integration::All = integration {
                     uninstall(Integration::Dotfiles { shell: None }, silent).await?;
-                    uninstall(Integration::Ssh, silent).await?;
                     #[cfg(target_os = "macos")]
                     uninstall(Integration::InputMethod, silent).await?;
                     #[cfg(target_os = "linux")]
@@ -98,11 +96,9 @@ impl IntegrationsSubcommands {
             IntegrationsSubcommands::Reinstall { integration, silent } => {
                 if let Integration::All = integration {
                     uninstall(Integration::Dotfiles { shell: None }, silent).await?;
-                    uninstall(Integration::Ssh, silent).await?;
                     #[cfg(target_os = "macos")]
                     uninstall(Integration::InputMethod, silent).await?;
                     install(Integration::Dotfiles { shell: None }, silent).await?;
-                    install(Integration::Ssh, silent).await?;
                     #[cfg(target_os = "macos")]
                     install(Integration::InputMethod, silent).await?;
                 } else {
@@ -118,9 +114,10 @@ impl IntegrationsSubcommands {
 fn integration_name(integration: Integration) -> &'static str {
     match integration {
         Integration::Dotfiles { .. } => "dotfiles",
-        Integration::Ssh => "ssh",
         Integration::InputMethod => "input-method",
+        #[cfg(target_os = "linux")]
         Integration::AutostartEntry => "autostart-entry",
+        #[cfg(target_os = "linux")]
         Integration::GnomeShellExtension => "gnome-shell-extension",
         Integration::All => "all",
     }
@@ -135,10 +132,7 @@ async fn install(integration: Integration, silent: bool) -> Result<()> {
     let result = match integration {
         Integration::All => Ok(()),
         Integration::Dotfiles { shell } => {
-            let shells = match shell {
-                Some(shell) => vec![shell],
-                None => vec![Shell::Bash, Shell::Zsh, Shell::Fish],
-            };
+            let shells = selected_shells(shell);
 
             let mut errs: Vec<String> = vec![];
             for shell in &shells {
@@ -174,19 +168,9 @@ async fn install(integration: Integration, silent: bool) -> Result<()> {
                 Err(eyre::eyre!("\n\n{}", errs.join("\n\n")))
             }
         },
-        Integration::Ssh => {
-            let ssh_integration = SshIntegration::new()?;
-            if ssh_integration.is_installed().await.is_err() {
-                installed = true;
-                ssh_integration.install().await.map_err(eyre::Report::from)
-            } else {
-                Ok(())
-            }
-        },
         Integration::InputMethod => {
             cfg_if::cfg_if! {
                 if #[cfg(target_os = "macos")] {
-                    fig_settings::state::set_value("input-method.enabled", true).ok();
                     fig_integrations::input_method::InputMethod::default().install().await?;
                     installed = true;
                     status = Some("You must restart your terminal to finish installing the input method.");
@@ -197,12 +181,14 @@ async fn install(integration: Integration, silent: bool) -> Result<()> {
                 }
             }
         },
+        #[cfg(target_os = "linux")]
         Integration::AutostartEntry => {
             errored = true;
             Err(eyre::eyre!(
                 "Installing the autostart entry from the CLI is not supported"
             ))
         },
+        #[cfg(target_os = "linux")]
         Integration::GnomeShellExtension => {
             errored = true;
             Err(eyre::eyre!(
@@ -240,10 +226,7 @@ async fn uninstall(integration: Integration, silent: bool) -> Result<()> {
     let result = match integration {
         Integration::All => Ok(()),
         Integration::Dotfiles { shell } => {
-            let shells = match shell {
-                Some(shell) => vec![shell],
-                None => vec![Shell::Bash, Shell::Zsh, Shell::Fish],
-            };
+            let shells = selected_shells(shell);
 
             let mut errs: Vec<String> = vec![];
             for shell in &shells {
@@ -279,15 +262,6 @@ async fn uninstall(integration: Integration, silent: bool) -> Result<()> {
                 Err(eyre::eyre!("\n\n{}", errs.join("\n\n")))
             }
         },
-        Integration::Ssh => {
-            let ssh_integration = SshIntegration::new()?;
-            if ssh_integration.is_installed().await.is_ok() {
-                uninstalled = true;
-                ssh_integration.uninstall().await.map_err(eyre::Report::from)
-            } else {
-                Ok(())
-            }
-        },
         Integration::InputMethod => {
             cfg_if::cfg_if! {
                 if #[cfg(target_os = "macos")] {
@@ -299,6 +273,7 @@ async fn uninstall(integration: Integration, silent: bool) -> Result<()> {
                 }
             }
         },
+        #[cfg(target_os = "linux")]
         Integration::AutostartEntry => {
             cfg_if::cfg_if! {
                 if #[cfg(target_os = "linux")] {
@@ -312,6 +287,7 @@ async fn uninstall(integration: Integration, silent: bool) -> Result<()> {
                 }
             }
         },
+        #[cfg(target_os = "linux")]
         Integration::GnomeShellExtension => {
             cfg_if::cfg_if! {
                 if #[cfg(target_os = "linux")] {
@@ -341,119 +317,138 @@ async fn uninstall(integration: Integration, silent: bool) -> Result<()> {
     result
 }
 
-async fn status(integration: Integration, format: OutputFormat) -> Result<ExitCode> {
-    match integration {
-        Integration::All => Err(eyre::eyre!(
-            "Checking the status for all integrations is currently not supported"
-        )),
-        Integration::Ssh => {
-            let ssh_integration = SshIntegration::new()?;
-            let installed = ssh_integration.is_installed().await.is_ok();
-            format.print(
-                || if installed { "Installed" } else { "Not installed" },
-                || {
-                    json!({
-                        "installed": installed,
-                    })
-                },
-            );
-            Ok(ExitCode::SUCCESS)
-        },
-        Integration::Dotfiles { .. } => {
-            let mut all_integrations = vec![];
-            let mut errors = vec![];
+fn selected_shells(shell: Option<Shell>) -> Vec<Shell> {
+    shell.map_or_else(|| vec![Shell::Bash, Shell::Zsh, Shell::Fish], |shell| vec![shell])
+}
 
-            for shell in &[Shell::Bash, Shell::Zsh, Shell::Fish] {
+struct IntegrationStatus {
+    text: String,
+    json: Value,
+    failed: bool,
+}
+
+impl IntegrationStatus {
+    fn installed(installed: bool) -> Self {
+        Self {
+            text: if installed { "Installed" } else { "Not installed" }.to_owned(),
+            json: json!({ "installed": installed }),
+            failed: false,
+        }
+    }
+}
+
+async fn query_status(integration: Integration) -> Result<IntegrationStatus> {
+    match integration {
+        Integration::All => eyre::bail!("Use the combined status query for all integrations"),
+        Integration::Dotfiles { shell } => {
+            let mut integrations = Vec::new();
+            let mut errors = Vec::new();
+            let mut text = String::new();
+            for shell in selected_shells(shell) {
                 match shell.get_shell_integrations(&Env::new()) {
-                    Ok(integrations) => {
-                        for integration in integrations {
-                            all_integrations.push((
-                                integration.is_installed().await.is_ok(),
-                                integration.describe(),
-                                integration.get_shell(),
-                                integration.file_name().to_owned(),
-                            ));
+                    Ok(shell_integrations) => {
+                        for integration in shell_integrations {
+                            let installed = integration.is_installed().await.is_ok();
+                            let description = integration.describe();
+                            let marker = if installed {
+                                "✔ ".green().to_string()
+                            } else {
+                                "✘ ".red().to_string()
+                            };
+                            text.push_str(&format!("{marker}{description}\n"));
+                            integrations.push(json!({
+                                "installed": installed,
+                                "description": description,
+                                "shell": integration.get_shell(),
+                                "file_name": integration.file_name(),
+                            }));
                         }
                     },
-                    Err(e) => {
-                        errors.push((shell.to_string(), e.verbose_message()));
+                    Err(error) => {
+                        let error = error.verbose_message();
+                        text.push_str(&format!("{shell}: {error}\n"));
+                        errors.push(json!({ "shell": shell, "error": error }));
                     },
                 }
             }
-
-            format.print(
-                || {
-                    let mut s = String::new();
-                    for (installed, describe, _, _) in &all_integrations {
-                        s.push_str(&if *installed {
-                            "✔ ".green().to_string()
-                        } else {
-                            "✘ ".red().to_string()
-                        });
-                        s.push_str(describe);
-                        s.push('\n');
-                    }
-
-                    for (shell, error) in &errors {
-                        s.push_str(&format!("{shell}: {error}\n"));
-                    }
-
-                    s
-                },
-                || {
-                    let integrations = all_integrations
-                        .iter()
-                        .map(|(installed, describe, shell, file_name)| {
-                            json!({
-                                "installed": installed,
-                                "description": describe,
-                                "shell": shell,
-                                "file_name": file_name,
-                            })
-                        })
-                        .collect::<Vec<_>>();
-
-                    let errors = errors
-                        .iter()
-                        .map(|(shell, error)| {
-                            json!({
-                                "shell": shell,
-                                "error": error,
-                            })
-                        })
-                        .collect::<Vec<_>>();
-
-                    json!({
-                        "integrations": integrations,
-                        "errors": errors,
-                    })
-                },
-            );
-
-            Ok(ExitCode::SUCCESS)
+            Ok(IntegrationStatus {
+                text,
+                failed: !errors.is_empty(),
+                json: json!({ "integrations": integrations, "errors": errors }),
+            })
         },
         Integration::InputMethod => {
-            cfg_if::cfg_if! {
-                if #[cfg(target_os = "macos")] {
-                    let input_method = fig_integrations::input_method::InputMethod::default();
-                    let installed = input_method.is_installed().await.is_ok();
-                    format.print(
-                        || if installed { "Installed" } else { "Not installed" },
-                        || json!({
-                            "installed": installed,
-                        })
-                    );
-                    Ok(ExitCode::SUCCESS)
-                } else {
-                    Err(eyre::eyre!("Input method integration is only supported on macOS"))
-                }
-            }
+            #[cfg(target_os = "macos")]
+            return Ok(IntegrationStatus::installed(
+                fig_integrations::input_method::InputMethod::default()
+                    .installation_status()
+                    .await
+                    .is_ok(),
+            ));
+            #[cfg(not(target_os = "macos"))]
+            eyre::bail!("Input method integration is only supported on macOS")
         },
-        Integration::AutostartEntry => Err(eyre::eyre!(
-            "Checking the status of the autostart entry from the CLI is not supported"
-        )),
-        Integration::GnomeShellExtension => Err(eyre::eyre!(
-            "Checking the status of the GNOME Shell extension from the CLI is not supported"
-        )),
+        #[cfg(target_os = "linux")]
+        Integration::AutostartEntry => {
+            eyre::bail!("Checking the status of the autostart entry from the CLI is not supported")
+        },
+        #[cfg(target_os = "linux")]
+        Integration::GnomeShellExtension => {
+            eyre::bail!("Checking the status of the GNOME Shell extension from the CLI is not supported")
+        },
+    }
+}
+
+async fn status(integration: Integration, format: OutputFormat) -> Result<ExitCode> {
+    let report = if integration == Integration::All {
+        let mut text = String::new();
+        let mut values = Map::new();
+        let mut failed = false;
+        // These are the integrations whose status can be queried on this platform.
+        for integration in [
+            Integration::Dotfiles { shell: None },
+            #[cfg(target_os = "macos")]
+            Integration::InputMethod,
+        ] {
+            let name = integration_name(integration);
+            match query_status(integration).await {
+                Ok(report) => {
+                    text.push_str(&format!("{name}:\n{}\n", report.text.trim_end()));
+                    values.insert(name.to_owned(), report.json);
+                    failed |= report.failed;
+                },
+                Err(error) => {
+                    text.push_str(&format!("{name}: {error}\n"));
+                    values.insert(name.to_owned(), json!({ "error": error.to_string() }));
+                    failed = true;
+                },
+            }
+        }
+        IntegrationStatus {
+            text,
+            json: Value::Object(values),
+            failed,
+        }
+    } else {
+        query_status(integration).await?
+    };
+    format.print(|| report.text.trim_end(), || &report.json);
+    Ok(if report.failed {
+        ExitCode::FAILURE
+    } else {
+        ExitCode::SUCCESS
+    })
+}
+
+#[cfg(test)]
+mod command_tests {
+    use super::*;
+
+    #[test]
+    fn explicit_shell_limits_the_status_query() {
+        for shell in [Shell::Bash, Shell::Zsh, Shell::Fish, Shell::Nu] {
+            assert_eq!(selected_shells(Some(shell)), vec![shell]);
+        }
+        assert_eq!(selected_shells(None), vec![Shell::Bash, Shell::Zsh, Shell::Fish]);
     }
 }

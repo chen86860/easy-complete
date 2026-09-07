@@ -17,32 +17,12 @@ use fig_util::consts::APP_BUNDLE_ID;
 use fig_util::env_var::Q_DEBUG_SHELL;
 use fig_util::macos::BUNDLE_CONTENTS_MACOS_PATH;
 use fig_util::{APP_BUNDLE_NAME, CLI_BINARY_NAME, PRODUCT_NAME, PTY_BINARY_NAME, Shell, directories};
-use owo_colors::OwoColorize;
 use tempfile::{NamedTempFile, TempDir};
 use tracing::error;
 
 use crate::cli::launch_fig_desktop;
 use crate::util::desktop::LaunchArgs;
 use crate::util::{get_app_info, glob, glob_dir, quit_fig};
-
-#[derive(Debug, ValueEnum, Clone, PartialEq, Eq)]
-pub enum Build {
-    Production,
-    #[value(alias = "staging")]
-    Beta,
-    #[value(hide = true, alias = "dev")]
-    Develop,
-}
-
-impl std::fmt::Display for Build {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Build::Production => f.write_str("production"),
-            Build::Beta => f.write_str("beta"),
-            Build::Develop => f.write_str("develop"),
-        }
-    }
-}
 
 #[derive(Debug, ValueEnum, Clone, PartialEq, Eq)]
 pub enum App {
@@ -113,15 +93,9 @@ pub enum InputMethodDebugAction {
 
 #[derive(Debug, PartialEq, Subcommand)]
 pub enum DebugSubcommand {
-    /// Debug the app
+    /// Run the desktop app directly for debugging
+    #[cfg(target_os = "macos")]
     App,
-    /// Switch to another branch of a Fig.js app
-    Build {
-        #[arg(value_enum)]
-        app: App,
-        #[arg(value_enum)]
-        build: Option<Build>,
-    },
     /// Toggle/set autocomplete window debug mode
     AutocompleteWindow {
         #[arg(value_enum)]
@@ -172,19 +146,15 @@ impl DebugSubcommand {
     pub async fn execute(&self) -> Result<ExitCode> {
         let env = Env::new();
         match self {
+            #[cfg(target_os = "macos")]
             DebugSubcommand::App => {
-                if !cfg!(target_os = "macos") {
-                    bail!("app is only supported on macOS");
-                }
-
                 let app_info = get_app_info().unwrap_or_else(|_| "".into());
                 if app_info.is_empty() {
                     println!("{PRODUCT_NAME} is not currently running. Attempting to start...");
-                    if Command::new("open")
+                    if !Command::new("open")
                         .args(["-g", "-b", APP_BUNDLE_ID])
-                        .spawn()?
-                        .wait()
-                        .is_err()
+                        .status()?
+                        .success()
                     {
                         bail!("Could not start {PRODUCT_NAME}");
                     }
@@ -202,39 +172,12 @@ impl DebugSubcommand {
                 println!("Running the {APP_BUNDLE_NAME} executable directly from {fig_path}.");
                 println!("You will need to grant accessibility permissions to the current terminal{terminal_text}!");
 
-                Command::new(
-                    Path::new(&fig_path)
-                        .join(BUNDLE_CONTENTS_MACOS_PATH)
-                        .join(CLI_BINARY_NAME),
-                )
-                .spawn()?
-                .wait()?;
-            },
-            DebugSubcommand::Build { build, app } => match build {
-                Some(build) => {
-                    fig_settings::settings::set_value(
-                        format!("developer.{app}.build"),
-                        match build {
-                            Build::Production => serde_json::Value::Null,
-                            Build::Beta => "beta".into(),
-                            Build::Develop => "develop".into(),
-                        },
-                    )?;
-                    println!(
-                        "{PRODUCT_NAME} will now use the {} build of {}",
-                        build.magenta(),
-                        app.magenta()
-                    );
-                },
-                None => {
-                    let current_build = fig_settings::settings::get_string_opt(format!("developer.{app}.build"));
-                    let current_build = match current_build.as_deref() {
-                        Some("staging" | "beta") => Build::Beta,
-                        Some("develop" | "dev") => Build::Develop,
-                        _ => Build::Production,
-                    };
-                    println!("{current_build}");
-                },
+                let status = Command::new(desktop_debug_executable(Path::new(&fig_path))).status()?;
+                return Ok(if status.success() {
+                    ExitCode::SUCCESS
+                } else {
+                    ExitCode::FAILURE
+                });
             },
             DebugSubcommand::AutocompleteWindow { mode } => {
                 let result = match mode {
@@ -744,5 +687,23 @@ impl DebugSubcommand {
             },
         }
         Ok(ExitCode::SUCCESS)
+    }
+}
+
+#[cfg(target_os = "macos")]
+fn desktop_debug_executable(bundle: &Path) -> PathBuf {
+    bundle.join(BUNDLE_CONTENTS_MACOS_PATH).join(fig_util::APP_PROCESS_NAME)
+}
+
+#[cfg(all(test, target_os = "macos"))]
+mod command_tests {
+    use super::*;
+
+    #[test]
+    fn debug_app_runs_the_desktop_executable() {
+        assert_eq!(
+            desktop_debug_executable(Path::new("/Applications/Easy Complete.app")),
+            Path::new("/Applications/Easy Complete.app/Contents/MacOS/easy-complete")
+        );
     }
 }

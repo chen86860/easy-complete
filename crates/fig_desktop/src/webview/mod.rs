@@ -1,5 +1,4 @@
 pub mod autocomplete;
-pub mod companion;
 pub mod dashboard;
 pub mod menu;
 pub mod notification;
@@ -28,7 +27,6 @@ use tao::event::{Event as WryEvent, StartCause, WindowEvent as WryWindowEvent};
 use tao::event_loop::{ControlFlow, EventLoopBuilder};
 use tao::window::{Theme as TaoTheme, Window, WindowBuilder, WindowId as WryWindowId};
 use tokio::sync::mpsc::UnboundedSender;
-use tokio::time::MissedTickBehavior;
 use tracing::{debug, error, info, trace, warn};
 use url::Url;
 use window::WindowState;
@@ -40,16 +38,13 @@ use self::window_id::DashboardId;
 use crate::event::{Event, ShowMessageNotification, WindowEvent};
 use crate::notification_bus::{JsonNotification, NOTIFICATION_BUS};
 use crate::platform::{PlatformBoundEvent, PlatformState};
-use crate::protocol::spec::clear_index_cache;
 use crate::protocol::{api, icons, resource, spec};
 use crate::remote_ipc::RemoteHook;
 use crate::request::api_request;
 use crate::tray::{self, build_tray, get_context_menu, get_icon};
 use crate::webview::window_id::AutocompleteId;
 pub use crate::webview::window_id::{AUTOCOMPLETE_ID, DASHBOARD_ID, WindowId};
-use crate::{
-    EventLoop, EventLoopProxy, EventLoopWindowTarget, InterceptState, auth_watcher, file_watcher, local_ipc, utils,
-};
+use crate::{EventLoop, EventLoopProxy, EventLoopWindowTarget, InterceptState, file_watcher, local_ipc, utils};
 
 pub const DASHBOARD_SIZE: LogicalSize<f64> = LogicalSize::new(820.0, 640.0);
 pub const DASHBOARD_MINIMUM_SIZE: LogicalSize<f64> = LogicalSize::new(DASHBOARD_SIZE.width, 520.0);
@@ -61,8 +56,6 @@ const AUTOCOMPLETE_RELEASE_DELAY_SETTING: &str = "developer.autocomplete.release
 const DEFAULT_AUTOCOMPLETE_RELEASE_DELAY: Duration = Duration::from_secs(10 * 60);
 /// How long to hold window events before giving up on the webview reporting that it mounted.
 const AUTOCOMPLETE_MOUNT_TIMEOUT: Duration = Duration::from_secs(5);
-
-pub const LOGIN_PATH: &str = "/";
 
 fn map_theme(theme: &str) -> Option<WryTheme> {
     match theme {
@@ -673,10 +666,9 @@ impl WebviewManager {
         {
             let platform_state = self.platform_state.clone();
             let figterm_state = self.figterm_state.clone();
-            let notifications_state = self.notifications_state.clone();
             let event_loop = self.event_loop.create_proxy();
             tokio::spawn(async move {
-                match local_ipc::start_local_ipc(platform_state, figterm_state, notifications_state, event_loop).await {
+                match local_ipc::start_local_ipc(platform_state, figterm_state, event_loop).await {
                     Ok(_) => (),
                     Err(err) => error!("Unable to start local ipc: {:?}", err),
                 }
@@ -765,7 +757,6 @@ impl WebviewManager {
         }
 
         file_watcher::setup_listeners(self.notifications_state.clone(), self.event_loop.create_proxy()).await;
-        auth_watcher::spawn_auth_watcher();
 
         init_webview_notification_listeners(self.event_loop.create_proxy()).await;
 
@@ -1009,12 +1000,12 @@ impl WebviewManager {
                         Event::ControlFlow(new_control_flow) => {
                             *control_flow = new_control_flow;
                         },
-                        Event::ReloadTray { is_logged_in } => {
-                            tray.set_icon(Some(get_icon(is_logged_in)))
+                        Event::ReloadTray => {
+                            tray.set_icon(Some(get_icon()))
                                 .map_err(|err| error!(?err))
                                 .ok();
                             tray.set_icon_as_template(true);
-                            tray.set_menu(Some(Box::new(get_context_menu(is_logged_in))));
+                            tray.set_menu(Some(Box::new(get_context_menu())));
                         },
                         Event::AutocompleteLifecycleChanged { keep_ready } => {
                             if let Some(keep_ready) = keep_ready {
@@ -1110,7 +1101,7 @@ impl WebviewManager {
                         Event::ReloadAccessibility => {
                             // The tray carries the "permission is missing" warning, so it has to be
                             // rebuilt whenever the grant is given or taken away.
-                            tray.set_menu(Some(Box::new(get_context_menu(true))));
+                            tray.set_menu(Some(Box::new(get_context_menu())));
 
                             let autocomplete_enabled =
                                 !fig_settings::settings::get_bool_or("autocomplete.disable", false)
@@ -1402,7 +1393,7 @@ pub fn build_dashboard(
     let mut url = dashboard::url();
 
     if show_onboarding {
-        url.set_path(LOGIN_PATH);
+        url.set_path("/");
     } else if let Some(page) = page {
         url.set_path(&page);
     }
@@ -1730,21 +1721,6 @@ async fn init_webview_notification_listeners(proxy: EventLoopProxy) {
 
     watcher!(
         settings,
-        "developer.dashboard.build",
-        |_notification: JsonNotification, proxy: &EventLoopProxy| {
-            let url = dashboard::url();
-            debug!(%url, "Dashboard host");
-            proxy
-                .send_event(Event::WindowEvent {
-                    window_id: DASHBOARD_ID,
-                    window_event: WindowEvent::NavigateAbsolute { url },
-                })
-                .unwrap();
-        }
-    );
-
-    watcher!(
-        settings,
         "developer.autocomplete.host",
         |_notification: JsonNotification, proxy: &EventLoopProxy| {
             let url = autocomplete::url();
@@ -1758,97 +1734,8 @@ async fn init_webview_notification_listeners(proxy: EventLoopProxy) {
         }
     );
 
-    watcher!(
-        settings,
-        "developer.autocomplete.build",
-        |_notification: JsonNotification, proxy: &EventLoopProxy| {
-            let url = autocomplete::url();
-            debug!(%url, "Autocomplete host");
-            proxy
-                .send_event(Event::WindowEvent {
-                    window_id: AUTOCOMPLETE_ID,
-                    window_event: WindowEvent::NavigateAbsolute { url },
-                })
-                .unwrap();
-        }
-    );
-
-    // I don't think this is meant to be here anymore
-    // watcher!(settings, "app.beta", |_: JsonNotification, proxy: &EventLoopProxy| {
-    //     let proxy = proxy.clone();
-    //     tokio::spawn(fig_install::update(
-    //         Some(Box::new(move |_| {
-    //             proxy
-    //                 .send_event(Event::ShowMessageNotification {
-    //                     title: "Fig Update".into(),
-    //                     body: "Fig is updating in the background. You can continue to use Fig while
-    // it updates.".into(),                     parent: None,
-    //                 })
-    //                 .unwrap();
-    //         })),
-    //         fig_install::UpdateOptions {
-    //             ignore_rollout: true,
-    //             interactive: true,
-    //             relaunch_dashboard: true,
-    //         },
-    //     ));
-    // });
-
-    // Midway watcher
     #[cfg(target_os = "macos")]
     let accent_proxy = proxy.clone();
-    tokio::spawn(async move {
-        let mut res = NOTIFICATION_BUS.subscribe_midway();
-
-        let (tx, mut rx) = tokio::sync::mpsc::channel(1);
-
-        // debounce thread
-        tokio::spawn(async move {
-            let mut should_send = false;
-            let mut interval = tokio::time::interval(Duration::from_millis(500));
-            interval.set_missed_tick_behavior(MissedTickBehavior::Skip);
-
-            loop {
-                tokio::select! {
-                    _ = rx.recv() => {
-                        should_send = true;
-                        interval.reset();
-                    }
-                    _ = interval.tick() => {
-                        if should_send {
-                            info!("clearing autocomplete cache");
-                            let _ = proxy.send_event(
-                                Event::WindowEvent {
-                                    window_id: AUTOCOMPLETE_ID,
-                                    window_event: WindowEvent::Event {
-                                        event_name: "clear-cache".into(),
-                                        payload: None
-                                    }
-                                }
-                            );
-                            clear_index_cache().await;
-                            should_send = false;
-                        }
-                    }
-                }
-            }
-        });
-
-        loop {
-            match res.recv().await {
-                Ok(()) => {
-                    if let Err(err) = tx.send(()).await {
-                        error!("Error sending notification: {err}");
-                    }
-                },
-                Err(tokio::sync::broadcast::error::RecvError::Lagged(n)) => {
-                    warn!("Notification bus 'midway' lagged by {n} messages");
-                },
-                Err(tokio::sync::broadcast::error::RecvError::Closed) => break,
-            }
-        }
-    });
-
     #[cfg(target_os = "macos")]
     {
         use macos_utils::NotificationCenter;

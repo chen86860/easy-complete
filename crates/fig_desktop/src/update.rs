@@ -124,7 +124,7 @@ mod macos {
         *ptr as id
     }
 
-    fn ensure_controller(starts_updater: bool) -> Option<id> {
+    fn ensure_controller() -> Option<id> {
         let mut slot = controller_slot().lock().ok()?;
         if let Some(controller) = *slot {
             return Some(controller as id);
@@ -144,10 +144,9 @@ mod macos {
         // internally, and we intentionally keep the controller alive for the lifetime of the app.
         let controller: id = unsafe {
             let allocated: id = msg_send![class, alloc];
-            let starts_updater = if starts_updater { YES } else { NO };
             msg_send![
                 allocated,
-                initWithStartingUpdater: starts_updater
+                initWithStartingUpdater: YES
                 updaterDelegate: nil
                 userDriverDelegate: user_driver_delegate()
             ]
@@ -158,31 +157,21 @@ mod macos {
             return None;
         }
 
-        // Arm Sparkle's scheduled background checks explicitly. Without this, Sparkle defers
-        // automatic checks until the user answers a first-run "Check for updates automatically?"
-        // permission prompt. Easy Complete runs as an LSUIElement (menu-bar-only) agent with no
-        // foreground window, so that prompt cannot reliably surface — leaving auto-update silently
-        // disabled. Setting the choice programmatically suppresses the prompt and guarantees the
-        // scheduled checker is running.
-        //
-        // We also force setAutomaticallyDownloadsUpdates: NO. Otherwise Sparkle's
-        // `automaticallyDownloadsUpdates` (persisted as the SUAutomaticallyUpdate user default,
-        // which can be left at YES from a prior install) makes background checks *silently
-        // download and install* without ever showing the update alert. Easy Complete ships
-        // ad-hoc signed with SUEnableInstallerLauncherService disabled, so that silent install
-        // path cannot complete — the net effect is "no popup ever appears" for auto-updates even
-        // though manual checks work. Disabling auto-download forces the background check to prompt.
+        let automatically_checks = if fig_settings::settings::get_bool_or("app.disableAutoupdates", false) {
+            NO
+        } else {
+            YES
+        };
+
         // SAFETY: SPUUpdater exposes both selectors as settable properties.
         unsafe {
             let updater: id = msg_send![controller, updater];
             if updater != nil {
-                let _: () = msg_send![updater, setAutomaticallyChecksForUpdates: YES];
-                let _: () = msg_send![updater, setAutomaticallyDownloadsUpdates: NO];
-                info!(
-                    "Sparkle updater controller ready (automatic checks enabled, auto-download disabled to force a prompt)"
-                );
+                let _: () = msg_send![updater, setAutomaticallyChecksForUpdates: automatically_checks];
+                let _: () = msg_send![updater, setAutomaticallyDownloadsUpdates: YES];
+                info!("Sparkle updater controller ready");
             } else {
-                warn!("Sparkle updater instance is unavailable; cannot enable automatic checks");
+                warn!("Sparkle updater instance is unavailable");
             }
         }
 
@@ -196,7 +185,7 @@ mod macos {
     }
 
     fn check_for_update_on_main(show_webview: bool) -> bool {
-        let Some(controller) = ensure_controller(false) else {
+        let Some(controller) = ensure_controller() else {
             return false;
         };
 
@@ -222,15 +211,12 @@ mod macos {
     }
 
     pub fn start_automatic_checks() {
-        // SPUStandardUpdaterController must be created on the main thread.
-        // Use exec_async so we never block the caller (event loop may not be
-        // running yet when this is called from the tokio async context).
         info!("Arming Sparkle scheduled update checks");
         if is_main_thread() {
-            let _ = ensure_controller(true);
+            let _ = ensure_controller();
         } else {
             dispatch::Queue::main().exec_async(|| {
-                let _ = ensure_controller(true);
+                let _ = ensure_controller();
             });
         }
     }

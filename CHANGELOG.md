@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.3.3-beta.1
+
+- change: remove the inherited `ec-chat` feature, SSH integration, inline shell completion command, multiplexer, and obsolete Amazon Q authentication, CodeWhisperer, profile, and telemetry surfaces
+- change: consolidate application updates on Sparkle while preserving background checks, automatic downloads, the Check for Updates dialog, and `ec update`; remove the legacy Amazon-hosted updater
+- chore: remove orphaned internal commands, unused settings, dead protocol messages, and unsupported installer code
+
 ## v2.3.2
 
 - fix: render the menu bar icon at Retina resolution with smooth edges while preserving its original shape (#187)

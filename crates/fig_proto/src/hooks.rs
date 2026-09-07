@@ -95,20 +95,6 @@ pub fn new_keyboard_focus_changed_hook(
     }))
 }
 
-pub fn new_ssh_hook(
-    context: impl Into<Option<ShellContext>>,
-    control_path: impl Into<String>,
-    remote_dest: impl Into<String>,
-) -> Result<Hook> {
-    Ok(hook_enum_to_hook(hook::Hook::OpenedSshConnection(
-        OpenedSshConnectionHook {
-            context: context.into(),
-            control_path: control_path.into(),
-            remote_hostname: remote_dest.into(),
-        },
-    )))
-}
-
 pub fn new_integration_ready_hook(identifier: impl Into<String>) -> Hook {
     hook_enum_to_hook(hook::Hook::IntegrationReady(IntegrationReadyHook {
         identifier: identifier.into(),
@@ -188,7 +174,6 @@ mod tests {
         let _ = new_prompt_hook(context.clone());
         let _ = new_preexec_hook(context.clone());
         let _ = new_keyboard_focus_changed_hook("app_identifier", "focused_session_id");
-        let _ = new_ssh_hook(context.clone(), "control_path", "remote_dest").unwrap();
         let _ = new_integration_ready_hook("identifier");
         let _ = new_hide_hook();
         let _ = new_event_hook("event_name", Some("payload".into()), vec!["app".into()]);

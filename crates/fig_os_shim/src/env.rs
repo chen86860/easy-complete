@@ -167,18 +167,6 @@ impl Env {
         self.get_os("Q_LOG_STDOUT").is_some()
     }
 
-    pub fn amazon_q_sigv4(&self) -> bool {
-        self.get("AMAZON_Q_SIGV4").is_ok_and(|v| !v.is_empty())
-    }
-
-    pub fn amazon_q_chat_shell(&self) -> String {
-        self.get("AMAZON_Q_CHAT_SHELL").unwrap_or_else(|_| "bash".to_string())
-    }
-
-    pub fn q_cli_client_application(&self) -> Result<String, VarError> {
-        self.get("Q_CLI_CLIENT_APPLICATION")
-    }
-
     pub fn q_parent(&self) -> Result<String, VarError> {
         self.get("Q_PARENT")
     }
@@ -189,10 +177,6 @@ impl Env {
 
     pub fn q_init_snapshot_test(&self) -> bool {
         self.get_os("Q_INIT_SNAPSHOT_TEST").is_some()
-    }
-
-    pub fn q_desktop_release_url(&self) -> Result<String, VarError> {
-        self.get("Q_DESKTOP_RELEASE_URL")
     }
 
     pub fn q_backend(&self) -> Result<String, VarError> {

@@ -3,7 +3,7 @@ use std::sync::LazyLock;
 use dashmap::DashMap;
 use fnv::FnvBuildHasher;
 use serde_json::Value;
-use tokio::sync::broadcast::{self, Receiver, Sender};
+use tokio::sync::broadcast::{Receiver, Sender};
 
 const CHANNEL_SIZE: usize = 8;
 
@@ -34,21 +34,10 @@ impl JsonNotification {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct NotificationBus {
     state_channels: DashMap<String, Sender<JsonNotification>, FnvBuildHasher>,
     settings_channels: DashMap<String, Sender<JsonNotification>, FnvBuildHasher>,
-    midway_channel: Sender<()>,
-}
-
-impl std::default::Default for NotificationBus {
-    fn default() -> Self {
-        Self {
-            state_channels: DashMap::default(),
-            settings_channels: DashMap::default(),
-            midway_channel: broadcast::channel(CHANNEL_SIZE).0,
-        }
-    }
 }
 
 impl NotificationBus {
@@ -76,10 +65,6 @@ impl NotificationBus {
             .subscribe()
     }
 
-    pub fn subscribe_midway(&self) -> Receiver<()> {
-        self.midway_channel.subscribe()
-    }
-
     pub fn send_state(&self, key: impl AsRef<str>, value: JsonNotification) {
         if let Some(tx) = self.state_channels.get(key.as_ref()) {
             tx.send(value).ok();
@@ -90,10 +75,6 @@ impl NotificationBus {
         if let Some(tx) = self.settings_channels.get(key.as_ref()) {
             tx.send(value).ok();
         }
-    }
-
-    pub fn send_midway(&self) {
-        self.midway_channel.send(()).ok();
     }
 
     pub fn send_state_new(&self, key: impl AsRef<str>, value: &Value) {

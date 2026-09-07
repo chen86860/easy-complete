@@ -1,7 +1,7 @@
 mod cli;
 mod event;
 // mod figterm;
-mod auth_watcher;
+
 mod file_watcher;
 mod install;
 mod local_ipc;
@@ -216,11 +216,7 @@ async fn main() -> ExitCode {
     let mut webview_manager = WebviewManager::new(ctx, visible, defer_dashboard_for_modern_login_item);
     let auto_updates_enabled = !fig_settings::settings::get_bool_or("app.disableAutoupdates", false);
     if auto_updates_enabled {
-        // start_automatic_checks dispatches to the main thread asynchronously,
-        // so the controller is created once the event loop is running.
         update::start_automatic_checks();
-        // Delay the explicit background check so the event loop is already
-        // processing the main GCD queue before exec_sync is called.
         tokio::spawn(async {
             tokio::time::sleep(std::time::Duration::from_secs(5)).await;
             let _ = update::check_for_update(false, false).await;

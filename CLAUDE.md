@@ -85,7 +85,7 @@ Three cooperating native processes communicate via Unix domain sockets (protobuf
 
 2. **`ecterm`** (`figterm`) — Pseudoterminal that sits between the user's shell and their terminal emulator. Intercepts keystrokes and the shell edit buffer to drive autocomplete. Built on a vendored fork of `alacritty_terminal`.
 
-3. **`ec`** (`ec_cli`) — CLI entry point. Subcommands include `setup`, `integrations`, `hook`, `settings`, `diagnostic`, `inline`, and more.
+3. **`ec`** (`ec_cli`) — CLI entry point. Subcommands include `integrations`, `hook`, `settings`, `diagnostic`, `doctor`, `issue`, and more.
 
 ### IPC
 

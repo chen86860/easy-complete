@@ -2,7 +2,7 @@
   "name": "@easy-complete/autocomplete-app",
   "private": true,
   "license": "MIT",
-  "version": "2.3.2",
+  "version": "2.3.3-beta.1",
   "repository": "https://github.com/chen86860/easy-complete",
   "type": "module",
   "scripts": {

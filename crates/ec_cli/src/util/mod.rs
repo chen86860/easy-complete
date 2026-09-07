@@ -1,7 +1,6 @@
 mod cli_context;
 pub mod desktop;
 pub mod pid_file;
-mod region_check;
 pub mod spinner;
 
 use std::env;
@@ -23,11 +22,9 @@ use dialoguer::theme::ColorfulTheme;
 use eyre::{Context, ContextCompat, Result, bail};
 use fig_ipc::local::quit_command;
 use fig_util::consts::APP_BUNDLE_ID;
-use fig_util::directories::home_local_bin;
-use fig_util::{CHAT_BINARY_NAME, CLI_BINARY_NAME, PRODUCT_NAME};
+use fig_util::{CLI_BINARY_NAME, PRODUCT_NAME};
 use globset::{Glob, GlobSet, GlobSetBuilder};
 use regex::Regex;
-pub use region_check::region_check;
 use tracing::warn;
 
 /// Glob patterns against full paths
@@ -103,34 +100,6 @@ pub fn app_path_from_bundle_id(bundle_id: impl AsRef<OsStr>) -> Option<String> {
     }
 }
 
-#[cfg(target_os = "linux")]
-pub fn qchat_path() -> Result<PathBuf> {
-    use fig_os_shim::Context;
-
-    let ctx = Context::new();
-    if let Some(path) = ctx.process_info().current_pid().exe() {
-        // This is required for deb installations.
-        if path.starts_with("/usr/bin") {
-            return Ok(PathBuf::from("/usr/bin").join(CHAT_BINARY_NAME));
-        }
-    }
-
-    if let Ok(local_bin_path) = home_local_bin() {
-        let local_bin_path = local_bin_path.join(CHAT_BINARY_NAME);
-        if local_bin_path.exists() {
-            return Ok(local_bin_path);
-        }
-    }
-
-    Ok(PathBuf::from(CHAT_BINARY_NAME))
-}
-
-#[cfg(target_os = "macos")]
-pub fn qchat_path() -> Result<PathBuf> {
-    use macos_utils::bundle::get_bundle_path_for_executable;
-
-    Ok(get_bundle_path_for_executable(CHAT_BINARY_NAME).unwrap_or(home_local_bin()?.join(CHAT_BINARY_NAME)))
-}
 pub async fn quit_fig(verbose: bool) -> Result<ExitCode> {
     if fig_util::system_info::in_cloudshell() {
         bail!("Restarting {PRODUCT_NAME} is not supported in CloudShell");
@@ -212,14 +181,6 @@ pub fn app_not_running_message() -> String {
     )
 }
 
-pub fn login_message() -> String {
-    format!(
-        "{}\nLooks like you aren't logged in to {PRODUCT_NAME}, to login run: {}",
-        "Not logged in".bold(),
-        format!("{CLI_BINARY_NAME} login").magenta()
-    )
-}
-
 pub fn match_regex(regex: impl AsRef<str>, input: impl AsRef<str>) -> Option<String> {
     Some(
         Regex::new(regex.as_ref())
@@ -298,17 +259,6 @@ pub fn dialoguer_theme() -> ColorfulTheme {
         prompt_prefix: dialoguer::console::style("?".into()).for_stderr().magenta(),
         ..ColorfulTheme::default()
     }
-}
-
-#[cfg(target_os = "macos")]
-pub async fn is_brew_reinstall() -> bool {
-    let regex = regex::bytes::Regex::new(r"brew(\.\w+)?\s+(upgrade|reinstall|install)").unwrap();
-
-    tokio::process::Command::new("ps")
-        .args(["aux", "-o", "args"])
-        .output()
-        .await
-        .is_ok_and(|output| regex.is_match(&output.stdout))
 }
 
 #[cfg(test)]

@@ -3,7 +3,6 @@ use std::env::{consts, var};
 
 use camino::Utf8PathBuf;
 use fig_os_shim::Context;
-use fig_util::directories::midway_cookie_path;
 #[cfg(target_os = "linux")]
 use fig_util::system_info::linux::{
     DesktopEnvironment, DisplayServer, OsRelease, get_desktop_environment, get_display_server, get_os_release,
@@ -47,7 +46,6 @@ pub struct Constants {
     new_uri_format: bool,
     support_api_proto: bool,
     api_proto_url: String,
-    midway: bool,
     #[cfg(target_os = "macos")]
     macos_version: String,
     #[cfg(target_os = "linux")]
@@ -102,7 +100,6 @@ impl Constants {
             new_uri_format: true,
             support_api_proto,
             api_proto_url: "api://localhost".to_string(),
-            midway: midway_cookie_path().is_ok_and(|p| p.is_file()),
             #[cfg(target_os = "macos")]
             macos_version: macos_utils::os::OperatingSystemVersion::get().to_string(),
             #[cfg(target_os = "linux")]

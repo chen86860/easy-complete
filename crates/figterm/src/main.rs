@@ -89,10 +89,6 @@ pub enum MainLoopEvent {
     },
     UnlockInterception,
     SetImmediateMode(bool),
-    PromptSSH {
-        uuid: String,
-        remote_host: String,
-    },
     SetCsiU,
     UnsetCsiU,
 }
@@ -599,36 +595,6 @@ fn figterm_main(command: Option<&[String]>) -> Result<()> {
                                     stdout.flush().await?;
                                     csi_u_set = false;
                                 },
-                                MainLoopEvent::PromptSSH { uuid: _, remote_host: _ } => {
-                                    // let should_install = should_install_remote_ssh_integration(
-                                    //     uuid,
-                                    //     remote_host.clone(),
-                                    //     main_loop_tx.clone(),
-                                    //     remote_receiver.clone(),
-                                    //     remote_sender.clone(),
-                                    //     &term,
-                                    //     &mut master,
-                                    //     &mut key_interceptor,
-                                    // ).await;
-
-                                    // let should_install = match should_install {
-                                    //     Some(val) => val,
-                                    //     None => {
-                                    //         prompt_remote_integration_install(
-                                    //             remote_host,
-                                    //             console_term.clone(),
-                                    //             console_term_key_tx.clone(),
-                                    //             &mut terminal,
-                                    //             input_rx.clone(),
-                                    //         ).await.unwrap_or(false)
-                                    //     }
-                                    // };
-
-                                    // if should_install {
-                                    //     let installation_command = "curl -fSsL https://fig.io/install-minimal.sh | bash; exec $SHELL\n";
-                                    //     master.write_all(installation_command.as_bytes()).await?;
-                                    // }
-                                }
                             }
                         }
                         Err(err) => warn!("Failed to recv: {err}"),

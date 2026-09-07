@@ -20,7 +20,6 @@ import {
   SettingsMap,
 } from "@easy-complete/api-bindings-wrappers";
 import { type Types } from "@easy-complete/api-bindings";
-import { trackEvent } from "../telemetry.js";
 import { FigState, initialFigState } from "../fig/hooks";
 import { AutocompleteState, NamedSetState, Visibility } from "./types";
 
@@ -243,10 +242,6 @@ const updateSuggestions =
         const { settings } = state;
         const suggestions = computeSuggestions(updatedState, settings);
         logger.info("Recomputed suggestions", { suggestions });
-
-        if (willBeVisible && !updatedState.figState.cwd) {
-          trackEvent("autocomplete-no-context", {});
-        }
 
         // If old state is visible, and user has changed the selected item try to
         // keep the same item selected.

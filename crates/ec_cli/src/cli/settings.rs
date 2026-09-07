@@ -1,7 +1,7 @@
 use std::process::ExitCode;
 
 use anstream::println;
-use clap::{ArgGroup, Args, Parser, Subcommand, ValueEnum};
+use clap::{ArgGroup, Args, Parser, Subcommand};
 use eyre::{Result, WrapErr, bail};
 use fig_ipc::local::open_ui_element;
 use fig_os_shim::Os;
@@ -14,24 +14,18 @@ use serde_json::json;
 use super::OutputFormat;
 use crate::cli::Cli;
 use crate::util::desktop::{LaunchArgs, launch_fig_desktop};
-use crate::util::{CliContext, app_not_running_message, qchat_path};
+use crate::util::{CliContext, app_not_running_message};
 
 #[derive(Debug, Subcommand, PartialEq, Eq)]
 pub enum SettingsSubcommands {
     /// Open the settings file
     Open,
-    /// List settings
+    /// List configured settings (does not include implicit defaults)
+    #[command(alias = "all")]
     List {
-        /// Show all available settings
-        #[arg(long)]
+        /// Accepted for compatibility; all configured settings are always listed
+        #[arg(long, hide = true)]
         all: bool,
-        /// Format of the output
-        #[arg(long, short, value_enum, default_value_t)]
-        format: OutputFormat,
-    },
-    /// List configured settings
-    #[command(hide = true)]
-    All {
         /// Format of the output
         #[arg(long, short, value_enum, default_value_t)]
         format: OutputFormat,
@@ -78,44 +72,24 @@ impl SettingsArgs {
                     bail!("The EDITOR environment variable is not set")
                 }
             },
-            Some(SettingsSubcommands::List { all, format }) => {
-                let mut args = vec!["settings".to_string(), "list".to_string()];
-                if all {
-                    args.push("--all".to_string());
-                }
-                if format != OutputFormat::default() {
-                    args.push("--format".to_string());
-                    args.push(format.to_possible_value().unwrap().get_name().to_string());
-                }
-
-                let status = tokio::process::Command::new(qchat_path()?).args(&args).status().await?;
-
-                Ok(if status.success() {
-                    ExitCode::SUCCESS
-                } else {
-                    ExitCode::FAILURE
-                })
-            },
-            Some(SettingsSubcommands::All { format }) => {
-                let mut args = vec!["settings".to_string(), "list".to_string()];
-
-                if format != OutputFormat::default() {
-                    args.push("--format".to_string());
-                    args.push(format.to_possible_value().unwrap().get_name().to_string());
-                }
-
-                let status = tokio::process::Command::new(qchat_path()?).args(&args).status().await?;
-
-                Ok(if status.success() {
-                    ExitCode::SUCCESS
-                } else {
-                    ExitCode::FAILURE
-                })
+            Some(SettingsSubcommands::List { format, .. }) => {
+                let settings = cli_context.settings().all()?;
+                format.print(
+                    || {
+                        settings
+                            .iter()
+                            .map(|(key, value)| format!("{key} = {value}"))
+                            .collect::<Vec<_>>()
+                            .join("\n")
+                    },
+                    || &settings,
+                );
+                Ok(ExitCode::SUCCESS)
             },
             None => match &self.key {
                 Some(key) => match (&self.value, self.delete) {
                     (Some(_), true) => Err(eyre::eyre!(
-                        "the argument '--delete' cannot be used with '[VALUE]'\n Usage: q settings --delete {key}"
+                        "the argument '--delete' cannot be used with '[VALUE]'\n Usage: {CLI_BINARY_NAME} settings --delete {key}"
                     )),
                     (None, false) => match fig_settings::settings::get_value(key)? {
                         Some(value) => {
@@ -174,7 +148,7 @@ impl SettingsArgs {
                 None => {
                     if self.delete {
                         return Err(eyre::eyre!(
-                            "the argument '--delete' requires a <KEY>\n Usage: q settings --delete <KEY>"
+                            "the argument '--delete' requires a <KEY>\n Usage: {CLI_BINARY_NAME} settings --delete <KEY>"
                         ));
                     }
 

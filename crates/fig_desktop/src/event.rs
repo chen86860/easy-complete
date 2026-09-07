@@ -26,9 +26,7 @@ pub enum Event {
 
     ReloadCredentials,
     ReloadAccessibility,
-    ReloadTray {
-        is_logged_in: bool,
-    },
+    ReloadTray,
     AutocompleteLifecycleChanged {
         /// The new `autocomplete.keepReady` value, when the sender already knows it.
         ///

@@ -3,34 +3,11 @@
  */
 
 import {
-  AggregateSessionMetricActionRequest,
-  AggregateSessionMetricActionRequestSchema,
   AppendToFileRequest,
   AppendToFileRequestSchema,
-  AuthBuilderIdPollCreateTokenRequest,
-  AuthBuilderIdPollCreateTokenRequestSchema,
-  AuthBuilderIdPollCreateTokenResponse,
-  AuthBuilderIdStartDeviceAuthorizationRequest,
-  AuthBuilderIdStartDeviceAuthorizationRequestSchema,
-  AuthBuilderIdStartDeviceAuthorizationResponse,
-  AuthCancelPkceAuthorizationRequest,
-  AuthCancelPkceAuthorizationRequestSchema,
-  AuthCancelPkceAuthorizationResponse,
-  AuthFinishPkceAuthorizationRequest,
-  AuthFinishPkceAuthorizationRequestSchema,
-  AuthFinishPkceAuthorizationResponse,
-  AuthStartPkceAuthorizationRequest,
-  AuthStartPkceAuthorizationRequestSchema,
-  AuthStartPkceAuthorizationResponse,
-  AuthStatusRequest,
-  AuthStatusRequestSchema,
-  AuthStatusResponse,
   CheckForUpdatesRequest,
   CheckForUpdatesRequestSchema,
   CheckForUpdatesResponse,
-  CodewhispererListCustomizationRequest,
-  CodewhispererListCustomizationRequestSchema,
-  CodewhispererListCustomizationResponse,
   ContentsOfDirectoryRequest,
   ContentsOfDirectoryRequestSchema,
   ContentsOfDirectoryResponse,
@@ -58,9 +35,6 @@ import {
   InstallRequest,
   InstallRequestSchema,
   InstallResponse,
-  ListAvailableProfilesRequest,
-  ListAvailableProfilesRequestSchema,
-  ListAvailableProfilesResponse,
   NotificationRequest,
   NotificationRequestSchema,
   OnboardingRequest,
@@ -79,12 +53,6 @@ import {
   RunProcessRequest,
   RunProcessRequestSchema,
   RunProcessResponse,
-  SetProfileRequest,
-  SetProfileRequestSchema,
-  TelemetryPageRequest,
-  TelemetryPageRequestSchema,
-  TelemetryTrackRequest,
-  TelemetryTrackRequestSchema,
   UpdateApplicationPropertiesRequest,
   UpdateApplicationPropertiesRequestSchema,
   UpdateApplicationRequest,
@@ -93,8 +61,6 @@ import {
   UpdateLocalStateRequestSchema,
   UpdateSettingsPropertyRequest,
   UpdateSettingsPropertyRequestSchema,
-  UserLogoutRequest,
-  UserLogoutRequestSchema,
   WindowFocusRequest,
   WindowFocusRequestSchema,
   WriteFileRequest,
@@ -390,99 +356,6 @@ export async function sendHistoryQueryRequest(
   });
 }
 
-export async function sendAuthStatusRequest(
-  request: Omit<AuthStatusRequest, "$typeName" | "$unknown">,
-): Promise<AuthStatusResponse> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      {
-        case: "authStatusRequest",
-        value: create(AuthStatusRequestSchema, request),
-      },
-      (response) => {
-        switch (response?.case) {
-          case "authStatusResponse":
-            resolve(response.value);
-            break;
-          case "error":
-            reject(Error(response.value));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.case}' for 'AuthStatusRequest'`,
-              ),
-            );
-        }
-      },
-    );
-  });
-}
-
-export async function sendAuthBuilderIdStartDeviceAuthorizationRequest(
-  request: Omit<
-    AuthBuilderIdStartDeviceAuthorizationRequest,
-    "$typeName" | "$unknown"
-  >,
-): Promise<AuthBuilderIdStartDeviceAuthorizationResponse> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      {
-        case: "authBuilderIdStartDeviceAuthorizationRequest",
-        value: create(
-          AuthBuilderIdStartDeviceAuthorizationRequestSchema,
-          request,
-        ),
-      },
-      (response) => {
-        switch (response?.case) {
-          case "authBuilderIdStartDeviceAuthorizationResponse":
-            resolve(response.value);
-            break;
-          case "error":
-            reject(Error(response.value));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.case}' for 'AuthBuilderIdStartDeviceAuthorizationRequest'`,
-              ),
-            );
-        }
-      },
-    );
-  });
-}
-
-export async function sendAuthBuilderIdPollCreateTokenRequest(
-  request: Omit<AuthBuilderIdPollCreateTokenRequest, "$typeName" | "$unknown">,
-): Promise<AuthBuilderIdPollCreateTokenResponse> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      {
-        case: "authBuilderIdPollCreateTokenRequest",
-        value: create(AuthBuilderIdPollCreateTokenRequestSchema, request),
-      },
-      (response) => {
-        switch (response?.case) {
-          case "authBuilderIdPollCreateTokenResponse":
-            resolve(response.value);
-            break;
-          case "error":
-            reject(Error(response.value));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.case}' for 'AuthBuilderIdPollCreateTokenRequest'`,
-              ),
-            );
-        }
-      },
-    );
-  });
-}
-
 export async function sendPingRequest(
   request: Omit<PingRequest, "$typeName" | "$unknown">,
 ): Promise<PingResponse> {
@@ -500,125 +373,6 @@ export async function sendPingRequest(
           default:
             reject(
               Error(`Invalid response '${response?.case}' for 'PingRequest'`),
-            );
-        }
-      },
-    );
-  });
-}
-
-export async function sendCodewhispererListCustomizationRequest(
-  request: Omit<
-    CodewhispererListCustomizationRequest,
-    "$typeName" | "$unknown"
-  >,
-): Promise<CodewhispererListCustomizationResponse> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      {
-        case: "codewhispererListCustomizationRequest",
-        value: create(CodewhispererListCustomizationRequestSchema, request),
-      },
-      (response) => {
-        switch (response?.case) {
-          case "codewhispererListCustomizationResponse":
-            resolve(response.value);
-            break;
-          case "error":
-            reject(Error(response.value));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.case}' for 'CodewhispererListCustomizationRequest'`,
-              ),
-            );
-        }
-      },
-    );
-  });
-}
-
-export async function sendAuthStartPkceAuthorizationRequest(
-  request: Omit<AuthStartPkceAuthorizationRequest, "$typeName" | "$unknown">,
-): Promise<AuthStartPkceAuthorizationResponse> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      {
-        case: "authStartPkceAuthorizationRequest",
-        value: create(AuthStartPkceAuthorizationRequestSchema, request),
-      },
-      (response) => {
-        switch (response?.case) {
-          case "authStartPkceAuthorizationResponse":
-            resolve(response.value);
-            break;
-          case "error":
-            reject(Error(response.value));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.case}' for 'AuthStartPkceAuthorizationRequest'`,
-              ),
-            );
-        }
-      },
-    );
-  });
-}
-
-export async function sendAuthFinishPkceAuthorizationRequest(
-  request: Omit<AuthFinishPkceAuthorizationRequest, "$typeName" | "$unknown">,
-): Promise<AuthFinishPkceAuthorizationResponse> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      {
-        case: "authFinishPkceAuthorizationRequest",
-        value: create(AuthFinishPkceAuthorizationRequestSchema, request),
-      },
-      (response) => {
-        switch (response?.case) {
-          case "authFinishPkceAuthorizationResponse":
-            resolve(response.value);
-            break;
-          case "error":
-            reject(Error(response.value));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.case}' for 'AuthFinishPkceAuthorizationRequest'`,
-              ),
-            );
-        }
-      },
-    );
-  });
-}
-
-export async function sendAuthCancelPkceAuthorizationRequest(
-  request: Omit<AuthCancelPkceAuthorizationRequest, "$typeName" | "$unknown">,
-): Promise<AuthCancelPkceAuthorizationResponse> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      {
-        case: "authCancelPkceAuthorizationRequest",
-        value: create(AuthCancelPkceAuthorizationRequestSchema, request),
-      },
-      (response) => {
-        switch (response?.case) {
-          case "authCancelPkceAuthorizationResponse":
-            resolve(response.value);
-            break;
-          case "error":
-            reject(Error(response.value));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.case}' for 'AuthCancelPkceAuthorizationRequest'`,
-              ),
             );
         }
       },
@@ -647,35 +401,6 @@ export async function sendGetPlatformInfoRequest(
             reject(
               Error(
                 `Invalid response '${response?.case}' for 'GetPlatformInfoRequest'`,
-              ),
-            );
-        }
-      },
-    );
-  });
-}
-
-export async function sendListAvailableProfilesRequest(
-  request: Omit<ListAvailableProfilesRequest, "$typeName" | "$unknown">,
-): Promise<ListAvailableProfilesResponse> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      {
-        case: "listAvailableProfilesRequest",
-        value: create(ListAvailableProfilesRequestSchema, request),
-      },
-      (response) => {
-        switch (response?.case) {
-          case "listAvailableProfilesResponse":
-            resolve(response.value);
-            break;
-          case "error":
-            reject(Error(response.value));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.case}' for 'ListAvailableProfilesRequest'`,
               ),
             );
         }
@@ -821,35 +546,6 @@ export async function sendUpdateApplicationPropertiesRequest(
             reject(
               Error(
                 `Invalid response '${response?.case}' for 'UpdateApplicationPropertiesRequest'`,
-              ),
-            );
-        }
-      },
-    );
-  });
-}
-
-export async function sendTelemetryTrackRequest(
-  request: Omit<TelemetryTrackRequest, "$typeName" | "$unknown">,
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      {
-        case: "telemetryTrackRequest",
-        value: create(TelemetryTrackRequestSchema, request),
-      },
-      (response) => {
-        switch (response?.case) {
-          case "success":
-            resolve();
-            break;
-          case "error":
-            reject(Error(response.value));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.case}' for 'TelemetryTrackRequest'`,
               ),
             );
         }
@@ -1032,93 +728,6 @@ export async function sendCreateDirectoryRequest(
   });
 }
 
-export async function sendTelemetryPageRequest(
-  request: Omit<TelemetryPageRequest, "$typeName" | "$unknown">,
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      {
-        case: "telemetryPageRequest",
-        value: create(TelemetryPageRequestSchema, request),
-      },
-      (response) => {
-        switch (response?.case) {
-          case "success":
-            resolve();
-            break;
-          case "error":
-            reject(Error(response.value));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.case}' for 'TelemetryPageRequest'`,
-              ),
-            );
-        }
-      },
-    );
-  });
-}
-
-export async function sendAggregateSessionMetricActionRequest(
-  request: Omit<AggregateSessionMetricActionRequest, "$typeName" | "$unknown">,
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      {
-        case: "aggregateSessionMetricActionRequest",
-        value: create(AggregateSessionMetricActionRequestSchema, request),
-      },
-      (response) => {
-        switch (response?.case) {
-          case "success":
-            resolve();
-            break;
-          case "error":
-            reject(Error(response.value));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.case}' for 'AggregateSessionMetricActionRequest'`,
-              ),
-            );
-        }
-      },
-    );
-  });
-}
-
-export async function sendUserLogoutRequest(
-  request: Omit<UserLogoutRequest, "$typeName" | "$unknown">,
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      {
-        case: "userLogoutRequest",
-        value: create(UserLogoutRequestSchema, request),
-      },
-      (response) => {
-        switch (response?.case) {
-          case "success":
-            resolve();
-            break;
-          case "error":
-            reject(Error(response.value));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.case}' for 'UserLogoutRequest'`,
-              ),
-            );
-        }
-      },
-    );
-  });
-}
-
 export async function sendUpdateApplicationRequest(
   request: Omit<UpdateApplicationRequest, "$typeName" | "$unknown">,
 ): Promise<void> {
@@ -1169,35 +778,6 @@ export async function sendDragWindowRequest(
             reject(
               Error(
                 `Invalid response '${response?.case}' for 'DragWindowRequest'`,
-              ),
-            );
-        }
-      },
-    );
-  });
-}
-
-export async function sendSetProfileRequest(
-  request: Omit<SetProfileRequest, "$typeName" | "$unknown">,
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    sendMessage(
-      {
-        case: "setProfileRequest",
-        value: create(SetProfileRequestSchema, request),
-      },
-      (response) => {
-        switch (response?.case) {
-          case "success":
-            resolve();
-            break;
-          case "error":
-            reject(Error(response.value));
-            break;
-          default:
-            reject(
-              Error(
-                `Invalid response '${response?.case}' for 'SetProfileRequest'`,
               ),
             );
         }

@@ -2,11 +2,9 @@ use std::sync::Mutex;
 
 use fig_os_shim::{Context, ContextArcProvider, ContextProvider};
 use fig_proto::local::command_response::Response as CommandResponseTypes;
-use fig_proto::local::dump_state_command::Type as DumpStateType;
 use fig_proto::local::{
-    BundleMetadataResponse, DebugModeCommand, DiagnosticsCommand, DiagnosticsResponse, DumpStateCommand,
-    DumpStateResponse, LogLevelCommand, LogLevelResponse, OpenBrowserCommand, OpenUiElementCommand, QuitCommand,
-    UiElement,
+    BundleMetadataResponse, DebugModeCommand, DiagnosticsCommand, DiagnosticsResponse, LogLevelCommand,
+    LogLevelResponse, OpenBrowserCommand, OpenUiElementCommand, QuitCommand, UiElement,
 };
 use fig_remote_ipc::figterm::FigtermState;
 use fig_settings::StateProvider;
@@ -17,8 +15,6 @@ use tracing::error;
 use super::{LocalResponse, LocalResult};
 use crate::event::{Event, WindowEvent};
 use crate::platform::PlatformState;
-use crate::webview::DASHBOARD_SIZE;
-use crate::webview::notification::WebviewNotificationsState;
 use crate::{AUTOCOMPLETE_ID, DASHBOARD_ID, EventLoopProxy, platform};
 
 pub async fn debug(command: DebugModeCommand, proxy: &EventLoopProxy) -> LocalResult {
@@ -180,74 +176,6 @@ pub fn log_level(LogLevelCommand { level }: LogLevelCommand) -> LocalResult {
         LogLevelResponse {
             old_level: Some(old_level),
         },
-    ))))
-}
-
-pub async fn login(proxy: &EventLoopProxy) -> LocalResult {
-    proxy
-        .send_event(Event::WindowEvent {
-            window_id: DASHBOARD_ID,
-            window_event: WindowEvent::Batch(vec![
-                WindowEvent::UpdateWindowGeometry {
-                    size: Some(DASHBOARD_SIZE),
-                    position: None,
-                    anchor: None,
-                    tx: None,
-                    dry_run: false,
-                },
-                WindowEvent::Reload,
-                WindowEvent::Show,
-            ]),
-        })
-        .map_err(|err| error!(?err))
-        .ok();
-
-    proxy
-        .send_event(Event::ReloadTray { is_logged_in: true })
-        .map_err(|err| error!(?err))
-        .ok();
-
-    Ok(LocalResponse::Success(None))
-}
-
-pub async fn logout(proxy: &EventLoopProxy) -> LocalResult {
-    // fig_auth removed
-
-    proxy
-        .send_event(Event::WindowEvent {
-            window_id: DASHBOARD_ID,
-            window_event: WindowEvent::Batch(vec![WindowEvent::Reload, WindowEvent::Show]),
-        })
-        .map_err(|err| error!(?err))
-        .ok();
-
-    proxy
-        .send_event(Event::ReloadTray { is_logged_in: false })
-        .map_err(|err| error!(?err))
-        .ok();
-
-    Ok(LocalResponse::Success(None))
-}
-
-pub fn dump_state(
-    command: DumpStateCommand,
-    figterm_state: &FigtermState,
-    webview_notifications_state: &WebviewNotificationsState,
-    platform_state: &PlatformState,
-) -> LocalResult {
-    let json = match command.r#type() {
-        DumpStateType::DumpStateFigterm => {
-            serde_json::to_string_pretty(&figterm_state).unwrap_or_else(|err| format!("unable to dump: {err}"))
-        },
-        DumpStateType::DumpStateWebNotifications => serde_json::to_string_pretty(&webview_notifications_state)
-            .unwrap_or_else(|err| format!("unable to dump: {err}")),
-        DumpStateType::DumpStatePlatform => {
-            serde_json::to_string_pretty(&platform_state).unwrap_or_else(|err| format!("unable to dump: {err}"))
-        },
-    };
-
-    LocalResult::Ok(LocalResponse::Message(Box::new(CommandResponseTypes::DumpState(
-        DumpStateResponse { json },
     ))))
 }
 

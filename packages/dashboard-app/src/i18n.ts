@@ -97,7 +97,7 @@ const en = {
   "about.updates": "Updates",
   "about.checkAutomatically": "Check for Updates Automatically",
   "about.checkAutomaticallyDescription":
-    "Notify when a new version is available",
+    "Download updates automatically and notify when they are ready",
   "about.privacy": "Privacy",
   "about.shareUsageData": "Share Anonymous Usage Data",
   "about.shareUsageDataDescription":
@@ -238,7 +238,7 @@ const zhCN: Record<TranslationKey, string> = {
   "about.checkForUpdates": "检查更新",
   "about.updates": "更新",
   "about.checkAutomatically": "自动检查更新",
-  "about.checkAutomaticallyDescription": "有新版本时通知我",
+  "about.checkAutomaticallyDescription": "自动下载更新，并在准备完成后通知我",
   "about.privacy": "隐私",
   "about.shareUsageData": "共享匿名使用数据",
   "about.shareUsageDataDescription": "仅包含匿名统计数据，不包含命令或个人数据",

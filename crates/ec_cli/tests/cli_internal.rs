@@ -29,12 +29,6 @@ fn get_shell() -> Result<()> {
 }
 
 #[test]
-fn hostname() -> Result<()> {
-    cli().args(["_", "hostname"]).assert().success();
-    Ok(())
-}
-
-#[test]
 fn should_figterm_launch_code_success() -> Result<()> {
     cli()
         .args(["_", "should-figterm-launch"])

@@ -19,15 +19,13 @@ mod update;
 use std::io::{Write as _, stdout};
 use std::process::ExitCode;
 
-use anstream::{eprintln, println};
+use anstream::println;
 use clap::{ArgAction, CommandFactory, Parser, Subcommand, ValueEnum};
-use crossterm::style::Stylize;
 use eyre::{Result, WrapErr, bail};
 use fig_ipc::local::open_ui_element;
 use fig_log::{LogArgs, initialize_logging};
 use fig_proto::local::UiElement;
 use fig_util::{CLI_BINARY_NAME, PRODUCT_NAME, directories, manifest, system_info};
-use internal::InternalSubcommand;
 use serde::Serialize;
 use tracing::{Level, debug};
 
@@ -37,7 +35,7 @@ use crate::util::desktop::{LaunchArgs, launch_fig_desktop};
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, ValueEnum)]
 pub enum OutputFormat {
-    /// Outputs the results as markdown
+    /// Outputs human-readable text
     #[default]
     Plain,
     /// Outputs the results as JSON
@@ -91,13 +89,13 @@ pub enum CliRootCommands {
     /// Update the application
     #[command(alias("upgrade"))]
     Update(update::UpdateArgs),
-    /// Run diagnostic tests
+    /// Print system and environment diagnostics
     #[command(alias("diagnostics"))]
     Diagnostic(diagnostics::DiagnosticArgs),
     /// Generate the dotfiles for the given shell
     #[command(hide = true)]
     Init(init::InitArgs),
-    /// Create a new Github issue
+    /// Open a prefilled GitHub bug report
     Issue(issue::IssueArgs),
     /// Fix and diagnose common issues
     Doctor(doctor::DoctorArgs),
@@ -148,7 +146,7 @@ pub struct Cli {
     /// Increase logging verbosity
     #[arg(long, short = 'v', action = ArgAction::Count, global = true)]
     pub verbose: u8,
-    /// Print help for all subcommands
+    /// Print help for all subcommands, including internal commands
     #[arg(long)]
     help_all: bool,
 }
@@ -170,12 +168,9 @@ impl Cli {
                 false => None,
             },
             log_to_stdout: fig_os_shim::Env::new().q_log_stdout() || self.verbose > 0,
-            log_file_path: match self.subcommand {
-                Some(CliRootCommands::Internal(InternalSubcommand::Multiplexer(_))) => Some("mux.log".to_owned()),
-                _ => match fig_log::get_log_level_max() >= Level::DEBUG {
-                    true => Some("cli.log".to_owned()),
-                    false => None,
-                },
+            log_file_path: match fig_log::get_log_level_max() >= Level::DEBUG {
+                true => Some("cli.log".to_owned()),
+                false => None,
             }
             .map(|name| directories::logs_dir().expect("home dir must be set").join(name)),
             delete_old_log_file: false,
@@ -227,13 +222,7 @@ impl Cli {
 
     #[allow(clippy::unused_self)]
     fn print_help_all(&self) -> Result<ExitCode> {
-        let mut cmd = Self::command().help_template("{all-args}");
-        eprintln!();
-        eprintln!(
-            "{}\n    {CLI_BINARY_NAME} [OPTIONS] [SUBCOMMAND]\n",
-            "USAGE:".bold().underlined(),
-        );
-        cmd.print_long_help()?;
+        write_help_tree(Self::command(), CLI_BINARY_NAME, &mut stdout().lock())?;
         Ok(ExitCode::SUCCESS)
     }
 
@@ -242,6 +231,24 @@ impl Cli {
         let _ = writeln!(stdout(), "{}", Self::command().render_version());
         Ok(ExitCode::SUCCESS)
     }
+}
+
+fn write_help_tree(mut command: clap::Command, path: &str, output: &mut impl std::io::Write) -> std::io::Result<()> {
+    command = command.bin_name(path.to_owned()).disable_help_subcommand(true);
+    for subcommand in command.get_subcommands_mut() {
+        *subcommand = subcommand.clone().hide(false);
+    }
+    writeln!(output, "{path}\n")?;
+    write!(output, "{}", command.render_long_help())?;
+    writeln!(output, "\n")?;
+    for subcommand in command
+        .get_subcommands()
+        .filter(|subcommand| subcommand.get_name() != "help")
+    {
+        let subcommand_path = format!("{path} {}", subcommand.get_name());
+        write_help_tree(subcommand.clone(), &subcommand_path, output)?;
+    }
+    Ok(())
 }
 
 async fn launch_dashboard(help_fallback: bool) -> Result<ExitCode> {

@@ -19,7 +19,6 @@ message Command {
   oneof command {
     TerminalIntegrationCommand terminal_integration = 100;
     ListTerminalIntegrationsCommand list_terminal_integrations = 101;
-    LogoutCommand logout = 102;
     RestartCommand restart = 103;
     QuitCommand quit = 104;
     UpdateCommand update = 105;
@@ -35,14 +34,12 @@ message Command {
     OpenBrowserCommand open_browser = 117;
     // A request to set the desktops's log level
     LogLevelCommand log_level = 118;
-    DumpStateCommand dump_state = 119;
     DevtoolsCommand devtools = 120;
-    LoginCommand login = 121;
     ConnectToIBusCommand connect_to_ibus = 122;
     BundleMetadataCommand bundle_metadata = 123;
   }
 
-  reserved 116;
+  reserved 102, 116, 119, 121;
 }
 
 message Hook {
@@ -54,7 +51,6 @@ message Hook {
     PostExecHook post_exec = 104;
     KeyboardFocusChangedHook keyboard_focus_changed = 105;
     TmuxPaneChangedHook tmux_pane_changed = 106;
-    OpenedSSHConnectionHook opened_ssh_connection = 107;
     CallbackHook callback = 108;
     IntegrationReadyHook integration_ready = 109;
     HideHook hide = 110;
@@ -81,10 +77,6 @@ message TerminalIntegrationCommand {
 }
 
 message ListTerminalIntegrationsCommand {}
-
-message LoginCommand {}
-
-message LogoutCommand {}
 
 message RestartCommand {}
 
@@ -154,16 +146,6 @@ message LogLevelCommand {
   string level = 1;
 }
 
-message DumpStateCommand {
-  enum Type {
-    TYPE_DUMP_STATE_FIGTERM = 0;
-    TYPE_DUMP_STATE_WEB_NOTIFICATIONS = 1;
-    TYPE_DUMP_STATE_PLATFORM = 2;
-  }
-
-  Type type = 1;
-}
-
 message DevtoolsCommand {
   enum Window {
     WINDOW_DEVTOOLS_AUTOCOMPLETE = 0;
@@ -230,13 +212,6 @@ message KeyboardFocusChangedHook {
 
 message TmuxPaneChangedHook {
   int32 pane_identifier = 1;
-}
-
-message OpenedSSHConnectionHook {
-  fig_common.ShellContext context = 1;
-
-  string control_path = 2;
-  string remote_hostname = 3;
 }
 
 message CallbackHook {
@@ -365,10 +340,6 @@ message LogLevelResponse {
   optional string old_level = 1;
 }
 
-message DumpStateResponse {
-  string json = 1;
-}
-
 message BundleMetadataResponse {
   optional string json = 1;
 }
@@ -385,7 +356,6 @@ message CommandResponse {
     DiagnosticsResponse diagnostics = 101;
     // A response to a log level command
     LogLevelResponse log_level = 102;
-    DumpStateResponse dump_state = 103;
     BundleMetadataResponse bundle_metadata = 104;
   }
 }

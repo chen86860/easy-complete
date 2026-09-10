@@ -1,7 +1,8 @@
 # Changelog
 
-## v2.3.3-beta.1
+## v2.3.3
 
+- feat: bundle an autocomplete spec generated directly from the `ec` CLI, so Easy Complete's own commands and options stay in sync with the shipped binary
 - change: remove the inherited `ec-chat` feature, SSH integration, inline shell completion command, multiplexer, and obsolete Amazon Q authentication, CodeWhisperer, profile, and telemetry surfaces
 - change: consolidate application updates on Sparkle while preserving background checks, automatic downloads, the Check for Updates dialog, and `ec update`; remove the legacy Amazon-hosted updater
 - chore: remove orphaned internal commands, unused settings, dead protocol messages, and unsupported installer code

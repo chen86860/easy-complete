@@ -19,7 +19,6 @@ use tracing::{debug, warn};
 use crate::{Error, Result};
 
 const LEGACY_LABEL: &str = "dev.emmmm.easy-complete";
-const UPSTREAM_LEGACY_LABEL: &str = "com.amazon.codewhisperer.launcher";
 
 // Force-load the framework so the dynamic `SMAppService` class lookup works.
 // ServiceManagement itself exists on macOS 12; only SMAppService is 13+.
@@ -48,13 +47,12 @@ impl ServiceStatus {
 /// Reconcile the persisted launch preference with the platform integration.
 ///
 /// This is intentionally safe to call on every app launch. It also removes the
-/// two historical LaunchAgents so an upgrade cannot leave duplicate jobs behind.
+/// historical Easy Complete LaunchAgent so an upgrade cannot leave a duplicate job behind.
 pub fn reconcile(enabled: bool) -> Result<()> {
     if sm_app_service().is_some() {
-        remove_legacy_launch_agents()?;
+        remove_legacy_launch_agent(LEGACY_LABEL)?;
         set_sm_app_service_enabled(enabled)
     } else {
-        remove_legacy_launch_agent(UPSTREAM_LEGACY_LABEL)?;
         set_legacy_launch_agent_enabled(enabled)
     }
 }
@@ -185,11 +183,6 @@ fn current_app_executable() -> Result<PathBuf> {
     Ok(bundle.join("Contents").join("MacOS").join(APP_PROCESS_NAME))
 }
 
-fn remove_legacy_launch_agents() -> Result<()> {
-    remove_legacy_launch_agent(LEGACY_LABEL)?;
-    remove_legacy_launch_agent(UPSTREAM_LEGACY_LABEL)
-}
-
 fn remove_legacy_launch_agent(label: &str) -> Result<()> {
     let path = legacy_launch_agent_path(label)?;
     if !path.exists() {
@@ -231,12 +224,6 @@ mod tests {
         assert_eq!(ServiceStatus::from_raw(1), ServiceStatus::Enabled);
         assert_eq!(ServiceStatus::from_raw(2), ServiceStatus::RequiresApproval);
         assert_eq!(ServiceStatus::from_raw(3), ServiceStatus::NotFound);
-    }
-
-    #[test]
-    fn legacy_labels_cover_both_previous_install_paths() {
-        assert_eq!(LEGACY_LABEL, APP_BUNDLE_ID);
-        assert_ne!(LEGACY_LABEL, UPSTREAM_LEGACY_LABEL);
     }
 
     #[test]

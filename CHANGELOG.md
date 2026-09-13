@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.3.4
+
+- fix: require both stdin and stdout to be interactive terminals before launching `ecterm`, preventing desktop Homebrew installs and other redirected shell sessions from failing with `stdin and stdout must both be tty handles`
+- change: stop migrating, deleting, or rewriting Amazon Q and Fig files during installation, shell setup, login-item reconciliation, and uninstallation; Easy Complete now manages only its own files and registrations
+- chore: remove unused legacy integration checks, migration helpers, constants, and inactive `figterm` modules
+
 ## v2.3.3
 
 - feat: bundle an autocomplete spec generated directly from the `ec` CLI, so Easy Complete's own commands and options stay in sync with the shipped binary

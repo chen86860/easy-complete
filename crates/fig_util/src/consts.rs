@@ -31,10 +31,6 @@ pub const DATA_DIR_NAME: &str = "easy-complete";
 /// Backup directory name
 pub const BACKUP_DIR_NAME: &str = ".easy-complete.dotfiles.bak";
 
-pub const OLD_PRODUCT_NAME: &str = "Amazon Q";
-pub const OLD_CLI_BINARY_NAMES: &[&str] = &["q"];
-pub const OLD_PTY_BINARY_NAMES: &[&str] = &["qterm"];
-
 pub const GITHUB_REPO_NAME: &str = "chen86860/easy-complete";
 
 pub mod url {

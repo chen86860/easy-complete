@@ -31,12 +31,11 @@ use fig_proto::local::DiagnosticsResponse;
 use fig_settings::JsonStore;
 use fig_util::directories::{remote_socket_path, settings_path};
 use fig_util::env_var::{PROCESS_LAUNCHED_BY_Q, Q_PARENT, QTERM_SESSION_ID};
-use fig_util::macos::BUNDLE_CONTENTS_INFO_PLIST_PATH;
 use fig_util::system_info::SupportLevel;
 use fig_util::terminal::in_special_terminal;
 use fig_util::{
-    APP_BUNDLE_NAME, CLI_BINARY_NAME, CLI_CRATE_NAME, OLD_CLI_BINARY_NAMES, PRODUCT_NAME, PTY_BINARY_NAME, Shell,
-    Terminal, directories, system_paths,
+    APP_BUNDLE_NAME, CLI_BINARY_NAME, CLI_CRATE_NAME, PRODUCT_NAME, PTY_BINARY_NAME, Shell, Terminal, directories,
+    system_paths,
 };
 use futures::FutureExt;
 use futures::future::BoxFuture;
@@ -47,9 +46,8 @@ use spinners::{Spinner, Spinners};
 use tokio::io::AsyncBufReadExt;
 
 use super::app::restart_fig;
-use super::diagnostics::verify_integration;
 use crate::util::desktop::{LaunchArgs, desktop_app_running, launch_fig_desktop};
-use crate::util::{app_path_from_bundle_id, glob, glob_dir, is_executable_in_path};
+use crate::util::{app_path_from_bundle_id, is_executable_in_path};
 
 #[derive(Debug, Args, PartialEq, Eq)]
 pub struct DoctorArgs {
@@ -230,20 +228,6 @@ fn is_installed(app: Option<impl AsRef<OsStr>>) -> bool {
         Some(x) => !x.is_empty(),
         None => false,
     }
-}
-
-pub fn app_version(app: impl AsRef<OsStr>) -> Option<Version> {
-    let app_path = app_path_from_bundle_id(app)?;
-    let output = Command::new("defaults")
-        .args([
-            "read",
-            &format!("{app_path}/{BUNDLE_CONTENTS_INFO_PLIST_PATH}"),
-            "CFBundleShortVersionString",
-        ])
-        .output()
-        .ok()?;
-    let version = String::from_utf8_lossy(&output.stdout);
-    Version::parse(version.trim()).ok()
 }
 
 const CHECKMARK: &str = "✔";
@@ -867,11 +851,7 @@ impl DoctorCheck<Option<Shell>> for DotfileCheck {
         );
         match self.integration.is_installed().await {
             Ok(()) => Ok(()),
-            Err(
-                InstallationError::LegacyInstallation(msg)
-                | InstallationError::NotInstalled(msg)
-                | InstallationError::ImproperInstallation(msg),
-            ) => {
+            Err(InstallationError::NotInstalled(msg) | InstallationError::ImproperInstallation(msg)) => {
                 let fix_integration = self.integration.clone();
                 Err(DoctorError::Error {
                     reason: msg,
@@ -1077,16 +1057,6 @@ impl DoctorCheck<DiagnosticsResponse> for CliPathCheck {
     async fn check(&self, _: &DiagnosticsResponse) -> Result<(), DoctorError> {
         let path = std::env::current_exe().context("Could not get executable path.")?;
 
-        for old_bin in OLD_CLI_BINARY_NAMES {
-            if path.ends_with(old_bin) {
-                return Err(doctor_warning!(
-                    "The {} CLI has been replaced with {}",
-                    old_bin.magenta(),
-                    CLI_BINARY_NAME.magenta()
-                ));
-            }
-        }
-
         let local_bin_path = directories::home_dir()
             .unwrap()
             .join(".local")
@@ -1270,40 +1240,6 @@ impl DoctorCheck<SupportedTerminalCheckContext> for SupportedTerminalCheck {
     }
 }
 
-struct ItermIntegrationCheck;
-
-#[async_trait]
-impl DoctorCheck<Option<Terminal>> for ItermIntegrationCheck {
-    fn name(&self) -> Cow<'static, str> {
-        "iTerm integration is enabled".into()
-    }
-
-    async fn get_type(&self, current_terminal: &Option<Terminal>, platform: Platform) -> DoctorCheckType {
-        if platform == Platform::MacOs {
-            if !is_installed(Terminal::Iterm.to_bundle_id().as_deref()) {
-                DoctorCheckType::NoCheck
-            } else if matches!(current_terminal.to_owned(), Some(Terminal::Iterm)) {
-                DoctorCheckType::NormalCheck
-            } else {
-                DoctorCheckType::SoftCheck
-            }
-        } else {
-            DoctorCheckType::NoCheck
-        }
-    }
-
-    async fn check(&self, _: &Option<Terminal>) -> Result<(), DoctorError> {
-        if let Some(version) = app_version("com.googlecode.iterm2") {
-            if version < Version::new(3, 4, 0) {
-                return Err(doctor_error!(
-                    "iTerm version is incompatible with {PRODUCT_NAME}. Please update iTerm to latest version"
-                ));
-            }
-        }
-        Ok(())
-    }
-}
-
 struct ItermBashIntegrationCheck;
 
 #[async_trait]
@@ -1359,59 +1295,6 @@ impl DoctorCheck<SupportedTerminalCheckContext> for ItermBashIntegrationCheck {
     }
 }
 
-struct HyperIntegrationCheck;
-#[async_trait]
-impl DoctorCheck<Option<Terminal>> for HyperIntegrationCheck {
-    fn name(&self) -> Cow<'static, str> {
-        "Hyper integration is enabled".into()
-    }
-
-    async fn get_type(&self, current_terminal: &Option<Terminal>, _platform: Platform) -> DoctorCheckType {
-        if !is_installed(Terminal::Hyper.to_bundle_id().as_deref()) {
-            return DoctorCheckType::NoCheck;
-        }
-
-        if matches!(current_terminal.to_owned(), Some(Terminal::Hyper)) {
-            DoctorCheckType::NormalCheck
-        } else {
-            DoctorCheckType::SoftCheck
-        }
-    }
-
-    async fn check(&self, _: &Option<Terminal>) -> Result<(), DoctorError> {
-        let integration = verify_integration("co.zeit.hyper")
-            .await
-            .context("Could not verify Hyper integration")?;
-
-        if integration != "installed!" {
-            // Check ~/.hyper_plugins/local/fig-hyper-integration/index.js exists
-            let integration_path = directories::home_dir()
-                .context("Could not get home dir")?
-                .join(".hyper_plugins/local/fig-hyper-integration/index.js");
-
-            if !integration_path.exists() {
-                return Err(doctor_error!("fig-hyper-integration plugin is missing."));
-            }
-
-            let config = read_to_string(
-                directories::home_dir()
-                    .context("Could not get home dir")?
-                    .join(".hyper.js"),
-            )
-            .context("Could not read ~/.hyper.js")?;
-
-            if !config.contains("fig-hyper-integration") {
-                return Err(doctor_error!(
-                    "fig-hyper-integration plugin needs to be added to localPlugins!"
-                ));
-            }
-            return Err(doctor_error!("Unknown error with Hyper integration"));
-        }
-
-        Ok(())
-    }
-}
-
 struct SystemVersionCheck;
 
 #[async_trait]
@@ -1434,66 +1317,6 @@ impl DoctorCheck for SystemVersionCheck {
             )),
             SupportLevel::Unsupported => Err(doctor_error!("{os_version} is not supported")),
         }
-    }
-}
-
-struct VSCodeIntegrationCheck;
-
-#[async_trait]
-impl DoctorCheck<Option<Terminal>> for VSCodeIntegrationCheck {
-    fn name(&self) -> Cow<'static, str> {
-        "VSCode integration is enabled".into()
-    }
-
-    async fn get_type(&self, current_terminal: &Option<Terminal>, _platform: Platform) -> DoctorCheckType {
-        if !is_installed(Terminal::VSCode.to_bundle_id().as_deref())
-            && !is_installed(Terminal::VSCodeInsiders.to_bundle_id().as_deref())
-        {
-            return DoctorCheckType::NoCheck;
-        }
-
-        if matches!(
-            current_terminal,
-            Some(Terminal::VSCode | Terminal::VSCodeInsiders | Terminal::Cursor | Terminal::CursorNightly)
-        ) {
-            DoctorCheckType::NormalCheck
-        } else {
-            DoctorCheckType::SoftCheck
-        }
-    }
-
-    async fn check(&self, _: &Option<Terminal>) -> Result<(), DoctorError> {
-        let integration = verify_integration("com.microsoft.VSCode")
-            .await
-            .context("Could not verify VSCode integration")?;
-
-        if integration != "installed!" {
-            let mut missing = true;
-
-            for dir in [".vscode", ".vscode-insiders", ".cursor", ".cursor-nightly"] {
-                // Check if withfig.fig exists
-                let extensions = directories::home_dir()
-                    .context("Could not get home dir")?
-                    .join(dir)
-                    .join("extensions");
-
-                let glob_set = glob([extensions.join("withfig.fig-").to_string_lossy()]).unwrap();
-
-                let extensions = extensions.as_path();
-                if let Ok(fig_extensions) = glob_dir(&glob_set, extensions) {
-                    if fig_extensions.is_empty() {
-                        missing = false;
-                    }
-                }
-            }
-
-            if missing {
-                return Err(doctor_error!("VSCode integration is missing!"));
-            }
-
-            return Err(doctor_error!("Unknown error with VSCode integration!"));
-        }
-        Ok(())
     }
 }
 
@@ -2096,13 +1919,7 @@ pub async fn doctor_cli(all: bool, strict: bool) -> Result<ExitCode> {
             "Let's check your terminal integrations...",
             vec![
                 &SupportedTerminalCheck,
-                // &ItermIntegrationCheck,
                 &ItermBashIntegrationCheck,
-                // TODO: re-enable on macos once IME/terminal integrations are sorted
-                // #[cfg(not(target_os = "macos"))]
-                // &HyperIntegrationCheck,
-                // #[cfg(not(target_os = "macos"))]
-                // &VSCodeIntegrationCheck,
                 #[cfg(target_os = "macos")]
                 &ImeStatusCheck,
             ],

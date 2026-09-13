@@ -26,7 +26,6 @@ struct LinuxConstants {
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Constants {
-    codewhisperer: bool,
     version: &'static str,
     cli: Option<Utf8PathBuf>,
     bundle_path: Option<Utf8PathBuf>,
@@ -78,7 +77,6 @@ impl Constants {
             .unwrap_or_else(|| DEFAULT_THEMES.iter().map(|s| (*s).to_owned()).collect());
 
         Self {
-            codewhisperer: true,
             version: env!("CARGO_PKG_VERSION"),
             cli: which(CLI_BINARY_NAME)
                 .ok()

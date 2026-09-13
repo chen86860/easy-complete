@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.3.4
+
+- 修复：仅在 stdin 和 stdout 均为交互式终端时启动 `ecterm`，避免桌面版 Homebrew 安装及其他重定向 Shell 会话出现 `stdin and stdout must both be tty handles` 错误
+- 调整：安装、Shell 配置、登录项同步和卸载流程不再迁移、删除或改写 Amazon Q 与 Fig 文件；Easy Complete 现在只管理自身创建的文件和注册项
+- 维护：移除未使用的旧集成检查、迁移辅助函数、常量和未启用的 `figterm` 模块
+
 ## v2.3.3
 
 - 新增：内置直接由 `ec` CLI 生成的补全规则，使 Easy Complete 自身的命令和选项始终与发布的二进制保持一致

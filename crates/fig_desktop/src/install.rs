@@ -17,28 +17,6 @@ use crate::utils::is_cargo_debug_build;
 const PREVIOUS_VERSION_KEY: &str = "desktop.versionAtPreviousLaunch";
 
 #[cfg(target_os = "macos")]
-const MIGRATED_KEY: &str = "desktop.migratedFromFig";
-
-#[cfg(target_os = "macos")]
-pub async fn migrate_data_dir() {
-    // Migrate the user data dir
-    if let (Ok(old), Ok(new)) = (fig_util::directories::old_fig_data_dir(), fig_data_dir()) {
-        if !old.is_symlink() && old.is_dir() && !new.is_dir() {
-            match tokio::fs::rename(&old, &new).await {
-                Ok(()) => {
-                    if let Err(err) = symlink(&new, &old).await {
-                        error!(%err, "Failed to symlink old user data dir");
-                    }
-                },
-                Err(err) => {
-                    error!(%err, "Failed to migrate user data dir");
-                },
-            }
-        }
-    }
-}
-
-#[cfg(target_os = "macos")]
 fn run_input_method_migration() {
     use fig_integrations::input_method::InputMethod;
     use tokio::time::{Duration, sleep};
@@ -170,15 +148,6 @@ pub async fn run_install(
     #[cfg(target_os = "macos")]
     {
         initialize_fig_dir(&fig_os_shim::Env::new()).await.ok();
-
-        if fig_util::directories::home_dir()
-            .map(|home| home.join("Library/Application Support/fig/credentials.json"))
-            .is_ok_and(|path| path.exists())
-            && !fig_settings::state::get_bool_or(MIGRATED_KEY, false)
-        {
-            fig_settings::state::set_value(MIGRATED_KEY, true).ok();
-            // fig_telemetry removed
-        }
     }
 
     #[cfg(target_os = "macos")]
@@ -265,31 +234,20 @@ pub async fn initialize_fig_dir(env: &fig_os_shim::Env) -> anyhow::Result<()> {
     use std::fs;
 
     use fig_integrations::shell::ShellExt;
+    use fig_util::Shell;
     use fig_util::consts::{CLI_BINARY_NAME, PTY_BINARY_NAME};
-    use fig_util::directories::home_dir;
-    use fig_util::{OLD_CLI_BINARY_NAMES, OLD_PTY_BINARY_NAMES, Shell};
-    use tracing::warn;
 
     let local_bin = fig_util::directories::home_local_bin()?;
     if let Err(err) = fs::create_dir_all(&local_bin) {
         error!(%err, "Failed to create {local_bin:?}");
     }
 
-    // Install figterm to ~/.local/bin
+    // Install ecterm to ~/.local/bin
     match get_bundle_path_for_executable(PTY_BINARY_NAME) {
         Some(pty_path) => {
             let link = local_bin.join(PTY_BINARY_NAME);
             if let Err(err) = symlink(&pty_path, link).await {
                 error!(%err, "Failed to symlink for {PTY_BINARY_NAME}: {pty_path:?}");
-            }
-
-            for old_pty_binary_name in OLD_PTY_BINARY_NAMES {
-                let old_pty_binary_path = local_bin.join(old_pty_binary_name);
-                if old_pty_binary_path.exists() {
-                    if let Err(err) = tokio::fs::remove_file(&old_pty_binary_path).await {
-                        warn!(%err, "Failed to remove {old_pty_binary_name}: {old_pty_binary_path:?}");
-                    }
-                }
             }
 
             for shell in Shell::all() {
@@ -329,16 +287,6 @@ pub async fn initialize_fig_dir(env: &fig_os_shim::Env) -> anyhow::Result<()> {
                         error!(%err, "Failed to copy {PTY_BINARY_NAME} to {}", pty_shell_cpy.display());
                     }
                 });
-
-                for old_pty_binary_name in OLD_PTY_BINARY_NAMES {
-                    // Remove legacy pty shell copies
-                    let old_pty_binary_path = local_bin.join(format!("{shell} ({old_pty_binary_name})"));
-                    if old_pty_binary_path.exists() {
-                        if let Err(err) = tokio::fs::remove_file(&old_pty_binary_path).await {
-                            warn!(%err, "Failed to remove legacy pty: {old_pty_binary_path:?}");
-                        }
-                    }
-                }
             }
         },
         None => error!("Failed to find {PTY_BINARY_NAME} in bundle"),
@@ -351,31 +299,8 @@ pub async fn initialize_fig_dir(env: &fig_os_shim::Env) -> anyhow::Result<()> {
             if let Err(err) = symlink(&ec_cli_path, dest).await {
                 error!(%err, "Failed to symlink {CLI_BINARY_NAME}");
             }
-
-            for old_cli_binary_name in OLD_CLI_BINARY_NAMES {
-                let old_cli_binary_path = local_bin.join(old_cli_binary_name);
-                if old_cli_binary_path.is_symlink() {
-                    if let Err(err) = symlink(&ec_cli_path, &old_cli_binary_path).await {
-                        warn!(%err, "Failed to symlink legacy CLI: {old_cli_binary_path:?}");
-                    }
-                }
-            }
         },
         None => error!("Failed to find {CLI_BINARY_NAME} in bundle"),
-    }
-
-    if let Ok(home) = home_dir() {
-        let iterm_integration_path = home
-            .join("Library")
-            .join("Application Support")
-            .join("iTerm2")
-            .join("Scripts")
-            .join("AutoLaunch")
-            .join("fig-iterm-integration.scpt");
-
-        if iterm_integration_path.exists() {
-            std::fs::remove_file(&iterm_integration_path).ok();
-        }
     }
 
     // Init the shell directory

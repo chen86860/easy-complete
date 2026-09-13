@@ -5,7 +5,6 @@ declare global {
      */
     const constants:
       | {
-          codewhisperer: boolean;
           version: string;
           cli?: string;
           bundlePath?: string;

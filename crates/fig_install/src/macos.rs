@@ -1,56 +1,23 @@
-use std::path::Path;
-
 use fig_util::consts::APP_BUNDLE_ID;
 use fig_util::directories;
 use tokio::fs;
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use tracing::{error, warn};
+use tracing::warn;
 
 use crate::Error;
-
-async fn remove_in_dir_with_prefix_unless(dir: &Path, prefix: &str, unless: impl Fn(&str) -> bool) {
-    if let Ok(mut entries) = fs::read_dir(dir).await {
-        while let Ok(Some(entry)) = entries.next_entry().await {
-            if let Some(name) = entry.file_name().to_str() {
-                if name.starts_with(prefix) && !unless(name) {
-                    fs::remove_file(entry.path()).await.ok();
-                    fs::remove_dir_all(entry.path()).await.ok();
-                }
-            }
-        }
-    }
-}
 
 #[allow(unused_variables)]
 pub(crate) async fn uninstall_desktop(ctx: &fig_os_shim::Context) -> Result<(), Error> {
     // TODO:
-    // 1. Set title of running ttys "Restart this terminal to finish uninstalling Q..."
+    // 1. Set title of running ttys "Restart this terminal to finish uninstalling Easy Complete..."
     // 2. Delete webview cache
 
-    // Remove launch agents
-    if let Ok(home) = directories::home_dir() {
-        let launch_agents = home.join("Library").join("LaunchAgents");
-        remove_in_dir_with_prefix_unless(&launch_agents, "com.amazon.codewhisperer.", |p| p.contains("daemon")).await;
-    } else {
-        warn!("Could not find home directory");
-    }
-
-    // Delete Fig defaults on macOS
+    // Delete Easy Complete defaults on macOS
     tokio::process::Command::new("defaults")
         .args(["delete", APP_BUNDLE_ID])
         .output()
         .await
         .map_err(|err| warn!("Failed to delete defaults: {err}"))
         .ok();
-
-    tokio::process::Command::new("defaults")
-        .args(["delete", "com.amazon.codewhisperer.shared"])
-        .output()
-        .await
-        .map_err(|err| warn!("Failed to delete defaults: {err}"))
-        .ok();
-
-    uninstall_terminal_integrations().await;
 
     // Delete data dir
     if let Ok(fig_data_dir) = directories::fig_data_dir() {
@@ -88,119 +55,5 @@ pub(crate) async fn uninstall_desktop(ctx: &fig_os_shim::Context) -> Result<(), 
             .ok();
     }
 
-    // Remove the previous codewhisperer data dir only if it is a symlink.
-    if let Ok(old_fig_data_dir) = directories::old_fig_data_dir() {
-        if old_fig_data_dir.exists() {
-            if let Ok(metadata) = fs::symlink_metadata(&old_fig_data_dir).await {
-                if metadata.is_symlink() {
-                    fs::remove_file(&old_fig_data_dir)
-                        .await
-                        .map_err(|err| error!("Failed to remove the old fig data dir {old_fig_data_dir:?}: {err}"))
-                        .ok();
-                }
-            }
-        }
-    }
-
     Ok(())
-}
-
-pub async fn uninstall_terminal_integrations() {
-    // Delete integrations
-    if let Ok(home) = directories::home_dir() {
-        // Delete iTerm integration
-        for path in &[
-            "Library/Application Support/iTerm2/Scripts/AutoLaunch/fig-iterm-integration.py",
-            ".config/iterm2/AppSupport/Scripts/AutoLaunch/fig-iterm-integration.py",
-            "Library/Application Support/iTerm2/Scripts/AutoLaunch/fig-iterm-integration.scpt",
-        ] {
-            fs::remove_file(home.join(path))
-                .await
-                .map_err(|err| warn!("Could not remove iTerm integration {path}: {err}"))
-                .ok();
-        }
-
-        // Delete VSCode integration
-        for (folder, prefix) in &[
-            (".vscode/extensions", "withfig.fig-"),
-            (".vscode-insiders/extensions", "withfig.fig-"),
-            (".vscode-oss/extensions", "withfig.fig-"),
-            (".cursor/extensions", "withfig.fig-"),
-            (".cursor-nightly/extensions", "withfig.fig-"),
-        ] {
-            let folder = home.join(folder);
-            remove_in_dir_with_prefix_unless(&folder, prefix, |_| false).await;
-        }
-
-        // Remove Hyper integration
-        let hyper_path = home.join(".hyper.js");
-        if hyper_path.exists() {
-            // Read the config file
-            match fs::File::open(&hyper_path).await {
-                Ok(mut file) => {
-                    let mut contents = String::new();
-                    match file.read_to_string(&mut contents).await {
-                        Ok(_) => {
-                            contents = contents.replace("\"fig-hyper-integration\",", "");
-                            contents = contents.replace("\"fig-hyper-integration\"", "");
-
-                            // Write the config file
-                            match fs::File::create(&hyper_path).await {
-                                Ok(mut file) => {
-                                    file.write_all(contents.as_bytes())
-                                        .await
-                                        .map_err(|err| warn!("Could not write to Hyper config: {err}"))
-                                        .ok();
-                                },
-                                Err(err) => {
-                                    warn!("Could not create Hyper config: {err}");
-                                },
-                            }
-                        },
-                        Err(err) => {
-                            warn!("Could not read Hyper config: {err}");
-                        },
-                    }
-                },
-                Err(err) => {
-                    warn!("Could not open Hyper config: {err}");
-                },
-            }
-        }
-
-        // Remove Kitty integration
-        let kitty_path = home.join(".config").join("kitty").join("kitty.conf");
-        if kitty_path.exists() {
-            // Read the config file
-            match fs::File::open(&kitty_path).await {
-                Ok(mut file) => {
-                    let mut contents = String::new();
-                    match file.read_to_string(&mut contents).await {
-                        Ok(_) => {
-                            contents = contents.replace("watcher ${HOME}/.fig/tools/kitty-integration.py", "");
-                            // Write the config file
-                            match fs::File::create(&kitty_path).await {
-                                Ok(mut file) => {
-                                    file.write_all(contents.as_bytes())
-                                        .await
-                                        .map_err(|err| warn!("Could not write to Kitty config: {err}"))
-                                        .ok();
-                                },
-                                Err(err) => {
-                                    warn!("Could not create Kitty config: {err}");
-                                },
-                            }
-                        },
-                        Err(err) => {
-                            warn!("Could not read Kitty config: {err}");
-                        },
-                    }
-                },
-                Err(err) => {
-                    warn!("Could not open Kitty config: {err}");
-                },
-            }
-        }
-        // TODO: Add Jetbrains integration
-    }
 }

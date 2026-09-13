@@ -93,9 +93,6 @@ async fn main() -> ExitCode {
         option_env!("POSTHOG_API_KEY").unwrap_or(""),
     );
 
-    #[cfg(target_os = "macos")]
-    install::migrate_data_dir().await;
-
     if let Err(err) = fig_settings::settings::init_global() {
         error!(%err, "failed to init global settings");
     }

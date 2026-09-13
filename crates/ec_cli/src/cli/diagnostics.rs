@@ -11,7 +11,7 @@ use fig_diagnostic::Diagnostics;
 use fig_ipc::local::send_recv_command_to_socket;
 use fig_proto::local::command::Command;
 use fig_proto::local::command_response::Response;
-use fig_proto::local::{DiagnosticsCommand, DiagnosticsResponse, IntegrationAction, TerminalIntegrationCommand};
+use fig_proto::local::{DiagnosticsCommand, DiagnosticsResponse};
 use spinners::{Spinner, Spinners};
 
 use super::OutputFormat;
@@ -82,21 +82,4 @@ pub async fn get_diagnostics() -> Result<DiagnosticsResponse> {
         Some(Response::Diagnostics(diagnostics)) => Ok(diagnostics),
         _ => eyre::bail!("Invalid response"),
     }
-}
-
-pub async fn verify_integration(integration: impl Into<String>) -> Result<String> {
-    let response = send_recv_command_to_socket(Command::TerminalIntegration(TerminalIntegrationCommand {
-        identifier: integration.into(),
-        action: IntegrationAction::VerifyInstall as i32,
-    }))
-    .await?
-    .context("Received EOF while getting terminal integration")?;
-
-    let message = match response.response {
-        Some(Response::Success(success)) => success.message,
-        Some(Response::Error(error)) => error.message,
-        _ => eyre::bail!("Invalid response"),
-    };
-
-    message.context("No message found")
 }

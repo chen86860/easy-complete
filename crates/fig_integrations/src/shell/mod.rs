@@ -7,7 +7,7 @@ use cfg_if::cfg_if;
 use clap::ValueEnum;
 use fig_os_shim::Env;
 use fig_util::{CLI_BINARY_NAME, PRODUCT_NAME, PTY_BINARY_NAME, Shell, directories};
-use regex::{Regex, RegexSet};
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 
 use crate::error::{ErrorExt, Result};
@@ -329,22 +329,6 @@ impl DotfileShellIntegration {
         self.dotfile_directory.join(self.dotfile_name)
     }
 
-    fn legacy_script_integration(&self, when: When) -> Result<ShellScriptShellIntegration> {
-        let integration_file_name = format!(
-            "{}.{}.{}",
-            Regex::new(r"^\.").unwrap().replace_all(self.dotfile_name, ""),
-            when,
-            self.shell
-        );
-        Ok(ShellScriptShellIntegration {
-            shell: self.shell,
-            when,
-            path: directories::old_fig_data_dir()?
-                .join("shell")
-                .join(integration_file_name),
-        })
-    }
-
     fn script_integration(&self, when: When) -> Result<ShellScriptShellIntegration> {
         let integration_file_name = format!(
             "{}.{}.{}",
@@ -368,93 +352,6 @@ impl DotfileShellIntegration {
                 // See strip_trailing_foreign_integrations / Otty shell-integration docs.
                 "# {PRODUCT_NAME} post block. Keep near the bottom of this file."
             ),
-        }
-    }
-
-    fn legacy_description(when: When) -> String {
-        match when {
-            When::Pre => "# CodeWhisperer pre block. Keep at the top of this file.",
-            When::Post => "# CodeWhisperer post block. Keep at the bottom of this file.",
-        }
-        .into()
-    }
-
-    fn legacy_regexes(&self, when: When) -> Result<RegexSet> {
-        let shell = self.shell;
-
-        let eval_line = match shell {
-            Shell::Fish => format!("eval ({CLI_BINARY_NAME} init {shell} {when} | string split0)"),
-            _ => format!("eval \"$({CLI_BINARY_NAME} init {shell} {when})\""),
-        };
-
-        let old_eval_source = match when {
-            When::Pre => match self.shell {
-                Shell::Fish => format!("set -Ua fish_user_paths $HOME/.local/bin\n{eval_line}"),
-                _ => format!("export PATH=\"${{PATH}}:${{HOME}}/.local/bin\"\n{eval_line}"),
-            },
-            When::Post => eval_line,
-        };
-
-        let old_file_regex = match when {
-            When::Pre => r"\[ -s ~/\.fig/shell/pre\.sh \] && source ~/\.fig/shell/pre\.sh\n?",
-            When::Post => r"\[ -s ~/\.fig/fig\.sh \] && source ~/\.fig/fig\.sh\n?",
-        };
-        let old_eval_regex = format!(
-            r#"(?m)(?:{}\n)?^{}\n{{0,2}}"#,
-            regex::escape(&DotfileShellIntegration::legacy_description(when)),
-            regex::escape(&old_eval_source),
-        );
-        let old_source_regex_1 = format!(
-            r#"(?m)(?:{}\n)?^{}\n{{0,2}}"#,
-            regex::escape(&DotfileShellIntegration::legacy_description(when)),
-            regex::escape(&self.legacy_source_text_1(when)?),
-        );
-        let old_source_regex_2 = format!(
-            r#"(?m)(?:{}\n)?^{}\n{{0,2}}"#,
-            regex::escape(&DotfileShellIntegration::legacy_description(when)),
-            regex::escape(&self.legacy_source_text_2(when)?),
-        );
-
-        let old_brand_regex = self.old_brand_regex(when)?;
-
-        Ok(RegexSet::new([
-            old_file_regex,
-            &old_eval_regex,
-            &old_source_regex_1,
-            &old_source_regex_2,
-            &old_brand_regex,
-        ])?)
-    }
-
-    fn legacy_source_text_1(&self, when: When) -> Result<String> {
-        let home = directories::home_dir()?;
-        let integration_path = self.script_integration(when)?.path;
-        let path = integration_path.strip_prefix(home)?;
-        Ok(format!(". \"$HOME/{}\"", path.display()))
-    }
-
-    fn legacy_source_text_2(&self, when: When) -> Result<String> {
-        let home = directories::home_dir()?;
-        let integration_path = self.script_integration(when)?.path;
-        let path = format!("\"$HOME/{}\"", integration_path.strip_prefix(home)?.display());
-
-        match self.shell {
-            Shell::Fish => Ok(format!("if test -f {path}; . {path}; end")),
-            _ => Ok(format!("[[ -f {path} ]] && . {path}")),
-        }
-    }
-
-    fn legacy_source_text_3(&self, when: When) -> Result<String> {
-        let home = directories::home_dir()?;
-        let integration_path = self.legacy_script_integration(when)?.path;
-        let path = regex::escape(&format!(
-            "\"${{HOME}}/{}\"",
-            integration_path.strip_prefix(home)?.display()
-        ));
-
-        match self.shell {
-            Shell::Fish => Ok(format!(r"test\s*\-f\s*{path};\s*and\s+builtin\s+source\s+{path}")),
-            _ => Ok(format!(r"\[\[\s*\-f\s*{path}\s*\]\]\s*&&\s*builtin\s+source\s*{path}")),
         }
     }
 
@@ -490,24 +387,11 @@ impl DotfileShellIntegration {
 
     fn remove_from_text(&self, text: impl Into<String>, when: When) -> Result<String> {
         let source_regex = self.source_regex(when, false)?;
-        let mut regexes = vec![source_regex];
-        regexes.extend(
-            self.legacy_regexes(when)?
-                .patterns()
-                .iter()
-                .map(|r| Regex::new(r).unwrap()),
-        );
-        Ok(regexes
-            .iter()
-            .fold::<String, _>(text.into(), |acc, reg| reg.replace_all(&acc, "").into()))
+        Ok(source_regex.replace_all(&text.into(), "").into())
     }
 
     fn matches_text(&self, text: &str, when: When) -> Result<()> {
         let dotfile = self.dotfile_path();
-        if self.legacy_regexes(when)?.is_match(text) {
-            let message = format!("{} has legacy {} integration.", dotfile.display(), when);
-            return Err(Error::LegacyInstallation(message.into()));
-        }
         if !self.source_regex(when, false)?.is_match(text) {
             let message = format!("{} does not source {} integration", dotfile.display(), when);
             return Err(Error::NotInstalled(message.into()));
@@ -542,14 +426,6 @@ impl DotfileShellIntegration {
             return Err(Error::ImproperInstallation(message.into()));
         }
         Ok(())
-    }
-
-    fn old_brand_regex(&self, when: When) -> Result<String> {
-        Ok(format!(
-            r#"(?m)(?:\s*{}\s*\n)?^\s*{}\s*\n{{0,2}}"#,
-            regex::escape(&DotfileShellIntegration::legacy_description(when)),
-            self.legacy_source_text_3(when)?,
-        ))
     }
 
     async fn install_inner(&self) -> Result<()> {
@@ -695,17 +571,6 @@ impl Integration for DotfileShellIntegration {
 
         Ok(())
     }
-
-    async fn migrate(&self) -> Result<()> {
-        match self.is_installed().await {
-            Ok(_) => Ok(()),
-            Err(Error::LegacyInstallation(_)) => {
-                self.install_inner().await?;
-                Ok(())
-            },
-            Err(err) => Err(err),
-        }
-    }
 }
 
 impl ShellIntegration for DotfileShellIntegration {
@@ -823,10 +688,8 @@ mod test {
     use std::io::Write;
     use std::process::{Command, Stdio};
 
-    use fig_util::build::SKIP_SHELLCHECK_TESTS;
-    use fig_util::directories::{home_dir, old_fig_data_dir};
-
     use super::*;
+    use fig_util::build::SKIP_SHELLCHECK_TESTS;
 
     fn run_shellcheck(source: String) {
         if SKIP_SHELLCHECK_TESTS {
@@ -878,71 +741,6 @@ mod test {
     #[test]
     fn shellcheck_bash_post() {
         check_script(Shell::Bash, When::Post);
-    }
-
-    #[test]
-    fn test_legacy_codewhisperer_regex() {
-        let re = regex::Regex::new(
-            &DotfileShellIntegration {
-                pre: true,
-                post: true,
-                shell: Shell::Zsh,
-                dotfile_directory: "".into(),
-                dotfile_name: ".zshrc",
-            }
-            .old_brand_regex(When::Pre)
-            .unwrap(),
-        )
-        .unwrap();
-
-        println!("re: {re}");
-
-        let data_dir = old_fig_data_dir().unwrap();
-        let dir = data_dir.strip_prefix(home_dir().unwrap()).unwrap().display();
-
-        // base case
-        let doc = &indoc::formatdoc! {r#"
-            # CodeWhisperer pre block. Keep at the top of this file.
-            [[ -f "${{HOME}}/{dir}/shell/zshrc.pre.zsh" ]] && builtin source "${{HOME}}/{dir}/shell/zshrc.pre.zsh"
-        "#};
-        let replaced = re.replace_all(doc, "");
-        assert_eq!(replaced, "");
-
-        // different comment case
-        let doc = indoc::formatdoc! {r#"
-            # different comment
-            [[ -f "${{HOME}}/{dir}/shell/zshrc.pre.zsh" ]] && builtin source "${{HOME}}/{dir}/shell/zshrc.pre.zsh"
-        "#};
-        let replaced = re.replace_all(&doc, "");
-        assert_eq!(replaced, "# different comment\n");
-
-        // spaces in command
-        let doc = indoc::formatdoc! {r#"
-            [[  -f  "${{HOME}}/{dir}/shell/zshrc.pre.zsh"  ]]  &&    builtin  source  "${{HOME}}/{dir}/shell/zshrc.pre.zsh" 
-        "#};
-        let replaced = re.replace_all(&doc, "");
-        assert_eq!(replaced, "");
-
-        // non match which looks similar
-        let doc = indoc::formatdoc! {r#"
-            [[ -f "${{HOME}}/{dir}/shell/zshrc.pre.zsh" ]] && source "${{HOME}}/{dir}/shell/zshrc.pre.zsh"
-            
-            # CodeWhisperer pre block. Keep at the top of this file.
-            [[ -f ${{HOME}}/shell/zshrc.pre.zsh" ]] && builtin source "${{HOME}}/shell/zshrc.pre.zsh"
-        "#};
-        let replaced = re.replace_all(&doc, "");
-        assert_eq!(replaced, doc);
-
-        // multiple lines
-        let doc = indoc::formatdoc! {r#"
-            # CodeWhisperer pre block. Keep at the top of this file.
-            [[ -f "${{HOME}}/{dir}/shell/zshrc.pre.zsh" ]] && builtin source "${{HOME}}/{dir}/shell/zshrc.pre.zsh"
-            [[ -f "${{HOME}}/{dir}/shell/zshrc.pre.zsh" ]] && builtin source "${{HOME}}/{dir}/shell/zshrc.pre.zsh"
-
-            [[ -f "${{HOME}}/{dir}/shell/zshrc.pre.zsh" ]] && builtin source "${{HOME}}/{dir}/shell/zshrc.pre.zsh"
-        "#};
-        let replaced = re.replace_all(&doc, "");
-        assert_eq!(replaced, "");
     }
 
     #[test]

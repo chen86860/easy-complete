@@ -20,7 +20,8 @@ if test -z "$SHOULD_QTERM_LAUNCH"
     set SHOULD_QTERM_LAUNCH $status
 end
 
-if test -t 1
+if test -t 0
+    and test -t 1
     and test -z "$PROCESS_LAUNCHED_BY_Q"
     and command -v {{PTY_BINARY_NAME}} 1>/dev/null 2>/dev/null
     and test "$SHOULD_QTERM_LAUNCH" -eq 0 -o \( "$SHOULD_QTERM_LAUNCH" -eq 2 -a \( -z "$Q_TERM" -o \( -z "$Q_TERM_TMUX" -a -n "$TMUX" \) \) \)

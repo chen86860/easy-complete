@@ -31,7 +31,8 @@ fi
 # Only launch figterm if current session is not already inside PTY and command exists.
 # PWSH var is set when launched by `pwsh -Login`, in which case we don't want to init.
 # It is not necessary in Fish.
-if   [[ -t 1 ]] \
+if   [[ -t 0 ]] \
+  && [[ -t 1 ]] \
   && [[ -z "${PROCESS_LAUNCHED_BY_Q:-}" ]] \
   && command -v {{PTY_BINARY_NAME}} 1>/dev/null 2>&1 \
   && [[ ("${SHOULD_QTERM_LAUNCH}" -eq 0) || (("${SHOULD_QTERM_LAUNCH}" -eq 2) && (-z "${Q_TERM:-}" || (-z "${Q_TERM_TMUX:-}" && -n "${TMUX:-}"))) ]]

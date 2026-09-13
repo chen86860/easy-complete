@@ -11,8 +11,6 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 #[derive(Error, Debug)]
 #[non_exhaustive]
 pub enum Error {
-    #[error("Legacy integration: {0}")]
-    LegacyInstallation(Cow<'static, str>),
     #[error("Improper integration installation: {0}")]
     ImproperInstallation(Cow<'static, str>),
     #[error("Integration not installed: {0}")]

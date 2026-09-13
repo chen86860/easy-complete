@@ -7,8 +7,6 @@ mod macos;
 use linux as os;
 #[cfg(target_os = "macos")]
 use macos as os;
-#[cfg(target_os = "macos")]
-pub use os::uninstall_terminal_integrations;
 use thiserror::Error;
 
 mod common;

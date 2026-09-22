@@ -277,6 +277,36 @@ export function BehaviorSection({
       </Card>
 
       <Card title={t("behavior.keyboardAndInsertion")}>
+        <Row
+          label={t("behavior.tabBehavior")}
+          description={t("behavior.tabBehaviorDescription")}
+        >
+          <Select
+            value={String(
+              settings[SETTINGS.TAB_KEYBINDING] ??
+                "insertCommonPrefixOrNavigateDown",
+            )}
+            options={[
+              {
+                value: "insertCommonPrefixOrNavigateDown",
+                label: t("behavior.tabPrefixThenNavigate"),
+              },
+              {
+                value: "insertCommonPrefix",
+                label: t("behavior.tabPrefixOnly"),
+              },
+              {
+                value: "insertCommonPrefixOrInsertSelected",
+                label: t("behavior.tabPrefixThenInsert"),
+              },
+              {
+                value: "navigateDown",
+                label: t("behavior.tabNavigateOnly"),
+              },
+            ]}
+            onChange={(value) => set(SETTINGS.TAB_KEYBINDING, value)}
+          />
+        </Row>
         <Row label={t("behavior.useUpArrowForHistory")}>
           <Toggle
             checked={Boolean(settings[SETTINGS.NAVIGATE_TO_HISTORY])}

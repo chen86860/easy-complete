@@ -33,6 +33,7 @@ export enum SETTINGS {
   ALWAYS_SUGGEST_CURRENT_TOKEN = "autocomplete.alwaysSuggestCurrentToken",
 
   NAVIGATE_TO_HISTORY = "autocomplete.navigateToHistory",
+  TAB_KEYBINDING = "autocomplete.keybindings.tab",
   ONLY_SHOW_ON_TAB = "autocomplete.onlyShowOnTab",
   ALWAYS_SHOW_DESCRIPTION = "autocomplete.alwaysShowDescription",
   HIDE_PREVIEW = "autocomplete.hidePreviewWindow",

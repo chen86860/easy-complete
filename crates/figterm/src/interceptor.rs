@@ -260,7 +260,7 @@ mod tests {
                 key: KeyCode::Tab,
                 modifiers: Modifiers::NONE
             }),
-            Some("insertCommonPrefix".into())
+            Some("insertCommonPrefixOrNavigateDown".into())
         );
         assert_eq!(
             interceptor.intercept_key(&KeyEvent {

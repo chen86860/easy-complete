@@ -12,15 +12,15 @@
     "name": "Insert common prefix",
     "description": "Insert shared prefix of available suggestions. Shake if there's no common prefix.",
     "category": "Insertion",
-    "availability": "WHEN_FOCUSED",
-    "defaultBindings": ["tab"]
+    "availability": "WHEN_FOCUSED"
   },
   {
     "identifier": "insertCommonPrefixOrNavigateDown",
     "name": "Insert common prefix or navigate",
     "description": "Insert shared prefix of available suggestions. Navigate if there's no common prefix.",
     "category": "Insertion",
-    "availability": "WHEN_FOCUSED"
+    "availability": "WHEN_FOCUSED",
+    "defaultBindings": ["tab"]
   },
   {
     "identifier": "insertCommonPrefixOrInsertSelected",

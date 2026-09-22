@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.3.5
+
+- 变更：没有可插入的公共前缀时，Tab 现在下移一个建议项，而不是只让窗口抖动一下、什么都不做。有公共前缀时行为不变，因此只有原先无效的那次按键会有变化——配合 Shift+Tab，Tab 键现在可以在列表中上下移动（#188）
+- 新增：设置面板「行为 → 键盘与插入」中新增「Tab 键行为」，可在补全公共前缀、下移一项、插入选中项以及两者的组合之间选择。此前键位设置在设置面板中没有入口，只能通过 `ec settings autocomplete.keybindings.tab` 修改；新值在之后打开的终端中生效
+
 ## v2.3.4
 
 - 修复：仅在 stdin 和 stdout 均为交互式终端时启动 `ecterm`，避免桌面版 Homebrew 安装及其他重定向 Shell 会话出现 `stdin and stdout must both be tty handles` 错误

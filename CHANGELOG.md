@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.3.5
+
+- change: Tab now moves down one suggestion when there is no shared prefix left to insert, instead of shaking the window and doing nothing. Inserting a shared prefix is unchanged, so only the previously dead keypress behaves differently — together with Shift+Tab this makes Tab navigate the list in both directions (#188)
+- feat: add a Tab Key setting to Settings → Behavior → Keyboard & Insertion, choosing between inserting the shared prefix, moving down, accepting the selected suggestion, or the combined defaults. Keybindings had no dashboard entry before and could only be changed with `ec settings autocomplete.keybindings.tab`; the new value applies to terminals opened afterwards
+
 ## v2.3.4
 
 - fix: require both stdin and stdout to be interactive terminals before launching `ecterm`, preventing desktop Homebrew installs and other redirected shell sessions from failing with `stdin and stdout must both be tty handles`

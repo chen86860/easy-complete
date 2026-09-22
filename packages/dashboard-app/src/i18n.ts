@@ -35,13 +35,13 @@ const en = {
   "behavior.launchAtLogin": "Launch at Login",
   "behavior.silentLaunch": "Silent Launch",
   "behavior.silentLaunchDescription":
-    "Start in the background without opening this settings window. Autocomplete still works; reopen settings from the menu bar icon, or by launching Easy Complete again while it is running",
+    "Start in the background without opening this settings window. Reopen settings from the menu bar icon",
   "behavior.showMenubarIcon": "Show Menu Bar Icon",
   "behavior.showMenubarIconDescription":
-    "Show the Easy Complete icon in the menu bar. When hidden, reopen settings by launching Easy Complete again while it is running",
+    "Show the Easy Complete icon in the menu bar. When hidden, reopen settings by launching again while it is running",
   "behavior.keepAutocompleteReady": "Always Keep Suggestions Ready",
   "behavior.keepAutocompleteReadyDescription":
-    "Keep autocomplete loaded when no terminals are connected for faster first suggestions, using more memory",
+    "Stay loaded with no terminals connected: faster first suggestion, more memory",
   "behavior.showAfterTab": "Show Suggestions After Tab",
   "behavior.suggestions": "Suggestions",
   "behavior.fuzzyMatching": "Fuzzy Matching",
@@ -49,33 +49,39 @@ const en = {
     "Match close character sequences instead of exact prefixes",
   "behavior.firstTokenCompletion": "Suggest Commands While Typing",
   "behavior.firstTokenCompletionDescription":
-    "While typing the first word, suggest matching commands from your PATH (for example, typing gi can suggest git). Turn off if the list is empty or slow. Subcommands still need a space after the command",
+    "Suggest matching commands from your PATH while typing the first word, such as git for gi. Subcommands still need a space after the command",
   "behavior.sortOrder": "Sort Order",
   "behavior.byRelevance": "By Relevance",
   "behavior.alphabetical": "Alphabetical",
   "behavior.keyboardAndInsertion": "Keyboard & Insertion",
+  "behavior.tabBehavior": "Tab Key",
+  "behavior.tabBehaviorDescription":
+    "What Tab does while the suggestion list is open. Shift+Tab always moves up",
+  "behavior.tabPrefixThenNavigate": "Insert prefix, else move down",
+  "behavior.tabPrefixOnly": "Insert shared prefix only",
+  "behavior.tabPrefixThenInsert": "Insert prefix, else accept",
+  "behavior.tabNavigateOnly": "Move down only",
   "behavior.useUpArrowForHistory": "Use Up Arrow for History",
   "behavior.insertTrailingSpace": "Insert Trailing Space",
   "behavior.showAutoExecuteSuggestion": "Show Immediately Execute",
   "behavior.showAutoExecuteSuggestionDescription":
-    "Add a red-arrow entry to the suggestion list that runs the command as typed when you press Enter",
+    "Add an entry to the list that runs the command as typed when you press Enter",
   "behavior.executeAfterTrailingSpace": "Pin After a Trailing Space",
   "behavior.executeAfterTrailingSpaceDescription":
-    "A trailing space usually means the command is complete, so move it to the top of the list",
+    "Move it to the top of the list when the command ends with a space",
   "behavior.runDangerousCommands": "Include Dangerous Commands",
   "behavior.runDangerousCommandsDescription":
-    "Show it for suggestions marked dangerous too, such as rm -rf",
+    "Show it for dangerous suggestions too, such as rm -rf",
   "behavior.history": "History",
   "behavior.historyMode": "History Mode",
   "behavior.showWithCompletions": "Show with completions",
   "behavior.historyOnly": "History only",
   "behavior.off": "Off",
   "behavior.mergeAllShells": "Merge All Shells",
-  "behavior.mergeAllShellsDescription":
-    "Include history from all shells (bash, zsh, fish)",
+  "behavior.mergeAllShellsDescription": "Include bash, zsh, and fish history",
   "behavior.historyCommand": "History Command",
   "behavior.historyCommandDescription":
-    "Shell command to use as the history source (leave empty for default)",
+    "Shell command to read history from. Leave empty for the default",
   "behavior.historyCommandPlaceholder": "e.g. atuin search",
 
   "about.troubleshooting": "Troubleshooting",
@@ -179,32 +185,39 @@ const zhCN: Record<TranslationKey, string> = {
   "behavior.launchAtLogin": "登录时启动",
   "behavior.silentLaunch": "静默启动",
   "behavior.silentLaunchDescription":
-    "启动时不打开本设置窗口，直接在后台运行。补全功能不受影响；需要设置时可点击菜单栏图标，或在程序运行时再次启动 Easy Complete",
+    "启动时不打开本设置窗口，直接在后台运行。需要设置时点击菜单栏图标",
   "behavior.showMenubarIcon": "显示菜单栏图标",
   "behavior.showMenubarIconDescription":
-    "在菜单栏中显示 Easy Complete 图标。隐藏后，可在程序运行时再次启动 Easy Complete 打开设置",
+    "在菜单栏中显示图标。隐藏后，可在程序运行时再次启动打开设置",
   "behavior.keepAutocompleteReady": "始终保持联想就绪",
   "behavior.keepAutocompleteReadyDescription":
-    "没有终端连接时仍保留联想服务，以更高内存占用换取首次建议更快显示",
+    "没有终端连接时仍保持就绪：首次建议更快，内存占用更高",
   "behavior.showAfterTab": "按 Tab 后显示建议",
   "behavior.suggestions": "补全建议",
   "behavior.fuzzyMatching": "模糊匹配",
   "behavior.fuzzyMatchingDescription": "匹配相近字符序列，而非仅匹配前缀",
   "behavior.firstTokenCompletion": "输入时提示命令名",
   "behavior.firstTokenCompletionDescription":
-    "输入第一个词时，从 PATH 中提示匹配的命令（例如输入 gi 可提示 git）。若列表为空或很慢可关掉。要显示子命令仍需先输入空格",
+    "输入第一个词时从 PATH 中提示匹配的命令，例如输入 gi 提示 git。子命令仍需先输入空格",
   "behavior.sortOrder": "排序方式",
   "behavior.byRelevance": "按相关性",
   "behavior.alphabetical": "按字母顺序",
   "behavior.keyboardAndInsertion": "键盘与插入",
+  "behavior.tabBehavior": "Tab 键行为",
+  "behavior.tabBehaviorDescription":
+    "补全列表打开时 Tab 键的作用，Shift+Tab 始终向上移动",
+  "behavior.tabPrefixThenNavigate": "补全公共前缀，否则下移一项",
+  "behavior.tabPrefixOnly": "仅补全公共前缀",
+  "behavior.tabPrefixThenInsert": "补全公共前缀，否则插入选中项",
+  "behavior.tabNavigateOnly": "仅下移一项",
   "behavior.useUpArrowForHistory": "使用上方向键浏览历史",
   "behavior.insertTrailingSpace": "自动插入尾随空格",
   "behavior.showAutoExecuteSuggestion": "显示立即执行",
   "behavior.showAutoExecuteSuggestionDescription":
-    "在补全列表中加入红色箭头的「立即执行」项，选中后按 Enter 直接运行当前命令",
+    "在列表中加入「立即执行」项，选中后按 Enter 直接运行当前命令",
   "behavior.executeAfterTrailingSpace": "空格结尾时置顶",
   "behavior.executeAfterTrailingSpaceDescription":
-    "命令以空格结尾通常意味着已输入完整，此时把它排到列表第一项",
+    "命令以空格结尾时，把它排到列表第一项",
   "behavior.runDangerousCommands": "包含危险命令",
   "behavior.runDangerousCommandsDescription":
     "对标记为危险的建议（例如 rm -rf）也显示",
@@ -214,11 +227,10 @@ const zhCN: Record<TranslationKey, string> = {
   "behavior.historyOnly": "仅显示历史记录",
   "behavior.off": "关闭",
   "behavior.mergeAllShells": "合并所有 Shell",
-  "behavior.mergeAllShellsDescription":
-    "包含所有 Shell（bash、zsh、fish）的历史记录",
+  "behavior.mergeAllShellsDescription": "包含 bash、zsh、fish 的历史记录",
   "behavior.historyCommand": "历史记录命令",
   "behavior.historyCommandDescription":
-    "用作历史记录来源的 Shell 命令（留空则使用默认值）",
+    "用作历史记录来源的 Shell 命令，留空则使用默认",
   "behavior.historyCommandPlaceholder": "例如 atuin search",
 
   "about.troubleshooting": "故障排查",

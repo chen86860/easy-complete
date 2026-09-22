@@ -1638,7 +1638,7 @@ dependencies = [
  "parking_lot",
  "paste",
  "predicates",
- "rand 0.10.2",
+ "rand 0.10.3",
  "regex",
  "semver",
  "serde",
@@ -1908,7 +1908,7 @@ dependencies = [
  "parking_lot",
  "paste",
  "percent-encoding",
- "rand 0.10.2",
+ "rand 0.10.3",
  "regex",
  "reqwest",
  "rfd",
@@ -2079,7 +2079,7 @@ dependencies = [
  "flate2",
  "nix 0.31.3",
  "pin-project-lite",
- "rand 0.10.2",
+ "rand 0.10.3",
  "tempfile",
  "thiserror 2.0.20",
  "tokio",
@@ -2230,7 +2230,7 @@ dependencies = [
  "objc2-app-kit 0.2.2",
  "objc2-foundation 0.2.2",
  "paste",
- "rand 0.10.2",
+ "rand 0.10.3",
  "regex",
  "serde",
  "serde_json",
@@ -5661,7 +5661,7 @@ dependencies = [
  "bytes",
  "getrandom 0.4.3",
  "lru-slab",
- "rand 0.10.2",
+ "rand 0.10.3",
  "rand_pcg 0.10.2",
  "ring",
  "rustc-hash",
@@ -5778,9 +5778,9 @@ dependencies = [
 
 [[package]]
 name = "rand"
-version = "0.10.2"
+version = "0.10.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c7f5fa3a058cd35567ef9bfa5e75732bee0f9e4c55fa90477bef2dfcdbc4be80"
+checksum = "65c9fb96cbc91e3478eaae79a69fcd3f1ae4ad052e471fe6732fff548984b4af"
 dependencies = [
  "chacha20",
  "getrandom 0.4.3",
@@ -7604,7 +7604,7 @@ dependencies = [
  "http",
  "httparse",
  "log",
- "rand 0.10.2",
+ "rand 0.10.3",
  "sha1",
  "thiserror 2.0.20",
 ]
@@ -7744,7 +7744,7 @@ checksum = "bf3923a6f5c4c6382e0b653c4117f48d631ea17f38ed86e2a828e6f7412f5239"
 dependencies = [
  "getrandom 0.4.3",
  "js-sys",
- "rand 0.10.2",
+ "rand 0.10.3",
  "serde_core",
  "wasm-bindgen",
 ]

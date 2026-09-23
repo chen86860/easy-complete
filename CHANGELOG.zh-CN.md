@@ -1,6 +1,6 @@
 # Changelog
 
-## v2.3.6-beta.1
+## v2.3.6
 
 - 修复：herdr 窗格中的 Shell 现在会启动 `ecterm`，补全下拉菜单可以正常出现。herdr 服务进程会继承启动它的 ecterm 会话中的 `Q_TERM`，所有窗格也随之继承，因而被误判为已处于 ecterm 中而跳过。现在 herdr 与 tmux、Zellij 一样按多路复用器处理。更新后需执行 `herdr server stop` 重启服务，新窗格才会生效
 

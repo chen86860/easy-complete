@@ -1934,18 +1934,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "fig_desktop-fuzz"
-version = "0.0.0"
-dependencies = [
- "fig_ipc",
- "fig_proto",
- "fig_util",
- "libfuzzer-sys",
- "tempfile",
- "tokio",
-]
-
-[[package]]
 name = "fig_desktop_api"
 version = "2.3.6"
 dependencies = [
@@ -2027,7 +2015,6 @@ dependencies = [
  "fig_integrations",
  "fig_os_shim",
  "fig_settings",
- "fig_test_utils",
  "fig_util",
  "serde_json",
  "thiserror 2.0.20",
@@ -2191,24 +2178,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "fig_test_utils"
-version = "2.3.6"
-dependencies = [
- "bytes",
- "fig_os_shim",
- "fig_util",
- "hex",
- "http",
- "http-body-util",
- "hyper",
- "hyper-util",
- "reqwest",
- "ring",
- "tokio",
- "tokio-util",
-]
-
-[[package]]
 name = "fig_util"
 version = "2.3.6"
 dependencies = [
@@ -2303,22 +2272,6 @@ dependencies = [
  "winapi",
  "windows 0.58.0",
  "winreg 0.56.0",
-]
-
-[[package]]
-name = "figterm2"
-version = "2.3.6"
-dependencies = [
- "anyhow",
- "async-trait",
- "fig_ipc",
- "fig_proto",
- "fig_remote_ipc",
- "fig_util",
- "portable-pty",
- "tempfile",
- "tokio",
- "uuid",
 ]
 
 [[package]]
@@ -3044,12 +2997,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6dbf3de79e51f3d586ab4cb9d5c3e2c14aa28ed23d180cf89b4df0454a69cc87"
 
 [[package]]
-name = "httpdate"
-version = "1.0.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "df3b46402a9d5adb4c86a0cf463f42e19994e3ee891101b1841f30a545cb49a9"
-
-[[package]]
 name = "hybrid-array"
 version = "0.4.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3072,7 +3019,6 @@ dependencies = [
  "http",
  "http-body",
  "httparse",
- "httpdate",
  "itoa 1.0.15",
  "pin-project-lite",
  "smallvec",

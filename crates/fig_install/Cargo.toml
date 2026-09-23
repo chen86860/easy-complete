@@ -28,6 +28,5 @@ tracing.workspace = true
 
 
 [dev-dependencies]
-fig_test_utils.workspace = true
 tracing-subscriber.workspace = true
 

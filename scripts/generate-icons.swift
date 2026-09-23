@@ -75,7 +75,7 @@ for points in [16, 32, 128, 256, 512] {
 }
 try appIcon(size: 512).write(to: icons.appendingPathComponent("icon.png"))
 
-for name in ["icon-monochrome", "not-logged-in"] {
+for name in ["icon-monochrome"] {
     try menuIcon(scale: 1).write(to: icons.appendingPathComponent("\(name).png"))
     try menuIcon(scale: 2).write(to: icons.appendingPathComponent("\(name)@2x.png"))
     try menuIcon(scale: 1, light: true).write(to: icons.appendingPathComponent("\(name)-light.png"))

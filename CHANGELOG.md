@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.3.7
+
+- change: shells in herdr panes no longer launch `ecterm`, restoring the behavior from v2.3.5
+- fix: update dependencies with published security advisories: `vitest` 4.1.11, `rand` 0.8.6 / 0.9.3 / 0.10.3, and on the website `js-yaml` 4.3.2 and `sharp` 0.35.4 (via wrangler 4.136)
+- chore: remove unused internal crates (`fig_test_utils`, `figterm2`, the `fig_desktop` fuzz target) and unreferenced icon assets
+
 ## v2.3.6
 
 - fix: shells in herdr panes now launch `ecterm`, so the completion dropdown appears inside herdr. The herdr server inherits `Q_TERM` from the ecterm session it was started in, and every pane inherited it too, so panes were treated as already wrapped and skipped. herdr is now treated as a multiplexer like tmux and Zellij. Stop the running server with `herdr server stop` after updating so new panes pick up the fix

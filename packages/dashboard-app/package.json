@@ -2,7 +2,7 @@
   "name": "@easy-complete/dashboard-app",
   "private": true,
   "license": "MIT",
-  "version": "2.3.6",
+  "version": "2.3.7",
   "type": "module",
   "scripts": {
     "dev": "vite",

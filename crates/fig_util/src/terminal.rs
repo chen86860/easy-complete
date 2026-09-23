@@ -56,7 +56,6 @@ pub const SPECIAL_TERMINALS: &[Terminal] = &[
     Terminal::Nvim,
     Terminal::Vim,
     Terminal::Zellij,
-    Terminal::Herdr,
 ];
 
 pub fn current_terminal() -> Option<&'static Terminal> {
@@ -161,8 +160,6 @@ pub enum Terminal {
     Nvim,
     /// Zellij
     Zellij,
-    /// Herdr
-    Herdr,
     /// Windsurf
     Windsurf,
     /// Windsurf Next
@@ -209,7 +206,6 @@ impl fmt::Display for Terminal {
             Terminal::Vim => write!(f, "Vim"),
             Terminal::Nvim => write!(f, "Nvim"),
             Terminal::Zellij => write!(f, "Zellij"),
-            Terminal::Herdr => write!(f, "Herdr"),
             Terminal::IntelliJ(Some(variant)) => write!(f, "{}", variant.application_name()),
             Terminal::IntelliJ(None) => write!(f, "IntelliJ"),
             Terminal::Zed => write!(f, "Zed"),
@@ -378,7 +374,6 @@ impl Terminal {
             Terminal::Vim => "vim".into(),
             Terminal::Nvim => "nvim".into(),
             Terminal::Zellij => "zellij".into(),
-            Terminal::Herdr => "herdr".into(),
             Terminal::Zed => "zed".into(),
             Terminal::IntelliJ(ide) => match ide {
                 Some(variant) => format!("intellij-{}", variant.internal_id()).into(),
@@ -547,7 +542,6 @@ impl Terminal {
             Terminal::Vim => &["vim"],
             Terminal::Nvim => &["nvim"],
             Terminal::Zellij => &["zellij"],
-            Terminal::Herdr => &["herdr"],
 
             _ => &[],
         }
@@ -625,7 +619,7 @@ impl Terminal {
     pub fn is_special(&self) -> bool {
         matches!(
             self,
-            Terminal::Ssh | Terminal::Tmux | Terminal::Vim | Terminal::Nvim | Terminal::Zellij | Terminal::Herdr
+            Terminal::Ssh | Terminal::Tmux | Terminal::Vim | Terminal::Nvim | Terminal::Zellij
         )
     }
 

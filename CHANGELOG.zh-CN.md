@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.3.7
+
+- 变更：herdr 窗格中的 Shell 不再启动 `ecterm`，恢复为 v2.3.5 的行为
+- 修复：升级存在安全公告的依赖：`vitest` 4.1.11、`rand` 0.8.6 / 0.9.3 / 0.10.3，以及官网的 `js-yaml` 4.3.2 和 `sharp` 0.35.4（随 wrangler 4.136 升级）
+- 维护：移除未使用的内部 crate（`fig_test_utils`、`figterm2`、`fig_desktop` 模糊测试目标）和未被引用的图标资源
+
 ## v2.3.6
 
 - 修复：herdr 窗格中的 Shell 现在会启动 `ecterm`，补全下拉菜单可以正常出现。herdr 服务进程会继承启动它的 ecterm 会话中的 `Q_TERM`，所有窗格也随之继承，因而被误判为已处于 ecterm 中而跳过。现在 herdr 与 tmux、Zellij 一样按多路复用器处理。更新后需执行 `herdr server stop` 重启服务，新窗格才会生效

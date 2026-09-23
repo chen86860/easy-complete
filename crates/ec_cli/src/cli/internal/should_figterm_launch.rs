@@ -520,13 +520,6 @@ mod tests {
                 .parent_exe("/usr/bin/zsh")
                 .grandparent_exe("/usr/bin/tmux")
                 .expect(0),
-            // herdr panes inherit Q_TERM from the outer ecterm session, so it must not fall back to Q_TERM
-            test("on mac with valid parent, herdr grandparent and inherited Q_TERM")
-                .os(Os::Mac)
-                .parent_exe("/bin/zsh")
-                .grandparent_exe("/opt/homebrew/Cellar/herdr/0.9.1/bin/herdr")
-                .env(&[(Q_TERM, "1")])
-                .expect(0),
             test(format!("In Codespaces without {Q_TERM}"))
                 .parent_exe("/usr/bin/zsh")
                 .env(&[("CODESPACES", "1")])

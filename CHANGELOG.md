@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.3.6-beta.1
+
+- fix: shells in herdr panes now launch `ecterm`, so the completion dropdown appears inside herdr. The herdr server inherits `Q_TERM` from the ecterm session it was started in, and every pane inherited it too, so panes were treated as already wrapped and skipped. herdr is now treated as a multiplexer like tmux and Zellij. Stop the running server with `herdr server stop` after updating so new panes pick up the fix
+
 ## v2.3.5
 
 - change: Tab now moves down one suggestion when there is no shared prefix left to insert, instead of shaking the window and doing nothing. Inserting a shared prefix is unchanged, so only the previously dead keypress behaves differently — together with Shift+Tab this makes Tab navigate the list in both directions (#188)

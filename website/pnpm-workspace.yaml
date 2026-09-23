@@ -5,12 +5,11 @@ packages: []
 # version that already resolves past it.
 overrides:
   'postcss@8': 8.5.26
-  'js-yaml@4': 4.3.1
+  'js-yaml@4': 4.3.2
   'nanoid@3': 3.3.18
   'undici@7': 7.29.0
   'ws@8': 8.21.1
   'esbuild@0.27': 0.28.1
-  'sharp@0.34': 0.35.3
 allowBuilds:
   core-js: true
   esbuild: true

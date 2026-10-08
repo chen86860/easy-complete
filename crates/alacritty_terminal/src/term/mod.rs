@@ -80,8 +80,12 @@ pub struct SizeInfo {
 }
 
 impl SizeInfo {
+    /// Clamped to the minimum size, since the PTY may report 0x0 (e.g. Zellij resurrected panes).
     pub fn new(screen_lines: usize, columns: usize) -> SizeInfo {
-        SizeInfo { screen_lines, columns }
+        SizeInfo {
+            screen_lines: max(screen_lines, MIN_SCREEN_LINES),
+            columns: max(columns, MIN_COLUMNS),
+        }
     }
 
     #[inline]
@@ -2065,6 +2069,22 @@ mod tests {
     use crate::event::VoidListener;
     use crate::grid::Scroll;
     use crate::index::{Column, Point};
+
+    #[test]
+    fn zero_size_is_clamped() {
+        for (lines, columns) in [(0, 0), (0, 80), (24, 0)] {
+            let mut term = Term::new_test(SizeInfo::new(lines, columns), VoidListener, 10);
+            term.input('a');
+            term.newline();
+            term.input('b');
+        }
+
+        let mut term = Term::new_test(SizeInfo::new(24, 80), VoidListener, 10);
+        term.resize(SizeInfo::new(0, 0));
+        term.input('a');
+        assert_eq!(term.screen_lines(), MIN_SCREEN_LINES);
+        assert_eq!(term.columns(), MIN_COLUMNS);
+    }
 
     #[test]
     fn scroll_display_page_up() {

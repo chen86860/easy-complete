@@ -64,7 +64,7 @@ Mac。应用会收集匿名使用统计（打开次数、每日补全次数—�
   回退，无需账号，也不发起任何 AI 请求。
 - **兼容你正在用的终端** —— iTerm2、Apple Terminal、VS Code、Cursor、JetBrains 系列
   通过 PTY 集成工作；Ghostty、Kitty、WezTerm、Zed、Alacritty、Otty 则通过随附的输入法
-  追踪光标。
+  追踪光标。在 tmux 和 Zellij 中同样可用。
 - **支持 `zsh`、`bash` 与 `fish`** —— shell 集成由应用自动安装与维护。
 
 ---
@@ -168,6 +168,9 @@ ec settings <key> <value>       # 修改某项设置
 ChatGPT（Codex）以及 JetBrains IDE 终端。少数绕过标准 PTY 路径的终端（**Ghostty、Kitty、
 WezTerm、Zed、Alacritty、Otty**）还需要依赖随附的输入法来追踪光标位置——这一项会在安装时
 自动注册。
+
+终端复用器同样支持：在 **tmux** 和 **Zellij** 的窗格中都能弹出补全，包括 Zellij 恢复会话后
+重新运行的窗格。
 
 ---
 

@@ -67,7 +67,7 @@ for the full list of what is and isn't collected.
   loaded from disk. There is no network fallback, no account, and no AI request.
 - **Works with the terminals you already use** — iTerm2, Apple Terminal, VS Code,
   Cursor, JetBrains IDEs via the PTY integration; Ghostty, Kitty, WezTerm, Zed,
-  Alacritty and Otty via the bundled input method.
+  Alacritty and Otty via the bundled input method. Also works inside tmux and Zellij.
 - **`zsh`, `bash` and `fish`** — shell integration is installed and managed for you.
 
 ---
@@ -177,6 +177,9 @@ Terminal, VS Code, Cursor, ChatGPT (Codex), and JetBrains IDE terminals. Termina
 bypass the standard PTY path (**Ghostty, Kitty, WezTerm, Zed, Alacritty, Otty**)
 additionally rely on the bundled input method for cursor tracking — this is registered
 automatically during install.
+
+Terminal multiplexers work too: completions appear inside **tmux** and **Zellij** panes,
+including panes restored from a resurrected Zellij session.
 
 ---
 

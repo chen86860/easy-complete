@@ -326,6 +326,41 @@ jobs:
 
             This DMG is Developer ID signed, notarized, and published with a Sparkle appcast for future updates.
 
+      - name: Update Homebrew tap
+        if: startsWith(github.ref, 'refs/tags/') && steps.release_channel.outputs.is_prerelease != 'true'
+        env:
+          HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          HOMEBREW_TAP_REPO: chen86860/homebrew-tap
+        run: |
+          set -euo pipefail
+          if [ -z "$HOMEBREW_TAP_TOKEN" ]; then
+            echo "::warning::HOMEBREW_TAP_TOKEN is not set; skipping Homebrew tap update."
+            exit 0
+          fi
+
+          APP_VERSION="${GITHUB_REF_NAME#v}"
+          SHA256="$(shasum -a 256 "dist/Easy-Complete-${APP_VERSION}-arm64.dmg" | awk '{print $1}')"
+          TAP_DIR="$RUNNER_TEMP/homebrew-tap"
+          CASK="$TAP_DIR/Casks/easy-complete.rb"
+
+          git clone --depth 1 "https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/${HOMEBREW_TAP_REPO}.git" "$TAP_DIR"
+          sed -i '' -E \
+            -e "s/^  version \".*\"$/  version \"${APP_VERSION}\"/" \
+            -e "s/^  sha256 \".*\"$/  sha256 \"${SHA256}\"/" \
+            "$CASK"
+          grep -Fq "version \"${APP_VERSION}\"" "$CASK"
+          grep -Fq "sha256 \"${SHA256}\"" "$CASK"
+
+          if git -C "$TAP_DIR" diff --quiet; then
+            echo "Homebrew tap already at ${APP_VERSION}."
+            exit 0
+          fi
+
+          git -C "$TAP_DIR" -c user.name="github-actions[bot]" \
+            -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -am "chore(easy-complete): update to ${APP_VERSION}"
+          git -C "$TAP_DIR" push origin HEAD:main
+
       - name: Send Telegram notification
         if: always() && env.TELEGRAM_BOT_TOKEN != ''
         env:

@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.3.8
+
+- fix: `ecterm` no longer crashes with `index out of bounds` when started on a zero-sized terminal, such as a pane restored from a resurrected Zellij session. The terminal size is now clamped to at least 1 line × 2 columns (#191)
+
 ## v2.3.7
 
 - change: shells in herdr panes no longer launch `ecterm`, restoring the behavior from v2.3.5

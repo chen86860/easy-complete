@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.3.8
+
+- 修复：`ecterm` 在尺寸为 0 的终端中启动时（例如 Zellij 恢复会话后重新运行的窗格）不再因 `index out of bounds` 崩溃。终端尺寸现在至少按 1 行 × 2 列处理（#191）
+
 ## v2.3.7
 
 - 变更：herdr 窗格中的 Shell 不再启动 `ecterm`，恢复为 v2.3.5 的行为

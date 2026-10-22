@@ -1397,7 +1397,7 @@ pub fn build_dashboard(
     }
 
     let dashboard_init_script = dashboard_initialization_script();
-    let webview_builder = WebViewBuilder::with_web_context(web_context)
+    let webview_builder = WebViewBuilder::new_with_web_context(web_context)
         .with_url(url.as_str())
         .with_ipc_handler(move |payload| {
             let body = payload.into_body();
@@ -1509,7 +1509,7 @@ pub fn build_autocomplete(
 
     let proxy = GLOBAL_PROXY.get().expect("event loop proxy is initialized").clone();
 
-    let webview_builder = WebViewBuilder::with_web_context(web_context)
+    let webview_builder = WebViewBuilder::new_with_web_context(web_context)
         .with_url(autocomplete::url().as_str())
         .with_ipc_handler(move |payload| {
             let body = payload.into_body();
@@ -1560,7 +1560,7 @@ pub fn build_autocomplete(
         // Local debug builds keep inspector access; release builds stay free of browser UI.
         .with_devtools(cfg!(debug_assertions))
         .with_transparent(true)
-        .with_initialization_script(&javascript_init(true))
+        .with_initialization_script(javascript_init(true))
         .with_navigation_handler(navigation_handler(AUTOCOMPLETE_ID, &[r"localhost$", r"^127\.0\.0\.1$"]))
         .with_clipboard(true)
         .with_hotkeys_zoom(true)

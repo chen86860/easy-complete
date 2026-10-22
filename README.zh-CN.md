@@ -225,8 +225,8 @@ Shell 钩子（`.zshrc`、`.bashrc`、fish 配置）在每次提示符和按键�
 
 ### 工具链
 
-- Rust `1.87.0`（在 `rust-toolchain.toml` 中固定），edition 2024
-- Node `>=22.13 <23`，pnpm `11.14`（由 `package.json` 的 `packageManager` 字段固定）
+- Rust `1.97.0`（在 `rust-toolchain.toml` 中固定），edition 2024
+- Node `>=24 <25`，pnpm `11.14`（由 `package.json` 的 `packageManager` 字段固定）
 - TypeScript 构建图由 Turborepo 管理
 
 ### Rust

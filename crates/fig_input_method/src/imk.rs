@@ -174,6 +174,14 @@ pub fn connect_imkserver(name: &NSString, identifier: Option<&NSString>) {
     info!("connected to imkserver");
 }
 
+pub fn register_controller() {
+    info!("registering {INPUT_CONTROLLER_CLASS_NAME}...");
+
+    MyInputController::class();
+
+    info!("finished registering {INPUT_CONTROLLER_CLASS_NAME}.");
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -208,12 +216,4 @@ mod tests {
         assert!(is_valid_caret_rect(rect(-1920.0, -450.0, 0.0, 16.0)));
         assert!(is_valid_caret_rect(rect(1200.0, 800.0, 8.0, 16.0)));
     }
-}
-
-pub fn register_controller() {
-    info!("registering {INPUT_CONTROLLER_CLASS_NAME}...");
-
-    MyInputController::class();
-
-    info!("finished registering {INPUT_CONTROLLER_CLASS_NAME}.");
 }

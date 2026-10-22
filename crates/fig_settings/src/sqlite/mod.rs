@@ -73,10 +73,10 @@ impl Db {
 
     fn open(path: &Path) -> Result<Self> {
         // make the parent dir if it doesnt exist
-        if let Some(parent) = path.parent() {
-            if !parent.exists() {
-                std::fs::create_dir_all(parent)?;
-            }
+        if let Some(parent) = path.parent()
+            && !parent.exists()
+        {
+            std::fs::create_dir_all(parent)?;
         }
 
         let conn = SqliteConnectionManager::file(path);

@@ -131,8 +131,8 @@ impl fig_remote_ipc::RemoteHookHandler for RemoteHook {
             session.context.clone_from(&hook.context);
         });
 
-        if cwd_changed {
-            if let Err(err) = self
+        if cwd_changed
+            && let Err(err) = self
                 .notifications_state
                 .broadcast_notification_all(
                     &NotificationType::NotifyOnLocationChange,
@@ -149,9 +149,8 @@ impl fig_remote_ipc::RemoteHookHandler for RemoteHook {
                     &self.proxy,
                 )
                 .await
-            {
-                error!(%err, "Failed to broadcast LocationChangedNotification");
-            }
+        {
+            error!(%err, "Failed to broadcast LocationChangedNotification");
         }
 
         if let Err(err) = self

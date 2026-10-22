@@ -144,14 +144,12 @@ macro_rules! doctor_warning {
         DoctorError::warning(format!($($arg)*))
     }}
 }
-pub(crate) use doctor_warning;
 
 macro_rules! doctor_error {
     ($($arg:tt)*) => {{
         DoctorError::error(format!($($arg)*))
     }}
 }
-pub(crate) use doctor_error;
 
 #[allow(unused_macros)]
 macro_rules! doctor_fix {
@@ -164,7 +162,13 @@ macro_rules! doctor_fix {
         }
     };
 }
+
+#[cfg(target_os = "linux")]
+pub(crate) use doctor_error;
+#[cfg(target_os = "linux")]
 pub(crate) use doctor_fix;
+#[cfg(target_os = "linux")]
+pub(crate) use doctor_warning;
 
 macro_rules! doctor_fix_async {
     ({ reason: $reason:expr,fix: $fix:expr }) => {
@@ -203,15 +207,15 @@ where
     let args = args.into_iter().collect::<Vec<_>>();
 
     Some(DoctorFix::Sync(Box::new(move || {
-        if let (Some(exe), Some(remaining)) = (args.first(), args.get(1..)) {
-            if Command::new(exe).args(remaining).status()?.success() {
-                if let Some(duration) = sleep_duration.into() {
-                    let spinner = Spinner::new(Spinners::Dots, "Waiting for command to finish...".into());
-                    std::thread::sleep(duration);
-                    stop_spinner(Some(spinner)).ok();
-                }
-                return Ok(());
+        if let (Some(exe), Some(remaining)) = (args.first(), args.get(1..))
+            && Command::new(exe).args(remaining).status()?.success()
+        {
+            if let Some(duration) = sleep_duration.into() {
+                let spinner = Spinner::new(Spinners::Dots, "Waiting for command to finish...".into());
+                std::thread::sleep(duration);
+                stop_spinner(Some(spinner)).ok();
             }
+            return Ok(());
         }
         eyre::bail!(
             "Failed to run {:?}",
@@ -252,10 +256,10 @@ fn print_status_result(name: impl Display, status: &Result<(), DoctorError>, ver
                     println!("  {infoline}");
                 }
             }
-            if let Some(error) = error {
-                if verbose {
-                    println!("  {error:?}");
-                }
+            if let Some(error) = error
+                && verbose
+            {
+                println!("  {error:?}");
             }
         },
     }
@@ -391,18 +395,18 @@ impl DoctorCheck for DesktopSocketCheck {
         let fig_socket_path = directories::desktop_socket_path().context("No socket path")?;
         let parent = fig_socket_path.parent().map(PathBuf::from);
 
-        if let Some(parent) = parent {
-            if !parent.exists() {
-                return Err(DoctorError::Error {
-                    reason: format!("{PRODUCT_NAME} socket parent directory does not exist").into(),
-                    info: vec![format!("Path: {}", fig_socket_path.display()).into()],
-                    fix: Some(DoctorFix::Sync(Box::new(|| {
-                        std::fs::create_dir_all(parent)?;
-                        Ok(())
-                    }))),
-                    error: None,
-                });
-            }
+        if let Some(parent) = parent
+            && !parent.exists()
+        {
+            return Err(DoctorError::Error {
+                reason: format!("{PRODUCT_NAME} socket parent directory does not exist").into(),
+                info: vec![format!("Path: {}", fig_socket_path.display()).into()],
+                fix: Some(DoctorFix::Sync(Box::new(|| {
+                    std::fs::create_dir_all(parent)?;
+                    Ok(())
+                }))),
+                error: None,
+            });
         }
 
         check_file_exists(&fig_socket_path).map_err(|_err| {
@@ -759,28 +763,24 @@ impl DoctorCheck for PtySocketCheck {
                         ..
                     },
                 )) => {
-                    if let Some(style) = zsh_autosuggestion_style {
-                        if let Some(fg) = style.fg {
-                            if let Some(fig_proto::figterm::term_color::Color::Indexed(i)) = fg.color {
-                                if i == 15 {
-                                    return Err(doctor_warning!(
-                                        "ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE is set to the same style as your text, this must be different to detect what you've typed"
-                                    ));
-                                }
-                            }
-                        }
+                    if let Some(style) = zsh_autosuggestion_style
+                        && let Some(fg) = style.fg
+                        && let Some(fig_proto::figterm::term_color::Color::Indexed(i)) = fg.color
+                        && i == 15
+                    {
+                        return Err(doctor_warning!(
+                            "ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE is set to the same style as your text, this must be different to detect what you've typed"
+                        ));
                     }
 
-                    if let Some(style) = fish_suggestion_style {
-                        if let Some(fg) = style.fg {
-                            if let Some(fig_proto::figterm::term_color::Color::Indexed(i)) = fg.color {
-                                if i == 15 {
-                                    return Err(doctor_warning!(
-                                        "The Fish suggestion color is set to the same style your text, this must be different in order to detect what you've typed"
-                                    ));
-                                }
-                            }
-                        }
+                    if let Some(style) = fish_suggestion_style
+                        && let Some(fg) = style.fg
+                        && let Some(fig_proto::figterm::term_color::Color::Indexed(i)) = fg.color
+                        && i == 15
+                    {
+                        return Err(doctor_warning!(
+                            "The Fish suggestion color is set to the same style your text, this must be different in order to detect what you've typed"
+                        ));
                     }
                 },
                 _ => {
@@ -830,10 +830,10 @@ impl DoctorCheck<Option<Shell>> for DotfileCheck {
     }
 
     async fn get_type(&self, current_shell: &Option<Shell>, _platform: Platform) -> DoctorCheckType {
-        if let Some(shell) = current_shell {
-            if *shell == self.integration.get_shell() {
-                return DoctorCheckType::NormalCheck;
-            }
+        if let Some(shell) = current_shell
+            && *shell == self.integration.get_shell()
+        {
+            return DoctorCheckType::NormalCheck;
         }
 
         if is_executable_in_path(self.integration.get_shell().to_string()) {
@@ -1390,21 +1390,21 @@ impl DoctorCheck<SupportedTerminalCheckContext> for ImeStatusCheck {
                     .into_iter()
                     .find(|app| app.bundle_identifier.as_deref() == terminal.to_bundle_id().as_deref());
 
-                if let Some(app) = app {
-                    if !input_method.enabled_for_terminal_instance(terminal, app.process_identifier) {
-                        return Err(DoctorError::Error {
-                            reason: format!("Not enabled for {terminal}").into(),
-                            info: vec![
-                                format!(
-                                    "Restart {} [{}] to enable autocomplete in this terminal.",
-                                    terminal, app.process_identifier
-                                )
-                                .into(),
-                            ],
-                            fix: None,
-                            error: None,
-                        });
-                    }
+                if let Some(app) = app
+                    && !input_method.enabled_for_terminal_instance(terminal, app.process_identifier)
+                {
+                    return Err(DoctorError::Error {
+                        reason: format!("Not enabled for {terminal}").into(),
+                        info: vec![
+                            format!(
+                                "Restart {} [{}] to enable autocomplete in this terminal.",
+                                terminal, app.process_identifier
+                            )
+                            .into(),
+                        ],
+                        fix: None,
+                        error: None,
+                    });
                 }
             },
             _ => (),
@@ -1616,16 +1616,17 @@ where
 
         let mut result = check.check(&context).await;
 
-        if !config.strict && check_type == DoctorCheckType::SoftCheck {
-            if let Err(DoctorError::Error { reason, .. }) = result {
-                result = Err(DoctorError::Warning(reason));
-            }
+        if !config.strict
+            && check_type == DoctorCheckType::SoftCheck
+            && let Err(DoctorError::Error { reason, .. }) = result
+        {
+            result = Err(DoctorError::Warning(reason));
         }
 
-        if config.strict {
-            if let Err(DoctorError::Warning(reason)) = result {
-                result = Err(DoctorError::error(reason));
-            }
+        if config.strict
+            && let Err(DoctorError::Warning(reason)) = result
+        {
+            result = Err(DoctorError::error(reason));
         }
 
         if config.all || result.is_err() {

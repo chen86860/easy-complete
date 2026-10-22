@@ -187,8 +187,8 @@ To keep the bundle small, the sync script supports excluding whole namespaces vi
 
 ## Toolchain Versions
 
-- Rust: `1.87.0` (pinned in `rust-toolchain.toml`), edition 2024
-- Node: `^22.0.0`
+- Rust: `1.97.0` (pinned in `rust-toolchain.toml`), edition 2024
+- Node: `^24.0.0`
 - pnpm: `10.0.0`
 - Turborepo handles the TypeScript build graph
 

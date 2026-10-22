@@ -787,18 +787,18 @@ impl<T> Term<T> {
         trace!("New command cursor: {:?}", self.shell_state.cmd_cursor);
 
         // Add work around for emojis
-        if let Ok(cursor_offset) = fig_os_shim::Env::new().q_prompt_offset_workaround() {
-            if let Ok(offset) = cursor_offset.parse::<i32>() {
-                self.shell_state.cmd_cursor = self.shell_state.cmd_cursor.map(|cursor| Point {
-                    column: Column((cursor.column.0 as i32 - offset).max(0) as usize),
-                    line: cursor.line,
-                });
+        if let Ok(cursor_offset) = fig_os_shim::Env::new().q_prompt_offset_workaround()
+            && let Ok(offset) = cursor_offset.parse::<i32>()
+        {
+            self.shell_state.cmd_cursor = self.shell_state.cmd_cursor.map(|cursor| Point {
+                column: Column((cursor.column.0 as i32 - offset).max(0) as usize),
+                line: cursor.line,
+            });
 
-                trace!(
-                    "Command cursor offset by '{}' to {:?}",
-                    offset, self.shell_state.cmd_cursor
-                );
-            }
+            trace!(
+                "Command cursor offset by '{}' to {:?}",
+                offset, self.shell_state.cmd_cursor
+            );
         }
 
         self.shell_state.preexec = false;
@@ -1934,7 +1934,7 @@ impl TabStops {
     fn resize(&mut self, columns: usize) {
         let mut index = self.tabs.len();
         self.tabs.resize_with(columns, || {
-            let is_tabstop = index % INITIAL_TABSTOPS == 0;
+            let is_tabstop = index.is_multiple_of(INITIAL_TABSTOPS);
             index += 1;
             is_tabstop
         });

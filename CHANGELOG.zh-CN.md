@@ -1,5 +1,15 @@
 # Changelog
 
+## v2.3.9-beta.2
+
+- chore: `rustls-webpki` 从 0.103.15 升级到 0.103.16，`webpki-roots` 从 1.0.3 升级到 1.0.10
+
+## v2.3.9-beta.1
+
+- prerelease: 工具链升级先发布到 beta tag，再进入正式 Sparkle 更新通道
+- chore: Rust 工具链从 1.87.0 升级到 1.97.0，并修复新增的 clippy lint（主要是把嵌套 `if` 合并为 let-chains）。1.98 及以上暂不可用：`apple-bundle` 0.1.4 在这些版本上无法编译
+- chore: Node 从 22 升级到 24 LTS（`engines.node` 改为 `>=24 <25`），mise 中的 Python 从 3.11 升级到 3.13
+
 ## v2.3.8
 
 - 修复：`ecterm` 在尺寸为 0 的终端中启动时（例如 Zellij 恢复会话后重新运行的窗格）不再因 `index out of bounds` 崩溃。终端尺寸现在至少按 1 行 × 2 列处理（#191）

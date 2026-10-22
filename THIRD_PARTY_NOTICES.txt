@@ -1241,7 +1241,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ================================================================================
-alacritty_terminal 2.3.8
+alacritty_terminal 2.3.9-beta.2
 License: Apache-2.0
 Authors: Christian Duerr <contact@christianduerr.com>, Joe Wilm <joe@jwilm.com>
 Source: https://github.com/alacritty/alacritty
@@ -58692,7 +58692,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-rustls-webpki 0.103.13
+rustls-webpki 0.103.16
 License: ISC
 Source: https://github.com/rustls/webpki
 
@@ -58719,7 +58719,7 @@ The files under third-party/chromium are licensed as described in
 third-party/chromium/LICENSE.
 
 ================================================================================
-rustls 0.23.43
+rustls 0.23.45
 License: Apache-2.0 OR ISC OR MIT
 Source: https://github.com/rustls/rustls
 
@@ -79217,7 +79217,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-webpki-roots 1.0.3
+webpki-roots 1.0.10
 License: CDLA-Permissive-2.0
 Source: https://github.com/rustls/webpki-roots
 

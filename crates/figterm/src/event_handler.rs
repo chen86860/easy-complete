@@ -43,10 +43,10 @@ impl EventListener for EventHandler {
 
                 let insert_on_new_cmd = INSERT_ON_NEW_CMD.lock().unwrap().take();
 
-                if let Some(cwd) = &shell_state.local_context.current_working_directory {
-                    if cwd.exists() {
-                        std::env::set_current_dir(cwd).ok();
-                    }
+                if let Some(cwd) = &shell_state.local_context.current_working_directory
+                    && cwd.exists()
+                {
+                    std::env::set_current_dir(cwd).ok();
                 }
 
                 if let Some((text, bracketed, execute)) = insert_on_new_cmd {
@@ -68,10 +68,10 @@ impl EventListener for EventHandler {
                     error!(%err, "Sender error");
                 }
 
-                if self.csi_u_enabled {
-                    if let Err(err) = self.main_loop_sender.send(MainLoopEvent::SetCsiU) {
-                        error!(%err, "Sender error");
-                    }
+                if self.csi_u_enabled
+                    && let Err(err) = self.main_loop_sender.send(MainLoopEvent::SetCsiU)
+                {
+                    error!(%err, "Sender error");
                 }
             },
             Event::PreExec => {
@@ -88,10 +88,10 @@ impl EventListener for EventHandler {
                     error!(%err, "Sender error");
                 }
 
-                if self.csi_u_enabled {
-                    if let Err(err) = self.main_loop_sender.send(MainLoopEvent::UnsetCsiU) {
-                        error!(%err, "Sender error");
-                    }
+                if self.csi_u_enabled
+                    && let Err(err) = self.main_loop_sender.send(MainLoopEvent::UnsetCsiU)
+                {
+                    error!(%err, "Sender error");
                 }
             },
             Event::CommandInfo(command_info) => {

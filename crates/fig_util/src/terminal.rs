@@ -234,10 +234,10 @@ impl Terminal {
 
         #[cfg(target_os = "macos")]
         {
-            if let Ok(bundle_id) = env.get("__CFBundleIdentifier") {
-                if let Some(term) = Self::from_bundle_id(bundle_id) {
-                    return Some(term);
-                }
+            if let Ok(bundle_id) = env.get("__CFBundleIdentifier")
+                && let Some(term) = Self::from_bundle_id(bundle_id)
+            {
+                return Some(term);
             }
         }
 
@@ -273,19 +273,19 @@ impl Terminal {
         let (mut curr_depth, max_depth) = (0, 5);
         while curr_depth < max_depth {
             if let Some(pid) = option_pid {
-                if let Some(exe) = pid.exe() {
-                    if let Some(name) = exe.file_name().and_then(|s| s.to_str()) {
-                        for terminal in terminals {
-                            if terminal.executable_names().contains(&name) {
-                                return Some(terminal.clone());
-                            }
+                if let Some(exe) = pid.exe()
+                    && let Some(name) = exe.file_name().and_then(|s| s.to_str())
+                {
+                    for terminal in terminals {
+                        if terminal.executable_names().contains(&name) {
+                            return Some(terminal.clone());
                         }
                     }
                 }
-                if let Some(cmdline) = pid.cmdline() {
-                    if let Some(terminal) = Self::try_from_cmdline(&cmdline, terminals) {
-                        return Some(terminal.clone());
-                    }
+                if let Some(cmdline) = pid.cmdline()
+                    && let Some(terminal) = Self::try_from_cmdline(&cmdline, terminals)
+                {
+                    return Some(terminal.clone());
                 }
                 option_pid = pid.parent();
                 curr_depth += 1;
@@ -311,13 +311,12 @@ impl Terminal {
                 .take(1)
                 .next()
                 .and_then(|cmd| cmd.split('/').next_back());
-            if let Some(second_arg_name) = second_arg_name {
-                if let Some(term) = second_arg_terms
+            if let Some(second_arg_name) = second_arg_name
+                && let Some(term) = second_arg_terms
                     .iter()
                     .find(|t| t.executable_names().contains(&second_arg_name))
-                {
-                    return Some(term.clone());
-                }
+            {
+                return Some(term.clone());
             }
         }
 

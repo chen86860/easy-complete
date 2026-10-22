@@ -386,8 +386,8 @@ fn launch_shell(command: Option<&[String]>) -> Result<()> {
         }
     }
 
-    execvp(&cargs[0], &cargs).expect("Failed to execvp");
-    unreachable!()
+    let Err(err) = execvp(&cargs[0], &cargs);
+    panic!("Failed to execvp: {err:?}")
 }
 
 fn figterm_main(command: Option<&[String]>) -> Result<()> {
@@ -607,8 +607,8 @@ fn figterm_main(command: Option<&[String]>) -> Result<()> {
 
                                         debug!(?event, ?raw, %preexec,  "Got key event");
 
-                                        if !preexec && ai_enabled && event.key == KeyCode::Enter && event.modifiers == input::Modifiers::NONE {
-                                            if let Some(TextBuffer { buffer, cursor_idx }) = term.get_current_buffer() {
+                                        if !preexec && ai_enabled && event.key == KeyCode::Enter && event.modifiers == input::Modifiers::NONE
+                                            && let Some(TextBuffer { buffer, cursor_idx }) = term.get_current_buffer() {
                                                 let buffer = buffer.trim();
                                                 if buffer.len() > 1 && buffer.starts_with('#') && term.columns() > buffer.len() {
                                                     write_buffer.extend(
@@ -630,7 +630,6 @@ fn figterm_main(command: Option<&[String]>) -> Result<()> {
                                                     continue 'select_loop;
                                                 }
                                             }
-                                        }
 
                                         // if we are in CSI u mode we try to encode first, otherwise we try to send the raw bytes first
                                         let raw = if csi_u_set {
@@ -666,15 +665,14 @@ fn figterm_main(command: Option<&[String]>) -> Result<()> {
                                             false
                                         };
 
-                                        if !handled_action {
-                                            if let Some(bytes) = raw {
+                                        if !handled_action
+                                            && let Some(bytes) = raw {
                                                 if (event.key == KeyCode::Char('c') || event.key == KeyCode::Char('d'))
                                                     && event.modifiers == Modifiers::CTRL {
                                                     key_interceptor.reset();
                                                 }
                                                 write_buffer.extend(&bytes);
                                             }
-                                        }
                                     }
                                     Ok((_, InputEvent::Resized)) => {
                                         terminal.flush()?;

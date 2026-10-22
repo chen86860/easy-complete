@@ -364,9 +364,9 @@ impl InputMethod {
         debug!("Terminating input method...");
 
         let bundle_id = self.bundle_id()?;
-        applications::running_applications_matching(&bundle_id)
-            .iter()
-            .for_each(|app| app.terminate());
+        for app in applications::running_applications_matching(&bundle_id).iter() {
+            app.terminate();
+        }
 
         Ok(())
     }
@@ -418,14 +418,13 @@ impl Integration for InputMethod {
             // NSApplication run loop, so we fall back to patching HIToolbox directly in install().
             // If TIS still reports not-enabled but our bundle ID is already in HIToolbox's
             // AppleSelectedInputSources, treat the IME as enabled so Ghostty/Kitty/etc. work.
-            if matches!(error, InputMethodError::NotEnabled | InputMethodError::NotSelected) {
-                if let Ok(bundle_id) = self.bundle_id() {
-                    if is_bundle_in_hitoolbox_sources(&bundle_id) {
-                        info!("TIS reports not-enabled but bundle is in HIToolbox sources; treating as enabled");
-                        self.set_is_enabled(true);
-                        return Ok(());
-                    }
-                }
+            if matches!(error, InputMethodError::NotEnabled | InputMethodError::NotSelected)
+                && let Ok(bundle_id) = self.bundle_id()
+                && is_bundle_in_hitoolbox_sources(&bundle_id)
+            {
+                info!("TIS reports not-enabled but bundle is in HIToolbox sources; treating as enabled");
+                self.set_is_enabled(true);
+                return Ok(());
             }
 
             self.set_is_enabled(false);
@@ -513,19 +512,14 @@ impl Integration for InputMethod {
                 // If the TIS API didn't stick (common when called from a CLI process
                 // without an NSApplication run loop), fall back to directly writing
                 // the new bundle ID into HIToolbox's AppleSelectedInputSources list.
-                let still_disabled = run_on_main(|| {
-                    self.input_source()
-                        .map(|s| !s.is_enabled().unwrap_or(false))
-                        .unwrap_or(true)
-                });
-                if still_disabled {
-                    if let Ok(bundle_id) = self.bundle_id() {
-                        info!("TISEnableInputSource did not stick; patching HIToolbox directly for {bundle_id}");
-                        force_enable_in_hitoolbox(&bundle_id);
-                        // Treat the HIToolbox patch as a successful enable so the desktop
-                        // app doesn't block autocomplete for terminals that need the IME.
-                        self.set_is_enabled(true);
-                    }
+                let still_disabled =
+                    run_on_main(|| self.input_source().map_or(true, |s| !s.is_enabled().unwrap_or(false)));
+                if still_disabled && let Ok(bundle_id) = self.bundle_id() {
+                    info!("TISEnableInputSource did not stick; patching HIToolbox directly for {bundle_id}");
+                    force_enable_in_hitoolbox(&bundle_id);
+                    // Treat the HIToolbox patch as a successful enable so the desktop
+                    // app doesn't block autocomplete for terminals that need the IME.
+                    self.set_is_enabled(true);
                 }
 
                 // select() never triggers a dialog; retry a few times for TIS to settle.

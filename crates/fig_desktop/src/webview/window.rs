@@ -326,10 +326,10 @@ impl WindowState {
             } => {
                 let (is_above, is_clipped) =
                     self.update_window_geometry(position, size, anchor, platform_state, dry_run);
-                if let Some(tx) = tx {
-                    if let Err(err) = tx.send(WindowGeometryResult { is_above, is_clipped }) {
-                        tracing::error!(%err, "failed to send window geometry update result");
-                    }
+                if let Some(tx) = tx
+                    && let Err(err) = tx.send(WindowGeometryResult { is_above, is_clipped })
+                {
+                    tracing::error!(%err, "failed to send window geometry update result");
                 }
             },
             WindowEvent::Hide | WindowEvent::Close => {
@@ -354,15 +354,15 @@ impl WindowState {
 
                     let age = self.created_at.elapsed();
                     let resize_count = self.resize_count.load(Ordering::Relaxed);
-                    if autocomplete_should_recycle(age, resize_count) {
-                        if let Some(proxy) = GLOBAL_PROXY.get() {
-                            proxy
-                                .send_event(Event::AutocompleteRecycleRequested {
-                                    age_seconds: age.as_secs(),
-                                    resize_count,
-                                })
-                                .ok();
-                        }
+                    if autocomplete_should_recycle(age, resize_count)
+                        && let Some(proxy) = GLOBAL_PROXY.get()
+                    {
+                        proxy
+                            .send_event(Event::AutocompleteRecycleRequested {
+                                age_seconds: age.as_secs(),
+                                resize_count,
+                            })
+                            .ok();
                     }
                 }
 

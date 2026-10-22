@@ -1,5 +1,15 @@
 # Changelog
 
+## v2.3.9-beta.2
+
+- chore: update `rustls-webpki` from 0.103.15 to 0.103.16 and `webpki-roots` from 1.0.3 to 1.0.10
+
+## v2.3.9-beta.1
+
+- prerelease: ship the toolchain upgrade on a beta tag first, before it reaches the stable Sparkle update channel
+- chore: upgrade the Rust toolchain from 1.87.0 to 1.97.0 and fix the new clippy lints (mostly nested `if` collapsed into let-chains). 1.98+ stays blocked by `apple-bundle` 0.1.4, which no longer compiles there
+- chore: upgrade Node from 22 to 24 LTS (`engines.node` is now `>=24 <25`) and the mise Python pin from 3.11 to 3.13
+
 ## v2.3.8
 
 - fix: `ecterm` no longer crashes with `index out of bounds` when started on a zero-sized terminal, such as a pane restored from a resurrected Zellij session. The terminal size is now clamped to at least 1 line × 2 columns (#191)

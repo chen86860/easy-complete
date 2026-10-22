@@ -46,6 +46,10 @@ fn resolve_url(url: &str) -> Result<String, String> {
         })
 }
 
+pub fn ping(_request: PingRequest) -> RequestResult {
+    RequestResult::Ok(Box::new(ServerSubmessage::PingResponse(PingResponse {})))
+}
+
 #[cfg(test)]
 mod tests {
     use super::resolve_url;
@@ -56,8 +60,4 @@ mod tests {
 
         assert_eq!(resolve_url(url).unwrap(), url);
     }
-}
-
-pub fn ping(_request: PingRequest) -> RequestResult {
-    RequestResult::Ok(Box::new(ServerSubmessage::PingResponse(PingResponse {})))
 }

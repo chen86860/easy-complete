@@ -60,7 +60,7 @@ dependencies = [
 
 [[package]]
 name = "alacritty_terminal"
-version = "2.3.8"
+version = "2.3.9-beta.2"
 dependencies = [
  "bitflags 2.13.1",
  "camino",
@@ -210,7 +210,7 @@ checksum = "330a5ed07fa54e4702c9d6c4174f74427fc0ef6e214bbd677ae50a5099946470"
 
 [[package]]
 name = "appkit-nsworkspace-bindings"
-version = "2.3.8"
+version = "2.3.9-beta.2"
 dependencies = [
  "bindgen 0.71.1",
  "objc",
@@ -1589,7 +1589,7 @@ checksum = "92773504d58c093f6de2459af4af33faa518c13451eb8f2b5698ed3d36e7c813"
 
 [[package]]
 name = "ec_cli"
-version = "2.3.8"
+version = "2.3.9-beta.2"
 dependencies = [
  "anstream 1.0.0",
  "appkit-nsworkspace-bindings",
@@ -1861,7 +1861,7 @@ dependencies = [
 
 [[package]]
 name = "fig_desktop"
-version = "2.3.8"
+version = "2.3.9-beta.2"
 dependencies = [
  "accessibility-sys",
  "anyhow",
@@ -1935,7 +1935,7 @@ dependencies = [
 
 [[package]]
 name = "fig_desktop_api"
-version = "2.3.8"
+version = "2.3.9-beta.2"
 dependencies = [
  "anstream 1.0.0",
  "async-trait",
@@ -1968,7 +1968,7 @@ dependencies = [
 
 [[package]]
 name = "fig_diagnostic"
-version = "2.3.8"
+version = "2.3.9-beta.2"
 dependencies = [
  "cfg-if",
  "clap",
@@ -1987,7 +1987,7 @@ dependencies = [
 
 [[package]]
 name = "fig_input_method"
-version = "2.3.8"
+version = "2.3.9-beta.2"
 dependencies = [
  "apple-bundle",
  "core-foundation 0.10.1",
@@ -2009,7 +2009,7 @@ dependencies = [
 
 [[package]]
 name = "fig_install"
-version = "2.3.8"
+version = "2.3.9-beta.2"
 dependencies = [
  "bitflags 2.13.1",
  "fig_integrations",
@@ -2025,7 +2025,7 @@ dependencies = [
 
 [[package]]
 name = "fig_integrations"
-version = "2.3.8"
+version = "2.3.9-beta.2"
 dependencies = [
  "accessibility-sys",
  "async-trait",
@@ -2055,7 +2055,7 @@ dependencies = [
 
 [[package]]
 name = "fig_ipc"
-version = "2.3.8"
+version = "2.3.9-beta.2"
 dependencies = [
  "async-trait",
  "base64 0.23.1",
@@ -2078,7 +2078,7 @@ dependencies = [
 
 [[package]]
 name = "fig_log"
-version = "2.3.8"
+version = "2.3.9-beta.2"
 dependencies = [
  "fig_os_shim",
  "fig_util",
@@ -2092,7 +2092,7 @@ dependencies = [
 
 [[package]]
 name = "fig_os_shim"
-version = "2.3.8"
+version = "2.3.9-beta.2"
 dependencies = [
  "cfg-if",
  "dirs 5.0.1",
@@ -2105,7 +2105,7 @@ dependencies = [
 
 [[package]]
 name = "fig_proto"
-version = "2.3.8"
+version = "2.3.9-beta.2"
 dependencies = [
  "arbitrary",
  "bytes",
@@ -2125,7 +2125,7 @@ dependencies = [
 
 [[package]]
 name = "fig_remote_ipc"
-version = "2.3.8"
+version = "2.3.9-beta.2"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2143,7 +2143,7 @@ dependencies = [
 
 [[package]]
 name = "fig_settings"
-version = "2.3.8"
+version = "2.3.9-beta.2"
 dependencies = [
  "fd-lock",
  "fig_util",
@@ -2163,7 +2163,7 @@ dependencies = [
 
 [[package]]
 name = "fig_telemetry"
-version = "2.3.8"
+version = "2.3.9-beta.2"
 dependencies = [
  "chrono",
  "fig_os_shim",
@@ -2179,7 +2179,7 @@ dependencies = [
 
 [[package]]
 name = "fig_util"
-version = "2.3.8"
+version = "2.3.9-beta.2"
 dependencies = [
  "appkit-nsworkspace-bindings",
  "bstr",
@@ -2218,7 +2218,7 @@ dependencies = [
 
 [[package]]
 name = "figterm"
-version = "2.3.8"
+version = "2.3.9-beta.2"
 dependencies = [
  "alacritty_terminal",
  "anyhow",
@@ -3739,7 +3739,7 @@ dependencies = [
 
 [[package]]
 name = "macos-utils"
-version = "2.3.8"
+version = "2.3.9-beta.2"
 dependencies = [
  "accessibility",
  "accessibility-sys",
@@ -6206,9 +6206,9 @@ dependencies = [
 
 [[package]]
 name = "rustls-webpki"
-version = "0.103.15"
+version = "0.103.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f3c3cf1d8b1e7d4927e2d154c3fcb02979afb9939629c62cd9048d4f07b60ac2"
+checksum = "4443b1b6d39d7c663139942cc4558262562d2c84123bb6282ef177009ca8b281"
 dependencies = [
  "ring",
  "rustls-pki-types",
@@ -8010,9 +8010,9 @@ dependencies = [
 
 [[package]]
 name = "webpki-roots"
-version = "1.0.3"
+version = "1.0.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "32b130c0d2d49f8b6889abc456e795e82525204f27c42cf767cf0d7734e089b8"
+checksum = "1c1c8e20c8a38fc7d65abfe74eb7280e4aa667e8eec8bc84996d2874810748d9"
 dependencies = [
  "rustls-pki-types",
 ]

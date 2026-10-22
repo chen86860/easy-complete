@@ -196,12 +196,11 @@ impl DebugSubcommand {
 
                 fig_settings::state::set_value("developer.logging", true)?;
 
-                if files.is_empty() || files.iter().any(|f| f == "fig_desktop") {
-                    if let Err(err) =
+                if (files.is_empty() || files.iter().any(|f| f == "fig_desktop"))
+                    && let Err(err) =
                         fig_ipc::local::set_log_level(level.as_ref().clone().unwrap_or_else(|| "DEBUG".into())).await
-                    {
-                        println!("Could not set log level for fig_desktop: {err}");
-                    }
+                {
+                    println!("Could not set log level for fig_desktop: {err}");
                 }
 
                 tokio::spawn(async move {

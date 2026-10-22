@@ -23,10 +23,10 @@ const SYNC_BUFFER_SIZE: usize = 0x20_0000;
 const SYNC_ESCAPE_START_LEN: usize = 5;
 
 /// Start of the DCS sequence for beginning synchronized updates.
-const SYNC_START_ESCAPE_START: [u8; SYNC_ESCAPE_START_LEN] = [b'\x1b', b'P', b'=', b'1', b's'];
+const SYNC_START_ESCAPE_START: [u8; SYNC_ESCAPE_START_LEN] = *b"\x1bP=1s";
 
 /// Start of the DCS sequence for terminating synchronized updates.
-const SYNC_END_ESCAPE_START: [u8; SYNC_ESCAPE_START_LEN] = [b'\x1b', b'P', b'=', b'2', b's'];
+const SYNC_END_ESCAPE_START: [u8; SYNC_ESCAPE_START_LEN] = *b"\x1bP=2s";
 
 /// Parse colors in XParseColor format.
 fn xparse_color(color: &[u8]) -> Option<Rgb> {
@@ -89,10 +89,9 @@ fn parse_number(input: &[u8]) -> Option<u8> {
     let mut num: u8 = 0;
     for c in input {
         let c = *c as char;
-        if let Some(digit) = c.to_digit(10) {
+        {
+            let digit = c.to_digit(10)?;
             num = num.checked_mul(10).and_then(|v| v.checked_add(digit as u8))?;
-        } else {
-            return None;
         }
     }
     Some(num)
@@ -1068,7 +1067,7 @@ where
 
             // Set color index.
             b"4" => {
-                if params.len() > 1 && params.len() % 2 != 0 {
+                if params.len() > 1 && !params.len().is_multiple_of(2) {
                     for chunk in params[1..].chunks(2) {
                         let index = parse_number(chunk[0]);
                         let color = xparse_color(chunk[1]);
@@ -1083,28 +1082,28 @@ where
 
             // Get/set Foreground, Background, Cursor colors.
             b"10" | b"11" | b"12" => {
-                if params.len() >= 2 {
-                    if let Some(mut dynamic_code) = parse_number(params[0]) {
-                        for param in &params[1..] {
-                            // 10 is the first dynamic color, also the foreground.
-                            let offset = dynamic_code as usize - 10;
-                            let index = NamedColor::Foreground as usize + offset;
+                if params.len() >= 2
+                    && let Some(mut dynamic_code) = parse_number(params[0])
+                {
+                    for param in &params[1..] {
+                        // 10 is the first dynamic color, also the foreground.
+                        let offset = dynamic_code as usize - 10;
+                        let index = NamedColor::Foreground as usize + offset;
 
-                            // End of setting dynamic colors.
-                            if index > NamedColor::Cursor as usize {
-                                unhandled!();
-                                break;
-                            }
-
-                            if let Some(color) = xparse_color(param) {
-                                self.handler.set_color(index, color);
-                            } else {
-                                unhandled!();
-                            }
-                            dynamic_code += 1;
+                        // End of setting dynamic colors.
+                        if index > NamedColor::Cursor as usize {
+                            unhandled!();
+                            break;
                         }
-                        return;
+
+                        if let Some(color) = xparse_color(param) {
+                            self.handler.set_color(index, color);
+                        } else {
+                            unhandled!();
+                        }
+                        dynamic_code += 1;
                     }
+                    return;
                 }
                 unhandled!();
             },

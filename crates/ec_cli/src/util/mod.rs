@@ -59,10 +59,10 @@ pub fn glob_files(glob: &GlobSet, directory: impl AsRef<Path>) -> Result<Vec<Pat
         let file_name = path.file_name();
 
         // Check if the file matches the glob pattern
-        if let Some(file_name) = file_name {
-            if glob.is_match(file_name) {
-                files.push(path);
-            }
+        if let Some(file_name) = file_name
+            && glob.is_match(file_name)
+        {
+            files.push(path);
         }
     }
 

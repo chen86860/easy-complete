@@ -213,14 +213,13 @@ async fn shell_init(shell: &Shell, when: &When, rcfile: &Option<String>) -> Resu
         && !fig_integrations::input_method::InputMethod::default()
             .is_enabled()
             .unwrap_or(false)
+        && let Some(terminal) = Terminal::parent_terminal(&Context::new())
     {
-        if let Some(terminal) = Terminal::parent_terminal(&Context::new()) {
-            let prompt_state_key = format!("prompt.input-method.{}.count", terminal.internal_id());
-            let prompt_count = fig_settings::state::get_int_or(&prompt_state_key, 0);
-            if terminal.supports_macos_input_method() && prompt_count < 2 {
-                let _ = fig_settings::state::set_value(&prompt_state_key, prompt_count + 1);
-                to_source.push(input_method_prompt_code(*shell, &terminal));
-            }
+        let prompt_state_key = format!("prompt.input-method.{}.count", terminal.internal_id());
+        let prompt_count = fig_settings::state::get_int_or(&prompt_state_key, 0);
+        if terminal.supports_macos_input_method() && prompt_count < 2 {
+            let _ = fig_settings::state::set_value(&prompt_state_key, prompt_count + 1);
+            to_source.push(input_method_prompt_code(*shell, &terminal));
         }
     }
 

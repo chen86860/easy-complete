@@ -232,13 +232,13 @@ impl UIElement {
     }
 
     pub fn find_x_term_caret_tree(&self) -> Result<Vec<UIElement>> {
-        if self.role().map(|role| role == kAXTextFieldRole).unwrap_or(false) && self.is_focused().unwrap_or(false) {
-            if let Ok(classes) = self.dom_class_list() {
-                if classes.iter().any(|cls| cls == "xterm-helper-textarea") {
-                    // self.print_all_attribute_values();
-                    return Ok(vec![self.clone()]);
-                }
-            }
+        if self.role().map(|role| role == kAXTextFieldRole).unwrap_or(false)
+            && self.is_focused().unwrap_or(false)
+            && let Ok(classes) = self.dom_class_list()
+            && classes.iter().any(|cls| cls == "xterm-helper-textarea")
+        {
+            // self.print_all_attribute_values();
+            return Ok(vec![self.clone()]);
         }
 
         let mut children_with_cursor: Vec<_> = self

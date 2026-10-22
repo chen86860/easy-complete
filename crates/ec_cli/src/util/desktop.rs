@@ -107,7 +107,17 @@ pub fn launch_fig_desktop(args: LaunchArgs) -> Result<()> {
         },
     }
 
-    std::fs::remove_file(directories::desktop_socket_path()?).ok();
+    // `desktop_app_running` can report a running app as missing, e.g. inside a sandbox that
+    // blocks LaunchServices. Unlinking a socket the app still listens on leaves it unreachable
+    // until restart, since `open` only reactivates the running app and it never rebinds.
+    let socket_path = directories::desktop_socket_path()?;
+    match socket_listener_state(&socket_path) {
+        SocketListenerState::Listening => return Ok(()),
+        SocketListenerState::Stale => {
+            std::fs::remove_file(&socket_path).ok();
+        },
+        SocketListenerState::Unknown => {},
+    }
 
     let mut common_args = vec![];
     if !args.open_dashboard {
@@ -186,6 +196,30 @@ pub fn launch_fig_desktop(args: LaunchArgs) -> Result<()> {
     Err(eyre!("failed to connect to socket".to_owned()))
 }
 
+#[derive(Debug, PartialEq, Eq)]
+enum SocketListenerState {
+    /// Something accepted a connection on the socket.
+    Listening,
+    /// The socket file exists but nothing listens on it, so it is safe to remove.
+    Stale,
+    /// No socket file, or the probe was not allowed to tell.
+    Unknown,
+}
+
+#[cfg(unix)]
+fn socket_listener_state(path: &std::path::Path) -> SocketListenerState {
+    match std::os::unix::net::UnixStream::connect(path) {
+        Ok(_) => SocketListenerState::Listening,
+        Err(err) if err.kind() == std::io::ErrorKind::ConnectionRefused => SocketListenerState::Stale,
+        Err(_) => SocketListenerState::Unknown,
+    }
+}
+
+#[cfg(not(unix))]
+fn socket_listener_state(_path: &std::path::Path) -> SocketListenerState {
+    SocketListenerState::Stale
+}
+
 #[cfg(target_os = "linux")]
 fn launch_linux_desktop(ctx: std::sync::Arc<fig_os_shim::Context>, state: &fig_settings::State) -> eyre::Result<()> {
     use std::process::Stdio;
@@ -227,6 +261,31 @@ fn launch_linux_desktop(ctx: std::sync::Arc<fig_os_shim::Context>, state: &fig_s
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Only a socket nobody listens on may be unlinked; a live one must survive a launch
+    /// attempt that wrongly believes the app is down.
+    #[cfg(unix)]
+    #[test]
+    fn socket_listener_state_distinguishes_live_and_stale_sockets() {
+        use std::os::unix::net::UnixListener;
+
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("desktop.sock");
+        assert_eq!(socket_listener_state(&path), SocketListenerState::Unknown);
+
+        let listener = UnixListener::bind(&path).unwrap();
+        assert_eq!(socket_listener_state(&path), SocketListenerState::Listening);
+
+        drop(listener);
+        assert!(path.exists());
+        // A test spawning a process in parallel briefly inherits the listener between fork
+        // and exec, keeping it alive a moment past the drop.
+        let state = (0..50)
+            .map(|_| socket_listener_state(&path))
+            .inspect(|_| std::thread::sleep(std::time::Duration::from_millis(20)))
+            .find(|state| *state != SocketListenerState::Listening);
+        assert_eq!(state, Some(SocketListenerState::Stale));
+    }
 
     /// Each of these reaches the desktop app on another machine, or forces the wrapper
     /// outright, so the gate must let them through without ever asking whether a local

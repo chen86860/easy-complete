@@ -3,6 +3,8 @@
 ## v2.3.9-beta.3
 
 - fix: running `ec doctor`, `ec launch` or another command that starts the app no longer deletes `desktop.sock` while Easy Complete is still running. When the app-running check misses a live app, for example inside a sandbox that blocks LaunchServices such as an AI agent's command runner, the socket used to be removed and completions stopped in every terminal until `ec restart`. The socket is now removed only when nothing is listening on it (#199)
+- fix: Easy Complete now recreates `desktop.sock` within 5 seconds if it disappears while the app runs, so completions recover on their own instead of waiting for `ec restart` (#199)
+- fix: a crash (`EXC_BAD_ACCESS` on a `tokio-rt-worker` thread) when a webview was released while one of its `ecresource://` or `spec://` requests was still being answered. Update `wry` from 0.48.1 to 0.49.0, which keeps the webview alive until the response is delivered (#199)
 
 ## v2.3.9-beta.2
 

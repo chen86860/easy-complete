@@ -1344,7 +1344,7 @@ impl InputParser {
         );
 
         map.insert(
-            [b'\t'],
+            *b"\t",
             InputEvent::Key(KeyEvent {
                 key: KeyCode::Tab,
                 modifiers: Modifiers::NONE,
@@ -1360,14 +1360,14 @@ impl InputParser {
         );
 
         map.insert(
-            [b'\r'],
+            *b"\r",
             InputEvent::Key(KeyEvent {
                 key: KeyCode::Enter,
                 modifiers: Modifiers::NONE,
             }),
         );
         map.insert(
-            [b'\n'],
+            *b"\n",
             InputEvent::Key(KeyEvent {
                 key: KeyCode::Enter,
                 modifiers: Modifiers::NONE,

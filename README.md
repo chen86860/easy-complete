@@ -239,8 +239,8 @@ cursor position — back to `ecterm` on every prompt and keystroke. On macOS, th
 
 ### Toolchain
 
-- Rust `1.87.0` (pinned in `rust-toolchain.toml`), edition 2024
-- Node `>=22.13 <23`, pnpm `11.14` (pinned by `packageManager` in `package.json`)
+- Rust `1.97.0` (pinned in `rust-toolchain.toml`), edition 2024
+- Node `>=24 <25`, pnpm `11.14` (pinned by `packageManager` in `package.json`)
 - Turborepo for the TypeScript build graph
 
 ### Rust

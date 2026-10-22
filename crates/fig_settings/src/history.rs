@@ -82,44 +82,44 @@ impl History {
         trace!("Inserting command into history: {:?}", command_info);
         // Insert the command into the history table
         // Ensure that the command is not empty
-        if let Some(command) = &command_info.command {
-            if !command.is_empty() {
-                self.conn()?.execute(
-                    "INSERT INTO history 
+        if let Some(command) = &command_info.command
+            && !command.is_empty()
+        {
+            self.conn()?.execute(
+                "INSERT INTO history 
                         (command, shell, pid, session_id, cwd, start_time, end_time, duration, hostname, exit_code)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                    params![
-                        &command_info.command,
-                        &command_info.shell,
-                        &command_info.pid,
-                        &command_info.session_id,
-                        &command_info.cwd,
-                        &command_info
-                            .start_time
-                            .as_ref()
-                            .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
-                            .map(|d| d.as_secs()),
-                        &command_info
-                            .end_time
-                            .as_ref()
-                            .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
-                            .map(|t| t.as_secs()),
-                        &command_info
-                            .start_time
-                            .as_ref()
-                            .and_then(|start_time| {
-                                command_info
-                                    .end_time
-                                    .as_ref()
-                                    .and_then(|end_time| end_time.duration_since(*start_time).ok())
-                            })
-                            .map(|duration| duration.as_millis())
-                            .and_then(|duration| i64::try_from(duration).ok()),
-                        &command_info.hostname,
-                        &command_info.exit_code,
-                    ],
-                )?;
-            }
+                params![
+                    &command_info.command,
+                    &command_info.shell,
+                    &command_info.pid,
+                    &command_info.session_id,
+                    &command_info.cwd,
+                    &command_info
+                        .start_time
+                        .as_ref()
+                        .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
+                        .map(|d| d.as_secs()),
+                    &command_info
+                        .end_time
+                        .as_ref()
+                        .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
+                        .map(|t| t.as_secs()),
+                    &command_info
+                        .start_time
+                        .as_ref()
+                        .and_then(|start_time| {
+                            command_info
+                                .end_time
+                                .as_ref()
+                                .and_then(|end_time| end_time.duration_since(*start_time).ok())
+                        })
+                        .map(|duration| duration.as_millis())
+                        .and_then(|duration| i64::try_from(duration).ok()),
+                    &command_info.hostname,
+                    &command_info.exit_code,
+                ],
+            )?;
         }
 
         // Legacy insert into old history file

@@ -150,19 +150,18 @@ async fn main() -> ExitCode {
     }
 
     #[cfg(target_os = "macos")]
-    if let Ok(current_exe) = fig_util::current_exe_origin() {
-        if let Ok(statvfs) = nix::sys::statvfs::statvfs(&current_exe) {
-            if statvfs.flags().contains(nix::sys::statvfs::FsFlags::ST_RDONLY) {
-                rfd::MessageDialog::new()
+    if let Ok(current_exe) = fig_util::current_exe_origin()
+        && let Ok(statvfs) = nix::sys::statvfs::statvfs(&current_exe)
+        && statvfs.flags().contains(nix::sys::statvfs::FsFlags::ST_RDONLY)
+    {
+        rfd::MessageDialog::new()
                     .set_title("Error")
                     .set_description(
                         format!("Cannot execute {PRODUCT_NAME} from within a readonly volume. Please move {PRODUCT_NAME} to your applications folder and try again.")
                     )
                     .show();
 
-                return ExitCode::FAILURE;
-            }
-        }
+        return ExitCode::FAILURE;
     }
 
     let ctx = Context::new();

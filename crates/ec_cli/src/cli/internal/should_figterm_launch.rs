@@ -246,23 +246,23 @@ pub fn should_figterm_launch_exit_status(ctx: &Context, quiet: bool) -> u8 {
     }
 
     // Check for Warp Terminal
-    if let Ok(term_program) = env.get(TERM_PROGRAM) {
-        if term_program == WARP_TERMINAL {
-            if !quiet {
-                writeln!(stdout(), "❌ {TERM_PROGRAM} = {WARP_TERMINAL}").ok();
-            }
-            return 1;
+    if let Ok(term_program) = env.get(TERM_PROGRAM)
+        && term_program == WARP_TERMINAL
+    {
+        if !quiet {
+            writeln!(stdout(), "❌ {TERM_PROGRAM} = {WARP_TERMINAL}").ok();
         }
+        return 1;
     }
 
     // Check for SecureCRT
-    if let Ok(cf_bundle_identifier) = env.get("__CFBundleIdentifier") {
-        if cf_bundle_identifier == "com.vandyke.SecureCRT" {
-            if !quiet {
-                writeln!(stdout(), "❌ __CFBundleIdentifier = com.vandyke.SecureCRT").ok();
-            }
-            return 1;
+    if let Ok(cf_bundle_identifier) = env.get("__CFBundleIdentifier")
+        && cf_bundle_identifier == "com.vandyke.SecureCRT"
+    {
+        if !quiet {
+            writeln!(stdout(), "❌ __CFBundleIdentifier = com.vandyke.SecureCRT").ok();
         }
+        return 1;
     }
 
     // PWSH var is set when launched by `pwsh -Login`, in which case we don't want to init.

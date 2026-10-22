@@ -55,12 +55,10 @@ pub async fn install_cli(
                 None => bail!("No option selected"),
             }
         };
-        if !manual_install {
-            if let Err(err) = install(InstallComponents::SHELL_INTEGRATIONS, &env).await {
-                println!("{}", "Could not automatically install:".bold());
-                println!("{err}");
-                manual_install = true;
-            }
+        if !manual_install && let Err(err) = install(InstallComponents::SHELL_INTEGRATIONS, &env).await {
+            println!("{}", "Could not automatically install:".bold());
+            println!("{err}");
+            manual_install = true;
         }
         if !no_confirm && manual_install {
             let shell_dir = fig_util::directories::fig_data_dir_utf8()?.join("shell");

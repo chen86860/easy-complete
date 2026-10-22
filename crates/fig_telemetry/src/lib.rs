@@ -230,10 +230,10 @@ pub async fn flush_queue() {
 
     let mut failed: Vec<String> = Vec::new();
     for event in &events {
-        if send_event(event).await.is_err() {
-            if let Ok(line) = serde_json::to_string(event) {
-                failed.push(line);
-            }
+        if send_event(event).await.is_err()
+            && let Ok(line) = serde_json::to_string(event)
+        {
+            failed.push(line);
         }
     }
 

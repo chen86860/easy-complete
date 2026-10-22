@@ -482,13 +482,12 @@ impl WindowServerHandler for WindowServerInner {
             let app_elem: UIElement = ax_app.into();
             if let Ok(window) = app_elem.focused_window() {
                 let fullscreen = window.is_fullscreen();
-                if let Ok(is_fullscreen) = fullscreen {
-                    if let Err(e) = self
+                if let Ok(is_fullscreen) = fullscreen
+                    && let Err(e) = self
                         .sender
                         .send(WindowServerEvent::ActiveSpaceChanged { is_fullscreen })
-                    {
-                        warn!("Error sending active space changed notif: {e:?}");
-                    }
+                {
+                    warn!("Error sending active space changed notif: {e:?}");
                 }
             }
         }
@@ -496,20 +495,20 @@ impl WindowServerHandler for WindowServerInner {
 
     fn did_terminate_application(&mut self, notif: &NSNotification) {
         unsafe {
-            if let Some(ns_app) = get_app_from_notification(notif) {
-                if let Some(bundle_id) = app_bundle_id(&ns_app) {
-                    trace!("Terminated application - {bundle_id:?}");
+            if let Some(ns_app) = get_app_from_notification(notif)
+                && let Some(bundle_id) = app_bundle_id(&ns_app)
+            {
+                trace!("Terminated application - {bundle_id:?}");
 
-                    let apps = NSWorkspace::sharedWorkspace().runningApplications();
+                let apps = NSWorkspace::sharedWorkspace().runningApplications();
 
-                    let has_running = apps
-                        .iter()
-                        .any(|running| app_bundle_id(running).map(|id| id == bundle_id).unwrap_or(false));
+                let has_running = apps
+                    .iter()
+                    .any(|running| app_bundle_id(running).map(|id| id == bundle_id).unwrap_or(false));
 
-                    if !has_running {
-                        trace!("Deregistering app {bundle_id:?} since no other instances are running");
-                        self.deregister(bundle_id.as_str());
-                    }
+                if !has_running {
+                    trace!("Deregistering app {bundle_id:?} since no other instances are running");
+                    self.deregister(bundle_id.as_str());
                 }
             }
         }
@@ -596,10 +595,10 @@ unsafe extern "C" fn application_ax_callback(
         },
     };
 
-    if let Some(event) = event {
-        if let Err(e) = cb_data.sender.send(event) {
-            warn!("Error sending focus changed event: {e:?}");
-        }
+    if let Some(event) = event
+        && let Err(e) = cb_data.sender.send(event)
+    {
+        warn!("Error sending focus changed event: {e:?}");
     }
 }
 

@@ -179,7 +179,7 @@ fn current_app_executable() -> Result<PathBuf> {
     let bundle = current
         .ancestors()
         .find(|path| path.extension().is_some_and(|extension| extension == "app"))
-        .ok_or_else(|| Error::ApplicationNotInstalled(Cow::Borrowed("Easy Complete.app")))?;
+        .ok_or(Error::ApplicationNotInstalled(Cow::Borrowed("Easy Complete.app")))?;
     Ok(bundle.join("Contents").join("MacOS").join(APP_PROCESS_NAME))
 }
 

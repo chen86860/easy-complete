@@ -81,50 +81,49 @@ pub async fn setup_listeners(notifications_state: Arc<WebviewNotificationsState>
         while let Some(event) = rx.recv().await {
             trace!(?event, "Settings event");
 
-            if let Some(settings_path) = &settings_path {
-                if event.paths.contains(settings_path) {
-                    if let EventKind::Create(_) | EventKind::Modify(_) = event.kind {
-                        match fig_settings::OldSettings::load_from_file() {
-                            Ok(settings) => {
-                                debug!("Settings file changed");
+            if let Some(settings_path) = &settings_path
+                && event.paths.contains(settings_path)
+                && let EventKind::Create(_) | EventKind::Modify(_) = event.kind
+            {
+                match fig_settings::OldSettings::load_from_file() {
+                    Ok(settings) => {
+                        debug!("Settings file changed");
 
-                                notifications_state
-                                    .broadcast_notification_all(
-                                        &NotificationType::NotifyOnSettingsChange,
-                                        fig_proto::fig::Notification {
-                                            r#type: Some(NotificationEnum::SettingsChangedNotification(
-                                                SettingsChangedNotification {
-                                                    json_blob: serde_json::to_string(&settings).ok(),
-                                                },
-                                            )),
+                        notifications_state
+                            .broadcast_notification_all(
+                                &NotificationType::NotifyOnSettingsChange,
+                                fig_proto::fig::Notification {
+                                    r#type: Some(NotificationEnum::SettingsChangedNotification(
+                                        SettingsChangedNotification {
+                                            json_blob: serde_json::to_string(&settings).ok(),
                                         },
-                                        &proxy,
-                                    )
-                                    .await
-                                    .unwrap();
+                                    )),
+                                },
+                                &proxy,
+                            )
+                            .await
+                            .unwrap();
 
-                                json_map_diff(
-                                    &prev_settings,
-                                    &settings,
-                                    |key, value| {
-                                        debug!(%key, %value, "Setting added");
-                                        NOTIFICATION_BUS.send_settings_new(key, value);
-                                    },
-                                    |key, old, new| {
-                                        debug!(%key, %old, %new, "Setting change");
-                                        NOTIFICATION_BUS.send_settings_changed(key, old, new);
-                                    },
-                                    |key, value| {
-                                        debug!(%key, %value, "Setting removed");
-                                        NOTIFICATION_BUS.send_settings_remove(key, value);
-                                    },
-                                );
-
-                                prev_settings = settings;
+                        json_map_diff(
+                            &prev_settings,
+                            &settings,
+                            |key, value| {
+                                debug!(%key, %value, "Setting added");
+                                NOTIFICATION_BUS.send_settings_new(key, value);
                             },
-                            Err(err) => error!(%err, "Failed to get settings"),
-                        }
-                    }
+                            |key, old, new| {
+                                debug!(%key, %old, %new, "Setting change");
+                                NOTIFICATION_BUS.send_settings_changed(key, old, new);
+                            },
+                            |key, value| {
+                                debug!(%key, %value, "Setting removed");
+                                NOTIFICATION_BUS.send_settings_remove(key, value);
+                            },
+                        );
+
+                        prev_settings = settings;
+                    },
+                    Err(err) => error!(%err, "Failed to get settings"),
                 }
             }
         }

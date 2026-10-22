@@ -387,10 +387,10 @@ impl PlatformStateImpl {
                         let title: id = msg_send![window, title];
 
                         // TODO: implement better method for determining if WebView belongs to autocomplete
-                        if let Some(title) = to_s(title) {
-                            if title == AUTOCOMPLETE_WINDOW_TITLE {
-                                return YES;
-                            }
+                        if let Some(title) = to_s(title)
+                            && title == AUTOCOMPLETE_WINDOW_TITLE
+                        {
+                            return YES;
                         }
                     }
 
@@ -405,12 +405,12 @@ impl PlatformStateImpl {
                         let title: id = msg_send![window, title];
 
                         // TODO: implement better method for determining if WebView belongs to autocomplete
-                        if let Some(title) = to_s(title) {
-                            if title == AUTOCOMPLETE_WINDOW_TITLE {
-                                // Prevent clicked window from taking focus
-                                let app: id = msg_send![application, sharedApplication];
-                                let _: () = msg_send![app, preventWindowOrdering];
-                            }
+                        if let Some(title) = to_s(title)
+                            && title == AUTOCOMPLETE_WINDOW_TITLE
+                        {
+                            // Prevent clicked window from taking focus
+                            let app: id = msg_send![application, sharedApplication];
+                            let _: () = msg_send![app, preventWindowOrdering];
                         }
 
                         // Invoke superclass implementation
@@ -647,16 +647,16 @@ impl PlatformStateImpl {
             },
             PlatformBoundEvent::WindowDestroyed { app } => {
                 let mut focused = self.focused_window.lock().unwrap();
-                if let Some(focused_window) = focused.as_ref() {
-                    if focused_window.bundle_id() == app.bundle_id {
-                        focused.take();
-                        self.proxy
-                            .send_event(Event::WindowEvent {
-                                window_id: AUTOCOMPLETE_ID,
-                                window_event: WindowEvent::Hide,
-                            })
-                            .ok();
-                    }
+                if let Some(focused_window) = focused.as_ref()
+                    && focused_window.bundle_id() == app.bundle_id
+                {
+                    focused.take();
+                    self.proxy
+                        .send_event(Event::WindowEvent {
+                            window_id: AUTOCOMPLETE_ID,
+                            window_event: WindowEvent::Hide,
+                        })
+                        .ok();
                 }
                 Ok(())
             },

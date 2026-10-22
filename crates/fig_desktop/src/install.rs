@@ -210,12 +210,11 @@ async fn symlink(src: impl AsRef<std::path::Path>, dst: impl AsRef<std::path::Pa
     match tokio::fs::symlink_metadata(dst).await {
         Ok(metadata) => {
             // If it's a symlink, check if it points to the right place
-            if metadata.file_type().is_symlink() {
-                if let Ok(read_link) = tokio::fs::read_link(dst).await {
-                    if read_link == src {
-                        return Ok(());
-                    }
-                }
+            if metadata.file_type().is_symlink()
+                && let Ok(read_link) = tokio::fs::read_link(dst).await
+                && read_link == src
+            {
+                return Ok(());
             }
 
             // If it's not a symlink or it points to the wrong place, delete it

@@ -978,7 +978,7 @@ impl WebviewManager {
                             }
                         },
                         Event::WindowEventAll { window_event } => {
-                            for (_window_id, window_state) in self.window_id_map.iter() {
+                            for window_state in self.window_id_map.values() {
                                 if window_state.enabled() || window_event.is_allowed_while_disabled() {
                                     window_state.handle(
                                         window_event.clone(),
@@ -1042,8 +1042,8 @@ impl WebviewManager {
                                 age_seconds,
                                 resize_count,
                             );
-                            if recycled {
-                                if let Err(err) = autocomplete_lifecycle.reconcile(
+                            if recycled
+                                && let Err(err) = autocomplete_lifecycle.reconcile(
                                     &self.context,
                                     &mut self.fig_id_map,
                                     &mut self.window_id_map,
@@ -1053,7 +1053,6 @@ impl WebviewManager {
                                 ) {
                                     error!(%err, "Failed to rebuild recycled autocomplete webview");
                                 }
-                            }
                         },
                         Event::AutocompleteWebviewMounted => {
                             dispatch_deferred_autocomplete_events(
@@ -1139,11 +1138,10 @@ impl WebviewManager {
                         }) => {
                             let mut dialog = rfd::AsyncMessageDialog::new().set_title(title).set_description(body);
 
-                            if let Some(parent) = parent {
-                                if let Some(parent_window) = self.fig_id_map.get(&parent) {
+                            if let Some(parent) = parent
+                                && let Some(parent_window) = self.fig_id_map.get(&parent) {
                                     dialog = dialog.set_parent(&parent_window.window);
                                 }
-                            }
 
                             let dialog = match (buttons, buttons_result.as_ref()) {
                                 (Some(buttons), Some(_)) => dialog.set_buttons(buttons),

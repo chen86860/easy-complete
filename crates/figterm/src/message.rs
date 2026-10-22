@@ -155,15 +155,15 @@ pub async fn process_figterm_request(
                     trace!(?expected, "lock set, expected buffer");
                     *EXPECTED_BUFFER.lock().unwrap() = expected;
                 }
-                if let Some(ref insertion_buffer) = request.insertion_buffer {
-                    if buffer.ne(insertion_buffer) {
-                        if buffer.starts_with(insertion_buffer) {
-                            if let Some(len_diff) = buffer.len().checked_sub(insertion_buffer.len()) {
-                                insertion_string.extend(std::iter::repeat_n('\x08', len_diff));
-                            }
-                        } else if insertion_buffer.starts_with(&buffer) {
-                            insertion_string.push_str(&insertion_buffer[buffer.len()..]);
+                if let Some(ref insertion_buffer) = request.insertion_buffer
+                    && buffer.ne(insertion_buffer)
+                {
+                    if buffer.starts_with(insertion_buffer) {
+                        if let Some(len_diff) = buffer.len().checked_sub(insertion_buffer.len()) {
+                            insertion_string.extend(std::iter::repeat_n('\x08', len_diff));
                         }
+                    } else if insertion_buffer.starts_with(&buffer) {
+                        insertion_string.push_str(&insertion_buffer[buffer.len()..]);
                     }
                 }
             }

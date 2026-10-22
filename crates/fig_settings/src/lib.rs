@@ -191,10 +191,10 @@ pub trait JsonStore: Sized {
         let path = Self::path()?;
 
         // If the folder doesn't exist, create it.
-        if let Some(parent) = path.parent() {
-            if !parent.exists() {
-                fs::create_dir_all(parent)?;
-            }
+        if let Some(parent) = path.parent()
+            && !parent.exists()
+        {
+            fs::create_dir_all(parent)?;
         }
 
         let json: Map = {
@@ -252,10 +252,10 @@ pub trait JsonStore: Sized {
         let path = Self::path()?;
 
         // If the folder doesn't exist, create it.
-        if let Some(parent) = path.parent() {
-            if !parent.exists() {
-                fs::create_dir_all(parent)?;
-            }
+        if let Some(parent) = path.parent()
+            && !parent.exists()
+        {
+            fs::create_dir_all(parent)?;
         }
 
         let _lock_guard = Self::file_lock().write();

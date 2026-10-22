@@ -239,13 +239,13 @@ pub async fn handle_remote_ipc(
                             nonce,
                             response: Some(response),
                         })) => {
-                            if initialized {
-                                if let Some(nonce) = nonce {
-                                    figterm_state
-                                        .with(&session_id, |session| session.response_map.remove(&nonce))
-                                        .flatten()
-                                        .map(|channel| channel.send(response));
-                                }
+                            if initialized
+                                && let Some(nonce) = nonce
+                                && let Some(channel) = figterm_state
+                                    .with(&session_id, |session| session.response_map.remove(&nonce))
+                                    .flatten()
+                            {
+                                let _ = channel.send(response);
                             }
                             None
                         },
@@ -415,8 +415,8 @@ async fn handle_commands(
         };
 
         figterm_state.with(&session_id, |session| {
-            if let Some(writer) = &session.writer {
-                if writer
+            if let Some(writer) = &session.writer
+                && writer
                     .try_send(Clientbound {
                         packet: Some(clientbound::Packet::Request(clientbound::Request {
                             request: Some(request),
@@ -424,10 +424,9 @@ async fn handle_commands(
                         })),
                     })
                     .is_ok()
-                {
-                    session.last_receive = Instant::now();
-                };
-            }
+            {
+                session.last_receive = Instant::now();
+            };
         })?;
     }
 

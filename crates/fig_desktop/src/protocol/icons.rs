@@ -171,17 +171,17 @@ pub async fn handle(
             let asset = ASSETS.get(&AssetSpecifier::Named("template".into())).unwrap();
             let mut image = image::load_from_memory_with_format(asset, image::ImageFormat::Png).unwrap();
 
-            if let Some(color) = query_pairs.get("color") {
-                if let Some(rgb) = parse_hex_rgb(color) {
-                    for y in 0..image.height() {
-                        for x in 0..image.width() {
-                            let Rgba([r, g, b, a]) = image.get_pixel(x, y);
-                            image.put_pixel(
-                                x,
-                                y,
-                                Rgba([scale_u8(r, rgb[0]), scale_u8(g, rgb[1]), scale_u8(b, rgb[2]), a]),
-                            );
-                        }
+            if let Some(color) = query_pairs.get("color")
+                && let Some(rgb) = parse_hex_rgb(color)
+            {
+                for y in 0..image.height() {
+                    for x in 0..image.width() {
+                        let Rgba([r, g, b, a]) = image.get_pixel(x, y);
+                        image.put_pixel(
+                            x,
+                            y,
+                            Rgba([scale_u8(r, rgb[0]), scale_u8(g, rgb[1]), scale_u8(b, rgb[2]), a]),
+                        );
                     }
                 }
             }

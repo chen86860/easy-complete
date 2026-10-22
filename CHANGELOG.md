@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.3.9-beta.3
+
+- fix: running `ec doctor`, `ec launch` or another command that starts the app no longer deletes `desktop.sock` while Easy Complete is still running. When the app-running check misses a live app, for example inside a sandbox that blocks LaunchServices such as an AI agent's command runner, the socket used to be removed and completions stopped in every terminal until `ec restart`. The socket is now removed only when nothing is listening on it (#199)
+
 ## v2.3.9-beta.2
 
 - chore: update `rustls-webpki` from 0.103.15 to 0.103.16 and `webpki-roots` from 1.0.3 to 1.0.10

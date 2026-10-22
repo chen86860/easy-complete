@@ -163,6 +163,13 @@ macro_rules! doctor_fix {
     };
 }
 
+#[cfg(target_os = "linux")]
+pub(crate) use doctor_error;
+#[cfg(target_os = "linux")]
+pub(crate) use doctor_fix;
+#[cfg(target_os = "linux")]
+pub(crate) use doctor_warning;
+
 macro_rules! doctor_fix_async {
     ({ reason: $reason:expr,fix: $fix:expr }) => {
         DoctorError::Error {

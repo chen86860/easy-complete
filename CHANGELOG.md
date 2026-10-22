@@ -1,19 +1,12 @@
 # Changelog
 
-## v2.3.9-beta.3
+## v2.3.9
 
 - fix: running `ec doctor`, `ec launch` or another command that starts the app no longer deletes `desktop.sock` while Easy Complete is still running. When the app-running check misses a live app, for example inside a sandbox that blocks LaunchServices such as an AI agent's command runner, the socket used to be removed and completions stopped in every terminal until `ec restart`. The socket is now removed only when nothing is listening on it (#199)
 - fix: a crash (`EXC_BAD_ACCESS` on a `tokio-rt-worker` thread) when a webview was released while one of its `ecresource://` or `spec://` requests was still being answered. Update `wry` from 0.48.1 to 0.49.0, which keeps the webview alive until the response is delivered (#199)
-
-## v2.3.9-beta.2
-
-- chore: update `rustls-webpki` from 0.103.15 to 0.103.16 and `webpki-roots` from 1.0.3 to 1.0.10
-
-## v2.3.9-beta.1
-
-- prerelease: ship the toolchain upgrade on a beta tag first, before it reaches the stable Sparkle update channel
 - chore: upgrade the Rust toolchain from 1.87.0 to 1.97.0 and fix the new clippy lints (mostly nested `if` collapsed into let-chains). 1.98+ stays blocked by `apple-bundle` 0.1.4, which no longer compiles there
 - chore: upgrade Node from 22 to 24 LTS (`engines.node` is now `>=24 <25`) and the mise Python pin from 3.11 to 3.13
+- chore: update `rustls-webpki` from 0.103.15 to 0.103.16 and `webpki-roots` from 1.0.3 to 1.0.10
 
 ## v2.3.8
 

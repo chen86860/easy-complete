@@ -1,19 +1,12 @@
 # Changelog
 
-## v2.3.9-beta.3
+## v2.3.9
 
 - 修复：Easy Complete 仍在运行时，执行 `ec doctor`、`ec launch` 等会启动 App 的命令不再删除 `desktop.sock`。此前如果检测漏掉了正在运行的 App（例如在 AI 代理的命令执行环境等屏蔽了 LaunchServices 的沙箱中），socket 会被删掉，所有终端的补全都会失效，直到执行 `ec restart`。现在只有在没有进程监听时才会删除该 socket（#199）
 - 修复：WebView 被释放时，若其 `ecresource://` 或 `spec://` 请求的响应尚未返回，App 会崩溃（`tokio-rt-worker` 线程上的 `EXC_BAD_ACCESS`）。`wry` 从 0.48.1 升级到 0.49.0，在响应送达前保持 WebView 存活（#199）
-
-## v2.3.9-beta.2
-
-- chore: `rustls-webpki` 从 0.103.15 升级到 0.103.16，`webpki-roots` 从 1.0.3 升级到 1.0.10
-
-## v2.3.9-beta.1
-
-- prerelease: 工具链升级先发布到 beta tag，再进入正式 Sparkle 更新通道
 - chore: Rust 工具链从 1.87.0 升级到 1.97.0，并修复新增的 clippy lint（主要是把嵌套 `if` 合并为 let-chains）。1.98 及以上暂不可用：`apple-bundle` 0.1.4 在这些版本上无法编译
 - chore: Node 从 22 升级到 24 LTS（`engines.node` 改为 `>=24 <25`），mise 中的 Python 从 3.11 升级到 3.13
+- chore: `rustls-webpki` 从 0.103.15 升级到 0.103.16，`webpki-roots` 从 1.0.3 升级到 1.0.10
 
 ## v2.3.8
 

@@ -1,7 +1,9 @@
 pub(crate) mod commands;
 mod hooks;
 
+use std::path::Path;
 use std::sync::Arc;
+use std::time::Duration;
 
 use anyhow::{Context, Result};
 use fig_ipc::{BufferedUnixStream, RecvMessage, SendMessage};
@@ -13,7 +15,8 @@ use fig_remote_ipc::figterm::FigtermState;
 use fig_settings::settings::SettingsProvider;
 use fig_settings::{Settings, State, StateProvider};
 use fig_util::directories;
-use tokio::net::UnixListener;
+use tokio::net::{UnixListener, UnixStream};
+use tokio::time::MissedTickBehavior;
 use tracing::{debug, error, trace, warn};
 
 use crate::event::Event;
@@ -92,7 +95,7 @@ pub async fn start_local_ipc(
 
     let listener = UnixListener::bind(&socket_path)?;
 
-    while let Ok((stream, _)) = listener.accept().await {
+    accept_rebinding_removed_socket(listener, &socket_path, SOCKET_CHECK_INTERVAL, |stream| {
         tokio::spawn(handle_local_ipc(
             BufferedUnixStream::new(stream),
             platform_state.clone(),
@@ -100,10 +103,55 @@ pub async fn start_local_ipc(
             proxy.clone(),
             LocalIpcContext::new(),
         ));
-    }
+    })
+    .await;
 
     Ok(())
 }
+
+/// Accepts connections until the listener fails, rebinding `socket_path` if it disappears.
+///
+/// Anything can unlink the socket while we keep listening on it (an older `ec` that misjudged
+/// the app as stopped, a cleanup tool), which silently cuts off every new terminal until
+/// restart. A path that exists but belongs to someone else's socket is left alone.
+async fn accept_rebinding_removed_socket(
+    mut listener: UnixListener,
+    socket_path: &Path,
+    check_interval: Duration,
+    mut on_accept: impl FnMut(UnixStream),
+) {
+    let mut socket_check = tokio::time::interval(check_interval);
+    socket_check.set_missed_tick_behavior(MissedTickBehavior::Delay);
+
+    loop {
+        tokio::select! {
+            accepted = listener.accept() => {
+                let Ok((stream, _)) = accepted else { break };
+                on_accept(stream);
+            },
+            _ = socket_check.tick() => {
+                if !socket_removed(socket_path).await {
+                    continue;
+                }
+                match UnixListener::bind(socket_path) {
+                    Ok(rebound) => {
+                        warn!("Local ipc socket {socket_path:?} was removed, rebound it");
+                        listener = rebound;
+                    },
+                    Err(err) => error!("Failed to rebind removed local ipc socket {socket_path:?}: {err}"),
+                }
+            },
+        }
+    }
+}
+
+async fn socket_removed(socket_path: &Path) -> bool {
+    tokio::fs::symlink_metadata(socket_path)
+        .await
+        .is_err_and(|err| err.kind() == std::io::ErrorKind::NotFound)
+}
+
+const SOCKET_CHECK_INTERVAL: Duration = Duration::from_secs(5);
 
 async fn handle_local_ipc<Ctx>(
     mut stream: BufferedUnixStream,
@@ -251,5 +299,77 @@ async fn handle_local_ipc<Ctx>(
             },
             None => warn!("Received empty local message"),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const TEST_CHECK_INTERVAL: Duration = Duration::from_millis(20);
+
+    async fn wait_until(mut condition: impl FnMut() -> bool) {
+        for _ in 0..100 {
+            if condition() {
+                return;
+            }
+            tokio::time::sleep(TEST_CHECK_INTERVAL).await;
+        }
+        panic!("condition not met in time");
+    }
+
+    #[tokio::test]
+    async fn rebinds_a_removed_socket() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("desktop.sock");
+        let listener = UnixListener::bind(&path).unwrap();
+        let (accepted_tx, mut accepted_rx) = tokio::sync::mpsc::unbounded_channel();
+        let server = tokio::spawn({
+            let path = path.clone();
+            async move {
+                accept_rebinding_removed_socket(listener, &path, TEST_CHECK_INTERVAL, |stream| {
+                    accepted_tx.send(stream).unwrap();
+                })
+                .await;
+            }
+        });
+
+        std::fs::remove_file(&path).unwrap();
+        wait_until(|| path.exists()).await;
+
+        UnixStream::connect(&path).await.unwrap();
+        tokio::time::timeout(Duration::from_secs(2), accepted_rx.recv())
+            .await
+            .unwrap()
+            .unwrap();
+        server.abort();
+    }
+
+    #[tokio::test]
+    async fn leaves_a_replaced_socket_alone() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("desktop.sock");
+        let listener = UnixListener::bind(&path).unwrap();
+        let server = tokio::spawn({
+            let path = path.clone();
+            async move {
+                accept_rebinding_removed_socket(listener, &path, TEST_CHECK_INTERVAL, |_| {
+                    panic!("the replaced socket must not reach the original listener");
+                })
+                .await;
+            }
+        });
+
+        std::fs::remove_file(&path).unwrap();
+        let other = UnixListener::bind(&path).unwrap();
+        tokio::time::sleep(TEST_CHECK_INTERVAL * 5).await;
+
+        UnixStream::connect(&path).await.unwrap();
+        tokio::time::timeout(Duration::from_secs(2), other.accept())
+            .await
+            .unwrap()
+            .unwrap();
+        assert!(!server.is_finished());
+        server.abort();
     }
 }

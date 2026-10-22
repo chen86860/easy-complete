@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.3.9-beta.2
+
+- chore: `rustls-webpki` 从 0.103.15 升级到 0.103.16，`webpki-roots` 从 1.0.3 升级到 1.0.10
+
 ## v2.3.9-beta.1
 
 - prerelease: 工具链升级先发布到 beta tag，再进入正式 Sparkle 更新通道

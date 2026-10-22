@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.3.9-beta.2
+
+- chore: update `rustls-webpki` from 0.103.15 to 0.103.16 and `webpki-roots` from 1.0.3 to 1.0.10
+
 ## v2.3.9-beta.1
 
 - prerelease: ship the toolchain upgrade on a beta tag first, before it reaches the stable Sparkle update channel

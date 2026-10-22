@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.4.0-beta.0
+
+- chore: `wry` 从 0.49.0 升级到 0.57.0。macOS 上的主要收益：修复了关闭 WebView 与响应其自定义协议请求之间的竞争（即 #199 崩溃所在的环节），修复了异步自定义协议请求偶尔得不到响应的问题，`ecresource://` / `spec://` 响应体也少了一次内存拷贝
+- chore: 移除 wry 的 `protocol` 和 `transparent` feature，新版 wry 已默认启用这两项功能
+
 ## v2.3.9
 
 - 修复：Easy Complete 仍在运行时，执行 `ec doctor`、`ec launch` 等会启动 App 的命令不再删除 `desktop.sock`。此前如果检测漏掉了正在运行的 App（例如在 AI 代理的命令执行环境等屏蔽了 LaunchServices 的沙箱中），socket 会被删掉，所有终端的补全都会失效，直到执行 `ec restart`。现在只有在没有进程监听时才会删除该 socket（#199）

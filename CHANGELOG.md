@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.4.0-beta.0
+
+- chore: update `wry` from 0.49.0 to 0.57.0. The main macOS gains are a fix for a race between closing a webview and answering its custom protocol requests (the area of the #199 crash), a fix for asynchronous custom protocol requests that never got a response, and one fewer copy of each `ecresource://` / `spec://` response body
+- chore: the `protocol` and `transparent` wry features are gone, since wry now always enables them
+
 ## v2.3.9
 
 - fix: running `ec doctor`, `ec launch` or another command that starts the app no longer deletes `desktop.sock` while Easy Complete is still running. When the app-running check misses a live app, for example inside a sandbox that blocks LaunchServices such as an AI agent's command runner, the socket used to be removed and completions stopped in every terminal until `ec restart`. The socket is now removed only when nothing is listening on it (#199)

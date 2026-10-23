@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.4.0-beta.3
+
+- fix: publish the beta update feed. The release workflow could not create it for v2.4.0-beta.2, so "Receive Beta Updates" found no updates; the app itself is unchanged from v2.4.0-beta.2
+
 ## v2.4.0-beta.2
 
 - feat: add a "Receive Beta Updates" toggle under Settings → About → Updates (`app.betaUpdates`). When on, Easy Complete checks a separate beta update feed and installs prerelease builds automatically; stable releases still reach you from there

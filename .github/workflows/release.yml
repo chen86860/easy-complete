@@ -339,9 +339,11 @@ jobs:
         run: |
           set -euo pipefail
           if ! gh release view "$FEED_TAG" >/dev/null 2>&1; then
+            # Point the tag at the default branch: GITHUB_TOKEN may not create a ref on a
+            # commit whose workflow files differ from it (HTTP 403), and the tag only holds assets.
             gh release create "$FEED_TAG" \
               --prerelease \
-              --target "$GITHUB_SHA" \
+              --target "${{ github.event.repository.default_branch }}" \
               --title "Beta update feed" \
               --notes "Rolling Sparkle appcast for users who opt into beta updates. Updated by the release workflow on every tag; do not delete."
           fi

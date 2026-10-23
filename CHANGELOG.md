@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.4.0-beta.1
+
+- fix: update `tray-icon` from 0.24.2 to 0.26.1, which fixes left clicks on the menu bar icon being swallowed on macOS 27, and `muda` from 0.19.3 to 0.21.2, which fixes a use-after-free when a menu item outlived its Rust handle. `tao` goes from 0.36.0 to 0.37.1 alongside them
+- fix: update Rust dependencies with published security advisories: `rustls` 0.23.46, `time` 0.3.55, `h2` 0.4.20, `crossbeam-epoch` 0.9.21, `event-listener` 5.4.2 and `quinn-proto` 0.11.19
+- fix: update `dompurify` to 3.4.17 on the website (critical advisory, loaded through `posthog-js`), and patch dev-only npm advisories: `vitest` 4.1.12, `brace-expansion` 5.0.12, `source-map-js` 1.2.2
+
 ## v2.4.0-beta.0
 
 - chore: update `wry` from 0.49.0 to 0.57.0. The main macOS gains are a fix for a race between closing a webview and answering its custom protocol requests (the area of the #199 crash), a fix for asynchronous custom protocol requests that never got a response, and one fewer copy of each `ecresource://` / `spec://` response body

@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.4.0-beta.1
+
+- 修复：`tray-icon` 从 0.24.2 升级到 0.26.1，修复 macOS 27 上点击菜单栏图标时左键事件被吞掉的问题；`muda` 从 0.19.3 升级到 0.21.2，修复菜单项比其 Rust 句柄存活更久时的 use-after-free。`tao` 同步从 0.36.0 升级到 0.37.1
+- 修复：升级存在安全公告的 Rust 依赖：`rustls` 0.23.46、`time` 0.3.55、`h2` 0.4.20、`crossbeam-epoch` 0.9.21、`event-listener` 5.4.2、`quinn-proto` 0.11.19
+- 修复：官网的 `dompurify` 升级到 3.4.17（严重级安全公告，经 `posthog-js` 引入），并修复仅影响开发环境的 npm 安全公告：`vitest` 4.1.12、`brace-expansion` 5.0.12、`source-map-js` 1.2.2
+
 ## v2.4.0-beta.0
 
 - chore: `wry` 从 0.49.0 升级到 0.57.0。macOS 上的主要收益：修复了关闭 WebView 与响应其自定义协议请求之间的竞争（即 #199 崩溃所在的环节），修复了异步自定义协议请求偶尔得不到响应的问题，`ecresource://` / `spec://` 响应体也少了一次内存拷贝

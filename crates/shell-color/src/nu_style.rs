@@ -35,6 +35,16 @@ fn color_string_to_nustyle(color_string: &str) -> Style {
         return Style::default();
     }
 
+    // nu-json 0.104.1 panics (index out of bounds) on a `/*` comment that is never closed, and
+    // dist builds abort on panic, which would take ecterm down. Checking every `/*` on its own
+    // also covers one inside a quoted string, which no color value contains.
+    if color_string
+        .match_indices("/*")
+        .any(|(start, _)| !color_string[start + 2..].contains("*/"))
+    {
+        return Style::default();
+    }
+
     let nu_style = match nu_json::from_str::<NuStyle>(color_string) {
         Ok(s) => s,
         Err(_) => return Style::default(),
@@ -575,5 +585,12 @@ mod tests {
         // Hjson: `#` starts a comment and a quoteless value runs to the end of the line.
         assert_eq!(lookup_ansi_color_style("{fg: #ff0000}"), Style::default());
         assert_eq!(lookup_ansi_color_style("{fg: light_blue}"), Style::default());
+    }
+
+    #[test]
+    fn unterminated_block_comment_does_not_panic() {
+        assert_eq!(lookup_ansi_color_style("{/*"), Style::default());
+        assert_eq!(lookup_ansi_color_style(r#"{"a/*b"/*//}"#), Style::default());
+        assert_eq!(lookup_ansi_color_style("{/* hint */\nfg: red\n}"), Color::Red.normal());
     }
 }

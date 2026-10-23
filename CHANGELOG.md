@@ -1,5 +1,15 @@
 # Changelog
 
+## v2.4.0-beta.2
+
+- feat: add a "Receive Beta Updates" toggle under Settings → About → Updates (`app.betaUpdates`). When on, Easy Complete checks a separate beta update feed and installs prerelease builds automatically; stable releases still reach you from there
+- fix: prerelease builds are now ordered correctly by the updater. Sparkle stopped reading a version at the first `-`, so it saw `2.4.0-beta.0`, `2.4.0-beta.1` and `2.4.0` as the same version and never offered the next build. **If you installed v2.4.0-beta.0 or v2.4.0-beta.1, install this build manually once**; later updates arrive automatically
+- fix: `ecterm` no longer crashes when the Nushell hint color (`$env.config.color_config.hints`) contains an unclosed `/*` comment
+- chore: drop the Nushell crates that came in through `shell-color` (56 packages, including `lru` with two security advisories); the hint color parsing is unchanged
+- chore: update `apple-bundle` from 0.1.4 to 0.2.1, which no longer blocks Rust 1.98 and later, and the yanked `chacha20`, `clipboard-win` and `spin`
+- chore: dist builds no longer strip proc-macros, which failed to load on macOS 27; shipped binaries are still stripped
+- ci: audit the Rust and npm lockfiles for security advisories on every lockfile change and weekly
+
 ## v2.4.0-beta.1
 
 - fix: update `tray-icon` from 0.24.2 to 0.26.1, which fixes left clicks on the menu bar icon being swallowed on macOS 27, and `muda` from 0.19.3 to 0.21.2, which fixes a use-after-free when a menu item outlived its Rust handle. `tao` goes from 0.36.0 to 0.37.1 alongside them

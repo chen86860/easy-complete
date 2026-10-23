@@ -1,5 +1,15 @@
 # Changelog
 
+## v2.4.0-beta.2
+
+- 新功能：在 设置 → 关于 → 更新 中新增「接收 Beta 版更新」开关（`app.betaUpdates`）。开启后会检查单独的 Beta 更新源，自动安装预览版本；正式版也会通过这个更新源推送
+- 修复：更新程序现在能正确比较预览版本号。Sparkle 读到版本号里的第一个 `-` 就停止，因此把 `2.4.0-beta.0`、`2.4.0-beta.1` 和 `2.4.0` 视为同一版本，从不推送下一个版本。**如果你安装过 v2.4.0-beta.0 或 v2.4.0-beta.1，请手动安装一次这个版本**，之后的更新会自动推送
+- 修复：Nushell 提示色（`$env.config.color_config.hints`）中包含未闭合的 `/*` 注释时，`ecterm` 不再崩溃
+- chore: 移除经由 `shell-color` 引入的 Nushell 依赖（共 56 个包，其中 `lru` 有两条安全公告），提示色的解析结果不变
+- chore: `apple-bundle` 从 0.1.4 升级到 0.2.1，不再阻碍升级到 Rust 1.98 及以上；同时升级已被撤回的 `chacha20`、`clipboard-win`、`spin`
+- chore: dist 构建不再对 proc-macro 执行 strip（在 macOS 27 上会导致其无法加载），发布的二进制仍然是 strip 过的
+- ci: 锁文件变更时及每周自动审计 Rust 和 npm 依赖的安全公告
+
 ## v2.4.0-beta.1
 
 - 修复：`tray-icon` 从 0.24.2 升级到 0.26.1，修复 macOS 27 上点击菜单栏图标时左键事件被吞掉的问题；`muda` 从 0.19.3 升级到 0.21.2，修复菜单项比其 Rust 句柄存活更久时的 use-after-free。`tao` 同步从 0.36.0 升级到 0.37.1

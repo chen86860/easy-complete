@@ -1,0 +1,10 @@
+# cargo-audit configuration, used by .github/workflows/audit.yml.
+# Every ignored advisory needs a reason, and should be dropped once the dependency moves past it.
+
+[advisories]
+ignore = [
+  # quick-xml 0.37 comes in only through wayland-scanner (Linux windowing for tao/wry).
+  # The macOS app never builds it.
+  "RUSTSEC-2026-0194",
+  "RUSTSEC-2026-0195",
+]

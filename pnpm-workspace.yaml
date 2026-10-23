@@ -22,3 +22,9 @@ allowBuilds:
   '@bufbuild/buf': true
   core-js: true
   esbuild: true
+# Advisories `pnpm audit` (see .github/workflows/audit.yml) should not fail on. Each needs a
+# reason; drop the entry once the dependency moves past it.
+auditConfig:
+  ignoreGhsas:
+    # braces 3.0.3 via micromatch (tailwindcss 3 build tooling). No fixed release is published.
+    - GHSA-vfj7-8cjw-p6xm

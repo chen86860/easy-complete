@@ -19,3 +19,12 @@ onlyBuiltDependencies:
   - esbuild
   - workerd
   - sharp
+# Advisories `pnpm audit` (see .github/workflows/audit.yml) should not fail on. Each needs a
+# reason; drop the entry once the dependency moves past it.
+auditConfig:
+  ignoreGhsas:
+    # undici and sharp are pinned exactly by wrangler's miniflare (local dev server and deploy
+    # tooling); neither ships to the site. Revisit when wrangler moves to a newer miniflare.
+    - GHSA-rfgv-xxqx-mfg5
+    - GHSA-w293-vg96-wgc3
+    - GHSA-wq5f-xc86-pv6w

@@ -16,16 +16,22 @@ BUNDLE_ID="dev.emmmm.easy-complete"
 APP_CATEGORY="public.app-category.productivity"   # Finder / Launchpad "Developer Tools"
 COPYRIGHT="${COPYRIGHT:-© 2026 Easy Complete contributors}"
 DEFAULT_SPARKLE_APPCAST_URL="https://github.com/chen86860/easy-complete/releases/latest/download/appcast.xml"
+# Rolling feed that the release workflow refreshes on every tag, stable and beta alike.
+# The app reads it instead of SUFeedURL when the user opts into beta updates.
+DEFAULT_SPARKLE_BETA_APPCAST_URL="https://github.com/chen86860/easy-complete/releases/download/beta-feed/appcast.xml"
 export MACOSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET:-12.0}"
 
 REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 VERSION=$(cargo metadata --no-deps --format-version 1 | python3 -c "import sys,json; print(json.load(sys.stdin)['packages'][0]['version'])" 2>/dev/null || echo "dev")
+# CFBundleVersion is what Sparkle compares, so it must order prereleases correctly.
+BUNDLE_VERSION=$("${REPO_DIR}/scripts/sparkle-version.sh" "$VERSION" 2>/dev/null || echo "$VERSION")
 
 STAGING_BUNDLE="${REPO_DIR}/build/${APP_DISPLAY}.app"
 MACOS_DIR="${STAGING_BUNDLE}/Contents/MacOS"
 RESOURCES_DIR="${STAGING_BUNDLE}/Contents/Resources"
 FRAMEWORKS_DIR="${STAGING_BUNDLE}/Contents/Frameworks"
 SPARKLE_APPCAST_URL="${SPARKLE_APPCAST_URL:-$DEFAULT_SPARKLE_APPCAST_URL}"
+SPARKLE_BETA_APPCAST_URL="${SPARKLE_BETA_APPCAST_URL:-$DEFAULT_SPARKLE_BETA_APPCAST_URL}"
 
 GREEN='\033[0;32m'; NC='\033[0m'
 info() { echo -e "${GREEN}==>${NC} $*"; }
@@ -121,6 +127,8 @@ fi
 read -r -d '' SPARKLE_PLIST_ENTRIES <<PLIST || true
     <key>SUFeedURL</key>
     <string>${SPARKLE_APPCAST_URL}</string>
+    <key>ECBetaFeedURL</key>
+    <string>${SPARKLE_BETA_APPCAST_URL}</string>
     <key>SUEnableAutomaticChecks</key>
     <true/>
     <key>SUScheduledCheckInterval</key>
@@ -176,7 +184,7 @@ cat > "${STAGING_BUNDLE}/Contents/Info.plist" <<PLIST
     <key>CFBundleExecutable</key>
     <string>${APP_NAME}</string>
     <key>CFBundleVersion</key>
-    <string>${VERSION}</string>
+    <string>${BUNDLE_VERSION}</string>
     <key>CFBundleShortVersionString</key>
     <string>${VERSION}</string>
     <key>CFBundlePackageType</key>

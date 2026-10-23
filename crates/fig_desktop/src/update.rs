@@ -9,6 +9,7 @@ mod macos {
     use std::sync::{Mutex, OnceLock};
 
     use cocoa::base::{NO, YES, id, nil};
+    use cocoa::foundation::NSString;
     use objc::declare::ClassDecl;
     use objc::runtime::{BOOL, Class, Object, Sel};
     use objc::{msg_send, sel, sel_impl};
@@ -124,6 +125,66 @@ mod macos {
         *ptr as id
     }
 
+    /// Returns a shared `SPUUpdaterDelegate` instance that points Sparkle at the beta feed while
+    /// `app.betaUpdates` is on.
+    ///
+    /// `SUFeedURL` follows `releases/latest`, which GitHub never resolves to a prerelease, so beta
+    /// builds are published to a separate rolling feed named by the `ECBetaFeedURL` Info.plist
+    /// key. Sparkle asks for the feed URL on every check, so toggling the setting takes effect on
+    /// the next check without a restart. Returning nil keeps the `SUFeedURL` default.
+    fn updater_delegate() -> id {
+        static DELEGATE: OnceLock<usize> = OnceLock::new();
+
+        extern "C" fn feed_url_string(_this: &Object, _cmd: Sel, _updater: id) -> id {
+            if !fig_settings::settings::get_bool_or("app.betaUpdates", false) {
+                return nil;
+            }
+
+            // SAFETY: NSBundle.mainBundle and objectForInfoDictionaryKey: are always safe to call;
+            // the key holds a string written by build-app.sh, and a missing key returns nil.
+            unsafe {
+                let Some(bundle_class) = Class::get("NSBundle") else {
+                    return nil;
+                };
+                let bundle: id = msg_send![bundle_class, mainBundle];
+                let key = NSString::alloc(nil).init_str("ECBetaFeedURL");
+                let key: id = msg_send![key, autorelease];
+                let url: id = msg_send![bundle, objectForInfoDictionaryKey: key];
+                if url == nil {
+                    warn!("Beta updates are enabled but ECBetaFeedURL is missing; using the default feed");
+                } else {
+                    info!("Checking the beta update feed");
+                }
+                url
+            }
+        }
+
+        let ptr = DELEGATE.get_or_init(|| {
+            let Some(superclass) = Class::get("NSObject") else {
+                return 0;
+            };
+            let Some(mut decl) = ClassDecl::new("ECSparkleUpdaterDelegate", superclass) else {
+                return 0;
+            };
+
+            // SAFETY: the method signature matches SPUUpdaterDelegate's feedURLStringForUpdater:.
+            unsafe {
+                decl.add_method(
+                    sel!(feedURLStringForUpdater:),
+                    feed_url_string as extern "C" fn(&Object, Sel, id) -> id,
+                );
+            }
+
+            let cls = decl.register();
+            // SAFETY: +[NSObject new] returns a retained instance we intentionally leak for the
+            // lifetime of the app (Sparkle holds the delegate weakly).
+            let obj: id = unsafe { msg_send![cls, new] };
+            obj as usize
+        });
+
+        *ptr as id
+    }
+
     fn ensure_controller() -> Option<id> {
         let mut slot = controller_slot().lock().ok()?;
         if let Some(controller) = *slot {
@@ -147,7 +208,7 @@ mod macos {
             msg_send![
                 allocated,
                 initWithStartingUpdater: YES
-                updaterDelegate: nil
+                updaterDelegate: updater_delegate()
                 userDriverDelegate: user_driver_delegate()
             ]
         };

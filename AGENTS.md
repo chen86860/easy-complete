@@ -75,6 +75,8 @@ The script outputs the exact next steps:
 2. `git add -A && git commit -m "chore: bump version to v<version>"`
 3. `git tag v<version> && git push origin main --tags`
 
+Prereleases use `X.Y.Z-alpha|beta|rc[.N]` tags. They publish as GitHub prereleases (no Homebrew tap update), and every tag also refreshes the `appcast.xml` on the rolling `beta-feed` release, which users who enable `app.betaUpdates` read. Sparkle's version comparator stops at the first `-`, so `CFBundleVersion` / `sparkle:version` drop the separators (`2.4.0-beta.1` → `2.4.0beta1`, via `scripts/sparkle-version.sh`); `CFBundleShortVersionString` keeps the tag form.
+
 ## Architecture
 
 ### Multi-Process Design
@@ -128,6 +130,7 @@ Relevant settings:
 | `developer.autocomplete.releaseDelaySeconds` | `600`   | Idle delay before releasing the overlay, clamped to 1s–24h. Debug only; low values cause constant rebuilds |
 | `dashboard.language`                         | unset   | Dashboard UI language: `system`, `en`, or `zh-CN`                                |
 | `app.silentLaunch`                           | `false` | Start without opening the dashboard, same as `--no-dashboard`. A `ec://` deep link naming a page overrides it |
+| `app.betaUpdates`                            | `false` | Check the rolling `beta-feed` appcast instead of `releases/latest`, so prerelease builds are offered |
 
 ### Website Tailwind CSS
 

@@ -536,11 +536,20 @@ export function AboutSection({
         <Row
           label={t("about.checkAutomatically")}
           description={t("about.checkAutomaticallyDescription")}
-          last
         >
           <Toggle
             checked={!(settings[SETTINGS.DISABLE_AUTO_UPDATES] ?? false)}
             onChange={(value) => set(SETTINGS.DISABLE_AUTO_UPDATES, !value)}
+          />
+        </Row>
+        <Row
+          label={t("about.betaUpdates")}
+          description={t("about.betaUpdatesDescription")}
+          last
+        >
+          <Toggle
+            checked={Boolean(settings[SETTINGS.BETA_UPDATES] ?? false)}
+            onChange={(value) => set(SETTINGS.BETA_UPDATES, value)}
           />
         </Row>
       </Card>

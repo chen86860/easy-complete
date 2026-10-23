@@ -244,6 +244,12 @@ codegen-units = 1
 strip = "symbols"
 panic = "abort"
 
+# Proc-macros and build scripts run on the build host and never ship. Stripping them
+# breaks loading on macOS 27, where dyld rejects the stripped proc-macro dylibs with
+# "mis-aligned LINKEDIT string pool" and rustc reports `can't find crate`.
+[profile.dist.build-override]
+strip = false
+
 [profile.dev.package.insta]
 opt-level = 3
 

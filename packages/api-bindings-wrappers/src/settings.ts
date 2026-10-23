@@ -11,6 +11,7 @@ export enum SETTINGS {
   SILENT_LAUNCH = "app.silentLaunch",
   HIDE_MENUBAR_ICON = "app.hideMenubarIcon",
   DISABLE_AUTO_UPDATES = "app.disableAutoupdates",
+  BETA_UPDATES = "app.betaUpdates",
   KEEP_AUTOCOMPLETE_READY = "autocomplete.keepReady",
   DASHBOARD_LANGUAGE = "dashboard.language",
 

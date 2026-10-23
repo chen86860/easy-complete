@@ -104,6 +104,9 @@ const en = {
   "about.checkAutomatically": "Check for Updates Automatically",
   "about.checkAutomaticallyDescription":
     "Download updates automatically and notify when they are ready",
+  "about.betaUpdates": "Receive Beta Updates",
+  "about.betaUpdatesDescription":
+    "Get prerelease builds before the stable release. They may be less stable",
   "about.privacy": "Privacy",
   "about.shareUsageData": "Share Anonymous Usage Data",
   "about.shareUsageDataDescription":
@@ -251,6 +254,8 @@ const zhCN: Record<TranslationKey, string> = {
   "about.updates": "更新",
   "about.checkAutomatically": "自动检查更新",
   "about.checkAutomaticallyDescription": "自动下载更新，并在准备完成后通知我",
+  "about.betaUpdates": "接收 Beta 版更新",
+  "about.betaUpdatesDescription": "在正式版发布前获取预览版本，稳定性可能较低",
   "about.privacy": "隐私",
   "about.shareUsageData": "共享匿名使用数据",
   "about.shareUsageDataDescription": "仅包含匿名统计数据，不包含命令或个人数据",

@@ -1001,10 +1001,9 @@ impl WebviewManager {
                             *control_flow = new_control_flow;
                         },
                         Event::ReloadTray => {
-                            tray.set_icon(Some(get_icon()))
+                            tray.set_icon_templated(Some(get_icon()))
                                 .map_err(|err| error!(?err))
                                 .ok();
-                            tray.set_icon_as_template(true);
                             tray.set_menu(Some(Box::new(get_context_menu())));
                         },
                         Event::AutocompleteLifecycleChanged { keep_ready } => {

@@ -618,8 +618,9 @@ fn trailing_foreign_integration_patterns() -> &'static [&'static str] {
         // Otty — marker form written into ~/.bashrc (and tmux-managed zsh/fish rc).
         r"(?ms)\n*#\s*>>> otty shell integration >>>.*?\#\s*<<< otty shell integration <<<\s*",
         // Otty — after is_installed strips comment-only / empty lines, only the
-        // guarded `if … OTTY_SHELL_INTEGRATION …; fi` body remains.
-        r#"(?ms)\n*if\s+\[\s+-n\s+"\$OTTY_SHELL_INTEGRATION"\s*\]\s*&&\s*\[\s+-r\s+"\$OTTY_SHELL_INTEGRATION/otty-integration\.(?:bash|zsh)"\s*\]\s*;\s*then\n\s*\.\s+"\$OTTY_SHELL_INTEGRATION/otty-integration\.(?:bash|zsh)"\nfi\s*"#,
+        // guarded `if … OTTY_SHELL_INTEGRATION …; fi` body remains. Newer Otty
+        // releases lead with a `[ -n "$BASH_VERSION" ] &&` / `$ZSH_VERSION` guard.
+        r#"(?ms)\n*if\s+(?:\[\s+-n\s+"\$(?:BASH|ZSH)_VERSION"\s*\]\s*&&\s*)?\[\s+-n\s+"\$OTTY_SHELL_INTEGRATION"\s*\]\s*&&\s*\[\s+-r\s+"\$OTTY_SHELL_INTEGRATION/otty-integration\.(?:bash|zsh)"\s*\]\s*;\s*then\n\s*\.\s+"\$OTTY_SHELL_INTEGRATION/otty-integration\.(?:bash|zsh)"\nfi\s*"#,
     ]
 }
 
@@ -831,6 +832,38 @@ mod test {
         integration
             .matches_text(&filtered, When::Post)
             .expect("Otty trailer must not fail post installation status");
+    }
+
+    #[test]
+    fn test_post_matches_with_guarded_otty_trailer() {
+        // Newer Otty releases put a `$BASH_VERSION` / `$ZSH_VERSION` guard in front of the
+        // original form.
+        let home = directories::home_dir().unwrap();
+        let data = directories::fig_data_dir().unwrap();
+        let rel = data.strip_prefix(&home).unwrap().display();
+
+        for (shell, dotfile_name, post_file, guard, ext) in [
+            (Shell::Bash, ".bashrc", "bashrc.post.bash", "BASH_VERSION", "bash"),
+            (Shell::Zsh, ".zshrc", "zshrc.post.zsh", "ZSH_VERSION", "zsh"),
+        ] {
+            let post_line = format!(
+                "[[ -f \"${{HOME}}/{rel}/shell/{post_file}\" ]] && builtin source \"${{HOME}}/{rel}/shell/{post_file}\""
+            );
+            let filtered = format!(
+                "{post_line}\nif [ -n \"${guard}\" ] && [ -n \"$OTTY_SHELL_INTEGRATION\" ] && [ -r \"$OTTY_SHELL_INTEGRATION/otty-integration.{ext}\" ]; then\n  . \"$OTTY_SHELL_INTEGRATION/otty-integration.{ext}\"\nfi\n"
+            );
+
+            let integration = DotfileShellIntegration {
+                shell,
+                pre: false,
+                post: true,
+                dotfile_directory: home.clone(),
+                dotfile_name,
+            };
+            integration
+                .matches_text(&filtered, When::Post)
+                .unwrap_or_else(|err| panic!("guarded Otty {ext} trailer must not fail post status: {err}"));
+        }
     }
 
     #[cfg(target_os = "linux")]

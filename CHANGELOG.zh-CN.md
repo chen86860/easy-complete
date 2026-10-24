@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.4.0-beta.5
+
+- 修复：将 `zod` 从 4.4.3 更新到 4.6.7（高危安全公告 GHSA-mrhx-c7xc-m3w5：校验超大的受约束集合时可能耗尽内存）。`eslint-plugin-react-hooks` 引入的仅开发用副本也从 3.25.7 升级到同一版本
+- ci：推送发布 tag 时会先运行完整 CI（lint、测试、`cargo fmt`、clippy、`cargo test`），未通过则不会构建
+
 ## v2.4.0-beta.4
 
 - 新功能：支持 Kiro 终端（`dev.kiro.desktop`）。和其他基于 VS Code 的编辑器一样，补全弹窗会跟随其内置终端的光标（#201）

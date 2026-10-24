@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.4.0-beta.5
+
+- fix: update `zod` from 4.4.3 to 4.6.7 (high advisory GHSA-mrhx-c7xc-m3w5: validating oversized constrained collections could exhaust memory). The dev-only copy pulled in by `eslint-plugin-react-hooks` moves off 3.25.7 to the same version
+- ci: a release tag now runs the full CI suite (lint, tests, `cargo fmt`, clippy, `cargo test`) first and is not built if it fails
+
 ## v2.4.0-beta.4
 
 - feat: support the Kiro terminal (`dev.kiro.desktop`). Like the other VS Code based editors, the completion popup follows the caret of its integrated terminal (#201)

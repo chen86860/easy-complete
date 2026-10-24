@@ -154,7 +154,7 @@ export const terminalSupport: TerminalSupport[] = [
   {
     name: "VS Code",
     integration: "xterm",
-    note: "Integrated terminal, including Cursor, Windsurf, and Trae.",
+    note: "Integrated terminal, including Cursor, Windsurf, Trae, and Kiro.",
   },
   {
     name: "iTerm2",

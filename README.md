@@ -173,7 +173,7 @@ ec settings <key> <value>       # change a setting
 ### Supported terminals
 
 Most terminals work out of the box via the PTY integration — including iTerm2, Apple
-Terminal, VS Code, Cursor, ChatGPT (Codex), and JetBrains IDE terminals. Terminals that
+Terminal, VS Code, Cursor, Kiro, ChatGPT (Codex), and JetBrains IDE terminals. Terminals that
 bypass the standard PTY path (**Ghostty, Kitty, WezTerm, Zed, Alacritty, Otty**)
 additionally rely on the bundled input method for cursor tracking — this is registered
 automatically during install.

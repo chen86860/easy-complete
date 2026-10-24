@@ -84,6 +84,7 @@ pub const XTERM_BUNDLE_IDS: &[&str] = &[
     "org.tabby",
     // OpenAI Codex, shipped as ChatGPT.app since the rename.
     "com.openai.codex",
+    "dev.kiro.desktop",
 ];
 
 const TRACKED_NOTIFICATIONS: &[&str] = &[

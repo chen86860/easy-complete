@@ -16,8 +16,17 @@ env:
   SPARKLE_MAXIMUM_DELTAS: "5"
 
 jobs:
+  # Tags are often pushed from branches that never opened a PR, so CI would
+  # otherwise not run on what ships.
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+
   build-arm-dmg:
     name: Build ARM DMG
+    needs: ci
     # macOS 26 SDK is required: the system only grants Liquid Glass window
     # chrome (traffic lights, materials) to binaries linked against it. A
     # macos-15 runner links the 15.x SDK and silently ships the legacy look.

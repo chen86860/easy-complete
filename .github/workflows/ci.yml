@@ -5,6 +5,8 @@ on:
     types: [opened, synchronize, reopened]
   push:
     branches: [main]
+  # release.yml runs this as a gate, so a tag that fails CI never ships.
+  workflow_call:
 
 permissions:
   contents: read

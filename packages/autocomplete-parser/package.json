@@ -29,7 +29,7 @@
     "@fig/autocomplete-shared": "^1.1.2",
     "loglevel": "^1.9.2",
     "semver": "^7.8.5",
-    "zod": "^4.4.3"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@easy-complete/eslint-config": "workspace:^",

@@ -42,7 +42,7 @@ const featureDataZh: Array<Omit<Feature, "glyph">> = [
   },
   {
     title: "IDE 内置终端",
-    desc: "补全会跟着你进入 VS Code、Cursor、ChatGPT(Codex)以及 JetBrains 系 IDE 的终端",
+    desc: "补全会跟着你进入 VS Code、Cursor、Kiro、ChatGPT(Codex)以及 JetBrains 系 IDE 的终端",
   },
   {
     title: "一条命令装好",
@@ -97,7 +97,7 @@ const faqsZh: Faq[] = [
   {
     question: "Easy Complete 支持哪些终端?",
     answer:
-      "Easy Complete 支持 Ghostty、Otty、Kitty、WezTerm、Alacritty、Zed、iTerm2、Apple Terminal、VS Code、ChatGPT(Codex)以及 JetBrains 系 IDE 终端。其中 Otty 与 ChatGPT(Codex)在 v2.1.0 加入",
+      "Easy Complete 支持 Ghostty、Otty、Kitty、WezTerm、Alacritty、Zed、iTerm2、Apple Terminal、VS Code(含 Cursor、Windsurf 与 Trae)、Kiro、ChatGPT(Codex)以及 JetBrains 系 IDE 终端。其中 Kiro 在 v2.4.0 加入",
   },
   {
     question: "如何安装 Easy Complete?",
@@ -133,6 +133,7 @@ const NOTE_ZH: Record<string, string> = {
   Zed: "终端面板,通过随附输入法跟踪光标",
   "JetBrains IDEs": "覆盖 JetBrains 全系 IDE 的内置终端",
   "ChatGPT (Codex)": "ChatGPT.app 里的 Codex 终端会话,通过 xterm.js 光标定位",
+  Kiro: "基于 VS Code 的 IDE 的内置终端,通过 xterm.js 光标定位",
   "VS Code": "内置终端,含 Cursor、Windsurf 与 Trae",
   iTerm2: "重载 Shell 后开箱即用",
   "Apple Terminal": "重载 Shell 后开箱即用",
@@ -211,7 +212,7 @@ const docSectionsZh: DocSection[] = [
   },
 ];
 
-const NEW_TERMINAL_NAMES_ZH = "Otty 与 ChatGPT(Codex)";
+const NEW_TERMINAL_NAMES_ZH = "Kiro";
 
 export const homeCopyZh: HomeCopy = {
   badge: "macOS · 100% 本地 · 开源",
@@ -236,10 +237,11 @@ export const homeCopyZh: HomeCopy = {
 
   terminalsLabel: "支持的终端",
   terminalsHeading: "你在哪儿敲命令,它就在哪儿",
-  terminalsNewPrefix: "v2.1.0 新增:",
+  terminalsNewPrefix: "v2.4.0 新增:",
   terminalsBody:
-    "Otty 加入使用输入法的终端行列,获得像素级光标跟踪;ChatGPT(Codex)会话则通过 xterm.js 光标定位。其余终端继续依靠首次启动时自动安装的 Shell 集成工作",
+    "Kiro 的内置终端也能用上补全,弹窗和 VS Code 里一样跟随它的 xterm.js 光标。其余终端继续依靠首次启动时自动安装的 Shell 集成工作。",
   terminalsLinkLabel: "查看完整支持列表",
+  terminalsLinkSuffix: "。",
   terminalGuideTitle: (name) => `${name} 自动补全配置指南`,
   newBadge: "新增",
 
@@ -286,9 +288,9 @@ export const docsCopyZh: DocsCopy = {
   trackingColumn: "光标跟踪",
   notesColumn: "说明",
   newBadge: "新增",
-  terminalsCalloutLead: `v2.1.0 新增 —— ${NEW_TERMINAL_NAMES_ZH}。`,
+  terminalsCalloutLead: `v2.4.0 新增 —— ${NEW_TERMINAL_NAMES_ZH}。`,
   terminalsCalloutBody:
-    "Otty 获得输入法光标跟踪,并且 Easy Complete 现在能与 Otty 管理的 Shell rc 文件共存,而不再把自己的集成误报为损坏。ChatGPT(Codex)会话则通过 xterm.js 光标定位跟踪,与 VS Code 走同一条路径",
+    "基于 VS Code 的 IDE Kiro 现已被识别为受支持的终端。它的内置终端通过 xterm.js 光标定位跟踪,与 VS Code 走同一条路径,无需额外配置",
   docSections: docSectionsZh,
   terminalSupport: terminalSupportZh,
 };

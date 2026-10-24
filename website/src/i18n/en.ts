@@ -34,10 +34,11 @@ export const homeCopyEn: HomeCopy = {
 
   terminalsLabel: "Supported terminals",
   terminalsHeading: "Works everywhere you type",
-  terminalsNewPrefix: "New in v2.1.0:",
+  terminalsNewPrefix: "New in v2.4.0:",
   terminalsBody:
-    "Otty joins the input-method terminals with pixel-accurate cursor tracking, and ChatGPT (Codex) sessions are located through the xterm.js caret. Everything else keeps working through the shell integration installed automatically on first launch.",
+    "Kiro's integrated terminal gets completions, with the popup following its xterm.js caret just like in VS Code. Everything else keeps working through the shell integration installed automatically on first launch.",
   terminalsLinkLabel: "See the full support list",
+  terminalsLinkSuffix: ".",
   terminalGuideTitle: (name) => `${name} autocomplete setup guide`,
   newBadge: "New",
 
@@ -86,9 +87,9 @@ export const docsCopyEn: DocsCopy = {
   trackingColumn: "Cursor tracking",
   notesColumn: "Notes",
   newBadge: "New",
-  terminalsCalloutLead: `New in v2.1.0 — ${newTerminals.join(" and ")}.`,
+  terminalsCalloutLead: `New in v2.4.0 — ${newTerminals.join(" and ")}.`,
   terminalsCalloutBody:
-    "Otty gets input-method cursor tracking, and Easy Complete now coexists with Otty-managed shell rc files instead of reporting its own integration as broken. ChatGPT (Codex) sessions are tracked through xterm.js caret detection, the same path VS Code uses.",
+    "Kiro, the VS Code-based IDE, is recognised as a supported terminal. Its integrated terminal is tracked through xterm.js caret detection, the same path VS Code uses, so no extra setup is needed.",
   docSections,
   terminalSupport,
 };

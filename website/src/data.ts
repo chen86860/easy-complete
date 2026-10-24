@@ -41,12 +41,41 @@ const featureData: Omit<Feature, "glyph">[] = [
   },
   {
     title: "In-IDE terminals",
-    desc: "Completions follow you into VS Code, Cursor, ChatGPT (Codex), and JetBrains IDE terminals.",
+    desc: "Completions follow you into VS Code, Cursor, Kiro, ChatGPT (Codex), and JetBrains IDE terminals.",
   },
   {
     title: "One-command setup",
     desc: "./install.sh builds, installs and wires up shell integration — then just start typing.",
   },
+];
+
+export interface FeatureTerminalLink {
+  /** Spellings used in the English and Chinese feature copy, longest first. */
+  names: string[];
+  /** Guide under `/terminals/`. */
+  slug?: string;
+  /** The guide also exists under `/zh/terminals/`. */
+  zhGuide?: boolean;
+  /** Official site, for terminals without a guide. */
+  url?: string;
+}
+
+/** Terminal names in the feature cards that link to their guide or official site. */
+export const featureTerminalLinks: FeatureTerminalLink[] = [
+  { names: ["Ghostty"], slug: "ghostty", zhGuide: true },
+  { names: ["Otty"], slug: "otty" },
+  { names: ["Kitty"], slug: "kitty" },
+  { names: ["WezTerm"], slug: "wezterm" },
+  { names: ["Alacritty"], slug: "alacritty" },
+  { names: ["Zed"], slug: "zed" },
+  { names: ["VS Code"], url: "https://code.visualstudio.com/" },
+  { names: ["Cursor"], url: "https://cursor.com/" },
+  { names: ["Kiro"], url: "https://kiro.dev/" },
+  {
+    names: ["ChatGPT (Codex)", "ChatGPT(Codex)"],
+    url: "https://openai.com/codex/",
+  },
+  { names: ["JetBrains IDE", "JetBrains"], url: "https://www.jetbrains.com/" },
 ];
 
 export const features: Feature[] = featureData.map((d, i) => ({
@@ -114,7 +143,6 @@ export const terminalSupport: TerminalSupport[] = [
     slug: "otty",
     integration: "input-method",
     note: "Input-method cursor tracking, and Easy Complete leaves Otty's own shell-integration block at the end of your rc file alone.",
-    isNew: true,
   },
   {
     name: "Kitty",
@@ -149,12 +177,17 @@ export const terminalSupport: TerminalSupport[] = [
     name: "ChatGPT (Codex)",
     integration: "xterm",
     note: "Codex terminal sessions inside ChatGPT.app, located through the xterm.js caret.",
+  },
+  {
+    name: "Kiro",
+    integration: "xterm",
+    note: "Integrated terminal of the VS Code-based IDE, located through the xterm.js caret.",
     isNew: true,
   },
   {
     name: "VS Code",
     integration: "xterm",
-    note: "Integrated terminal, including Cursor, Windsurf, Trae, and Kiro.",
+    note: "Integrated terminal, including Cursor, Windsurf, and Trae.",
   },
   {
     name: "iTerm2",
@@ -205,7 +238,7 @@ export const faqs: Faq[] = [
   {
     question: "Which terminals does Easy Complete support?",
     answer:
-      "Easy Complete supports Ghostty, Otty, Kitty, WezTerm, Alacritty, Zed, iTerm2, Apple Terminal, VS Code, ChatGPT (Codex), and JetBrains IDE terminals. Otty and ChatGPT (Codex) were added in v2.1.0.",
+      "Easy Complete supports Ghostty, Otty, Kitty, WezTerm, Alacritty, Zed, iTerm2, Apple Terminal, VS Code (including Cursor, Windsurf, and Trae), Kiro, ChatGPT (Codex), and JetBrains IDE terminals. Kiro was added in v2.4.0.",
   },
   {
     question: "How do I install Easy Complete?",

@@ -62,6 +62,8 @@ export interface HomeCopy {
   terminalsNewPrefix: string;
   terminalsBody: string;
   terminalsLinkLabel: string;
+  /** Sentence punctuation after the support-list link. */
+  terminalsLinkSuffix: string;
   terminalGuideTitle: (name: string) => string;
   newBadge: string;
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.4.0-beta.4
+
+- 新功能：支持 Kiro 终端（`dev.kiro.desktop`）。和其他基于 VS Code 的编辑器一样，补全弹窗会跟随其内置终端的光标（#201）
+- 修复：Otty 的 Shell 集成代码块位于 `~/.zshrc` 或 `~/.bashrc` 中我们的代码块之后时，`ec doctor` 和设置页不再误报 Shell 集成需要设置。新版 Otty 给这段代码加了 `[ -n "$ZSH_VERSION" ]` / `[ -n "$BASH_VERSION" ]` 判断，之前无法识别
+
 ## v2.4.0-beta.3
 
 - 修复：发布 Beta 更新源。v2.4.0-beta.2 的发布流程未能创建它，导致开启「接收 Beta 版更新」后检查不到更新；App 本身与 v2.4.0-beta.2 相同

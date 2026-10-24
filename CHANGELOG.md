@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.4.0-beta.4
+
+- feat: support the Kiro terminal (`dev.kiro.desktop`). Like the other VS Code based editors, the completion popup follows the caret of its integrated terminal (#201)
+- fix: `ec doctor` and the setup page no longer report the shell integration as needing setup when Otty's shell integration block sits below ours in `~/.zshrc` or `~/.bashrc`. Newer Otty releases guard the block with `[ -n "$ZSH_VERSION" ]` / `[ -n "$BASH_VERSION" ]`, which was not recognized
+
 ## v2.4.0-beta.3
 
 - fix: publish the beta update feed. The release workflow could not create it for v2.4.0-beta.2, so "Receive Beta Updates" found no updates; the app itself is unchanged from v2.4.0-beta.2

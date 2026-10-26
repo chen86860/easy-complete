@@ -9,7 +9,7 @@ import { TerminalMarquee } from "./components/TerminalMarquee.tsx";
 import { AppleIcon, GitHubIcon } from "./components/icons.tsx";
 import logoUrl from "./assets/logo.png";
 import { DOWNLOAD_URL } from "./download.ts";
-import { GITHUB_URL } from "./data.ts";
+import { GITHUB_URL, featureTerminalLinks } from "./data.ts";
 import { homeCopyEn } from "./i18n/en.ts";
 import { LOCALE_PREFIX, type HomeCopy, type Locale } from "./i18n/types.ts";
 import { captureEvent } from "./posthog.tsx";
@@ -235,6 +235,40 @@ function InstallActions({
   );
 }
 
+const TERMINAL_LINK_TARGETS = featureTerminalLinks.flatMap((link) =>
+  link.names.map((name) => ({ name, link })),
+);
+
+const TERMINAL_NAME_PATTERN = new RegExp(
+  `(${TERMINAL_LINK_TARGETS.map(({ name }) =>
+    name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+  ).join("|")})`,
+  "g",
+);
+
+/** Turns the terminal names in a feature description into links. */
+function linkTerminalNames(text: string, locale: Locale): ReactNode[] {
+  return text.split(TERMINAL_NAME_PATTERN).map((part, i) => {
+    const link = TERMINAL_LINK_TARGETS.find(({ name }) => name === part)?.link;
+    if (!link) return part;
+
+    const external = !link.slug;
+    const href = link.slug
+      ? `${link.zhGuide ? LOCALE_PREFIX[locale] : ""}/terminals/${link.slug}`
+      : link.url;
+    return (
+      <a
+        key={i}
+        href={href}
+        {...(external && { target: "_blank", rel: "noopener noreferrer" })}
+        className="text-[#cdd6e0] underline decoration-[#3a4552] underline-offset-3 transition-colors hover:text-(--accent) hover:decoration-(--accent-line)"
+      >
+        {part}
+      </a>
+    );
+  });
+}
+
 export function App({
   copy = homeCopyEn,
   locale = "en",
@@ -317,7 +351,7 @@ export function App({
                     {f.title}
                   </h3>
                   <p className="m-0 text-sm leading-[1.55] text-[#828d99]">
-                    {f.desc}
+                    {linkTerminalNames(f.desc, locale)}
                   </p>
                 </div>
               ))}
@@ -402,19 +436,16 @@ export function App({
             </div>
             <p className="m-0 max-w-170 text-sm leading-[1.6] text-[#6e7884]">
               <strong className="font-semibold text-[#cdd6e0]">
-                New in v2.1.0:
+                {copy.terminalsNewPrefix}
               </strong>{" "}
-              Otty joins the input-method terminals with pixel-accurate cursor
-              tracking, and ChatGPT (Codex) sessions are located through the
-              xterm.js caret. Everything else keeps working through the shell
-              integration installed automatically on first launch.{" "}
+              {copy.terminalsBody}{" "}
               <a
                 href={`${docsHref}#terminals`}
                 className="text-(--accent) underline underline-offset-4 transition-colors hover:brightness-125"
               >
                 {copy.terminalsLinkLabel}
               </a>
-              .
+              {copy.terminalsLinkSuffix}
             </p>
           </Reveal>
         </section>

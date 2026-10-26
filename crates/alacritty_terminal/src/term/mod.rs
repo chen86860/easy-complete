@@ -161,8 +161,6 @@ pub struct ShellState {
     pub fish_suggestion_color: Option<shell_color::SuggestionColor>,
     /// Zsh autosuggestion color
     pub zsh_autosuggestion_color: Option<shell_color::SuggestionColor>,
-    /// Fig autosuggestion color
-    pub fig_autosuggestion_color: Option<shell_color::SuggestionColor>,
     /// Nu hint color
     pub nu_hint_color: Option<shell_color::SuggestionColor>,
     /// Color support
@@ -1414,10 +1412,7 @@ impl<T: EventListener> Handler for Term<T> {
 
                 if let Some(suggestion_color) = match self.shell_state.get_context().shell.as_deref() {
                     Some("fish") => Some(self.shell_state().fish_suggestion_color.as_ref()),
-                    Some("zsh") => Some(match self.shell_state().fig_autosuggestion_color {
-                        Some(ref color) => Some(color),
-                        None => self.shell_state().zsh_autosuggestion_color.as_ref(),
-                    }),
+                    Some("zsh") => Some(self.shell_state().zsh_autosuggestion_color.as_ref()),
                     Some("nu") => Some(self.shell_state().nu_hint_color.as_ref()),
                     _ => None,
                 }
@@ -1804,21 +1799,6 @@ impl<T: EventListener> Handler for Term<T> {
 
         if let Some(color_support) = self.shell_state().color_support {
             self.shell_state.zsh_autosuggestion_color = Some(shell_color::parse_suggestion_color_zsh_autosuggest(
-                color,
-                color_support,
-            ));
-        }
-    }
-
-    #[inline]
-    fn fig_suggestion_color(&mut self, color: &str) {
-        if self.shell_state.osc_lock || color.is_empty() {
-            return;
-        }
-        trace!("Fig suggestion color: {color:?}");
-
-        if let Some(color_support) = self.shell_state().color_support {
-            self.shell_state.fig_autosuggestion_color = Some(shell_color::parse_suggestion_color_zsh_autosuggest(
                 color,
                 color_support,
             ));

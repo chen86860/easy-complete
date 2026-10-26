@@ -1,5 +1,63 @@
 # Changelog
 
+## v2.4.0
+
+Stable release of the v2.4.0 beta line (v2.4.0-beta.0 to beta.6). Changes since v2.3.9:
+
+- feat: support the Kiro terminal (`dev.kiro.desktop`). Like the other VS Code based editors, the completion popup follows the caret of its integrated terminal (#201)
+- feat: add a "Receive Beta Updates" toggle under Settings → About → Updates (`app.betaUpdates`, off by default). When on, Easy Complete checks a separate beta update feed and installs prerelease builds; stable releases still reach you from there
+- fix: pressing Enter on a line that starts with `#` no longer rewrites it into a failing `ec translate '…'` command left over from Amazon Q. The `ai.terminal-hash-sub` setting is removed and `#` lines reach the shell untouched
+- fix: Settings now shows the defaults the app actually uses (Insert Trailing Space on, Font Size 12.8, Max Width 320); the dashboard and the popup read every default from one shared table
+- fix: left clicks on the menu bar icon are no longer swallowed on macOS 27 (`tray-icon` 0.26.1, `muda` 0.21.2, `tao` 0.37.1), and the icon keeps its 18 pt size
+- fix: `ecterm` no longer crashes when the Nushell hint color contains an unclosed `/*` comment
+- fix: `ec doctor` and the setup page no longer report the shell integration as needing setup when Otty's guarded shell integration block sits below ours in `~/.zshrc` or `~/.bashrc`
+- fix: update dependencies with published security advisories, including `rustls`, `time`, `h2`, `crossbeam-epoch`, `event-listener`, `quinn-proto`, `zod` and `dompurify` (website)
+- chore: update `wry` from 0.49.0 to 0.57.0, which fixes a race between closing a webview and answering its custom protocol requests (the area of the #199 crash) and asynchronous custom protocol requests that never got a response
+- chore: remove leftover Amazon Q code that no longer did anything (inline shell completion scripts, the `FigAutosuggestionColor` prompt report, `ec _ callback`, the SSH remote-install prompt) and the Nushell crates pulled in by `shell-color` (56 packages)
+- ci: release tags run the full CI suite before building, and the Rust and npm lockfiles are audited for advisories on every change and weekly
+
+## v2.4.0-beta.6
+
+- fix: pressing Enter on a line that starts with `#` no longer rewrites it into `ec translate '…'`. That was the upstream Amazon Q AI translation shortcut; the `translate` subcommand is gone, so the rewrite only ran a failing command. The `ai.terminal-hash-sub` setting that controlled it is removed, and `#` lines now reach the shell untouched
+- fix: Settings now shows the defaults the app actually uses: Insert Trailing Space is on, Font Size is 12.8 and Max Width is 320. The dashboard and the autocomplete popup now read every default from one shared table, so they cannot drift apart again
+- fix: the menu bar icon is 18 pt again. Since v2.4.0-beta.1 it had grown to 22 pt
+- chore: remove leftover Amazon Q code that no longer did anything: the inline shell completion zsh scripts and their figterm messages, the `FigAutosuggestionColor` prompt report, the `ec _ callback` subcommand and the unused SSH remote-install prompt (`ssh.remote-prompt*` settings)
+
+## v2.4.0-beta.5
+
+- fix: update `zod` from 4.4.3 to 4.6.7 (high advisory GHSA-mrhx-c7xc-m3w5: validating oversized constrained collections could exhaust memory). The dev-only copy pulled in by `eslint-plugin-react-hooks` moves off 3.25.7 to the same version
+- ci: a release tag now runs the full CI suite (lint, tests, `cargo fmt`, clippy, `cargo test`) first and is not built if it fails
+
+## v2.4.0-beta.4
+
+- feat: support the Kiro terminal (`dev.kiro.desktop`). Like the other VS Code based editors, the completion popup follows the caret of its integrated terminal (#201)
+- fix: `ec doctor` and the setup page no longer report the shell integration as needing setup when Otty's shell integration block sits below ours in `~/.zshrc` or `~/.bashrc`. Newer Otty releases guard the block with `[ -n "$ZSH_VERSION" ]` / `[ -n "$BASH_VERSION" ]`, which was not recognized
+
+## v2.4.0-beta.3
+
+- fix: publish the beta update feed. The release workflow could not create it for v2.4.0-beta.2, so "Receive Beta Updates" found no updates; the app itself is unchanged from v2.4.0-beta.2
+
+## v2.4.0-beta.2
+
+- feat: add a "Receive Beta Updates" toggle under Settings → About → Updates (`app.betaUpdates`). When on, Easy Complete checks a separate beta update feed and installs prerelease builds automatically; stable releases still reach you from there
+- fix: prerelease builds are now ordered correctly by the updater. Sparkle stopped reading a version at the first `-`, so it saw `2.4.0-beta.0`, `2.4.0-beta.1` and `2.4.0` as the same version and never offered the next build. **If you installed v2.4.0-beta.0 or v2.4.0-beta.1, install this build manually once**; later updates arrive automatically
+- fix: `ecterm` no longer crashes when the Nushell hint color (`$env.config.color_config.hints`) contains an unclosed `/*` comment
+- chore: drop the Nushell crates that came in through `shell-color` (56 packages, including `lru` with two security advisories); the hint color parsing is unchanged
+- chore: update `apple-bundle` from 0.1.4 to 0.2.1, which no longer blocks Rust 1.98 and later, and the yanked `chacha20`, `clipboard-win` and `spin`
+- chore: dist builds no longer strip proc-macros, which failed to load on macOS 27; shipped binaries are still stripped
+- ci: audit the Rust and npm lockfiles for security advisories on every lockfile change and weekly
+
+## v2.4.0-beta.1
+
+- fix: update `tray-icon` from 0.24.2 to 0.26.1, which fixes left clicks on the menu bar icon being swallowed on macOS 27, and `muda` from 0.19.3 to 0.21.2, which fixes a use-after-free when a menu item outlived its Rust handle. `tao` goes from 0.36.0 to 0.37.1 alongside them
+- fix: update Rust dependencies with published security advisories: `rustls` 0.23.46, `time` 0.3.55, `h2` 0.4.20, `crossbeam-epoch` 0.9.21, `event-listener` 5.4.2 and `quinn-proto` 0.11.19
+- fix: update `dompurify` to 3.4.17 on the website (critical advisory, loaded through `posthog-js`), and patch dev-only npm advisories: `vitest` 4.1.12, `brace-expansion` 5.0.12, `source-map-js` 1.2.2
+
+## v2.4.0-beta.0
+
+- chore: update `wry` from 0.49.0 to 0.57.0. The main macOS gains are a fix for a race between closing a webview and answering its custom protocol requests (the area of the #199 crash), a fix for asynchronous custom protocol requests that never got a response, and one fewer copy of each `ecresource://` / `spec://` response body
+- chore: the `protocol` and `transparent` wry features are gone, since wry now always enables them
+
 ## v2.3.9
 
 - fix: running `ec doctor`, `ec launch` or another command that starts the app no longer deletes `desktop.sock` while Easy Complete is still running. When the app-running check misses a live app, for example inside a sandbox that blocks LaunchServices such as an AI agent's command runner, the socket used to be removed and completions stopped in every terminal until `ec restart`. The socket is now removed only when nothing is listening on it (#199)

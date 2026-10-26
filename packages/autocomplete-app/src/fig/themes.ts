@@ -1,5 +1,9 @@
 import logger from "loglevel";
-import { fread } from "@easy-complete/api-bindings-wrappers";
+import {
+  fread,
+  getDefaultSetting,
+  SETTINGS,
+} from "@easy-complete/api-bindings-wrappers";
 import { SystemTheme } from "../hooks/helpers";
 import { MissingThemeError } from "./errors";
 
@@ -279,8 +283,6 @@ function setCSSProperties(
   root.style.setProperty("--accent7-color", accent7);
 }
 
-export const DEFAULT_THEME = "github-dark";
-
 // Guards against out-of-order async theme loads: only the most recent
 // setTheme call is allowed to touch the CSS properties.
 let latestSetThemeCallId = 0;
@@ -290,7 +292,7 @@ export async function setTheme(
   newTheme?: string,
 ) {
   const callId = ++latestSetThemeCallId;
-  const themeName = newTheme || DEFAULT_THEME;
+  const themeName = newTheme || (getDefaultSetting(SETTINGS.THEME) as string);
   try {
     if (themeName === "system") {
       setCSSProperties(builtInThemes[currentSystemTheme], currentSystemTheme);
@@ -336,6 +338,6 @@ export function setFontSize(fontSize: number | undefined) {
   const root = document.documentElement;
   root.style.setProperty(
     "--font-size",
-    !fontSize || fontSize <= 0 ? "12.8px" : `${fontSize}px`,
+    `${!fontSize || fontSize <= 0 ? getDefaultSetting(SETTINGS.FONT_SIZE) : fontSize}px`,
   );
 }

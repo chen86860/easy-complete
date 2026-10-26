@@ -65,7 +65,7 @@ infer = "0.22.0"
 keyboard-types = "0.8.0"
 mime = "0.3.17"
 moka = { version = "0.12.1", features = ["future"] }
-muda = { version = "0.19.3", default-features = false }
+muda = { version = "0.21.2", default-features = false }
 notify = "8.0.0"
 parking_lot = { workspace = true, features = ["serde"] }
 paste = "1.0.11"
@@ -79,21 +79,19 @@ serde.workspace = true
 serde_json.workspace = true
 shellexpand.workspace = true
 sysinfo.workspace = true
-tao = { version = "0.36.0", features = ["serde"] }
+tao = { version = "0.37.1", features = ["serde"] }
 tempfile.workspace = true
 time.workspace = true
 tokio.workspace = true
 tracing.workspace = true
-tray-icon = { version = "0.24.2", default-features = false }
+tray-icon = { version = "0.26.1", default-features = false }
 url.workspace = true
 uuid.workspace = true
 which.workspace = true
 whoami.workspace = true
-wry = { version = "0.49.0", default-features = false, features = [
+wry = { version = "0.57.0", default-features = false, features = [
     # "tao",
-    "protocol",
     "devtools",
-    "transparent",
     "linux-body",
 ] }
 

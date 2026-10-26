@@ -1,7 +1,8 @@
 import { type ReactNode, useState } from "react";
 import { Native } from "@easy-complete/api-bindings";
 import {
-  getDefaultSetting,
+  getDefaultWidth,
+  settingOrDefault,
   SETTINGS,
 } from "@easy-complete/api-bindings-wrappers";
 import clsx from "clsx";
@@ -125,7 +126,7 @@ export function AppearanceSection({
 
       <Card title={t("theme.title")}>
         <ThemePicker
-          value={String(settings[SETTINGS.THEME] ?? "github-dark")}
+          value={String(settingOrDefault(settings, SETTINGS.THEME))}
           onChange={(value) => set(SETTINGS.THEME, value)}
         />
       </Card>
@@ -143,7 +144,7 @@ export function AppearanceSection({
         </Row>
         <Row label={t("appearance.fontSize")} last>
           <NumberInput
-            value={Number(settings[SETTINGS.FONT_SIZE] ?? 13)}
+            value={Number(settingOrDefault(settings, SETTINGS.FONT_SIZE))}
             min={10}
             max={24}
             unit="px"
@@ -155,7 +156,9 @@ export function AppearanceSection({
       <Card title={t("appearance.dimensions")}>
         <Row label={t("appearance.maxWidth")}>
           <NumberInput
-            value={Number(settings[SETTINGS.WIDTH] ?? 300)}
+            value={Number(
+              settings[SETTINGS.WIDTH] ?? getDefaultWidth(settings),
+            )}
             min={150}
             max={800}
             step={10}
@@ -165,7 +168,7 @@ export function AppearanceSection({
         </Row>
         <Row label={t("appearance.maxHeight")} last>
           <NumberInput
-            value={Number(settings[SETTINGS.HEIGHT] ?? 140)}
+            value={Number(settingOrDefault(settings, SETTINGS.HEIGHT))}
             min={80}
             max={600}
             step={10}
@@ -190,8 +193,9 @@ export function BehaviorSection({
   // that way by the autocomplete app and the CLI, so it stays as-is. Only the
   // UI is flipped, so the toggle reads positively and enabling it reveals the
   // sub-settings rather than hiding them.
-  const showAutoExecute = !(
-    settings[SETTINGS.HIDE_AUTO_EXECUTE_SUGGESTION] ?? false
+  const showAutoExecute = !settingOrDefault(
+    settings,
+    SETTINGS.HIDE_AUTO_EXECUTE_SUGGESTION,
   );
 
   return (
@@ -199,7 +203,9 @@ export function BehaviorSection({
       <Card title={t("behavior.startupAndTrigger")}>
         <Row label={t("behavior.launchAtLogin")}>
           <Toggle
-            checked={Boolean(settings[SETTINGS.LAUNCH_ON_STARTUP] ?? false)}
+            checked={Boolean(
+              settingOrDefault(settings, SETTINGS.LAUNCH_ON_STARTUP),
+            )}
             onChange={(value) => set(SETTINGS.LAUNCH_ON_STARTUP, value)}
           />
         </Row>
@@ -208,7 +214,9 @@ export function BehaviorSection({
           description={t("behavior.silentLaunchDescription")}
         >
           <Toggle
-            checked={Boolean(settings[SETTINGS.SILENT_LAUNCH] ?? false)}
+            checked={Boolean(
+              settingOrDefault(settings, SETTINGS.SILENT_LAUNCH),
+            )}
             onChange={(value) => set(SETTINGS.SILENT_LAUNCH, value)}
           />
         </Row>
@@ -217,7 +225,7 @@ export function BehaviorSection({
           description={t("behavior.showMenubarIconDescription")}
         >
           <Toggle
-            checked={!(settings[SETTINGS.HIDE_MENUBAR_ICON] ?? false)}
+            checked={!settingOrDefault(settings, SETTINGS.HIDE_MENUBAR_ICON)}
             onChange={(value) => set(SETTINGS.HIDE_MENUBAR_ICON, !value)}
           />
         </Row>
@@ -227,14 +235,16 @@ export function BehaviorSection({
         >
           <Toggle
             checked={Boolean(
-              settings[SETTINGS.KEEP_AUTOCOMPLETE_READY] ?? false,
+              settingOrDefault(settings, SETTINGS.KEEP_AUTOCOMPLETE_READY),
             )}
             onChange={(value) => set(SETTINGS.KEEP_AUTOCOMPLETE_READY, value)}
           />
         </Row>
         <Row label={t("behavior.showAfterTab")} last>
           <Toggle
-            checked={Boolean(settings[SETTINGS.ONLY_SHOW_ON_TAB])}
+            checked={Boolean(
+              settingOrDefault(settings, SETTINGS.ONLY_SHOW_ON_TAB),
+            )}
             onChange={(value) => set(SETTINGS.ONLY_SHOW_ON_TAB, value)}
           />
         </Row>
@@ -246,10 +256,7 @@ export function BehaviorSection({
           description={t("behavior.fuzzyMatchingDescription")}
         >
           <Toggle
-            checked={Boolean(
-              settings[SETTINGS.FUZZY_SEARCH] ??
-              getDefaultSetting(SETTINGS.FUZZY_SEARCH),
-            )}
+            checked={Boolean(settingOrDefault(settings, SETTINGS.FUZZY_SEARCH))}
             onChange={(value) => set(SETTINGS.FUZZY_SEARCH, value)}
           />
         </Row>
@@ -259,14 +266,14 @@ export function BehaviorSection({
         >
           <Toggle
             checked={Boolean(
-              settings[SETTINGS.FIRST_COMMAND_COMPLETION] ?? false,
+              settingOrDefault(settings, SETTINGS.FIRST_COMMAND_COMPLETION),
             )}
             onChange={(value) => set(SETTINGS.FIRST_COMMAND_COMPLETION, value)}
           />
         </Row>
         <Row label={t("behavior.sortOrder")} last>
           <Select
-            value={String(settings[SETTINGS.SORT_METHOD] ?? "default")}
+            value={String(settingOrDefault(settings, SETTINGS.SORT_METHOD))}
             options={[
               { value: "default", label: t("behavior.byRelevance") },
               { value: "alphabetical", label: t("behavior.alphabetical") },
@@ -282,10 +289,7 @@ export function BehaviorSection({
           description={t("behavior.tabBehaviorDescription")}
         >
           <Select
-            value={String(
-              settings[SETTINGS.TAB_KEYBINDING] ??
-                "insertCommonPrefixOrNavigateDown",
-            )}
+            value={String(settingOrDefault(settings, SETTINGS.TAB_KEYBINDING))}
             options={[
               {
                 value: "insertCommonPrefixOrNavigateDown",
@@ -309,13 +313,17 @@ export function BehaviorSection({
         </Row>
         <Row label={t("behavior.useUpArrowForHistory")}>
           <Toggle
-            checked={Boolean(settings[SETTINGS.NAVIGATE_TO_HISTORY])}
+            checked={Boolean(
+              settingOrDefault(settings, SETTINGS.NAVIGATE_TO_HISTORY),
+            )}
             onChange={(value) => set(SETTINGS.NAVIGATE_TO_HISTORY, value)}
           />
         </Row>
         <Row label={t("behavior.insertTrailingSpace")}>
           <Toggle
-            checked={Boolean(settings[SETTINGS.INSERT_SPACE_AUTOMATICALLY])}
+            checked={Boolean(
+              settingOrDefault(settings, SETTINGS.INSERT_SPACE_AUTOMATICALLY),
+            )}
             onChange={(value) =>
               set(SETTINGS.INSERT_SPACE_AUTOMATICALLY, value)
             }
@@ -342,7 +350,10 @@ export function BehaviorSection({
             >
               <Toggle
                 checked={Boolean(
-                  settings[SETTINGS.IMMEDIATELY_EXEC_AFTER_SPACE] ?? false,
+                  settingOrDefault(
+                    settings,
+                    SETTINGS.IMMEDIATELY_EXEC_AFTER_SPACE,
+                  ),
                 )}
                 onChange={(value) =>
                   set(SETTINGS.IMMEDIATELY_EXEC_AFTER_SPACE, value)
@@ -357,8 +368,10 @@ export function BehaviorSection({
             >
               <Toggle
                 checked={Boolean(
-                  settings[SETTINGS.IMMEDIATELY_RUN_DANGEROUS_COMMANDS] ??
-                  false,
+                  settingOrDefault(
+                    settings,
+                    SETTINGS.IMMEDIATELY_RUN_DANGEROUS_COMMANDS,
+                  ),
                 )}
                 onChange={(value) =>
                   set(SETTINGS.IMMEDIATELY_RUN_DANGEROUS_COMMANDS, value)
@@ -372,7 +385,7 @@ export function BehaviorSection({
       <Card title={t("behavior.history")}>
         <Row label={t("behavior.historyMode")}>
           <Select
-            value={String(settings[SETTINGS.HISTORY_MODE] ?? "show")}
+            value={String(settingOrDefault(settings, SETTINGS.HISTORY_MODE))}
             options={[
               { value: "show", label: t("behavior.showWithCompletions") },
               { value: "history_only", label: t("behavior.historyOnly") },
@@ -386,7 +399,9 @@ export function BehaviorSection({
           description={t("behavior.mergeAllShellsDescription")}
         >
           <Toggle
-            checked={Boolean(settings[SETTINGS.HISTORY_MERGE_SHELLS])}
+            checked={Boolean(
+              settingOrDefault(settings, SETTINGS.HISTORY_MERGE_SHELLS),
+            )}
             onChange={(value) => set(SETTINGS.HISTORY_MERGE_SHELLS, value)}
           />
         </Row>
@@ -536,11 +551,20 @@ export function AboutSection({
         <Row
           label={t("about.checkAutomatically")}
           description={t("about.checkAutomaticallyDescription")}
+        >
+          <Toggle
+            checked={!settingOrDefault(settings, SETTINGS.DISABLE_AUTO_UPDATES)}
+            onChange={(value) => set(SETTINGS.DISABLE_AUTO_UPDATES, !value)}
+          />
+        </Row>
+        <Row
+          label={t("about.betaUpdates")}
+          description={t("about.betaUpdatesDescription")}
           last
         >
           <Toggle
-            checked={!(settings[SETTINGS.DISABLE_AUTO_UPDATES] ?? false)}
-            onChange={(value) => set(SETTINGS.DISABLE_AUTO_UPDATES, !value)}
+            checked={Boolean(settingOrDefault(settings, SETTINGS.BETA_UPDATES))}
+            onChange={(value) => set(SETTINGS.BETA_UPDATES, value)}
           />
         </Row>
       </Card>
@@ -553,10 +577,7 @@ export function AboutSection({
           description={t("about.shareUsageDataDescription")}
         >
           <Toggle
-            checked={
-              (settings[SETTINGS.TELEMETRY_ENABLED] as boolean | undefined) ??
-              true
-            }
+            checked={settingOrDefault(settings, SETTINGS.TELEMETRY_ENABLED)}
             onChange={(value) => set(SETTINGS.TELEMETRY_ENABLED, value)}
           />
         </Row>

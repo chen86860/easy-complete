@@ -7,9 +7,10 @@ overrides:
   'postcss@8': 8.5.26
   'js-yaml@4': 4.3.2
   'nanoid@3': 3.3.18
-  'undici@7': 7.29.0
+  'undici@7': 7.30.1
   'ws@8': 8.21.1
   'esbuild@0.27': 0.28.1
+  'zod@<4.6.6': ^4.6.6
 allowBuilds:
   core-js: true
   esbuild: true
@@ -19,3 +20,12 @@ onlyBuiltDependencies:
   - esbuild
   - workerd
   - sharp
+# Advisories `pnpm audit` (see .github/workflows/audit.yml) should not fail on. Each needs a
+# reason; drop the entry once the dependency moves past it.
+auditConfig:
+  ignoreGhsas:
+    # undici and sharp are pinned exactly by wrangler's miniflare (local dev server and deploy
+    # tooling); neither ships to the site. Revisit when wrangler moves to a newer miniflare.
+    - GHSA-rfgv-xxqx-mfg5
+    - GHSA-w293-vg96-wgc3
+    - GHSA-wq5f-xc86-pv6w

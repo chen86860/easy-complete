@@ -30,8 +30,7 @@ export async function runCachedGenerator<T>(
   initialRun: () => Promise<T>,
   cacheKey?: string /* This is generator.script or generator.script(...) */,
 ): Promise<T> {
-  const cacheDefault =
-    getSetting<boolean>(SETTINGS.CACHE_ALL_GENERATORS) ?? false;
+  const cacheDefault = getSetting<boolean>(SETTINGS.CACHE_ALL_GENERATORS);
   let { cache } = generator;
   if (!cache && cacheDefault) {
     cache = { strategy: "stale-while-revalidate", ttl: 1_000 };

@@ -37,6 +37,8 @@ if [ -z "$VERSION" ]; then
 fi
 
 ARCHIVE_NAME="${SPARKLE_ARCHIVE_NAME:-Easy-Complete-${VERSION}-arm64.dmg}"
+# generate_appcast copies CFBundleVersion into <sparkle:version>, so match on that form.
+BUNDLE_VERSION="$("${REPO_DIR}/scripts/sparkle-version.sh" "$VERSION")"
 ARCHIVE_PATH="${APPCAST_DIR}/${ARCHIVE_NAME}"
 DMG_DIR="$(cd "$(dirname "$DMG_PATH")" && pwd)"
 APPCAST_ABS_DIR="$(cd "$APPCAST_DIR" && pwd)"
@@ -63,7 +65,7 @@ printf '%s' "$SPARKLE_PRIVATE_ED_KEY" | \
 # and writes files with spaces on disk. GitHub normalizes those spaces to dots in
 # release asset names, so normalize the files ourselves and keep the appcast URLs
 # aligned with the exact names uploaded to the release.
-python3 - "$APPCAST_DIR/appcast.xml" "$VERSION" "$APPCAST_DIR" <<'PY'
+python3 - "$APPCAST_DIR/appcast.xml" "$BUNDLE_VERSION" "$APPCAST_DIR" <<'PY'
 import pathlib
 import re
 import sys

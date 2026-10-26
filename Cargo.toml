@@ -13,7 +13,7 @@ authors = ["Easy Complete Contributors"]
 edition = "2024"
 homepage = "https://easy-complete.emmmm.dev/"
 publish = false
-version = "2.3.9"
+version = "2.4.0"
 license = "MIT"
 
 [workspace.dependencies]
@@ -110,7 +110,7 @@ reqwest = { version = "0.12.14", default-features = false, features = [
 ring = "0.17.14"
 rusqlite = { version = "0.32.1", features = ["bundled", "serde_json"] }
 shellexpand = "3.0.0"
-shell-color = "1.0.0"
+shell-color = { path = "crates/shell-color" }
 semver = { version = "1.0.26", features = ["serde"] }
 serde = { version = "1.0.219", features = ["derive", "rc"] }
 serde_json = "1.0.140"
@@ -243,6 +243,12 @@ lto = "thin"
 codegen-units = 1
 strip = "symbols"
 panic = "abort"
+
+# Proc-macros and build scripts run on the build host and never ship. Stripping them
+# breaks loading on macOS 27, where dyld rejects the stripped proc-macro dylibs with
+# "mis-aligned LINKEDIT string pool" and rustc reports `can't find crate`.
+[profile.dist.build-override]
+strip = false
 
 [profile.dev.package.insta]
 opt-level = 3

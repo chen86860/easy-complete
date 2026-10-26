@@ -65,9 +65,15 @@ for the full list of what is and isn't collected.
   hundreds of CLIs, rendered in a native overlay that follows your terminal cursor.
 - **Fully offline** — completion specs are bundled into the `.app` at build time and
   loaded from disk. There is no network fallback, no account, and no AI request.
-- **Works with the terminals you already use** — iTerm2, Apple Terminal, VS Code,
-  Cursor, JetBrains IDEs via the PTY integration; Ghostty, Kitty, WezTerm, Zed,
-  Alacritty and Otty via the bundled input method. Also works inside tmux and Zellij.
+- **Works with the terminals you already use** — [iTerm2](https://iterm2.com/),
+  [Apple Terminal](https://support.apple.com/guide/terminal/welcome/mac),
+  [Ghostty](https://ghostty.org/), [Kitty](https://sw.kovidgoyal.net/kitty/),
+  [WezTerm](https://wezterm.org/), [Alacritty](https://alacritty.org/),
+  [Zed](https://zed.dev/) and [Otty](https://otty.sh/), plus the integrated terminals in
+  [VS Code](https://code.visualstudio.com/), [Cursor](https://cursor.com/),
+  [Kiro](https://kiro.dev/), [ChatGPT (Codex)](https://openai.com/codex/) and
+  [JetBrains IDEs](https://www.jetbrains.com/). Also works inside
+  [tmux](https://github.com/tmux/tmux) and [Zellij](https://zellij.dev/).
 - **`zsh`, `bash` and `fish`** — shell integration is installed and managed for you.
 
 ---
@@ -173,10 +179,10 @@ ec settings <key> <value>       # change a setting
 ### Supported terminals
 
 Most terminals work out of the box via the PTY integration — including iTerm2, Apple
-Terminal, VS Code, Cursor, ChatGPT (Codex), and JetBrains IDE terminals. Terminals that
-bypass the standard PTY path (**Ghostty, Kitty, WezTerm, Zed, Alacritty, Otty**)
-additionally rely on the bundled input method for cursor tracking — this is registered
-automatically during install.
+Terminal, JetBrains IDE terminals, ChatGPT (Codex), and VS Code along with editors built on
+it (Cursor, Windsurf, Trae, Kiro). Terminals that bypass the standard PTY path
+(**Ghostty, Kitty, WezTerm, Zed, Alacritty, Otty**) additionally rely on the bundled input
+method for cursor tracking — this is registered automatically during install.
 
 Terminal multiplexers work too: completions appear inside **tmux** and **Zellij** panes,
 including panes restored from a resurrected Zellij session.

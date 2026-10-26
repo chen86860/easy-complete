@@ -88,7 +88,7 @@ export const createGeneratorState = (
       request = getScriptSuggestions(
         generator,
         context,
-        getSetting<number>(SETTINGS.SCRIPT_TIMEOUT, 5000),
+        getSetting<number>(SETTINGS.SCRIPT_TIMEOUT),
       );
     } else {
       request = getCustomSuggestions(generator, context);

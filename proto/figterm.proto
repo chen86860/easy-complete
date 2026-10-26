@@ -5,6 +5,8 @@ import "fig_common.proto";
 
 // A request message to figterm
 message FigtermRequestMessage {
+  reserved 8, 9, 11;
+
   oneof request {
     InterceptRequest intercept = 1;
     InsertTextRequest insert_text = 2;
@@ -12,18 +14,16 @@ message FigtermRequestMessage {
     DiagnosticsRequest diagnostics = 4;
     InsertOnNewCmdRequest insert_on_new_cmd = 5;
     UpdateShellContextRequest update_shell_context = 6;
-    InlineShellCompletionRequest inline_shell_completion = 8;
-    InlineShellCompletionAcceptRequest inline_shell_completion_accept = 9;
     TelemetryRequest telemtety = 10;
-    InlineShellCompletionSetEnabledRequest inline_shell_completion_set_enabled = 11;
   }
 }
 
 // A response message back from figterm
 message FigtermResponseMessage {
+  reserved 2;
+
   oneof response {
     DiagnosticsResponse diagnostics = 1;
-    InlineShellCompletionResponse inline_shell_completion = 2;
   }
 }
 
@@ -144,26 +144,6 @@ message UpdateShellContextRequest {
   repeated fig_common.EnvironmentVariable environment_variables = 2;
   bool update_alias = 3;
   optional string alias = 4;
-}
-
-// Command to notify figterm session that an SSH session has started in the terminal
-message InlineShellCompletionRequest {
-  // The text to complete
-  string buffer = 1;
-}
-
-message InlineShellCompletionResponse {
-  // The text to insert
-  optional string insert_text = 1;
-}
-
-message InlineShellCompletionAcceptRequest {
-  string buffer = 1;
-  string suggestion = 2;
-}
-
-message InlineShellCompletionSetEnabledRequest {
-  bool enabled = 1;
 }
 
 message TelemetryRequest {

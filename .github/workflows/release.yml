@@ -16,8 +16,17 @@ env:
   SPARKLE_MAXIMUM_DELTAS: "5"
 
 jobs:
+  # Tags are often pushed from branches that never opened a PR, so CI would
+  # otherwise not run on what ships.
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+
   build-arm-dmg:
     name: Build ARM DMG
+    needs: ci
     # macOS 26 SDK is required: the system only grants Liquid Glass window
     # chrome (traffic lights, materials) to binaries linked against it. A
     # macos-15 runner links the 15.x SDK and silently ships the legacy look.
@@ -250,11 +259,12 @@ jobs:
         run: |
           set -euo pipefail
           APP_VERSION="${GITHUB_REF_NAME#v}"
+          BUNDLE_VERSION="$(./scripts/sparkle-version.sh "$APP_VERSION")"
           test -f dist/Easy-Complete-arm64.dmg
           test -f "dist/Easy-Complete-${APP_VERSION}-arm64.dmg"
           test -f dist/sparkle/appcast.xml
           test "$(grep -c '<item>' dist/sparkle/appcast.xml)" -eq 1
-          grep -Fq "<sparkle:version>${APP_VERSION}</sparkle:version>" dist/sparkle/appcast.xml
+          grep -Fq "<sparkle:version>${BUNDLE_VERSION}</sparkle:version>" dist/sparkle/appcast.xml
           python3 - <<'PY'
           import pathlib
           import re
@@ -325,6 +335,55 @@ jobs:
             3. Reload your shell: `exec $SHELL`
 
             This DMG is Developer ID signed, notarized, and published with a Sparkle appcast for future updates.
+
+      # Beta testers read a rolling feed instead of releases/latest, which never points at a
+      # prerelease. Every tag refreshes it, so testers also move on to the next stable release.
+      # A feed already carrying a newer version (e.g. a beta when an older line gets a hotfix)
+      # is left alone.
+      - name: Publish beta update feed
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FEED_TAG: beta-feed
+        run: |
+          set -euo pipefail
+          if ! gh release view "$FEED_TAG" >/dev/null 2>&1; then
+            # Point the tag at the default branch: GITHUB_TOKEN may not create a ref on a
+            # commit whose workflow files differ from it (HTTP 403), and the tag only holds assets.
+            gh release create "$FEED_TAG" \
+              --prerelease \
+              --target "${{ github.event.repository.default_branch }}" \
+              --title "Beta update feed" \
+              --notes "Rolling Sparkle appcast for users who opt into beta updates. Updated by the release workflow on every tag; do not delete."
+          fi
+
+          FEED_DIR="$RUNNER_TEMP/beta-feed"
+          mkdir -p "$FEED_DIR"
+          if gh release download "$FEED_TAG" --pattern appcast.xml --dir "$FEED_DIR" --clobber; then
+            if ! python3 - "$FEED_DIR/appcast.xml" "${GITHUB_REF_NAME#v}" <<'PY'
+          import re
+          import sys
+
+          def key(version):
+              m = re.fullmatch(r"(\d+)\.(\d+)\.(\d+)(?:-(alpha|beta|rc)(?:\.(\d+))?)?", version)
+              if not m:
+                  raise SystemExit(f"unsupported version: {version}")
+              major, minor, patch, pre, num = m.groups()
+              rank = {"alpha": 0, "beta": 1, "rc": 2, None: 3}[pre]
+              return (int(major), int(minor), int(patch), rank, int(num or 0))
+
+          feed = open(sys.argv[1]).read()
+          current = re.search(r"<sparkle:shortVersionString>([^<]+)</sparkle:shortVersionString>", feed)
+          if current and key(current.group(1)) > key(sys.argv[2]):
+              print(f"Beta feed already serves {current.group(1)}; keeping it.")
+              sys.exit(1)
+          PY
+            then
+              exit 0
+            fi
+          fi
+
+          gh release upload "$FEED_TAG" dist/sparkle/appcast.xml --clobber
 
       - name: Update Homebrew tap
         if: startsWith(github.ref, 'refs/tags/') && steps.release_channel.outputs.is_prerelease != 'true'

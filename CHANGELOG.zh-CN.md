@@ -1,5 +1,63 @@
 # Changelog
 
+## v2.4.0
+
+v2.4.0 beta 系列（v2.4.0-beta.0 至 beta.6）的正式版。相比 v2.3.9 的变化：
+
+- 新功能：支持 Kiro 终端（`dev.kiro.desktop`）。和其他基于 VS Code 的编辑器一样，补全弹窗会跟随其内置终端的光标（#201）
+- 新功能：在「设置 → 关于 → 更新」中新增「接收 Beta 版更新」开关（`app.betaUpdates`，默认关闭）。开启后会检查独立的 beta 更新源并安装预览版本，正式版也会照常从这里推送
+- 修复：在以 `#` 开头的行上按 Enter，不再被改写成 Amazon Q 遗留的、会报错的 `ec translate '…'` 命令。`ai.terminal-hash-sub` 设置已移除，`#` 开头的行原样交给 Shell
+- 修复：设置页显示的默认值与应用实际使用的一致（「插入尾随空格」开启、字号 12.8、最大宽度 320），设置页和补全弹窗从同一份默认值表读取
+- 修复：macOS 27 上点击菜单栏图标不再无响应（`tray-icon` 0.26.1、`muda` 0.21.2、`tao` 0.37.1），图标保持 18 pt 大小
+- 修复：Nushell 提示色中含有未闭合的 `/*` 注释时，`ecterm` 不再崩溃
+- 修复：Otty 带判断的 Shell 集成代码块位于 `~/.zshrc` 或 `~/.bashrc` 中我们的代码块之后时，`ec doctor` 和设置页不再误报需要设置
+- 修复：更新存在安全公告的依赖，包括 `rustls`、`time`、`h2`、`crossbeam-epoch`、`event-listener`、`quinn-proto`、`zod` 和官网的 `dompurify`
+- chore: `wry` 从 0.49.0 升级到 0.57.0，修复了关闭 webview 与响应其自定义协议请求之间的竞争（#199 崩溃所在的区域），以及异步自定义协议请求得不到响应的问题
+- chore: 移除已不起作用的 Amazon Q 遗留代码（inline shell completion 脚本、`FigAutosuggestionColor` 提示符上报、`ec _ callback`、SSH 远程安装提示），以及经由 `shell-color` 引入的 Nushell 依赖（56 个包）
+- ci：发布 tag 会先运行完整 CI 再构建；Rust 和 npm 的 lockfile 在每次变更时及每周进行安全公告审计
+
+## v2.4.0-beta.6
+
+- 修复：在以 `#` 开头的行上按 Enter，不再被改写成 `ec translate '…'`。这是上游 Amazon Q 的 AI 翻译快捷方式，`translate` 子命令早已移除，改写后只会执行一条报错的命令。控制它的 `ai.terminal-hash-sub` 设置一并移除，`#` 开头的行现在原样交给 Shell
+- 修复：设置页显示的默认值与应用实际使用的一致：「插入尾随空格」默认开启，字号 12.8，最大宽度 320。设置页和补全弹窗现在从同一份默认值表读取，不会再出现不一致
+- 修复：菜单栏图标恢复为 18 pt。自 v2.4.0-beta.1 起它被放大到了 22 pt
+- chore: 移除已不起作用的 Amazon Q 遗留代码：inline shell completion 的 zsh 脚本及其 figterm 消息、`FigAutosuggestionColor` 提示符上报、`ec _ callback` 子命令，以及未被调用的 SSH 远程安装提示（`ssh.remote-prompt*` 设置）
+
+## v2.4.0-beta.5
+
+- 修复：将 `zod` 从 4.4.3 更新到 4.6.7（高危安全公告 GHSA-mrhx-c7xc-m3w5：校验超大的受约束集合时可能耗尽内存）。`eslint-plugin-react-hooks` 引入的仅开发用副本也从 3.25.7 升级到同一版本
+- ci：推送发布 tag 时会先运行完整 CI（lint、测试、`cargo fmt`、clippy、`cargo test`），未通过则不会构建
+
+## v2.4.0-beta.4
+
+- 新功能：支持 Kiro 终端（`dev.kiro.desktop`）。和其他基于 VS Code 的编辑器一样，补全弹窗会跟随其内置终端的光标（#201）
+- 修复：Otty 的 Shell 集成代码块位于 `~/.zshrc` 或 `~/.bashrc` 中我们的代码块之后时，`ec doctor` 和设置页不再误报 Shell 集成需要设置。新版 Otty 给这段代码加了 `[ -n "$ZSH_VERSION" ]` / `[ -n "$BASH_VERSION" ]` 判断，之前无法识别
+
+## v2.4.0-beta.3
+
+- 修复：发布 Beta 更新源。v2.4.0-beta.2 的发布流程未能创建它，导致开启「接收 Beta 版更新」后检查不到更新；App 本身与 v2.4.0-beta.2 相同
+
+## v2.4.0-beta.2
+
+- 新功能：在 设置 → 关于 → 更新 中新增「接收 Beta 版更新」开关（`app.betaUpdates`）。开启后会检查单独的 Beta 更新源，自动安装预览版本；正式版也会通过这个更新源推送
+- 修复：更新程序现在能正确比较预览版本号。Sparkle 读到版本号里的第一个 `-` 就停止，因此把 `2.4.0-beta.0`、`2.4.0-beta.1` 和 `2.4.0` 视为同一版本，从不推送下一个版本。**如果你安装过 v2.4.0-beta.0 或 v2.4.0-beta.1，请手动安装一次这个版本**，之后的更新会自动推送
+- 修复：Nushell 提示色（`$env.config.color_config.hints`）中包含未闭合的 `/*` 注释时，`ecterm` 不再崩溃
+- chore: 移除经由 `shell-color` 引入的 Nushell 依赖（共 56 个包，其中 `lru` 有两条安全公告），提示色的解析结果不变
+- chore: `apple-bundle` 从 0.1.4 升级到 0.2.1，不再阻碍升级到 Rust 1.98 及以上；同时升级已被撤回的 `chacha20`、`clipboard-win`、`spin`
+- chore: dist 构建不再对 proc-macro 执行 strip（在 macOS 27 上会导致其无法加载），发布的二进制仍然是 strip 过的
+- ci: 锁文件变更时及每周自动审计 Rust 和 npm 依赖的安全公告
+
+## v2.4.0-beta.1
+
+- 修复：`tray-icon` 从 0.24.2 升级到 0.26.1，修复 macOS 27 上点击菜单栏图标时左键事件被吞掉的问题；`muda` 从 0.19.3 升级到 0.21.2，修复菜单项比其 Rust 句柄存活更久时的 use-after-free。`tao` 同步从 0.36.0 升级到 0.37.1
+- 修复：升级存在安全公告的 Rust 依赖：`rustls` 0.23.46、`time` 0.3.55、`h2` 0.4.20、`crossbeam-epoch` 0.9.21、`event-listener` 5.4.2、`quinn-proto` 0.11.19
+- 修复：官网的 `dompurify` 升级到 3.4.17（严重级安全公告，经 `posthog-js` 引入），并修复仅影响开发环境的 npm 安全公告：`vitest` 4.1.12、`brace-expansion` 5.0.12、`source-map-js` 1.2.2
+
+## v2.4.0-beta.0
+
+- chore: `wry` 从 0.49.0 升级到 0.57.0。macOS 上的主要收益：修复了关闭 WebView 与响应其自定义协议请求之间的竞争（即 #199 崩溃所在的环节），修复了异步自定义协议请求偶尔得不到响应的问题，`ecresource://` / `spec://` 响应体也少了一次内存拷贝
+- chore: 移除 wry 的 `protocol` 和 `transparent` feature，新版 wry 已默认启用这两项功能
+
 ## v2.3.9
 
 - 修复：Easy Complete 仍在运行时，执行 `ec doctor`、`ec launch` 等会启动 App 的命令不再删除 `desktop.sock`。此前如果检测漏掉了正在运行的 App（例如在 AI 代理的命令执行环境等屏蔽了 LaunchServices 的沙箱中），socket 会被删掉，所有终端的补全都会失效，直到执行 `ec restart`。现在只有在没有进程监听时才会删除该 socket（#199）

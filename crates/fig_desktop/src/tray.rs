@@ -176,8 +176,7 @@ pub async fn build_tray(
     _figterm_state: &FigtermState,
 ) -> tray_icon::Result<TrayIcon> {
     TrayIconBuilder::new()
-        .with_icon(get_icon())
-        .with_icon_as_template(true)
+        .with_icon_templated(get_icon())
         .with_menu(Box::new(get_context_menu()))
         .build()
 }
@@ -189,7 +188,6 @@ pub fn get_icon() -> Icon {
                 if #[cfg(target_os = "linux")] {
                     include_bytes!("../icons/icon-monochrome-light.png").to_vec()
                 } else if #[cfg(target_os = "macos")] {
-                    // tray-icon displays this at 18 pt; provide 36 px for Retina.
                     include_bytes!("../icons/icon-monochrome@2x.png").to_vec()
                 } else {
                     include_bytes!("../icons/icon-monochrome.png").to_vec()
@@ -199,11 +197,27 @@ pub fn get_icon() -> Icon {
         let image = image::load_from_memory(&bytes)
             .expect("Failed to open icon path")
             .into_rgba8();
+        #[cfg(target_os = "macos")]
+        let image = pad_macos_tray_icon(image);
         let (width, height) = image.dimensions();
         let rgba = image.into_raw();
         (rgba, width, height)
     };
     Icon::from_rgba(icon_rgba, icon_width, icon_height).expect("Failed to open icon")
+}
+
+/// tray-icon 0.26 sizes the menu bar image in points equal to its pixel size, capped at 22 pt,
+/// so the 36 px Retina glyph would show at 22 pt instead of the 18 pt it was drawn for. Centering
+/// it on a 44 px canvas keeps 2x density (44 px → 22 pt) with the glyph itself at 18 pt.
+#[cfg(target_os = "macos")]
+fn pad_macos_tray_icon(glyph: image::RgbaImage) -> image::RgbaImage {
+    const CANVAS_PX: u32 = 44;
+
+    let mut canvas = image::RgbaImage::new(CANVAS_PX, CANVAS_PX);
+    let x = CANVAS_PX.saturating_sub(glyph.width()) / 2;
+    let y = CANVAS_PX.saturating_sub(glyph.height()) / 2;
+    image::imageops::overlay(&mut canvas, &glyph, x.into(), y.into());
+    canvas
 }
 
 fn get_image_rgba(image_bytes: &[u8]) -> (Vec<u8>, u32, u32) {

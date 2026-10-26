@@ -1,0 +1,69 @@
+name: Security audit
+
+# Fails when a lockfile contains a published advisory. Known, accepted advisories are listed
+# with a reason in .cargo/audit.toml (Rust) and under `auditConfig` in the pnpm-workspace.yaml
+# files (npm). The weekly run catches advisories published after the lockfiles last changed.
+on:
+  pull_request:
+    paths:
+      - Cargo.lock
+      - .cargo/audit.toml
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - website/pnpm-lock.yaml
+      - website/pnpm-workspace.yaml
+      - .github/workflows/audit.yml
+  push:
+    branches: [main]
+    paths:
+      - Cargo.lock
+      - .cargo/audit.toml
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - website/pnpm-lock.yaml
+      - website/pnpm-workspace.yaml
+      - .github/workflows/audit.yml
+  schedule:
+    - cron: "0 2 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rust:
+    name: Rust (cargo audit)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-audit@0.22.2
+
+      # Call the binary directly: `cargo audit` would go through the rustup proxy and install
+      # the pinned toolchain, which reading Cargo.lock does not need.
+      - name: Audit Cargo.lock
+        run: cargo-audit audit
+
+  javascript:
+    name: npm (pnpm audit)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6.0.10
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: package.json
+
+      - name: Audit app dependencies
+        run: pnpm audit --audit-level high
+
+      - name: Audit website dependencies
+        run: pnpm -C website audit --audit-level high

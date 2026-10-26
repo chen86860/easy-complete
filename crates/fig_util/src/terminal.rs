@@ -27,6 +27,7 @@ pub const MACOS_TERMINALS: &[Terminal] = &[
     Terminal::Trae,
     Terminal::Otty,
     Terminal::Codex,
+    Terminal::Kiro,
 ];
 
 /// Terminals that Linux supports
@@ -175,6 +176,8 @@ pub enum Terminal {
     /// OpenAI's Codex app, shipped as `ChatGPT.app` since the rename. Not to be confused
     /// with `ChatGPT Classic.app` (`com.openai.chat`), which has no terminal.
     Codex,
+    /// Kiro <https://kiro.dev/>
+    Kiro,
 
     /// Custom terminal to support user/custom entries
     Custom(CustomTerminal),
@@ -220,6 +223,7 @@ impl fmt::Display for Terminal {
             Terminal::Trae => write!(f, "Trae"),
             Terminal::Otty => write!(f, "Otty"),
             Terminal::Codex => write!(f, "ChatGPT"),
+            Terminal::Kiro => write!(f, "Kiro"),
             Terminal::Custom(custom_terminal) => write!(f, "{}", custom_terminal.name),
         }
     }
@@ -389,6 +393,7 @@ impl Terminal {
             Terminal::Trae => "trae".into(),
             Terminal::Otty => "otty".into(),
             Terminal::Codex => "codex".into(),
+            Terminal::Kiro => "kiro".into(),
             Terminal::Custom(custom_terminal) => custom_terminal.id.clone().into(),
         }
     }
@@ -421,6 +426,7 @@ impl Terminal {
             Terminal::Trae => Some("com.trae.app".into()),
             Terminal::Otty => Some("io.appmakes.otty".into()),
             Terminal::Codex => Some("com.openai.codex".into()),
+            Terminal::Kiro => Some("dev.kiro.desktop".into()),
             Terminal::Custom(custom_terminal) => custom_terminal.macos.bundle_id.clone().map(Cow::Owned),
             _ => None,
         }
@@ -451,6 +457,7 @@ impl Terminal {
             "com.trae.app" => Terminal::Trae,
             "io.appmakes.otty" => Terminal::Otty,
             "com.openai.codex" => Terminal::Codex,
+            "dev.kiro.desktop" => Terminal::Kiro,
             // TODO: the following line does not account for Android Studio
             _ if bundle.starts_with("com.jetbrains.") | bundle.starts_with("com.google.") => {
                 Terminal::IntelliJ(IntelliJVariant::from_bundle_id(bundle))
@@ -503,6 +510,7 @@ impl Terminal {
                 | Terminal::WindsurfNext
                 | Terminal::Trae
                 | Terminal::Codex
+                | Terminal::Kiro
         ) || self.as_custom().is_some_and(|c| c.macos.xterm)
     }
 
@@ -535,6 +543,7 @@ impl Terminal {
             Terminal::Otty => &["Otty", "otty"],
             // Main binary is ChatGPT; the PTY host is Contents/Resources/codex (lowercase).
             Terminal::Codex => &["ChatGPT", "Codex", "codex"],
+            Terminal::Kiro => &["Kiro", "kiro"],
 
             Terminal::Ssh => &["sshd"],
             Terminal::Tmux => &["tmux", "tmux: server"],
@@ -604,6 +613,7 @@ impl Terminal {
                 | Terminal::WindsurfNext
                 | Terminal::Trae
                 | Terminal::Codex
+                | Terminal::Kiro
         )
     }
 
@@ -905,5 +915,19 @@ mod tests {
 
         // ChatGPT Classic is the old chat app under a different bundle id and has no terminal.
         assert_eq!(Terminal::from_bundle_id("com.openai.chat"), None);
+    }
+
+    #[test]
+    fn test_kiro_detection() {
+        assert_eq!(Terminal::from_bundle_id("dev.kiro.desktop"), Some(Terminal::Kiro));
+        assert_eq!(Terminal::Kiro.to_bundle_id().as_deref(), Some("dev.kiro.desktop"));
+        assert_eq!(Terminal::Kiro.internal_id(), "kiro");
+        assert!(MACOS_TERMINALS.contains(&Terminal::Kiro));
+
+        // A VS Code fork, so the caret comes from xterm.js like VSCode and Cursor.
+        assert!(Terminal::Kiro.is_xterm());
+        assert!(!Terminal::Kiro.supports_macos_input_method());
+        assert!(!Terminal::Kiro.supports_fancy_boxes());
+        assert!(Terminal::Kiro.executable_names().contains(&"Kiro"));
     }
 }

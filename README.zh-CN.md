@@ -62,9 +62,15 @@ Mac。应用会收集匿名使用统计（打开次数、每日补全次数—�
   终端光标的原生浮层呈现。
 - **完全离线** —— 补全 spec 在构建时打包进 `.app`，运行时直接从本地读取，**没有**网络
   回退，无需账号，也不发起任何 AI 请求。
-- **兼容你正在用的终端** —— iTerm2、Apple Terminal、VS Code、Cursor、JetBrains 系列
-  通过 PTY 集成工作；Ghostty、Kitty、WezTerm、Zed、Alacritty、Otty 则通过随附的输入法
-  追踪光标。在 tmux 和 Zellij 中同样可用。
+- **兼容你正在用的终端** —— [iTerm2](https://iterm2.com/)、
+  [Apple Terminal](https://support.apple.com/zh-cn/guide/terminal/welcome/mac)、
+  [Ghostty](https://ghostty.org/)、[Kitty](https://sw.kovidgoyal.net/kitty/)、
+  [WezTerm](https://wezterm.org/)、[Alacritty](https://alacritty.org/)、
+  [Zed](https://zed.dev/)、[Otty](https://otty.sh/)，以及
+  [VS Code](https://code.visualstudio.com/)、[Cursor](https://cursor.com/)、
+  [Kiro](https://kiro.dev/)、[ChatGPT（Codex）](https://openai.com/codex/)、
+  [JetBrains 系列 IDE](https://www.jetbrains.com/) 的内置终端，在
+  [tmux](https://github.com/tmux/tmux) 和 [Zellij](https://zellij.dev/) 中同样可用。
 - **支持 `zsh`、`bash` 与 `fish`** —— shell 集成由应用自动安装与维护。
 
 ---
@@ -164,10 +170,10 @@ ec settings <key> <value>       # 修改某项设置
 
 ### 受支持的终端
 
-大多数终端通过 PTY 集成开箱即用——包括 iTerm2、Apple Terminal、VS Code、Cursor、
-ChatGPT（Codex）以及 JetBrains IDE 终端。少数绕过标准 PTY 路径的终端（**Ghostty、Kitty、
-WezTerm、Zed、Alacritty、Otty**）还需要依赖随附的输入法来追踪光标位置——这一项会在安装时
-自动注册。
+大多数终端通过 PTY 集成开箱即用——包括 iTerm2、Apple Terminal、JetBrains IDE 终端、
+ChatGPT（Codex），以及 VS Code 和基于它的编辑器（Cursor、Windsurf、Trae、Kiro）。少数
+绕过标准 PTY 路径的终端（**Ghostty、Kitty、WezTerm、Zed、Alacritty、Otty**）还需要依赖
+随附的输入法来追踪光标位置——这一项会在安装时自动注册。
 
 终端复用器同样支持：在 **tmux** 和 **Zellij** 的窗格中都能弹出补全，包括 Zellij 恢复会话后
 重新运行的窗格。

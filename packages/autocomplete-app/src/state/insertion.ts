@@ -7,7 +7,10 @@ import {
   longestCommonPrefix,
   ensureTrailingSlash,
 } from "@easy-complete/shared/utils";
-import { SETTINGS } from "@easy-complete/api-bindings-wrappers";
+import {
+  settingOrDefault,
+  SETTINGS,
+} from "@easy-complete/api-bindings-wrappers";
 import { NamedSetState, AutocompleteState, Visibility } from "./types";
 import {
   isMatchingType,
@@ -168,7 +171,7 @@ const makeInsertTextForItem =
     if (
       !text.endsWith("\n") &&
       item.shouldAddSpace &&
-      (settings[SETTINGS.INSERT_SPACE_AUTOMATICALLY] ?? true)
+      settingOrDefault(settings, SETTINGS.INSERT_SPACE_AUTOMATICALLY)
     ) {
       text += " ";
     }

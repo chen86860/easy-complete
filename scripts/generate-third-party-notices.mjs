@@ -33,6 +33,7 @@ const localThirdPartyCrates = new Set([
   "accessibility",
   "accessibility-sys",
   "alacritty_terminal",
+  "shell-color",
 ]);
 const licenseNamePattern = /^(?:licen[cs]e|copying|notice|copyright)(?:[._-].*)?$/i;
 const mitLicenseTerms = `MIT License

@@ -21,7 +21,7 @@ input_method_type = "palette"
 plist = "1.7.1"
 serde.workspace = true
 toml.workspace = true
-apple-bundle = "0.1.4"
+apple-bundle = "0.2.1"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 core-foundation = { workspace = true }

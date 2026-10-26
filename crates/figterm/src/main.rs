@@ -18,8 +18,7 @@ use std::time::{Duration, SystemTime};
 use alacritty_terminal::Term;
 use alacritty_terminal::ansi::Processor;
 use alacritty_terminal::event::EventListener;
-use alacritty_terminal::grid::Dimensions;
-use alacritty_terminal::term::{ShellState, SizeInfo, TextBuffer};
+use alacritty_terminal::term::{ShellState, SizeInfo};
 use anyhow::{Context as _, Result, anyhow};
 use bytes::BytesMut;
 use cfg_if::cfg_if;
@@ -31,11 +30,10 @@ use fig_proto::local::{self, EnvironmentVariable, TerminalCursorCoordinates};
 use fig_proto::remote::Hostbound;
 use fig_proto::remote_hooks::{hook_to_message, new_edit_buffer_hook};
 use fig_settings::state;
-use fig_util::consts::CLI_BINARY_NAME;
 use fig_util::env_var::{Q_LOG_LEVEL, Q_SHELL, Q_TERM, QTERM_SESSION_ID};
 use fig_util::process_info::{Pid, PidExt};
 use fig_util::{PRODUCT_NAME, PTY_BINARY_NAME, Terminal as FigTerminal, directories};
-use flume::{Receiver, Sender};
+use flume::Sender;
 #[cfg(unix)]
 use nix::unistd::execvp;
 use portable_pty::PtySize;
@@ -142,74 +140,6 @@ fn get_cursor_coordinates(terminal: &dyn Terminal) -> Option<TerminalCursorCoord
             return None;
         }
     }
-}
-
-#[allow(clippy::too_many_arguments)]
-async fn _should_install_remote_ssh_integration(
-    uuid: String,
-    remote_host: String,
-    main_loop_tx: Sender<MainLoopEvent>,
-    remote_receiver: Receiver<fig_proto::remote::Clientbound>,
-    remote_sender: Sender<Hostbound>,
-    term: &Term<EventHandler>,
-    pty_master: &mut Box<dyn crate::pty::AsyncMasterPty + Send + Sync>,
-    key_interceptor: &mut KeyInterceptor,
-) -> Option<bool> {
-    use fig_proto::remote::clientbound;
-
-    let remote_install_setting = fig_settings::settings::get_string_or("ssh.remote-prompt", "ask".into());
-    if remote_install_setting == "never" {
-        return Some(false);
-    }
-
-    let key = format!("ssh.remote-prompt.disable-host.{remote_host}");
-    let disable_host = fig_settings::state::get_bool_or(key, false);
-    if disable_host {
-        return Some(false);
-    }
-
-    let prompt_timeout: u64 = fig_settings::settings::get_int_or("ssh.remote-prompt.timeout", 2000)
-        .try_into()
-        .unwrap_or(2000);
-
-    // Wait for child ssh session to connect to local desktop instance.
-    let got_child_connection = tokio::time::timeout(tokio::time::Duration::from_millis(prompt_timeout), async {
-        loop {
-            if let Ok(msg) = remote_receiver.recv_async().await {
-                if let Some(clientbound::Packet::NotifyChildSessionStarted(clientbound::NotifyChildSessionStarted {
-                    parent_id,
-                })) = msg.packet
-                {
-                    if parent_id == uuid {
-                        return true;
-                    }
-                } else {
-                    process_remote_message(
-                        msg,
-                        main_loop_tx.clone(),
-                        remote_sender.clone(),
-                        term,
-                        pty_master,
-                        key_interceptor,
-                    )
-                    .await
-                    .ok();
-                }
-            }
-        }
-    })
-    .await
-    .is_ok();
-
-    if got_child_connection {
-        return Some(false);
-    }
-
-    if remote_install_setting == "always" {
-        return Some(true);
-    }
-
-    None
 }
 
 fn can_send_edit_buffer<T>(term: &Term<T>) -> bool
@@ -513,8 +443,6 @@ fn figterm_main(command: Option<&[String]>) -> Result<()> {
             newline_mode: false,
         };
 
-        let ai_enabled = fig_settings::settings::get_bool_or("ai.terminal-hash-sub", true);
-
         if let Ok(shell) = get_parent_shell() {
             let path = std::path::Path::new(&shell);
             let name = path.file_name().and_then(|name| name.to_str()).unwrap_or(shell.as_str());
@@ -606,30 +534,6 @@ fn figterm_main(command: Option<&[String]>) -> Result<()> {
                                         let preexec = term.shell_state().preexec;
 
                                         debug!(?event, ?raw, %preexec,  "Got key event");
-
-                                        if !preexec && ai_enabled && event.key == KeyCode::Enter && event.modifiers == input::Modifiers::NONE
-                                            && let Some(TextBuffer { buffer, cursor_idx }) = term.get_current_buffer() {
-                                                let buffer = buffer.trim();
-                                                if buffer.len() > 1 && buffer.starts_with('#') && term.columns() > buffer.len() {
-                                                    write_buffer.extend(
-                                                        &std::iter::repeat_n(b'\x08', buffer.len()
-                                                            .max(cursor_idx.unwrap_or(0)))
-                                                            .collect::<Vec<_>>()
-                                                    );
-                                                    write_buffer.extend(
-                                                        format!(
-                                                            "{} translate '{}'\r",
-                                                            CLI_BINARY_NAME,
-                                                            buffer
-                                                                .trim_start_matches('#')
-                                                                .trim()
-                                                                .replace('\'', "'\"'\"'")
-                                                            ).as_bytes()
-                                                    );
-                                                    master.write_all(&write_buffer).await?;
-                                                    continue 'select_loop;
-                                                }
-                                            }
 
                                         // if we are in CSI u mode we try to encode first, otherwise we try to send the raw bytes first
                                         let raw = if csi_u_set {

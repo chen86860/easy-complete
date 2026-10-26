@@ -16,6 +16,7 @@ import {
 } from "@easy-complete/autocomplete-parser";
 import {
   getSetting,
+  settingOrDefault,
   SETTINGS,
   SettingsMap,
 } from "@easy-complete/api-bindings-wrappers";
@@ -125,7 +126,7 @@ const computeSuggestions = (
   // "Show with completions" when the setting is unset. Without this the UI
   // claims history is on while the setting has never been written, so nothing
   // is shown until the user toggles the dropdown away and back.
-  const historyMode = (settings[SETTINGS.HISTORY_MODE] as string) ?? "show";
+  const historyMode = settingOrDefault<string>(settings, SETTINGS.HISTORY_MODE);
   if (historyMode === "show") {
     const existingNames = new Set();
     suggestions.forEach((suggestion) => {
@@ -172,7 +173,7 @@ const computeSuggestions = (
     parserResult.searchTerm,
     state.fuzzySearchEnabled,
     parserResult.currentArg?.suggestCurrentToken ??
-      getSetting(SETTINGS.ALWAYS_SUGGEST_CURRENT_TOKEN, false),
+      getSetting(SETTINGS.ALWAYS_SUGGEST_CURRENT_TOKEN),
     settings,
   );
 
@@ -365,7 +366,7 @@ export const useAutocompleteStore = createWithEqualityFn<AutocompleteState>(
                 break;
             }
 
-            if (getSetting<boolean>(SETTINGS.ONLY_SHOW_ON_TAB, false)) {
+            if (getSetting<boolean>(SETTINGS.ONLY_SHOW_ON_TAB)) {
               visibleState = originalVisibleState;
               if (hasNewArg) {
                 visibleState = Visibility.HIDDEN_UNTIL_SHOWN;

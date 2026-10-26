@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { SETTINGS } from "@easy-complete/api-bindings-wrappers";
+import {
+  settingOrDefault,
+  SETTINGS,
+} from "@easy-complete/api-bindings-wrappers";
 import { DashboardContent } from "./components/dashboard-content";
 import { DashboardWindowChrome } from "./components/dashboard-window-chrome";
 import { PermissionGate } from "./components/permission-gate";
@@ -32,9 +35,10 @@ export default function App() {
         onRefresh={permissionCheck.refresh}
         onRepair={permissionCheck.repair}
         onRepairAll={permissionCheck.repairAll}
-        telemetryEnabled={
-          (settings[SETTINGS.TELEMETRY_ENABLED] as boolean | undefined) ?? true
-        }
+        telemetryEnabled={settingOrDefault<boolean>(
+          settings,
+          SETTINGS.TELEMETRY_ENABLED,
+        )}
         onTelemetryChange={(value) => set(SETTINGS.TELEMETRY_ENABLED, value)}
       >
         <Sidebar

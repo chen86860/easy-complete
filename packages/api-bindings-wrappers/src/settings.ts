@@ -59,9 +59,46 @@ export enum SETTINGS {
 
 export type SettingsMap = { [key in SETTINGS]?: unknown };
 
+// The value each setting takes while unset, shared by the autocomplete overlay
+// and the dashboard so both agree. `autocomplete.width` is missing on purpose:
+// its default depends on the history mode, see `getDefaultWidth`.
 export const DEFAULT_SETTINGS: SettingsMap = {
+  // App
+  [SETTINGS.LAUNCH_ON_STARTUP]: false,
+  [SETTINGS.SILENT_LAUNCH]: false,
+  [SETTINGS.HIDE_MENUBAR_ICON]: false,
+  [SETTINGS.DISABLE_AUTO_UPDATES]: false,
+  [SETTINGS.BETA_UPDATES]: false,
+  [SETTINGS.KEEP_AUTOCOMPLETE_READY]: false,
+  [SETTINGS.TELEMETRY_ENABLED]: true,
+
+  // Style
+  [SETTINGS.THEME]: "github-dark",
+  [SETTINGS.FONT_SIZE]: 12.8,
+  [SETTINGS.HEIGHT]: 140,
+
+  // Behavior
+  [SETTINGS.ONLY_SHOW_ON_TAB]: false,
   [SETTINGS.FUZZY_SEARCH]: true,
+  [SETTINGS.FIRST_COMMAND_COMPLETION]: false,
+  [SETTINGS.SORT_METHOD]: "default",
+  [SETTINGS.TAB_KEYBINDING]: "insertCommonPrefixOrNavigateDown",
+  [SETTINGS.NAVIGATE_TO_HISTORY]: false,
+  [SETTINGS.INSERT_SPACE_AUTOMATICALLY]: true,
+  [SETTINGS.HIDE_AUTO_EXECUTE_SUGGESTION]: false,
+  [SETTINGS.IMMEDIATELY_EXEC_AFTER_SPACE]: false,
+  [SETTINGS.IMMEDIATELY_RUN_DANGEROUS_COMMANDS]: false,
+  [SETTINGS.ALWAYS_SUGGEST_CURRENT_TOKEN]: false,
+  [SETTINGS.SCRIPT_TIMEOUT]: 5000,
+  [SETTINGS.CACHE_ALL_GENERATORS]: false,
+
+  // History
+  [SETTINGS.HISTORY_MODE]: "show",
+  [SETTINGS.HISTORY_MERGE_SHELLS]: false,
 };
+
+const DEFAULT_WIDTH = 320;
+const HISTORY_WIDTH_INCREASE = 50;
 
 let settings: SettingsMap = {};
 
@@ -77,7 +114,25 @@ export const getSetting = <T = unknown>(
   defaultValue: unknown = getDefaultSetting(key),
 ): T => (settings[key] ?? defaultValue) as T;
 
+// Widens the popup to make room for history, but only when the history mode is
+// stored explicitly: an unset mode keeps the narrow width even though history
+// then shows by default.
+export const getDefaultWidth = (
+  settingsMap: Partial<Record<string, unknown>> = settings,
+): number =>
+  ["history_only", "show"].includes(
+    settingsMap[SETTINGS.HISTORY_MODE] as string,
+  )
+    ? DEFAULT_WIDTH + HISTORY_WIDTH_INCREASE
+    : DEFAULT_WIDTH;
+
 export const getSettings = () => settings;
+
+// `getSetting` for callers that hold their own copy of the settings map.
+export const settingOrDefault = <T = unknown>(
+  settingsMap: Partial<Record<string, unknown>>,
+  key: SETTINGS,
+): T => (settingsMap[key] ?? getDefaultSetting(key)) as T;
 
 export function isInDevMode(): boolean {
   return (

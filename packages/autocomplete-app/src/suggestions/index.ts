@@ -398,8 +398,8 @@ export const filterSuggestions = (
   settings: SettingsMap | undefined = undefined,
 ): Suggestion[] => {
   const shouldHideAutoExecute =
-    getSetting<boolean>(SETTINGS.HIDE_AUTO_EXECUTE_SUGGESTION, false) ||
-    getSetting<boolean>(SETTINGS.ONLY_SHOW_ON_TAB, false);
+    getSetting<boolean>(SETTINGS.HIDE_AUTO_EXECUTE_SUGGESTION) ||
+    getSetting<boolean>(SETTINGS.ONLY_SHOW_ON_TAB);
   const execDangerous = settings?.[
     SETTINGS.IMMEDIATELY_RUN_DANGEROUS_COMMANDS
   ] as boolean;

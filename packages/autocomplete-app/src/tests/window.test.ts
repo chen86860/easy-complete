@@ -1,11 +1,6 @@
 import { SETTINGS, updateSettings } from "@easy-complete/api-bindings-wrappers";
 import { beforeEach, describe, expect, it } from "vitest";
-import {
-  getMaxWidth,
-  getMaxHeight,
-  MAX_WIDTH,
-  AUTOCOMPLETE_HEIGHT,
-} from "../window";
+import { getMaxWidth, getMaxHeight } from "../window";
 
 describe("getMaxWidth", () => {
   beforeEach(() => {
@@ -13,7 +8,12 @@ describe("getMaxWidth", () => {
   });
 
   it("should return the default width", () => {
-    expect(getMaxWidth()).toEqual(MAX_WIDTH);
+    expect(getMaxWidth()).toEqual(320);
+  });
+
+  it("should widen the default when the history mode is stored", () => {
+    updateSettings({ [SETTINGS.HISTORY_MODE]: "show" });
+    expect(getMaxWidth()).toEqual(370);
   });
 
   it("should return the width from settings", () => {
@@ -29,7 +29,7 @@ describe("getMaxHeight", () => {
   });
 
   it("should return the default height", () => {
-    expect(getMaxHeight()).toEqual(AUTOCOMPLETE_HEIGHT);
+    expect(getMaxHeight()).toEqual(140);
   });
 
   it("should return the height from settings", () => {

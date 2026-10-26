@@ -56,7 +56,6 @@ indoc.workspace = true
 mimalloc.workspace = true
 owo-colors = "4.2.0"
 parking_lot.workspace = true
-rand.workspace = true
 regex.workspace = true
 semver.workspace = true
 serde.workspace = true

@@ -1595,7 +1595,6 @@ dependencies = [
  "parking_lot",
  "paste",
  "predicates",
- "rand 0.10.3",
  "regex",
  "semver",
  "serde",

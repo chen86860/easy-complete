@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.4.0-beta.6
+
+- fix: pressing Enter on a line that starts with `#` no longer rewrites it into `ec translate '…'`. That was the upstream Amazon Q AI translation shortcut; the `translate` subcommand is gone, so the rewrite only ran a failing command. The `ai.terminal-hash-sub` setting that controlled it is removed, and `#` lines now reach the shell untouched
+- fix: Settings now shows the defaults the app actually uses: Insert Trailing Space is on, Font Size is 12.8 and Max Width is 320. The dashboard and the autocomplete popup now read every default from one shared table, so they cannot drift apart again
+- fix: the menu bar icon is 18 pt again. Since v2.4.0-beta.1 it had grown to 22 pt
+- chore: remove leftover Amazon Q code that no longer did anything: the inline shell completion zsh scripts and their figterm messages, the `FigAutosuggestionColor` prompt report, the `ec _ callback` subcommand and the unused SSH remote-install prompt (`ssh.remote-prompt*` settings)
+
 ## v2.4.0-beta.5
 
 - fix: update `zod` from 4.4.3 to 4.6.7 (high advisory GHSA-mrhx-c7xc-m3w5: validating oversized constrained collections could exhaust memory). The dev-only copy pulled in by `eslint-plugin-react-hooks` moves off 3.25.7 to the same version

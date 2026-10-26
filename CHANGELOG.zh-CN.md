@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.4.0-beta.6
+
+- 修复：在以 `#` 开头的行上按 Enter，不再被改写成 `ec translate '…'`。这是上游 Amazon Q 的 AI 翻译快捷方式，`translate` 子命令早已移除，改写后只会执行一条报错的命令。控制它的 `ai.terminal-hash-sub` 设置一并移除，`#` 开头的行现在原样交给 Shell
+- 修复：设置页显示的默认值与应用实际使用的一致：「插入尾随空格」默认开启，字号 12.8，最大宽度 320。设置页和补全弹窗现在从同一份默认值表读取，不会再出现不一致
+- 修复：菜单栏图标恢复为 18 pt。自 v2.4.0-beta.1 起它被放大到了 22 pt
+- chore: 移除已不起作用的 Amazon Q 遗留代码：inline shell completion 的 zsh 脚本及其 figterm 消息、`FigAutosuggestionColor` 提示符上报、`ec _ callback` 子命令，以及未被调用的 SSH 远程安装提示（`ssh.remote-prompt*` 设置）
+
 ## v2.4.0-beta.5
 
 - 修复：将 `zod` 从 4.4.3 更新到 4.6.7（高危安全公告 GHSA-mrhx-c7xc-m3w5：校验超大的受约束集合时可能耗尽内存）。`eslint-plugin-react-hooks` 引入的仅开发用副本也从 3.25.7 升级到同一版本

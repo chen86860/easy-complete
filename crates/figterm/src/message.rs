@@ -243,9 +243,6 @@ pub async fn process_figterm_request(
             Ok(None)
         },
         FigtermRequest::Telemtety(_) => anyhow::bail!("Telemetry is not supported over remote"),
-        FigtermRequest::InlineShellCompletion(_)
-        | FigtermRequest::InlineShellCompletionAccept(_)
-        | FigtermRequest::InlineShellCompletionSetEnabled(_) => Ok(None),
     }
 }
 
@@ -262,11 +259,6 @@ pub async fn process_figterm_message(
     _session_id: &str,
 ) -> Result<()> {
     match figterm_request_message.request {
-        Some(
-            FigtermRequest::InlineShellCompletion(_)
-            | FigtermRequest::InlineShellCompletionAccept(_)
-            | FigtermRequest::InlineShellCompletionSetEnabled(_),
-        ) => {},
         Some(FigtermRequest::Telemtety(TelemetryRequest { .. })) => {
             // Telemetry removed
         },
@@ -302,7 +294,6 @@ async fn send_figterm_response_hostbound(
                 nonce,
                 response: Some(match response {
                     FigtermResponse::Diagnostics(diagnostics) => Response::Diagnostics(diagnostics),
-                    FigtermResponse::InlineShellCompletion(_) => return,
                 }),
             })),
         };

@@ -480,9 +480,6 @@ pub trait Handler {
     /// Fig ZshSuggestionColor Osc
     fn zsh_suggestion_color(&mut self, _: &str) {}
 
-    /// FigSuggestionColor Osc
-    fn fig_suggestion_color(&mut self, _: &str) {}
-
     /// Fig NuSuggestionColor Osc
     fn nu_hint_color(&mut self, _: &str) {}
 
@@ -1199,10 +1196,6 @@ where
                                     b"ZshAutosuggestionColor" => match str::from_utf8(&val[1..]) {
                                         Ok(s) => self.handler.zsh_suggestion_color(s),
                                         Err(err) => error!("Error decoding ZshAutosuggestionColor: {err}"),
-                                    },
-                                    b"FigAutosuggestionColor" => match str::from_utf8(&val[1..]) {
-                                        Ok(s) => self.handler.fig_suggestion_color(s),
-                                        Err(err) => error!("Error decoding FigAutosuggestionColor: {err}"),
                                     },
                                     b"NuHintColor" => match str::from_utf8(&val[1..]) {
                                         Ok(s) => self.handler.nu_hint_color(s),

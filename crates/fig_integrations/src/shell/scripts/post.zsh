@@ -91,7 +91,6 @@ fig_precmd() {
   fig_osc "TTY=%s" "${TTY}"
   fig_osc "Log=%s" "${Q_LOG_LEVEL}"
   fig_osc "ZshAutosuggestionColor=%s" "${ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE}"
-  fig_osc "FigAutosuggestionColor=%s" "${Q_AUTOSUGGEST_HIGHLIGHT_STYLE}"
   fig_osc "User=%s" "${USER:-root}"
 
   if [ "$Q_HAS_SET_PROMPT" -eq 1 ]; then

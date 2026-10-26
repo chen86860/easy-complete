@@ -1,5 +1,21 @@
 # Changelog
 
+## v2.4.0
+
+Stable release of the v2.4.0 beta line (v2.4.0-beta.0 to beta.6). Changes since v2.3.9:
+
+- feat: support the Kiro terminal (`dev.kiro.desktop`). Like the other VS Code based editors, the completion popup follows the caret of its integrated terminal (#201)
+- feat: add a "Receive Beta Updates" toggle under Settings → About → Updates (`app.betaUpdates`, off by default). When on, Easy Complete checks a separate beta update feed and installs prerelease builds; stable releases still reach you from there
+- fix: pressing Enter on a line that starts with `#` no longer rewrites it into a failing `ec translate '…'` command left over from Amazon Q. The `ai.terminal-hash-sub` setting is removed and `#` lines reach the shell untouched
+- fix: Settings now shows the defaults the app actually uses (Insert Trailing Space on, Font Size 12.8, Max Width 320); the dashboard and the popup read every default from one shared table
+- fix: left clicks on the menu bar icon are no longer swallowed on macOS 27 (`tray-icon` 0.26.1, `muda` 0.21.2, `tao` 0.37.1), and the icon keeps its 18 pt size
+- fix: `ecterm` no longer crashes when the Nushell hint color contains an unclosed `/*` comment
+- fix: `ec doctor` and the setup page no longer report the shell integration as needing setup when Otty's guarded shell integration block sits below ours in `~/.zshrc` or `~/.bashrc`
+- fix: update dependencies with published security advisories, including `rustls`, `time`, `h2`, `crossbeam-epoch`, `event-listener`, `quinn-proto`, `zod` and `dompurify` (website)
+- chore: update `wry` from 0.49.0 to 0.57.0, which fixes a race between closing a webview and answering its custom protocol requests (the area of the #199 crash) and asynchronous custom protocol requests that never got a response
+- chore: remove leftover Amazon Q code that no longer did anything (inline shell completion scripts, the `FigAutosuggestionColor` prompt report, `ec _ callback`, the SSH remote-install prompt) and the Nushell crates pulled in by `shell-color` (56 packages)
+- ci: release tags run the full CI suite before building, and the Rust and npm lockfiles are audited for advisories on every change and weekly
+
 ## v2.4.0-beta.6
 
 - fix: pressing Enter on a line that starts with `#` no longer rewrites it into `ec translate '…'`. That was the upstream Amazon Q AI translation shortcut; the `translate` subcommand is gone, so the rewrite only ran a failing command. The `ai.terminal-hash-sub` setting that controlled it is removed, and `#` lines now reach the shell untouched

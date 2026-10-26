@@ -1,5 +1,21 @@
 # Changelog
 
+## v2.4.0
+
+v2.4.0 beta 系列（v2.4.0-beta.0 至 beta.6）的正式版。相比 v2.3.9 的变化：
+
+- 新功能：支持 Kiro 终端（`dev.kiro.desktop`）。和其他基于 VS Code 的编辑器一样，补全弹窗会跟随其内置终端的光标（#201）
+- 新功能：在「设置 → 关于 → 更新」中新增「接收 Beta 版更新」开关（`app.betaUpdates`，默认关闭）。开启后会检查独立的 beta 更新源并安装预览版本，正式版也会照常从这里推送
+- 修复：在以 `#` 开头的行上按 Enter，不再被改写成 Amazon Q 遗留的、会报错的 `ec translate '…'` 命令。`ai.terminal-hash-sub` 设置已移除，`#` 开头的行原样交给 Shell
+- 修复：设置页显示的默认值与应用实际使用的一致（「插入尾随空格」开启、字号 12.8、最大宽度 320），设置页和补全弹窗从同一份默认值表读取
+- 修复：macOS 27 上点击菜单栏图标不再无响应（`tray-icon` 0.26.1、`muda` 0.21.2、`tao` 0.37.1），图标保持 18 pt 大小
+- 修复：Nushell 提示色中含有未闭合的 `/*` 注释时，`ecterm` 不再崩溃
+- 修复：Otty 带判断的 Shell 集成代码块位于 `~/.zshrc` 或 `~/.bashrc` 中我们的代码块之后时，`ec doctor` 和设置页不再误报需要设置
+- 修复：更新存在安全公告的依赖，包括 `rustls`、`time`、`h2`、`crossbeam-epoch`、`event-listener`、`quinn-proto`、`zod` 和官网的 `dompurify`
+- chore: `wry` 从 0.49.0 升级到 0.57.0，修复了关闭 webview 与响应其自定义协议请求之间的竞争（#199 崩溃所在的区域），以及异步自定义协议请求得不到响应的问题
+- chore: 移除已不起作用的 Amazon Q 遗留代码（inline shell completion 脚本、`FigAutosuggestionColor` 提示符上报、`ec _ callback`、SSH 远程安装提示），以及经由 `shell-color` 引入的 Nushell 依赖（56 个包）
+- ci：发布 tag 会先运行完整 CI 再构建；Rust 和 npm 的 lockfile 在每次变更时及每周进行安全公告审计
+
 ## v2.4.0-beta.6
 
 - 修复：在以 `#` 开头的行上按 Enter，不再被改写成 `ec translate '…'`。这是上游 Amazon Q 的 AI 翻译快捷方式，`translate` 子命令早已移除，改写后只会执行一条报错的命令。控制它的 `ai.terminal-hash-sub` 设置一并移除，`#` 开头的行现在原样交给 Shell

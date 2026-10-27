@@ -9,10 +9,11 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, LazyLock, Mutex, RwLock};
 
 use accessibility_sys::{
-    AXError, AXIsProcessTrusted, AXUIElementCreateSystemWide, AXUIElementSetMessagingTimeout, pid_t,
+    AXError, AXIsProcessTrusted, AXUIElement, AXUIElementCreateSystemWide, AXUIElementSetMessagingTimeout, pid_t,
 };
 use anyhow::Context;
 use cocoa::base::{NO, YES, id};
+use core_foundation::base::TCFType;
 use core_graphics::display::CGRect;
 use core_graphics::window::CGWindowID;
 use fig_integrations::input_method::InputMethod;
@@ -285,7 +286,8 @@ impl PlatformStateImpl {
                     if AXIsProcessTrusted() {
                         // This prevents Fig from becoming unresponsive if one of the applications
                         // we are tracking becomes unresponsive.
-                        AXUIElementSetMessagingTimeout(AXUIElementCreateSystemWide(), 0.25);
+                        let system_wide = AXUIElement::wrap_under_create_rule(AXUIElementCreateSystemWide());
+                        AXUIElementSetMessagingTimeout(system_wide.as_concrete_TypeRef(), 0.25);
                     }
                 }
 
@@ -547,7 +549,8 @@ impl PlatformStateImpl {
                         unsafe {
                             // This prevents Fig from becoming unresponsive if one of the applications
                             // we are tracking becomes unresponsive.
-                            AXUIElementSetMessagingTimeout(AXUIElementCreateSystemWide(), 0.25);
+                            let system_wide = AXUIElement::wrap_under_create_rule(AXUIElementCreateSystemWide());
+                            AXUIElementSetMessagingTimeout(system_wide.as_concrete_TypeRef(), 0.25);
                         }
                     }
                 });

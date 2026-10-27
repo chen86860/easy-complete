@@ -39,7 +39,6 @@ type AutocompleteActions = {
   ) => void;
   insertTextForItem: (item: Suggestion, execute?: boolean) => void;
   insertCommonPrefix: () => void;
-  setHistoryModeEnabled: React.Dispatch<React.SetStateAction<boolean>>;
   setUserFuzzySearchEnabled: React.Dispatch<React.SetStateAction<boolean>>;
   setSettings: React.Dispatch<React.SetStateAction<SettingsMap>>;
   historySourcesLoaded: () => void;
@@ -59,7 +58,6 @@ export type AutocompleteState = {
   selectedIndex: number;
   hasChangedIndex: boolean;
 
-  historyModeEnabled: boolean;
   /**
    * Bumped when an async history source finishes loading. `historySources` is
    * module-private, so without this the store has no way to know suggestions

@@ -98,7 +98,7 @@ mod test {
     #[test]
     fn test_load_json() {
         let json = KeyBindings::load_hardcoded();
-        assert_eq!(json.0.len(), 24);
+        assert_eq!(json.0.len(), 23);
 
         assert_eq!(json.0[0].identifier, "insertSelected");
         assert_eq!(json.0[0].binding, "enter");

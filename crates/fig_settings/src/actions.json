@@ -183,14 +183,6 @@
     "defaultBindings": ["command+i"]
   },
   {
-    "identifier": "toggleHistoryMode",
-    "name": "Toggle history mode",
-    "description": "Toggle between history suggestions and autocomplete spec suggestions",
-    "category": "General",
-    "availability": "WHEN_FOCUSED",
-    "defaultBindings": ["control+r"]
-  },
-  {
     "identifier": "toggleFuzzySearch",
     "name": "Toggle fuzzy search",
     "description": "Toggle between normal prefix search and fuzzy search",

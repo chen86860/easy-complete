@@ -115,7 +115,7 @@ impl UIElement {
                 let attr_ref = attr.as_concrete_TypeRef();
                 AXUIElementCopyAttributeValue(self.get_ref(), attr_ref, value_ref)
             })?;
-            Ok(CFType::wrap_under_get_rule(cf_ref))
+            Ok(CFType::wrap_under_create_rule(cf_ref))
         }
     }
 

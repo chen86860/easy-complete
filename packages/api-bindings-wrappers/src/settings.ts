@@ -33,7 +33,6 @@ export enum SETTINGS {
   SORT_METHOD = "autocomplete.sortMethod",
   ALWAYS_SUGGEST_CURRENT_TOKEN = "autocomplete.alwaysSuggestCurrentToken",
 
-  NAVIGATE_TO_HISTORY = "autocomplete.navigateToHistory",
   TAB_KEYBINDING = "autocomplete.keybindings.tab",
   ONLY_SHOW_ON_TAB = "autocomplete.onlyShowOnTab",
   ALWAYS_SHOW_DESCRIPTION = "autocomplete.alwaysShowDescription",
@@ -83,7 +82,6 @@ export const DEFAULT_SETTINGS: SettingsMap = {
   [SETTINGS.FIRST_COMMAND_COMPLETION]: false,
   [SETTINGS.SORT_METHOD]: "default",
   [SETTINGS.TAB_KEYBINDING]: "insertCommonPrefixOrNavigateDown",
-  [SETTINGS.NAVIGATE_TO_HISTORY]: false,
   [SETTINGS.INSERT_SPACE_AUTOMATICALLY]: true,
   [SETTINGS.HIDE_AUTO_EXECUTE_SUGGESTION]: false,
   [SETTINGS.IMMEDIATELY_EXEC_AFTER_SPACE]: false,
@@ -93,7 +91,7 @@ export const DEFAULT_SETTINGS: SettingsMap = {
   [SETTINGS.CACHE_ALL_GENERATORS]: false,
 
   // History
-  [SETTINGS.HISTORY_MODE]: "show",
+  [SETTINGS.HISTORY_MODE]: "off",
   [SETTINGS.HISTORY_MERGE_SHELLS]: false,
 };
 
@@ -114,9 +112,8 @@ export const getSetting = <T = unknown>(
   defaultValue: unknown = getDefaultSetting(key),
 ): T => (settings[key] ?? defaultValue) as T;
 
-// Widens the popup to make room for history, but only when the history mode is
-// stored explicitly: an unset mode keeps the narrow width even though history
-// then shows by default.
+// Widens the popup to make room for history when a history mode that shows
+// history suggestions is selected.
 export const getDefaultWidth = (
   settingsMap: Partial<Record<string, unknown>> = settings,
 ): number =>

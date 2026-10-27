@@ -73,11 +73,16 @@ pub unsafe fn get_caret_position(extend_range: bool) -> CaretPosition {
         },
     };
 
-    let selected_range_value_2 = if extend_range {
+    // Owns the created value so it is released when this function returns
+    let extended_range_value = extend_range.then(|| {
         let updated_range = CFRange::init(selected_text_range.location, 1);
-        AXValueCreate(kAXValueTypeCFRange, &updated_range as *const _ as *const c_void).as_void_ptr()
-    } else {
-        selected_range_value.as_concrete_TypeRef()
+        CFType::wrap_under_create_rule(
+            AXValueCreate(kAXValueTypeCFRange, &updated_range as *const _ as *const c_void).as_void_ptr(),
+        )
+    });
+    let selected_range_value_2 = match &extended_range_value {
+        Some(value) => value.as_concrete_TypeRef(),
+        None => selected_range_value.as_concrete_TypeRef(),
     };
 
     // https://linear.app/fig/issue/ENG-109/ - autocomplete-popup-shows-when-copying-and-pasting-in-terminal
@@ -95,16 +100,22 @@ pub unsafe fn get_caret_position(extend_range: bool) -> CaretPosition {
         )
     });
 
-    let select_bounds: AXValueRef = match select_bounds_result {
-        Ok(select_bounds) => select_bounds as AXValueRef,
+    // The Copy call returns a +1 reference; wrapping it releases it on drop
+    let select_bounds: CFType = match select_bounds_result {
+        Ok(select_bounds) => CFType::wrap_under_create_rule(select_bounds),
         Err(err) => {
             error!("Selected bounds error, error code {:?}", err);
             return INVALID_CARET_POSITION;
         },
     };
 
-    let selected_rect_result =
-        bool_ax_call(|x: *mut CGRect| AXValueGetValue(select_bounds, kAXValueTypeCGRect, x.cast()));
+    let selected_rect_result = bool_ax_call(|x: *mut CGRect| {
+        AXValueGetValue(
+            select_bounds.as_concrete_TypeRef() as AXValueRef,
+            kAXValueTypeCGRect,
+            x.cast(),
+        )
+    });
 
     let select_rect = match selected_rect_result {
         Ok(select_rect) => select_rect,

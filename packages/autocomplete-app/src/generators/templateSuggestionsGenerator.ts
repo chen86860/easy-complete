@@ -2,7 +2,7 @@ import logger from "loglevel";
 import { Annotation, TokenType } from "@easy-complete/autocomplete-parser";
 import { makeArray, findLast } from "@easy-complete/shared/utils";
 import { GeneratorContext } from "./helpers";
-import { getHistoryArgSuggestions } from "../history";
+import { ensureHistoryLoaded, getHistoryArgSuggestions } from "../history";
 
 const getHelpSuggestions = (annotations: Annotation[]) => {
   const helpSuggestions: Fig.TemplateSuggestion[] = [];
@@ -64,6 +64,7 @@ export async function getTemplateSuggestions(
 
   if (typesToInclude.has("history")) {
     try {
+      await ensureHistoryLoaded();
       const historySuggestions = getHistoryArgSuggestions(
         annotations,
         currentProcess,

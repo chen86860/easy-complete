@@ -51,7 +51,6 @@ const initialState: Partial<AutocompleteState> = {
   suggestions: [] as Suggestion[],
   hasChangedIndex: false,
 
-  historyModeEnabled: false,
   historyRevision: 0,
   fuzzySearchEnabled: false,
   userFuzzySearchEnabled: getSetting(SETTINGS.FUZZY_SEARCH),
@@ -106,12 +105,6 @@ const computeSuggestions = (
   } = state;
   const { annotations } = parserResult;
 
-  const historySuggestions = getFullHistorySuggestions(
-    buffer,
-    command,
-    processUserIsIn || "",
-  );
-
   const specSuggestions = getAllSuggestions(
     parserResult.currentArg,
     parserResult.completionObj,
@@ -122,11 +115,13 @@ const computeSuggestions = (
   );
 
   let suggestions = specSuggestions;
-  // Default to "show" to match the dashboard's Select, which renders
-  // "Show with completions" when the setting is unset. Without this the UI
-  // claims history is on while the setting has never been written, so nothing
-  // is shown until the user toggles the dropdown away and back.
+  // Resolve the unset case through the shared default so this agrees with the
+  // dashboard's Select. When it is "off" the full history scan is skipped.
   const historyMode = settingOrDefault<string>(settings, SETTINGS.HISTORY_MODE);
+  const historySuggestions =
+    historyMode === "off"
+      ? []
+      : getFullHistorySuggestions(buffer, command, processUserIsIn || "");
   if (historyMode === "show") {
     const existingNames = new Set();
     suggestions.forEach((suggestion) => {
@@ -158,8 +153,6 @@ const computeSuggestions = (
       ),
     }));
   } else if (historyMode === "history_only") {
-    suggestions = historySuggestions;
-  } else if (state.historyModeEnabled) {
     suggestions = historySuggestions;
   }
 
@@ -216,7 +209,6 @@ const updateSuggestions =
             "fuzzySearchEnabled",
             "parserResult",
             "generatorStates",
-            "historyModeEnabled",
             "historyRevision",
           ]) ||
           !fieldsAreEqual(updatedState.figState, state.figState, [
@@ -427,16 +419,6 @@ export const useAutocompleteStore = createWithEqualityFn<AutocompleteState>(
 
         setVisibleState: (visibleState: Visibility) =>
           setNamed("setVisibleState", { visibleState }),
-
-        setHistoryModeEnabled: (
-          historyModeEnabled: React.SetStateAction<boolean>,
-        ) =>
-          setNamed("setHistoryModeEnabled", (state) => ({
-            historyModeEnabled:
-              typeof historyModeEnabled === "function"
-                ? historyModeEnabled(state.historyModeEnabled)
-                : historyModeEnabled,
-          })),
 
         historySourcesLoaded: () =>
           setNamed("historySourcesLoaded", (state) => ({

@@ -24,8 +24,6 @@ export enum AutocompleteAction {
   SHOW_DESCRIPTION = "showDescription",
   TOGGLE_DESCRIPTION = "toggleDescription",
 
-  TOGGLE_HISTORY_MODE = "toggleHistoryMode",
-
   TOGGLE_FUZZY_SEARCH = "toggleFuzzySearch",
 
   INCREASE_SIZE = "increaseSize",

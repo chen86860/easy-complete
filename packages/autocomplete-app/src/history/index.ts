@@ -23,7 +23,7 @@ import {
   SETTINGS,
   getSetting,
 } from "@easy-complete/api-bindings-wrappers";
-import { History } from "@easy-complete/api-bindings";
+import { History, Settings } from "@easy-complete/api-bindings";
 import {
   AnnotatedCommand,
   HistoryEntry,
@@ -225,7 +225,16 @@ export const loadHistorySource = async (
     }
   });
 
-  return { entries, historyValueIndex };
+  // Parsed commands are only needed to build the index above. Suggestions read
+  // just `text` and `context`, so drop the parse trees instead of keeping one per
+  // history entry alive for the lifetime of the overlay.
+  const slimEntries = entries.map(({ text, context }) => ({
+    text,
+    context,
+    commands: [],
+  }));
+
+  return { entries: slimEntries, historyValueIndex };
 };
 
 const loadFigHistory = async (): Promise<HistoryEntry[]> =>
@@ -315,6 +324,25 @@ export const loadHistory = async (
     await loadHistoryCommand("fc -ln 1", "bash").catch(() => {});
     await loadHistoryCommand("history search", "fish").catch(() => {});
   }
+};
+
+let historyLoading: Promise<void> | undefined;
+
+/**
+ * Loads history at most once per overlay lifetime. With history suggestions off,
+ * nothing calls this until a spec `history` template needs argument values, so
+ * the parse cost is only paid by users who reach one.
+ */
+export const ensureHistoryLoaded = (onSourceLoaded?: () => void) => {
+  historyLoading ??= Settings.get(SETTINGS.DISABLE_HISTORY_LOADING)
+    .catch(() => undefined)
+    .then(async (res) => {
+      if (!JSON.parse(res?.jsonBlob ?? "false")) {
+        await loadHistory({}, onSourceLoaded);
+      }
+    })
+    .catch((err) => historyLogger.error(err));
+  return historyLoading;
 };
 
 const getFirstWord = (text: string) => text.split(" ", 1)[0] || "";

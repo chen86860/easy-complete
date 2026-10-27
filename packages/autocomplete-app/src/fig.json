@@ -194,14 +194,6 @@
         "defaultBindings": ["control+k"]
       },
       {
-        "identifier": "toggleHistoryMode",
-        "name": "Toggle history mode",
-        "category": "General",
-        "description": "Toggle between history suggestions and autocomplete spec suggestions",
-        "availability": "WHEN_FOCUSED",
-        "defaultBindings": ["control+r"]
-      },
-      {
         "identifier": "toggleFuzzySearch",
         "name": "Toggle fuzzy search",
         "category": "General",

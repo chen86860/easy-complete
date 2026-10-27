@@ -311,14 +311,6 @@ export function BehaviorSection({
             onChange={(value) => set(SETTINGS.TAB_KEYBINDING, value)}
           />
         </Row>
-        <Row label={t("behavior.useUpArrowForHistory")}>
-          <Toggle
-            checked={Boolean(
-              settingOrDefault(settings, SETTINGS.NAVIGATE_TO_HISTORY),
-            )}
-            onChange={(value) => set(SETTINGS.NAVIGATE_TO_HISTORY, value)}
-          />
-        </Row>
         <Row label={t("behavior.insertTrailingSpace")}>
           <Toggle
             checked={Boolean(

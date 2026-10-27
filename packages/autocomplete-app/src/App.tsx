@@ -2,6 +2,7 @@ import { WindowPosition, Settings } from "@easy-complete/api-bindings";
 import {
   getDefaultSetting,
   SETTINGS,
+  settingOrDefault,
 } from "@easy-complete/api-bindings-wrappers";
 import React, {
   useState,
@@ -18,7 +19,7 @@ import * as jsxRuntime from "react/jsx-runtime";
 import * as figApiBindings from "@easy-complete/api-bindings";
 import { getMaxHeight, getMaxWidth, POPOUT_WIDTH } from "./window";
 import { useParseArgumentsEffect } from "./parser/hooks";
-import { loadHistory } from "./history";
+import { ensureHistoryLoaded } from "./history";
 import "./index.css";
 import AutoSizedList, { AutoSizedHandleRef } from "./components/AutoSizedList";
 
@@ -210,15 +211,14 @@ function App() {
   useFigKeypress(keypressCallback);
   useFigClearCache();
 
+  // Full-history suggestions need history up front. With them off, spec
+  // `history` templates load it on first use instead.
+  const historyMode = settingOrDefault<string>(settings, SETTINGS.HISTORY_MODE);
   useEffect(() => {
-    Settings.get(SETTINGS.DISABLE_HISTORY_LOADING)
-      .catch(() => undefined)
-      .then((res) => {
-        if (!JSON.parse(res?.jsonBlob ?? "false")) {
-          loadHistory({}, historySourcesLoaded);
-        }
-      });
-  }, [historySourcesLoaded]);
+    if (historyMode !== "off") {
+      ensureHistoryLoaded(historySourcesLoaded);
+    }
+  }, [historyMode, historySourcesLoaded]);
 
   useEffect(() => {
     let isMostRecentEffect = true;

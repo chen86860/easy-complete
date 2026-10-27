@@ -37,7 +37,6 @@ export const useAutocompleteKeypressCallback = (
     visibleState,
     selectedIndex,
 
-    setHistoryModeEnabled,
     setUserFuzzySearchEnabled,
     settings,
 
@@ -54,27 +53,17 @@ export const useAutocompleteKeypressCallback = (
   const scrollWrapAround = settings[SETTINGS.SCROLL_WRAP_AROUND];
 
   const navigate = useCallback(
-    (delta: number, hideOrShowHistoryOnNegative = false) => {
+    (delta: number, hideOnNegative = false) => {
       let newIndex = selectedIndex + delta;
       let newVisibleState = visibleState;
       if (scrollWrapAround) {
         newIndex = (newIndex + suggestions.length) % suggestions.length;
-      } else if (newIndex === -1 && hideOrShowHistoryOnNegative) {
-        if (getSetting<boolean>(SETTINGS.NAVIGATE_TO_HISTORY)) {
-          setHistoryModeEnabled((enabled) => !enabled);
-          return;
-        }
+      } else if (newIndex === -1 && hideOnNegative) {
         newVisibleState = Visibility.HIDDEN_UNTIL_KEYPRESS;
       }
       scrollToIndex(newIndex, newVisibleState);
     },
-    [
-      selectedIndex,
-      visibleState,
-      suggestions.length,
-      scrollWrapAround,
-      setHistoryModeEnabled,
-    ],
+    [selectedIndex, visibleState, suggestions.length, scrollWrapAround],
   );
 
   return useCallback(
@@ -149,9 +138,6 @@ export const useAutocompleteKeypressCallback = (
               : Visibility.VISIBLE,
           );
           break;
-        case AutocompleteAction.TOGGLE_HISTORY_MODE:
-          setHistoryModeEnabled((enabled) => !enabled);
-          break;
         case AutocompleteAction.TOGGLE_DESCRIPTION:
           if (!getSetting<boolean>(SETTINGS.ALWAYS_SHOW_DESCRIPTION)) {
             toggleDescriptionPopout();
@@ -198,7 +184,6 @@ export const useAutocompleteKeypressCallback = (
       insertTextForItem,
       selectedItem,
       toggleDescriptionPopout,
-      setHistoryModeEnabled,
       visibleState,
       setVisibleState,
       changeSize,

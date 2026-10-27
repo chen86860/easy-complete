@@ -61,7 +61,6 @@ const en = {
   "behavior.tabPrefixOnly": "Insert shared prefix only",
   "behavior.tabPrefixThenInsert": "Insert prefix, else accept",
   "behavior.tabNavigateOnly": "Move down only",
-  "behavior.useUpArrowForHistory": "Use Up Arrow for History",
   "behavior.insertTrailingSpace": "Insert Trailing Space",
   "behavior.showAutoExecuteSuggestion": "Show Immediately Execute",
   "behavior.showAutoExecuteSuggestionDescription":
@@ -213,7 +212,6 @@ const zhCN: Record<TranslationKey, string> = {
   "behavior.tabPrefixOnly": "仅补全公共前缀",
   "behavior.tabPrefixThenInsert": "补全公共前缀，否则插入选中项",
   "behavior.tabNavigateOnly": "仅下移一项",
-  "behavior.useUpArrowForHistory": "使用上方向键浏览历史",
   "behavior.insertTrailingSpace": "自动插入尾随空格",
   "behavior.showAutoExecuteSuggestion": "显示立即执行",
   "behavior.showAutoExecuteSuggestionDescription":

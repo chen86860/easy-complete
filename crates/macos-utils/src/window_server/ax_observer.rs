@@ -5,15 +5,15 @@ use std::pin::Pin;
 use accessibility::util::ax_call;
 use accessibility_sys::{
     AXError, AXObserverAddNotification, AXObserverCallback, AXObserverCreate, AXObserverGetRunLoopSource,
-    AXObserverRef, AXUIElementRef, kAXErrorSuccess, pid_t,
+    AXObserverRef, AXUIElement, kAXErrorSuccess, pid_t,
 };
-use core_foundation::base::TCFType;
+use core_foundation::base::{CFRelease, TCFType};
 use core_foundation::runloop::{CFRunLoopAddSource, CFRunLoopGetCurrent, CFRunLoopRemoveSource, kCFRunLoopDefaultMode};
 use core_foundation::string::{CFString, CFStringRef};
 
 pub struct AXObserver<T> {
     inner: AXObserverRef,
-    ax_ref: AXUIElementRef,
+    ax_ref: AXUIElement,
     callback_data: Pin<Box<T>>,
 }
 
@@ -24,7 +24,7 @@ unsafe impl<T> Sync for AXObserver<T> {}
 impl<T> AXObserver<T> {
     pub unsafe fn create(
         pid: pid_t,
-        ax_ref: AXUIElementRef,
+        ax_ref: AXUIElement,
         data: T,
         callback: AXObserverCallback,
     ) -> Result<Self, AXError> {
@@ -52,7 +52,7 @@ impl<T> AXObserver<T> {
         let callback_data: *const T = &*self.callback_data;
         let err = AXObserverAddNotification(
             self.inner,
-            self.ax_ref,
+            self.ax_ref.as_concrete_TypeRef(),
             CFString::from(ax_event).as_CFTypeRef() as CFStringRef,
             callback_data as *const _ as *mut c_void,
         );
@@ -69,6 +69,7 @@ impl<T> Drop for AXObserver<T> {
                 AXObserverGetRunLoopSource(self.inner),
                 kCFRunLoopDefaultMode,
             );
+            CFRelease(self.inner.cast());
         }
     }
 }

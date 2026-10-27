@@ -9,7 +9,7 @@ use std::pin::Pin;
 use std::sync::OnceLock;
 
 use accessibility_sys::{
-    AXError, AXIsProcessTrusted, AXObserverRef, AXUIElementCreateApplication, AXUIElementRef,
+    AXError, AXIsProcessTrusted, AXObserverRef, AXUIElement, AXUIElementCreateApplication, AXUIElementRef,
     kAXApplicationActivatedNotification, kAXApplicationShownNotification, kAXFocusedUIElementChangedNotification,
     kAXFocusedWindowChangedNotification, kAXMainWindowChangedNotification, kAXUIElementDestroyedNotification,
     kAXWindowCreatedNotification, kAXWindowMovedNotification, kAXWindowResizedNotification, pid_t,
@@ -350,9 +350,9 @@ impl WindowServerInner {
             bundle_id: bundle_id.clone(),
         };
 
-        // Created only once the app is known to be worth tracking; nothing releases this
-        // ref, so returning early after creating it leaks it.
-        let ax_ref = AXUIElementCreateApplication(pid);
+        // Created only once the app is known to be worth tracking; the observer takes
+        // ownership and releases it on drop.
+        let ax_app = AXUIElement::wrap_under_create_rule(AXUIElementCreateApplication(pid));
 
         if self.observers.contains_key(&key) {
             debug!("app {} is already registered", key.bundle_id);
@@ -361,7 +361,7 @@ impl WindowServerInner {
 
         if from_activation {
             // In Swift had 0.25s delay before this...?
-            let elem = UIElement::from(ax_ref);
+            let elem = UIElement::from(ax_app.clone());
             let sender = self.sender.clone();
             let app = key.clone();
             let activated_bundle_id = key.bundle_id.clone();
@@ -383,13 +383,15 @@ impl WindowServerInner {
 
         let is_xterm = XTERM_BUNDLE_IDS.contains(&key.bundle_id.as_str());
         if is_xterm {
-            UIElement::from(ax_ref).enable_screen_reader_accessibility().ok();
+            UIElement::from(ax_app.clone())
+                .enable_screen_reader_accessibility()
+                .ok();
         }
 
         let bundle_id = key.bundle_id.clone();
         let mut observer = match AXObserver::create(
             key.pid,
-            ax_ref,
+            ax_app,
             AccessibilityCallbackData {
                 app: key.clone(),
                 sender: self.sender.clone(),
@@ -479,8 +481,7 @@ impl WindowServerHandler for WindowServerInner {
                 return;
             };
             let pid = app.processIdentifier();
-            let ax_app = AXUIElementCreateApplication(pid);
-            let app_elem: UIElement = ax_app.into();
+            let app_elem = UIElement::from(AXUIElement::wrap_under_create_rule(AXUIElementCreateApplication(pid)));
             if let Ok(window) = app_elem.focused_window() {
                 let fullscreen = window.is_fullscreen();
                 if let Ok(is_fullscreen) = fullscreen
@@ -582,7 +583,9 @@ unsafe extern "C" fn application_ax_callback(
             // We check to see if there is a valid window for the app, if there is not then we know the final
             // window has been destroyed. This is done via getting an error when trying to get the focused
             // window.
-            let ax_app_ref = UIElement::from(AXUIElementCreateApplication(app.pid));
+            let ax_app_ref = UIElement::from(AXUIElement::wrap_under_create_rule(AXUIElementCreateApplication(
+                app.pid,
+            )));
             if ax_app_ref.focused_window().is_err() {
                 Some(WindowServerEvent::WindowDestroyed { app: app.clone() })
             } else {

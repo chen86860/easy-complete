@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.4.1
+
+- fix: the main process no longer grows without bound. Every Accessibility attribute read leaked one `AXUIElement`; after 3 hours the app held 4.3 million of them (~350 MB). Footprint now stays around 50 MB (#203)
+- perf: shell history is no longer parsed and kept in memory at startup when history suggestions are off, halving the completion popup's memory (148 MB → 74 MB). Argument history for specs such as `ssh` and `scp` is loaded the first time it is needed (#203)
+- change: the history mode (`beta.history.mode`) now defaults to off. Turn it on under Behavior → History to see past commands in the popup
+- change: remove the Ctrl+R history mode toggle and the "Use Up Arrow for History" setting (`autocomplete.navigateToHistory`). Ctrl+R now reaches the shell's own reverse search
+
 ## v2.4.0
 
 Stable release of the v2.4.0 beta line (v2.4.0-beta.0 to beta.6). Changes since v2.3.9:

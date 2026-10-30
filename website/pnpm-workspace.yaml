@@ -24,8 +24,7 @@ onlyBuiltDependencies:
 # reason; drop the entry once the dependency moves past it.
 auditConfig:
   ignoreGhsas:
-    # undici and sharp are pinned exactly by wrangler's miniflare (local dev server and deploy
-    # tooling); neither ships to the site. Revisit when wrangler moves to a newer miniflare.
+    # undici is pinned exactly by wrangler's miniflare (local dev server and deploy tooling);
+    # it doesn't ship to the site. Revisit when wrangler moves to a newer miniflare.
     - GHSA-rfgv-xxqx-mfg5
     - GHSA-w293-vg96-wgc3
-    - GHSA-wq5f-xc86-pv6w

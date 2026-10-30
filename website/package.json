@@ -25,8 +25,8 @@
     "react-dom": "^19.3.0"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.57.1",
-    "@cloudflare/workers-types": "^5.20260922.1",
+    "@cloudflare/vite-plugin": "^1.66.0",
+    "@cloudflare/workers-types": "^5.20261029.1",
     "@tailwindcss/vite": "^4.3.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
@@ -34,6 +34,6 @@
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
     "vite": "^8.3.3",
-    "wrangler": "^4.136.1"
+    "wrangler": "^4.155.0"
   }
 }

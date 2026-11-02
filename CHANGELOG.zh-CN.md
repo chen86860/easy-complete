@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.5.0-beta.1
+
+- 新功能：授予辅助功能权限改为拖拽完成。点击「授予辅助功能权限」会打开系统设置的辅助功能列表，并在旁边显示一个小面板，把 Easy Complete 拖进列表即可，授权生效后面板自动关闭。面板只在系统设置位于最前时显示，带关闭按钮，可从设置页或菜单栏图标重新打开。提示文字跟随设置页语言（中文或英文）。参考自 [Hex](https://github.com/anomalyco/hex)
+- 变更：启动时不再弹出 macOS「想要控制这台 Mac」的系统对话框。辅助功能授权失效时（例如重新安装后），改为打开设置窗口的权限页，静默启动时也会打开
+- 修复：输入法改为可选项。只有 Kitty、Alacritty、Zed、Ghostty 和 WezTerm 需要它，拒绝安装后设置窗口不再一直停留在「完成设置」页，「全部修复」也会跳过它（#206）
+- 修复：升级时不再自动重新安装输入法。需要时可在设置页、通过 `ec integrations install input-method`，或在需要它的终端中按提示安装（#206）
+- 变更：安装输入法时 macOS 弹出的确认框更易懂，由原来的「允许 "ec" 启用 "EasyCompleteInputMethod"」改为「允许 "Easy Complete" 启用 "Easy Complete Cursor Tracking"」。`ec integrations install input-method` 会交给正在运行的 App 执行；输入法进程启动时也不再自行启用（此前会反复询问已拒绝的用户）；设置页也说明了输入法只读取光标位置，不会读取你输入的内容
+- 杂项：重新生成内置的 `ec` 补全 spec，去掉已移除的 `ec _ callback` 子命令
+
 ## v2.4.1
 
 - 修复：主进程内存不再持续增长。此前每次读取辅助功能属性都会泄漏一个 `AXUIElement`，运行 3 小时后累积 430 万个（约 350 MB），现在稳定在 50 MB 左右（#203）

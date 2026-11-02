@@ -17,10 +17,30 @@ info()  { echo -e "${GREEN}==>${NC} $*"; }
 warn()  { echo -e "${YELLOW}==>${NC} $*"; }
 error() { echo -e "${RED}==>${NC} $*" >&2; }
 
+SKIP_BUILD=false
+FRESH=false
+for arg in "$@"; do
+  case "$arg" in
+    --skip-build) SKIP_BUILD=true ;;
+    --fresh) FRESH=true ;;
+    *) error "Unknown option: $arg (usage: install.sh [--skip-build] [--fresh])"; exit 1 ;;
+  esac
+done
+
 # ── 1. Build & assemble the .app ──────────────────────────────────────────────
 # Shared with CI (see .github/workflows/release.yml) so the bundle is assembled
 # identically whether installed locally or packaged into a release DMG.
-"${REPO_DIR}/scripts/build-app.sh"
+# `--skip-build` reinstalls the bundle from the last build as is, e.g. after
+# uninstall.sh with no code changes since.
+if [ "$SKIP_BUILD" = true ]; then
+  if [ ! -d "$STAGING_BUNDLE" ]; then
+    error "--skip-build: no previous build at ${STAGING_BUNDLE}; run without it once"
+    exit 1
+  fi
+  info "Skipping build, reusing ${STAGING_BUNDLE}"
+else
+  "${REPO_DIR}/scripts/build-app.sh"
+fi
 
 # ── 3. Install to /Applications ───────────────────────────────────────────────
 info "Installing to /Applications/..."
@@ -42,6 +62,21 @@ ditto "$STAGING_BUNDLE" "$APP_BUNDLE"
 # autocomplete popup can never position itself and simply never appears.
 info "Resetting stale Accessibility permission..."
 tccutil reset Accessibility "$BUNDLE_ID" 2>/dev/null || true
+
+# `--fresh` stops here and launches the app the way a new user would after
+# dragging it into /Applications: the app links the CLI into ~/.local/bin on its
+# own, and shell integration, the input method and Accessibility are left to the
+# dashboard's setup page.
+if [ "$FRESH" = true ]; then
+  info "Fresh install: skipping CLI links, shell integration, input method and Accessibility prompt"
+  open "$APP_BUNDLE"
+  echo ""
+  info "Installation complete!"
+  echo ""
+  echo "  App:  ${APP_BUNDLE}"
+  echo "  Finish setup in the dashboard, as a new user would."
+  exit 0
+fi
 
 # ── 4. Symlink CLI binaries to ~/.local/bin ───────────────────────────────────
 info "Linking binaries to ${LOCAL_BIN}..."

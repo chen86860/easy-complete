@@ -143,6 +143,7 @@ async fn handle_local_ipc<Ctx>(
                             Diagnostics(command) => commands::diagnostic(command, &figterm_state).await,
                             OpenBrowser(command) => commands::open_browser(command).await,
                             PromptAccessibility(_) => commands::prompt_for_accessibility_permission(&ctx).await,
+                            InputMethod(command) => commands::input_method(command).await,
                             LogLevel(command) => commands::log_level(command),
                             ConnectToIbus(_) => commands::connect_to_ibus(proxy.clone(), &platform_state).await,
                             BundleMetadata(_) => commands::bundle_metadata(&ctx.context_arc()).await,
@@ -177,8 +178,7 @@ async fn handle_local_ipc<Ctx>(
                             | ReportWindow(_)
                             | RestartSettingsListener(_)
                             | RunInstallScript(_)
-                            | ResetCache(_)
-                            | InputMethod(_) => {
+                            | ResetCache(_) => {
                                 debug!(?command, "Unhandled command");
                                 Err(LocalResponse::Error {
                                     code: None,

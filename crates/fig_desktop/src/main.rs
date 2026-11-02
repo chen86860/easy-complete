@@ -165,13 +165,7 @@ async fn main() -> ExitCode {
     }
 
     let ctx = Context::new();
-    install::run_install(
-        Arc::clone(&ctx),
-        cli.ignore_immediate_update,
-        !cli.no_dashboard,
-        cli.is_startup,
-    )
-    .await;
+    let surface_permissions = install::run_install(Arc::clone(&ctx), cli.ignore_immediate_update, cli.is_startup).await;
 
     // Daily active-device heartbeat; also flushes locally aggregated counters
     // (autocomplete_shown/accepted etc.) as properties of the heartbeat event.
@@ -203,11 +197,15 @@ async fn main() -> ExitCode {
     #[cfg(target_os = "macos")]
     let defer_dashboard_for_modern_login_item = !cli.no_dashboard
         && !silent_launch
+        && !surface_permissions
         && launch_on_startup
         && fig_integrations::login_item::supports_modern_login_item();
     #[cfg(not(target_os = "macos"))]
     let defer_dashboard_for_modern_login_item = false;
-    let visible = !cli.no_dashboard && !silent_launch && !defer_dashboard_for_modern_login_item;
+    // A lost permission outranks a silent launch: the dashboard's permission gate is how the user
+    // gets it back.
+    let visible =
+        surface_permissions || (!cli.no_dashboard && !silent_launch && !defer_dashboard_for_modern_login_item);
 
     let mut webview_manager = WebviewManager::new(ctx, visible, defer_dashboard_for_modern_login_item);
     let auto_updates_enabled = !fig_settings::settings::get_bool_or("app.disableAutoupdates", false);

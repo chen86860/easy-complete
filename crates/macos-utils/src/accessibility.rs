@@ -34,3 +34,54 @@ pub fn prompt_for_accessibility() -> bool {
 pub fn accessibility_is_enabled() -> bool {
     unsafe { AXIsProcessTrusted() }
 }
+
+unsafe extern "C" {
+    fn ec_show_accessibility_guide(locale: i32) -> bool;
+}
+
+/// Language for the guide's instruction, mirroring `dashboard.language`.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum GuideLocale {
+    /// Follow the macOS preferred language.
+    #[default]
+    System,
+    English,
+    SimplifiedChinese,
+}
+
+impl GuideLocale {
+    /// Parses a `dashboard.language` value; anything unknown follows the system.
+    pub fn from_setting(value: Option<&str>) -> Self {
+        match value {
+            Some("en") => Self::English,
+            Some("zh-CN") => Self::SimplifiedChinese,
+            _ => Self::System,
+        }
+    }
+}
+
+/// Opens System Settings at the Accessibility list with a floating guide beside
+/// it that offers the app as a tile to drag into the list. Callable from any
+/// thread. Returns `false` without doing anything when not running from a
+/// `.app` bundle (dev builds), which has nothing to drag.
+pub fn show_accessibility_guide(locale: GuideLocale) -> bool {
+    let code = match locale {
+        GuideLocale::System => 0,
+        GuideLocale::English => 1,
+        GuideLocale::SimplifiedChinese => 2,
+    };
+    unsafe { ec_show_accessibility_guide(code) }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::GuideLocale;
+
+    #[test]
+    fn guide_locale_follows_dashboard_language() {
+        assert_eq!(GuideLocale::from_setting(Some("en")), GuideLocale::English);
+        assert_eq!(GuideLocale::from_setting(Some("zh-CN")), GuideLocale::SimplifiedChinese);
+        assert_eq!(GuideLocale::from_setting(Some("system")), GuideLocale::System);
+        assert_eq!(GuideLocale::from_setting(None), GuideLocale::System);
+    }
+}

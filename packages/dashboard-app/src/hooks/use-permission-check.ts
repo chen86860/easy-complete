@@ -12,6 +12,8 @@ export type PermissionRequirement = {
   repairLabel: string;
   /** When set, this permission can only be actioned after the listed ids are ready. */
   requires?: PermissionId[];
+  /** Optional permissions are offered but never block the dashboard or "Fix All". */
+  optional?: boolean;
 };
 
 export type PermissionStatus = PermissionRequirement & {
@@ -19,10 +21,13 @@ export type PermissionStatus = PermissionRequirement & {
   detail?: string;
 };
 
-const REQUIREMENTS: Array<Pick<PermissionRequirement, "id" | "requires">> = [
+const REQUIREMENTS: Array<
+  Pick<PermissionRequirement, "id" | "requires" | "optional">
+> = [
   { id: "accessibility" },
   { id: "shellIntegration", requires: ["accessibility"] },
-  { id: "inputMethod" },
+  // Only terminals that bypass the accessibility path (Ghostty, Kitty, ...) need it.
+  { id: "inputMethod", optional: true },
 ];
 
 const asMessage = (error: unknown, fallback: string) =>
@@ -98,6 +103,7 @@ export function usePermissionCheck() {
 
     try {
       for (const requirement of REQUIREMENTS) {
+        if (requirement.optional) continue;
         await repair(requirement.id);
       }
     } finally {
@@ -141,7 +147,9 @@ export function usePermissionCheck() {
     [details, states, t],
   );
 
-  const ready = permissions.every((permission) => permission.state === "ready");
+  const ready = permissions.every(
+    (permission) => permission.optional || permission.state === "ready",
+  );
   const checking = permissions.some(
     (permission) => permission.state === "checking",
   );

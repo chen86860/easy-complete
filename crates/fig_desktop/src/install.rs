@@ -40,20 +40,6 @@ fn run_input_method_migration() {
     }
 }
 
-#[cfg(target_os = "macos")]
-fn prompt_for_accessibility_permission() {
-    use macos_utils::accessibility::{accessibility_is_enabled, open_accessibility, prompt_for_accessibility};
-    use tracing::warn;
-
-    if accessibility_is_enabled() {
-        return;
-    }
-
-    if !prompt_for_accessibility() && !open_accessibility() {
-        warn!("Failed to open Accessibility permission prompt");
-    }
-}
-
 /// Tracks whether macOS has ever actually granted us Accessibility, so a grant that silently stops
 /// working can be told apart from one that was never given.
 #[cfg(target_os = "macos")]
@@ -79,72 +65,40 @@ pub fn record_accessibility_grant() {
 /// once-per-version install script never re-runs for a same-version reinstall, so this check has to
 /// live outside it and run on every launch.
 ///
-/// Only a granted -> revoked transition prompts, and it does so even for a silent launch: at that
-/// point the app is known-broken and has no other way to reach the user. A permission that was
-/// never granted is left to the normal launch prompt and the tray warning, so users who
-/// deliberately withhold it are not nagged on every start.
+/// Launch never raises macOS's own Accessibility dialog: the dashboard's permission gate offers the
+/// drag guide instead. Only a granted -> revoked transition asks for the dashboard, even on a silent
+/// launch, since the app is then known-broken and has no other way to reach the user. A permission
+/// that was never granted is left to the dashboard and the tray warning, so users who deliberately
+/// withhold it are not nagged on every start.
 ///
-/// Returns whether it raised the prompt itself, so the once-per-version install script does not
-/// raise a second one on the same launch.
+/// Returns whether the dashboard should be shown to surface the lost permission.
 #[cfg(target_os = "macos")]
-fn reconcile_accessibility_permission(prompt_for_permissions: bool) -> bool {
+fn reconcile_accessibility_permission() -> bool {
     use macos_utils::accessibility::accessibility_is_enabled;
     use tracing::{info, warn};
 
-    let enabled = accessibility_is_enabled();
-    let previously_granted = fig_settings::state::get_bool_or(ACCESSIBILITY_GRANTED_KEY, false);
-
-    if enabled {
+    if accessibility_is_enabled() {
         record_accessibility_grant();
         return false;
     }
 
-    if previously_granted {
-        info!("Accessibility permission was granted before but is no longer in effect, re-prompting");
-        // Clear it first so the next launch treats this as a plain missing permission and falls
-        // back to the tray warning rather than prompting again.
-        if let Err(err) = fig_settings::state::set_value(ACCESSIBILITY_GRANTED_KEY, false) {
-            warn!(%err, "Failed to clear Accessibility grant");
-        }
-        prompt_for_accessibility_permission();
-        return true;
+    if !fig_settings::state::get_bool_or(ACCESSIBILITY_GRANTED_KEY, false) {
+        return false;
     }
 
-    if !prompt_for_permissions {
-        info!("Accessibility permission is missing on a background launch, surfacing via the tray only");
+    info!("Accessibility permission was granted before but is no longer in effect, showing the dashboard");
+    // Clear it first so the next launch treats this as a plain missing permission and falls back to
+    // the tray warning rather than surfacing the dashboard again.
+    if let Err(err) = fig_settings::state::set_value(ACCESSIBILITY_GRANTED_KEY, false) {
+        warn!(%err, "Failed to clear Accessibility grant");
     }
-
-    false
+    true
 }
 
-#[cfg(target_os = "macos")]
-fn run_macos_post_install_permission_tasks(prompt_for_permissions: bool) {
-    use fig_integrations::Integration;
-    use fig_integrations::input_method::InputMethod;
-    use tracing::{debug, warn};
-
-    tokio::spawn(async {
-        let input_method = InputMethod::default();
-        if let Err(err) = input_method.install().await {
-            warn!(%err, "Failed to install input method during post-install permission setup");
-        }
-    });
-
-    if prompt_for_permissions {
-        prompt_for_accessibility_permission();
-    } else {
-        debug!("Skipping post-install Accessibility prompt for background launch");
-    }
-}
-
-/// Run items at launch
+/// Run items at launch. Returns whether the dashboard must be shown to surface a lost permission,
+/// even on a silent launch.
 #[allow(unused_variables)]
-pub async fn run_install(
-    ctx: Arc<Context>,
-    ignore_immediate_update: bool,
-    prompt_for_permissions: bool,
-    is_startup: bool,
-) {
+pub async fn run_install(ctx: Arc<Context>, ignore_immediate_update: bool, is_startup: bool) -> bool {
     #[cfg(target_os = "macos")]
     {
         initialize_fig_dir(&fig_os_shim::Env::new()).await.ok();
@@ -161,11 +115,16 @@ pub async fn run_install(
 
     // Runs on every launch, unlike the once-per-version install script below.
     #[cfg(target_os = "macos")]
-    let already_prompted_for_accessibility = reconcile_accessibility_permission(prompt_for_permissions);
+    let surface_permissions = reconcile_accessibility_permission();
+    #[cfg(not(target_os = "macos"))]
+    let surface_permissions = false;
 
     #[cfg(target_os = "macos")]
     if should_run_macos_install {
-        run_macos_post_install_permission_tasks(prompt_for_permissions && !already_prompted_for_accessibility);
+        // The input method is not installed here: only some terminals need it, and enabling an input
+        // source unprompted re-asks users who declined it on every update. It is installed on demand
+        // from the dashboard, `ec integrations install input-method`, or the `ec init` prompt in a
+        // terminal that needs it.
         // First run (no previous_version) = fresh install; otherwise = update.
         if previous_version().is_none() {
             fig_telemetry::track("app_installed");
@@ -196,6 +155,8 @@ pub async fn run_install(
     }
 
     // App updates are handled by Sparkle on macOS release builds.
+
+    surface_permissions
 }
 
 /// Symlink, and overwrite if it already exists and is invalid or not a symlink

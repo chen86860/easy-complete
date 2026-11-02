@@ -11,7 +11,8 @@ license.workspace = true
 workspace = true
 
 [package.metadata.bundle]
-bundle_name = "EasyCompleteInputMethod"
+# Shown as the input source's name in macOS's "Allow … to enable …?" prompt.
+bundle_name = "Easy Complete Cursor Tracking"
 bundle_identifier = "dev.emmmm.easy-complete.inputmethod"
 input_source_identifier = "dev.emmmm.easy-complete.inputmethod"
 invisible_in_system_ui = true

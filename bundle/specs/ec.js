@@ -1198,34 +1198,6 @@ const completion = {
           ]
         },
         {
-          name: "callback",
-          description: "Callback used for the internal pseudoterminal",
-          options: [
-            {
-              name: ["-v", "--verbose"],
-              description: "Increase logging verbosity",
-              isRepeatable: true,
-            },
-            {
-              name: ["-h", "--help"],
-              description: "Print help",
-            },
-          ],
-          args: [
-            {
-              name: "handler_id",
-            },
-            {
-              name: "filename",
-              isOptional: true,
-            },
-            {
-              name: "exit_code",
-              isOptional: true,
-            },
-          ]
-        },
-        {
           name: "install",
           description: "Install the Easy Complete cli",
           options: [
@@ -1415,10 +1387,6 @@ const completion = {
                   description: "List all the settings",
                 },
               ],
-            },
-            {
-              name: "callback",
-              description: "Callback used for the internal pseudoterminal",
             },
             {
               name: "install",
@@ -2367,10 +2335,6 @@ const completion = {
                   description: "List all the settings",
                 },
               ],
-            },
-            {
-              name: "callback",
-              description: "Callback used for the internal pseudoterminal",
             },
             {
               name: "install",

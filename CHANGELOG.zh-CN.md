@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.5.1
+
+- 变更：执行过的命令不再额外写入 `~/Library/Application Support/easy-complete/` 下的明文 `history` 文件。该文件没有任何地方读取，历史建议继续使用本地数据库；旧文件可以直接删除
+- 变更：补全 spec 图标改为随应用打包，不再从 GitHub 和各工具官网加载。源地址已失效的图标显示为通用图标
+- 修复：在应用外修改的设置（如 `ec telemetry disable`、`ec settings app.disableAutoupdates true`）现在无需重启即可对运行中的应用生效
+- 文档：隐私页面和 README 列出了应用可能发起的全部联网请求、留在本机的数据以及各自的关闭方式
+
 ## v2.5.0
 
 - 新功能：授予辅助功能权限改为拖拽完成。点击「授予辅助功能权限」后，把小面板里的 Easy Complete 拖进系统设置的列表即可

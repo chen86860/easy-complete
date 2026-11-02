@@ -28,16 +28,8 @@ const featureData: Omit<Feature, "glyph">[] = [
     desc: "Written in Rust and drawn in a native window, so suggestions keep up with your typing.",
   },
   {
-<<<<<<< Updated upstream
     title: "100% local",
     desc: "No cloud, no account, no AI calls. Your commands never leave your machine.",
-||||||| Stash base
-    title: "Local-first",
-    desc: "No account, no AI calls. Specs and icons are bundled, and suggestions are built on your Mac.",
-=======
-    title: "Runs on your Mac",
-    desc: "No account, no AI calls. Specs and icons are bundled, and suggestions are built on your Mac.",
->>>>>>> Stashed changes
   },
   {
     title: "Themeable",

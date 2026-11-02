@@ -76,17 +76,6 @@ static BOOL systemPrefersChinese(void) {
     return [language.lowercaseString hasPrefix:@"zh"];
 }
 
-/// The list's name as System Settings shows it, which follows the macOS
-/// language. macOS 27 renamed the Accessibility list.
-static NSString *accessibilityListName(void) {
-    NSOperatingSystemVersion version = {27, 0, 0};
-    BOOL renamed = [NSProcessInfo.processInfo isOperatingSystemAtLeastVersion:version];
-    if (systemPrefersChinese()) {
-        return renamed ? @"设备控制和数据访问" : @"辅助功能";
-    }
-    return renamed ? @"Device Control and Data Access" : @"Accessibility";
-}
-
 /// Mirrors the dashboard's `dashboard.language`: 0 system, 1 en, 2 zh-CN.
 static BOOL guideInChinese(int locale) {
     switch (locale) {
@@ -471,7 +460,8 @@ static void updateGuidePosition(void) {
     }
     NSRect visible = screen != nil ? screen.visibleFrame : settings;
     CGFloat x = NSMaxX(settings) - size.width - 16;
-    CGFloat y = NSMinY(settings) + 16;
+    // Just above the bottom edge, clear of the list's +/− buttons.
+    CGFloat y = NSMinY(settings) + 20;
     x = MIN(MAX(x, NSMinX(visible) + 8), NSMaxX(visible) - size.width - 8);
     y = MIN(MAX(y, NSMinY(visible) + 8), NSMaxY(visible) - size.height - 8);
     [guidePanel setFrameOrigin:NSMakePoint(x, y)];
@@ -492,6 +482,12 @@ static void showGuideOnMain(BOOL chinese) {
                                           @"Privacy_Accessibility"]);
 
     NSURL *bundleURL = runningBundleURL();
+    // The pane's title right above already names the list (renamed on macOS
+    // 27), so the instruction stays short enough for a panel that fits the
+    // list column.
+    NSString *format = chinese ? @"↑  将 %@ 拖到上方列表中" : @"↑  Drag %@ into the list above";
+    NSString *text = [NSString stringWithFormat:format, appName(bundleURL)];
+    NSFont *instructionFont = [NSFont systemFontOfSize:13 weight:NSFontWeightMedium];
     NSSize panelSize = NSMakeSize(480, 116);
     guidePanel = [[NSPanel alloc]
         initWithContentRect:NSMakeRect(0, 0, panelSize.width, panelSize.height)
@@ -517,13 +513,10 @@ static void showGuideOnMain(BOOL chinese) {
     content.layer.borderWidth = 1;
     content.layer.borderColor = [NSColor colorWithWhite:0 alpha:0.10].CGColor;
 
-    NSString *format = chinese ? @"↑  将 %@ 拖到上方的“%@”列表中"
-                               : @"↑  Drag %@ into the %@ list above";
-    NSString *text =
-        [NSString stringWithFormat:format, appName(bundleURL), accessibilityListName()];
     NSTextField *instruction = [NSTextField labelWithString:text];
     instruction.frame = NSMakeRect(18, 73, panelSize.width - 36 - 28, 24);
-    instruction.font = [NSFont systemFontOfSize:13 weight:NSFontWeightMedium];
+    instruction.font = instructionFont;
+    instruction.lineBreakMode = NSLineBreakByTruncatingTail;
     instruction.textColor = NSColor.labelColor;
     [content addSubview:instruction];
 

@@ -1,19 +1,13 @@
 # Changelog
 
-## v2.5.0-beta.2
+## v2.5.0
 
-- fix: the drag-to-grant Accessibility panel now appears when macOS is not in English. It found System Settings by its English window owner name, which is localized (for example "系统设置"), so the panel never showed and the flying tile stayed stuck by the button
-- feat: support the Herdr desktop app (`dev.herdr.app`). Completions now appear in its terminals, and the popup follows the caret through the input method, like Ghostty and Zed. Herdr was not recognized before, so the popup stayed hidden whenever it was in front (#205)
-- change: shells in Rex no longer launch `ecterm`. Rex picks each pane's agent icon from its foreground process, which `ecterm` hid, so Claude Code, Codex and other agents showed the default icon. Rex is not a supported terminal yet, so this costs no completions there
-
-## v2.5.0-beta.1
-
-- feat: granting Accessibility is now drag and drop. "Grant Accessibility" opens the Accessibility list in System Settings with a small panel beside it; drag the Easy Complete tile into the list and the panel closes once access is granted. The panel only shows while System Settings is in front, has a close button, and can be reopened from the setup page or the menu bar icon. Its text follows the dashboard language (English or Chinese). Adapted from [Hex](https://github.com/anomalyco/hex)
-- change: launch no longer pops up macOS's "would like to control this Mac" dialog. When an Accessibility grant stops working (for example after reinstalling), the settings window opens on the setup page instead, even on a silent launch
-- fix: the input method is now optional. It is only needed in Kitty, Alacritty, Zed, Ghostty and WezTerm, so declining it no longer keeps the settings window stuck on "Finish Setup", and "Fix All" skips it (#206)
-- fix: updates no longer reinstall the input method. Install it from the setup page, with `ec integrations install input-method`, or from the prompt shown in a terminal that needs it (#206)
-- change: macOS's "Allow … to enable …?" prompt for the input method is clearer: it now reads "Allow "Easy Complete" to enable "Easy Complete Cursor Tracking"?" instead of naming `ec` and `EasyCompleteInputMethod`. `ec integrations install input-method` hands the install to the running app, the input method no longer enables itself whenever it starts (which also re-asked users who had declined), and the setup page explains that the input method only reads the cursor position, never what you type
-- chore: regenerate the bundled `ec` completion spec, dropping the removed `ec _ callback` subcommand
+- feat: granting Accessibility is now drag and drop. Click "Grant Accessibility", then drag Easy Complete from the small panel into the System Settings list
+- feat: support the Herdr terminal (#205)
+- fix: the input method is now optional. Terminal.app and iTerm2 never needed it, and declining it no longer blocks the settings window or asks again after updates (#206)
+- change: no more macOS "would like to control this Mac" pop-up at launch. If Accessibility stops working, for example after reinstalling, the settings window opens to fix it
+- change: the macOS prompt for the input method now names Easy Complete, and the setup page explains it only reads the cursor position, never what you type
+- change: Rex now shows the correct icons for Claude Code, Codex and other agents
 
 ## v2.4.1
 

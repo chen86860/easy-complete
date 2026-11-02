@@ -3,6 +3,7 @@ import { Terminal } from "./components/Terminal.tsx";
 import {
   SiteFooterLinks,
   SiteHeader,
+  MAIN_ID,
   type LocaleHrefs,
 } from "./components/SiteChrome.tsx";
 import { TerminalMarquee } from "./components/TerminalMarquee.tsx";
@@ -14,66 +15,16 @@ import { homeCopyEn } from "./i18n/en.ts";
 import { LOCALE_PREFIX, type HomeCopy, type Locale } from "./i18n/types.ts";
 import { captureEvent } from "./posthog.tsx";
 
-const SECTION_LABEL =
-  "font-mono text-xs uppercase tracking-[.22em] text-(--accent) mb-3.5";
+const SECTION_LABEL = "mb-3 font-mono text-sm text-(--accent)";
 
-const ACTION_SURFACE =
-  "ec-action will-change-transform transition-[transform,filter,box-shadow,background-color,border-color,color] duration-200 ease-[var(--ease-out-quart)]";
+const SECTION_HEADING =
+  "m-0 text-[32px] font-semibold leading-[1.15] tracking-[-.015em] text-pretty";
 
-const CARD_SURFACE =
-  "ec-card will-change-transform transition-[transform,box-shadow,background-color,border-color] duration-[260ms] ease-[var(--ease-out-quart)]";
+const SECTION_INTRO = "m-0 mt-3 text-base leading-[1.6] text-[#8b95a1]";
+
+const SECTION = "border-t border-[#141a21] px-7 py-24";
 
 const BREW_INSTALL_COMMAND = "brew install --cask chen86860/tap/easy-complete";
-
-function prefersReducedMotion() {
-  return (
-    typeof window !== "undefined" &&
-    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
-  );
-}
-
-interface RevealProps {
-  children: ReactNode;
-  className?: string;
-  delay?: number;
-}
-
-function Reveal({ children, className = "", delay = 0 }: RevealProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(() => prefersReducedMotion());
-
-  useEffect(() => {
-    if (visible || prefersReducedMotion()) {
-      setVisible(true);
-      return;
-    }
-
-    const node = ref.current;
-    if (!node) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry?.isIntersecting) return;
-        setVisible(true);
-        observer.unobserve(entry.target);
-      },
-      { rootMargin: "0px 0px -12% 0px", threshold: 0.16 },
-    );
-
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [visible]);
-
-  return (
-    <div
-      ref={ref}
-      className={`ec-reveal ${visible ? "is-visible" : ""} ${className}`}
-      style={{ transitionDelay: visible ? `${delay}ms` : undefined }}
-    >
-      {children}
-    </div>
-  );
-}
 
 function CopyIcon({ copied }: { copied: boolean }) {
   return copied ? (
@@ -172,7 +123,7 @@ function InstallActions({
       } ${className}`}
     >
       <div
-        className={`flex flex-wrap justify-center gap-3.25 lg:gap-4 ${
+        className={`flex flex-wrap justify-center gap-3 lg:gap-4 ${
           split ? "lg:justify-start" : ""
         }`}
       >
@@ -181,7 +132,7 @@ function InstallActions({
           onClick={() =>
             captureEvent("website_download_clicked", { locale, placement })
           }
-          className={`${ACTION_SURFACE} inline-flex items-center gap-2.25 rounded-[11px] bg-(--accent) px-6.5 py-3.25 text-[16px] font-semibold text-[#06140a] hover:brightness-110 hover:shadow-[0_14px_34px_-12px_var(--accent-line)]`}
+          className="inline-flex h-12 items-center gap-2 rounded-[10px] bg-(--accent) px-6 text-base font-medium text-[#06140a] transition-[filter,scale] hover:brightness-110 active:scale-[.98]"
         >
           <AppleIcon />
           {copy.downloadCta}
@@ -191,7 +142,7 @@ function InstallActions({
           onClick={() =>
             captureEvent("website_github_clicked", { locale, placement })
           }
-          className={`${ACTION_SURFACE} inline-flex items-center gap-2.25 rounded-[11px] border border-[#2c343e] px-6.5 py-3.25 text-[16px] font-medium text-[#e6edf3] hover:border-[#475060] hover:bg-[#141a22]`}
+          className="inline-flex items-center gap-2 h-12 rounded-lg px-3 text-base font-medium text-[#9aa4b0] underline decoration-transparent underline-offset-4 transition-[color,text-decoration-color] hover:text-[#e6edf3] hover:decoration-[#475060] active:translate-y-px"
         >
           <GitHubIcon />
           {copy.githubCta}
@@ -199,24 +150,24 @@ function InstallActions({
       </div>
 
       <div
-        className="mt-4 flex w-full max-w-120 items-center gap-2.5 lg:mt-6"
+        className="mt-6 flex w-full max-w-120 items-center gap-3"
         aria-hidden="true"
       >
         <span className="h-px flex-1 bg-[#202832]" />
-        <span className="font-mono text-[10px] tracking-wider text-[#596472] uppercase">
+        <span className="font-mono text-xs text-[#65707d]">
           {copy.brewDivider}
         </span>
         <span className="h-px flex-1 bg-[#202832]" />
       </div>
 
-      <div className="group mt-2 inline-flex max-w-full items-stretch lg:mt-3 overflow-hidden rounded-md border border-[#232c36] bg-[#0c1117] font-mono text-[11px] text-[#8793a1] transition-[background-color,border-color,color] hover:border-[#37424f] hover:bg-[#11171e] hover:text-[#b5c0cc] sm:text-xs">
+      <div className="mt-3 inline-flex max-w-full items-stretch overflow-hidden rounded-md border border-[#232c36] bg-[#0c1117] font-mono text-[11px] text-[#8793a1] transition-[background-color,border-color,color] hover:border-[#37424f] hover:bg-[#11171e] hover:text-[#b5c0cc] sm:text-xs">
         <code className="min-w-0 cursor-text px-3 py-2 leading-5 whitespace-normal select-text sm:whitespace-nowrap">
           {BREW_INSTALL_COMMAND}
         </code>
         <button
           type="button"
           onClick={copyBrewCommand}
-          className={`inline-flex min-w-24 shrink-0 items-center justify-center gap-1.5 border-l border-[#232c36] px-3 transition-colors hover:bg-[#17202a] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--accent) ${
+          className={`inline-flex min-w-24 shrink-0 items-center justify-center gap-1.5 border-l border-[#232c36] px-3 transition-colors hover:bg-[#17202a] active:bg-[#1c2632] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--accent) ${
             copyState === "copied" ? "text-(--accent)" : ""
           }`}
           aria-label={copy.copyAriaLabel(BREW_INSTALL_COMMAND)}
@@ -282,7 +233,7 @@ export function App({
   const docsHref = `${prefix}/docs`;
 
   return (
-    <div className="relative min-h-screen overflow-x-clip bg-[#0a0d12]">
+    <div className="relative min-h-dvh overflow-x-clip bg-[#0a0d12]">
       {/* The hero glow is anchored to the page, not to a wrapper around the
           header — a sticky element only sticks within its own parent's box. */}
       <div
@@ -296,19 +247,15 @@ export function App({
       {/* ===== HEADER ===== */}
       <SiteHeader variant="transparent" locale={locale} hrefs={hrefs} />
 
-      <main className="relative">
+      <main id={MAIN_ID} className="relative">
         {/* ===== HERO ===== */}
-        <section className="relative px-7 pb-12 pt-10 lg:pb-20 lg:pt-16">
-          <div className="relative mx-auto grid max-w-310 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] lg:gap-18">
+        <section className="relative px-7 pt-12 pb-20 lg:pt-20 lg:pb-28">
+          <div className="relative mx-auto grid max-w-310 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] lg:gap-16">
             <div className="flex min-w-0 flex-col items-center text-center lg:items-start lg:text-left">
-              <div className="mb-6.5 inline-flex items-center gap-2 rounded-full border border-[#232c36] px-3.75 py-1.5 font-mono text-[12.5px] text-[#9aa4b0] lg:mb-8">
-                <span className="h-1.5 w-1.5 rounded-full bg-(--accent)" />
-                {copy.badge}
-              </div>
-              <h1 className="m-0 mb-4.5 max-w-155 text-[40px] font-bold leading-[1.03] tracking-[-.035em] text-balance [overflow-wrap:anywhere] sm:text-[54px] lg:mb-6 lg:leading-[1.06]">
+              <h1 className="m-0 mb-5 max-w-155 text-[40px] font-semibold leading-[1.05] tracking-[-.025em] text-balance [overflow-wrap:anywhere] sm:text-[56px] lg:mb-6">
                 {copy.heroHeading}
               </h1>
-              <p className="m-0 mb-7.5 max-w-132.5 text-[18px] leading-[1.6] text-[#909aa6] lg:mb-10 lg:text-[19px] lg:leading-[1.72]">
+              <p className="m-0 mb-8 max-w-132 text-lg leading-[1.6] text-[#909aa6] lg:mb-10">
                 {copy.heroSubheading}
               </p>
               <InstallActions
@@ -329,28 +276,22 @@ export function App({
         <TerminalMarquee label={copy.marqueeLabel} />
 
         {/* ===== FEATURES ===== */}
-        <section id="features" className="scroll-mt-20 px-7 py-20">
+        <section id="features" className="scroll-mt-20 px-7 py-24">
           <div className="mx-auto max-w-295">
             <div className={SECTION_LABEL}>{copy.featuresLabel}</div>
-            <h2 className="m-0 mb-2 max-w-160 text-[30px] font-bold leading-[1.15] tracking-[-.02em] text-pretty">
+            <h2 className={`${SECTION_HEADING} max-w-160`}>
               {copy.featuresHeading}
             </h2>
-            <p className="m-0 mb-10 max-w-140 text-[16px] text-[#8b95a1]">
+            <p className={`${SECTION_INTRO} mb-12 max-w-140`}>
               {copy.featuresSubheading}
             </p>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-x-10 sm:grid-cols-2 lg:grid-cols-3">
               {copy.features.map((f) => (
-                <div
-                  key={f.title}
-                  className={`${CARD_SURFACE} rounded-[14px] border border-[#1c232d] bg-[#0d1219] px-5 py-5.5 hover:-translate-y-1 hover:border-(--accent-line) hover:shadow-[0_18px_44px_-24px_var(--accent-glow)]`}
-                >
-                  <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px] border border-(--accent-line) bg-(--accent-soft) font-mono text-[16px] font-bold text-(--accent)">
-                    {f.glyph}
-                  </div>
-                  <h3 className="m-0 mb-1.75 text-[17px] font-semibold tracking-[-.01em]">
+                <div key={f.title} className="border-t border-[#1c232d] pt-5 pb-8">
+                  <h3 className="m-0 mb-2 text-[17px] font-medium text-[#e6edf3]">
                     {f.title}
                   </h3>
-                  <p className="m-0 text-sm leading-[1.55] text-[#828d99]">
+                  <p className="m-0 text-[15px] leading-[1.6] text-[#8b95a1]">
                     {linkTerminalNames(f.desc, locale)}
                   </p>
                 </div>
@@ -360,58 +301,52 @@ export function App({
         </section>
 
         {/* ===== WHY ===== */}
-        <section
-          id="why"
-          className="scroll-mt-20 border-t border-[#141a21] bg-[#090c11] px-7 py-20"
-        >
-          <Reveal className="mx-auto max-w-295">
+        <section id="why" className={`${SECTION} scroll-mt-20 bg-[#090c11]`}>
+          <div className="mx-auto max-w-295">
             <div className={SECTION_LABEL}>{copy.whyLabel}</div>
-            <h2 className="m-0 mb-11 max-w-140 text-[30px] font-bold leading-[1.15] tracking-[-.02em]">
+            <h2 className={`${SECTION_HEADING} mb-12 max-w-140`}>
               {copy.whyHeading}
             </h2>
-            <div className="grid grid-cols-1 gap-4.5 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               {copy.reasons.map((r) => (
                 <div
                   key={r.num}
-                  className={`${CARD_SURFACE} flex gap-5 rounded-[14px] border border-[#1a212a] bg-[#0c1118] px-6 py-6.5 hover:-translate-y-0.5 hover:border-[#2a3340]`}
+                  className="flex gap-5 rounded-2xl border border-[#1a212a] bg-[#0c1118] p-6"
                 >
-                  <div className="pt-0.75 font-mono text-sm font-bold text-(--accent)">
+                  <div className="pt-1 font-mono text-sm text-(--accent) tabular-nums">
                     {r.num}
                   </div>
                   <div>
-                    <h3 className="m-0 mb-1.75 text-[18px] font-semibold tracking-[-.01em]">
-                      {r.title}
-                    </h3>
-                    <p className="m-0 text-[14.5px] leading-[1.6] text-[#828d99]">
+                    <h3 className="m-0 mb-2 text-lg font-medium">{r.title}</h3>
+                    <p className="m-0 text-[15px] leading-[1.6] text-[#8b95a1]">
                       {r.desc}
                     </p>
                   </div>
                 </div>
               ))}
             </div>
-          </Reveal>
+          </div>
         </section>
 
         {/* ===== TERMINALS ===== */}
-        <section className="border-t border-[#141a21] px-7 py-18.5">
-          <Reveal className="mx-auto max-w-295">
+        <section className={SECTION}>
+          <div className="mx-auto max-w-295">
             <div className={SECTION_LABEL}>{copy.terminalsLabel}</div>
-            <h2 className="m-0 mb-6.5 max-w-155 text-[30px] font-bold leading-[1.15] tracking-[-.02em]">
+            <h2 className={`${SECTION_HEADING} mb-8 max-w-155`}>
               {copy.terminalsHeading}
             </h2>
-            <div className="mb-4.5 flex flex-wrap gap-2.75">
+            <div className="mb-6 flex flex-wrap gap-3">
               {copy.terminalSupport.map((t) => {
-                const chipClass = `${ACTION_SURFACE} inline-flex items-center gap-2.25 rounded-full border bg-[#0d1219] px-4 py-2.25 font-mono text-sm hover:-translate-y-0.5 hover:border-(--accent-line) hover:text-white ${
+                const chipClass = `inline-flex h-10 items-center gap-2 rounded-lg border bg-[#0d1219] px-4 font-mono text-sm transition-[color,border-color] hover:border-[#3a4552] hover:text-[#e6edf3] ${
                   t.isNew
                     ? "border-(--accent-line) text-[#e6edf3]"
                     : "border-[#232c36] text-[#cdd6e0]"
                 }`;
                 const body = (
                   <>
-                    <span className="font-bold text-(--accent)">✓</span>
                     {t.name}
                     {t.isNew && (
-                      <span className="rounded-full bg-(--accent-soft) px-1.75 py-0.5 text-[10px] font-bold uppercase tracking-wider text-(--accent)">
+                      <span className="text-xs text-(--accent)">
                         {copy.newBadge}
                       </span>
                     )}
@@ -434,33 +369,30 @@ export function App({
                 );
               })}
             </div>
-            <p className="m-0 max-w-170 text-sm leading-[1.6] text-[#6e7884]">
-              <strong className="font-semibold text-[#cdd6e0]">
+            <p className="m-0 max-w-170 text-[15px] leading-[1.6] text-[#76818d]">
+              <strong className="font-medium text-[#cdd6e0]">
                 {copy.terminalsNewPrefix}
               </strong>{" "}
               {copy.terminalsBody}{" "}
               <a
                 href={`${docsHref}#terminals`}
-                className="text-(--accent) underline underline-offset-4 transition-colors hover:brightness-125"
+                className="text-(--accent) underline underline-offset-4 transition-[filter] hover:brightness-125"
               >
                 {copy.terminalsLinkLabel}
               </a>
               {copy.terminalsLinkSuffix}
             </p>
-          </Reveal>
+          </div>
         </section>
 
         {/* ===== ARCHITECTURE ===== */}
-        <section
-          id="how"
-          className="scroll-mt-20 border-t border-[#141a21] bg-[#090c11] px-7 py-20"
-        >
-          <Reveal className="mx-auto max-w-295">
+        <section id="how" className={`${SECTION} scroll-mt-20 bg-[#090c11]`}>
+          <div className="mx-auto max-w-295">
             <div className={SECTION_LABEL}>{copy.howLabel}</div>
-            <h2 className="m-0 mb-2.5 max-w-160 text-[30px] font-bold leading-[1.15] tracking-[-.02em]">
+            <h2 className={`${SECTION_HEADING} max-w-160`}>
               {copy.howHeading}
             </h2>
-            <p className="m-0 mb-10 max-w-150 text-[16px] leading-[1.6] text-[#8b95a1]">
+            <p className={`${SECTION_INTRO} mb-12 max-w-150`}>
               {copy.howSubheading}
             </p>
 
@@ -468,80 +400,78 @@ export function App({
               {copy.processes.map((p) => (
                 <div
                   key={p.bin}
-                  className={`${CARD_SURFACE} flex flex-col rounded-[14px] border border-[#1c232d] bg-[#0c1118] px-5.5 py-6 hover:-translate-y-0.5 hover:border-[#2a3340]`}
+                  className="flex flex-col rounded-2xl border border-[#1c232d] bg-[#0c1118] p-6"
                 >
-                  <div className="mb-1 font-mono text-[16px] font-bold text-(--accent)">
+                  <div className="mb-1 font-mono text-base font-medium text-(--accent)">
                     {p.bin}
                   </div>
-                  <div className="mb-3.5 font-mono text-xs text-[#5d6773]">
+                  <div className="mb-4 font-mono text-xs text-[#65707d]">
                     {copy.crateLabel} · {p.crate}
                   </div>
-                  <p className="m-0 text-sm leading-[1.6] text-[#9099a5]">
+                  <p className="m-0 text-[15px] leading-[1.6] text-[#8b95a1]">
                     {p.role}
                   </p>
                 </div>
               ))}
             </div>
 
-            <div className="mt-4.5 flex flex-wrap items-center gap-2.5 font-mono text-[12.5px] text-[#6e7884]">
-              <span className="inline-flex items-center gap-2 rounded-lg border border-dashed border-[#2a333e] px-3.25 py-2">
+            <div className="mt-4 flex flex-wrap items-center gap-3 font-mono text-[13px] text-[#76818d]">
+              <span className="rounded-lg border border-dashed border-[#2a333e] px-3 py-2">
                 {copy.flowShellHooks}
               </span>
-              <span className="text-(--accent)">⇄</span>
-              <span className="inline-flex items-center gap-2 rounded-lg border border-dashed border-[#2a333e] px-3.25 py-2">
+              <span aria-hidden="true" className="text-[#4d5663]">
+                ⇄
+              </span>
+              <span className="rounded-lg border border-dashed border-[#2a333e] px-3 py-2">
                 {copy.flowInputMethod}
               </span>
-              <span className="text-(--accent)">⇄</span>
-              <span className="inline-flex items-center gap-2 rounded-lg border border-dashed border-[#2a333e] px-3.25 py-2">
+              <span aria-hidden="true" className="text-[#4d5663]">
+                ⇄
+              </span>
+              <span className="rounded-lg border border-dashed border-[#2a333e] px-3 py-2">
                 {copy.flowProtobuf}
               </span>
             </div>
-          </Reveal>
+          </div>
         </section>
 
         {/* ===== FAQ ===== */}
-        <section
-          id="faq"
-          className="scroll-mt-20 border-t border-[#141a21] px-7 py-20"
-        >
-          <Reveal className="mx-auto max-w-225">
+        <section id="faq" className={`${SECTION} scroll-mt-20`}>
+          <div className="mx-auto max-w-225">
             <div className={SECTION_LABEL}>{copy.faqLabel}</div>
-            <h2 className="m-0 mb-7 max-w-155 text-[30px] font-bold leading-[1.15] tracking-[-.02em]">
+            <h2 className={`${SECTION_HEADING} mb-8 max-w-155`}>
               {copy.faqHeading}
             </h2>
-            <div className="grid grid-cols-1 gap-4">
+            <div className="divide-y divide-[#1c232d] border-y border-[#1c232d]">
               {copy.faqs.map((faq) => (
-                <div
-                  key={faq.question}
-                  className={`${CARD_SURFACE} rounded-[14px] border border-[#1c232d] bg-[#0d1219] px-6 py-5 hover:-translate-y-0.5 hover:border-[#2a3340]`}
-                >
-                  <h3 className="m-0 mb-2 text-[17px] font-semibold tracking-[-.01em]">
+                <div key={faq.question} className="py-6">
+                  <h3 className="m-0 mb-2 text-[17px] font-medium">
                     {faq.question}
                   </h3>
-                  <p className="m-0 text-[14.5px] leading-[1.6] text-[#828d99]">
+                  <p className="m-0 max-w-180 text-[15px] leading-[1.6] text-[#8b95a1]">
                     {faq.answer}
                   </p>
                 </div>
               ))}
             </div>
-          </Reveal>
+          </div>
         </section>
 
         {/* ===== DOCS ===== */}
-        <section className="border-t border-[#141a21] bg-[#090c11] px-7 py-18.5">
-          <Reveal className="mx-auto max-w-295">
+        <section className={`${SECTION} bg-[#090c11]`}>
+          <div className="mx-auto max-w-295">
             <div className={SECTION_LABEL}>{copy.docsLabel}</div>
             <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:items-start">
               <div>
-                <h2 className="m-0 mb-3 max-w-130 text-[30px] font-bold leading-[1.15] tracking-[-.02em]">
+                <h2 className={`${SECTION_HEADING} max-w-130`}>
                   {copy.docsHeading}
                 </h2>
-                <p className="m-0 mb-6 max-w-130 text-[16px] leading-[1.65] text-[#828d99]">
+                <p className={`${SECTION_INTRO} mb-6 max-w-130`}>
                   {copy.docsSubheading}
                 </p>
                 <a
                   href={docsHref}
-                  className={`${ACTION_SURFACE} inline-flex items-center gap-2 rounded-[10px] border border-(--accent-line) bg-(--accent-soft) px-5 py-2.75 text-sm font-semibold text-(--accent) hover:bg-(--accent-soft) hover:brightness-125`}
+                  className="inline-flex h-10 items-center gap-2 rounded-[10px] border border-(--accent-line) bg-(--accent-soft) px-5 text-sm font-medium text-(--accent) transition-[filter,scale] hover:brightness-125 active:scale-[.98]"
                 >
                   {copy.docsCta}
                   <span aria-hidden="true" className="font-mono">
@@ -557,17 +487,17 @@ export function App({
                     <a
                       key={link.href}
                       href={link.href}
-                      className="group grid gap-1 py-4 transition-colors sm:grid-cols-[minmax(0,0.75fr)_minmax(0,1fr)_auto] sm:items-center sm:gap-5"
+                      className="group grid gap-1 py-4 sm:grid-cols-[minmax(0,0.75fr)_minmax(0,1fr)_auto] sm:items-center sm:gap-5"
                     >
-                      <span className="font-semibold text-[#d8e0e9] group-hover:text-(--accent)">
+                      <span className="font-medium text-[#d8e0e9] transition-colors group-hover:text-(--accent)">
                         {link.label}
                       </span>
-                      <span className="text-sm leading-[1.55] text-[#737e8b]">
+                      <span className="text-sm leading-[1.6] text-[#76818d]">
                         {link.description}
                       </span>
                       <span
                         aria-hidden="true"
-                        className="hidden font-mono text-(--accent) sm:inline"
+                        className="hidden font-mono text-[#4d5663] transition-colors group-hover:text-(--accent) sm:inline"
                       >
                         →
                       </span>
@@ -575,13 +505,13 @@ export function App({
                   ))}
               </div>
             </div>
-          </Reveal>
+          </div>
         </section>
 
         {/* ===== FOOTER CTA ===== */}
         <section
           id="get"
-          className="relative overflow-hidden border-t border-[#141a21] px-7 pb-16 pt-24 text-center"
+          className="relative overflow-hidden border-t border-[#141a21] px-7 pt-28 pb-16 text-center"
         >
           <div
             className="pointer-events-none absolute inset-0"
@@ -590,26 +520,26 @@ export function App({
                 "radial-gradient(60% 80% at 50% 0%, var(--accent-glow), transparent 62%)",
             }}
           />
-          <Reveal className="relative mx-auto max-w-180">
-            <h2 className="m-0 mb-3.5 text-[34px] font-bold leading-[1.05] tracking-[-.03em] sm:text-[46px]">
+          <div className="relative mx-auto max-w-180">
+            <h2 className="m-0 mb-4 text-[36px] font-semibold leading-[1.05] tracking-[-.02em] sm:text-[48px]">
               {copy.ctaHeading}
             </h2>
-            <p className="m-0 mb-7.5 text-[18px] text-[#909aa6]">
+            <p className="m-0 mb-8 text-lg text-[#909aa6]">
               {copy.ctaSubheading}
             </p>
             <InstallActions
-              className="mb-7.5"
+              className="mb-8"
               copy={copy}
               locale={locale}
               placement="footer_cta"
             />
-            <p className="m-0 font-mono text-[13px] leading-[1.7] text-[#5d6773]">
+            <p className="m-0 font-mono text-[13px] leading-[1.7] text-[#65707d]">
               {copy.ctaFootnote}
               <br />
               {copy.ctaTagline}
             </p>
-          </Reveal>
-          <div className="relative mx-auto mt-16 flex max-w-295 flex-wrap items-center justify-between gap-4 border-t border-[#161d25] pt-6.5 text-[13px] text-[#5d6773]">
+          </div>
+          <div className="relative mx-auto mt-20 flex max-w-295 flex-wrap items-center justify-between gap-4 border-t border-[#161d25] pt-6 text-[13px] text-[#65707d]">
             <span className="inline-flex items-center gap-2 font-mono">
               <img src={logoUrl} alt="" className="h-5 w-5 rounded-md" />
               Easy Complete

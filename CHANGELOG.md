@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.5.0-beta.1
+
+- feat: granting Accessibility is now drag and drop. "Grant Accessibility" opens the Accessibility list in System Settings with a small panel beside it; drag the Easy Complete tile into the list and the panel closes once access is granted. The panel only shows while System Settings is in front, has a close button, and can be reopened from the setup page or the menu bar icon. Its text follows the dashboard language (English or Chinese). Adapted from [Hex](https://github.com/anomalyco/hex)
+- change: launch no longer pops up macOS's "would like to control this Mac" dialog. When an Accessibility grant stops working (for example after reinstalling), the settings window opens on the setup page instead, even on a silent launch
+- fix: the input method is now optional. It is only needed in Kitty, Alacritty, Zed, Ghostty and WezTerm, so declining it no longer keeps the settings window stuck on "Finish Setup", and "Fix All" skips it (#206)
+- fix: updates no longer reinstall the input method. Install it from the setup page, with `ec integrations install input-method`, or from the prompt shown in a terminal that needs it (#206)
+- change: macOS's "Allow … to enable …?" prompt for the input method is clearer: it now reads "Allow "Easy Complete" to enable "Easy Complete Cursor Tracking"?" instead of naming `ec` and `EasyCompleteInputMethod`. `ec integrations install input-method` hands the install to the running app, the input method no longer enables itself whenever it starts (which also re-asked users who had declined), and the setup page explains that the input method only reads the cursor position, never what you type
+- chore: regenerate the bundled `ec` completion spec, dropping the removed `ec _ callback` subcommand
+
 ## v2.4.1
 
 - fix: the main process no longer grows without bound. Every Accessibility attribute read leaked one `AXUIElement`; after 3 hours the app held 4.3 million of them (~350 MB). Footprint now stays around 50 MB (#203)

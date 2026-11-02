@@ -1,9 +1,5 @@
-use std::fs::File;
-use std::io::{BufWriter, Write};
-use std::path::PathBuf;
 use std::time::SystemTime;
 
-use fig_util::directories;
 use inner::Inner;
 use r2d2::PooledConnection;
 use r2d2_sqlite::SqliteConnectionManager;
@@ -17,17 +13,6 @@ use crate::Result;
 use crate::sqlite::{Db, database};
 
 const ALL_COLUMNS: &str = "id, command, shell, pid, session_id, cwd, start_time, duration, hostname, exit_code";
-
-fn escape_string(s: impl AsRef<str>) -> String {
-    s.as_ref()
-        .replace('\\', "\\\\")
-        .replace('\"', "\\\"")
-        .replace('\n', "\\n")
-        .replace('\t', "\\t")
-        .replace('\r', "\\r")
-        .replace('\x08', "\\b")
-        .replace('\x0c', "\\f")
-}
 
 #[derive(Debug, Clone, Default)]
 pub struct CommandInfo {
@@ -78,7 +63,7 @@ impl History {
         Ok(self.db()?.pool.get()?)
     }
 
-    pub fn insert_command_history(&self, command_info: &CommandInfo, legacy: bool) -> Result<()> {
+    pub fn insert_command_history(&self, command_info: &CommandInfo) -> Result<()> {
         trace!("Inserting command into history: {:?}", command_info);
         // Insert the command into the history table
         // Ensure that the command is not empty
@@ -120,52 +105,6 @@ impl History {
                     &command_info.exit_code,
                 ],
             )?;
-        }
-
-        // Legacy insert into old history file
-        if legacy {
-            let mut legacy_history_file_opts = File::options();
-            legacy_history_file_opts.create(true).append(true);
-
-            #[cfg(unix)]
-            {
-                use std::os::unix::fs::OpenOptionsExt;
-                legacy_history_file_opts.mode(0o600);
-            }
-
-            let legacy_history_file = legacy_history_file_opts.open(
-                [directories::fig_data_dir().unwrap(), "history".into()]
-                    .into_iter()
-                    .collect::<PathBuf>(),
-            )?;
-
-            let mut legacy_history_buff = BufWriter::new(legacy_history_file);
-
-            match command_info.command.as_deref() {
-                Some(command) if !command.is_empty() => {
-                    let exit_code = command_info.exit_code.unwrap_or(0);
-                    let shell = command_info.shell.as_deref().unwrap_or("");
-                    let session_id = command_info.session_id.as_deref().unwrap_or("");
-                    let cwd = command_info.cwd.as_deref().unwrap_or("");
-                    let time = command_info
-                        .start_time
-                        .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok().map(|d| d.as_secs()))
-                        .unwrap_or(0);
-                    let entry = format!(
-                        "\n- command: {}\n  exit_code: {}\n  shell: {}\n  session_id: {}\n  cwd: {}\n  time: {}",
-                        escape_string(command),
-                        exit_code,
-                        escape_string(shell),
-                        escape_string(session_id),
-                        escape_string(cwd),
-                        time
-                    );
-
-                    legacy_history_buff.write_all(entry.as_bytes())?;
-                    legacy_history_buff.flush()?;
-                },
-                _ => {},
-            }
         }
 
         Ok(())
@@ -412,54 +351,45 @@ mod tests {
         history.db().unwrap().migrate().unwrap();
 
         history
-            .insert_command_history(
-                &CommandInfo {
-                    command: Some(CLI_BINARY_NAME.into()),
-                    shell: Some("bash".into()),
-                    pid: Some(123),
-                    session_id: Some("session-id".into()),
-                    cwd: Some("/home/grant/".into()),
-                    start_time: Some(std::time::UNIX_EPOCH + std::time::Duration::from_secs(123)),
-                    end_time: Some(std::time::UNIX_EPOCH + std::time::Duration::from_secs(124)),
-                    hostname: Some("laptop".into()),
-                    exit_code: Some(0),
-                },
-                false,
-            )
+            .insert_command_history(&CommandInfo {
+                command: Some(CLI_BINARY_NAME.into()),
+                shell: Some("bash".into()),
+                pid: Some(123),
+                session_id: Some("session-id".into()),
+                cwd: Some("/home/grant/".into()),
+                start_time: Some(std::time::UNIX_EPOCH + std::time::Duration::from_secs(123)),
+                end_time: Some(std::time::UNIX_EPOCH + std::time::Duration::from_secs(124)),
+                hostname: Some("laptop".into()),
+                exit_code: Some(0),
+            })
             .unwrap();
 
         history
-            .insert_command_history(
-                &CommandInfo {
-                    command: Some("cargo test".into()),
-                    shell: Some("zsh".into()),
-                    pid: Some(124),
-                    session_id: Some("session-id".into()),
-                    cwd: Some("/home/grant/".into()),
-                    start_time: Some(std::time::UNIX_EPOCH + std::time::Duration::from_secs(124)),
-                    end_time: Some(std::time::UNIX_EPOCH + std::time::Duration::from_secs(125)),
-                    hostname: Some("laptop".into()),
-                    exit_code: Some(0),
-                },
-                false,
-            )
+            .insert_command_history(&CommandInfo {
+                command: Some("cargo test".into()),
+                shell: Some("zsh".into()),
+                pid: Some(124),
+                session_id: Some("session-id".into()),
+                cwd: Some("/home/grant/".into()),
+                start_time: Some(std::time::UNIX_EPOCH + std::time::Duration::from_secs(124)),
+                end_time: Some(std::time::UNIX_EPOCH + std::time::Duration::from_secs(125)),
+                hostname: Some("laptop".into()),
+                exit_code: Some(0),
+            })
             .unwrap();
 
         history
-            .insert_command_history(
-                &CommandInfo {
-                    command: Some("cargo run".into()),
-                    shell: Some("zsh".into()),
-                    pid: Some(124),
-                    session_id: Some("session-id".into()),
-                    cwd: Some("/home/grant/".into()),
-                    start_time: Some(std::time::UNIX_EPOCH + std::time::Duration::from_secs(126)),
-                    end_time: None,
-                    hostname: Some("laptop".into()),
-                    exit_code: None,
-                },
-                false,
-            )
+            .insert_command_history(&CommandInfo {
+                command: Some("cargo run".into()),
+                shell: Some("zsh".into()),
+                pid: Some(124),
+                session_id: Some("session-id".into()),
+                cwd: Some("/home/grant/".into()),
+                start_time: Some(std::time::UNIX_EPOCH + std::time::Duration::from_secs(126)),
+                end_time: None,
+                hostname: Some("laptop".into()),
+                exit_code: None,
+            })
             .unwrap();
 
         let rows = history.all_rows().unwrap();

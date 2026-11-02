@@ -45,7 +45,7 @@ pub async fn spawn_history_task() -> HistorySender {
                         exit_code: command.exit_code,
                     };
 
-                    if let Err(err) = history.insert_command_history(&command_info, true) {
+                    if let Err(err) = history.insert_command_history(&command_info) {
                         error!(%err, "Failed to insert command into history");
                     }
                 },

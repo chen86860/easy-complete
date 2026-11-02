@@ -95,20 +95,6 @@ fn reconcile_accessibility_permission() -> bool {
     true
 }
 
-#[cfg(target_os = "macos")]
-fn run_macos_post_install_permission_tasks() {
-    use fig_integrations::Integration;
-    use fig_integrations::input_method::InputMethod;
-    use tracing::warn;
-
-    tokio::spawn(async {
-        let input_method = InputMethod::default();
-        if let Err(err) = input_method.install().await {
-            warn!(%err, "Failed to install input method during post-install permission setup");
-        }
-    });
-}
-
 /// Run items at launch. Returns whether the dashboard must be shown to surface a lost permission,
 /// even on a silent launch.
 #[allow(unused_variables)]
@@ -135,7 +121,10 @@ pub async fn run_install(ctx: Arc<Context>, ignore_immediate_update: bool, is_st
 
     #[cfg(target_os = "macos")]
     if should_run_macos_install {
-        run_macos_post_install_permission_tasks();
+        // The input method is not installed here: only some terminals need it, and enabling an input
+        // source unprompted re-asks users who declined it on every update. It is installed on demand
+        // from the dashboard, `ec integrations install input-method`, or the `ec init` prompt in a
+        // terminal that needs it.
         // First run (no previous_version) = fresh install; otherwise = update.
         if previous_version().is_none() {
             fig_telemetry::track("app_installed");

@@ -55,6 +55,11 @@ function PermissionRow({
             {permission.title}
           </div>
           <StatusBadge state={permission.state} />
+          {permission.optional ? (
+            <span className="rounded-full bg-[var(--ds-chip-bg)] px-2 py-0.5 text-[12px] font-medium text-[var(--ds-label-secondary)]">
+              {t("permission.optional")}
+            </span>
+          ) : null}
         </div>
         <div className="mt-1 text-[12px] leading-[17px] text-[var(--ds-label-secondary)]">
           {permission.description}

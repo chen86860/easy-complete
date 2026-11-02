@@ -132,8 +132,9 @@ const en = {
   "permission.shellIntegration.repair": "Install Shell Hooks",
   "permission.inputMethod.title": "Input Method Integration",
   "permission.inputMethod.description":
-    "Required for cursor tracking in Kitty, Alacritty, Zed, Ghostty, and WezTerm.",
+    "Only needed for cursor tracking in Kitty, Alacritty, Zed, Ghostty, and WezTerm. Terminal.app and iTerm2 work without it.",
   "permission.inputMethod.repair": "Install Input Method",
+  "permission.optional": "Optional",
   "permission.checkError": "Unable to check this requirement.",
   "permission.accessibilityFirst":
     "Grant Accessibility first to enable this step.",
@@ -279,8 +280,9 @@ const zhCN: Record<TranslationKey, string> = {
   "permission.shellIntegration.repair": "安装 Shell 钩子",
   "permission.inputMethod.title": "输入法集成",
   "permission.inputMethod.description":
-    "用于在 Kitty、Alacritty、Zed、Ghostty 和 WezTerm 中跟踪光标位置。",
+    "仅在 Kitty、Alacritty、Zed、Ghostty 和 WezTerm 中用于跟踪光标位置，Terminal.app 和 iTerm2 无需安装。",
   "permission.inputMethod.repair": "安装输入法",
+  "permission.optional": "可选",
   "permission.checkError": "无法检查此要求。",
   "permission.accessibilityFirst": "请先授予辅助功能权限，再执行此步骤。",
   "permission.working": "处理中…",

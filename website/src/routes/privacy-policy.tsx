@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SiteFooter, SiteHeader } from "../components/SiteChrome.tsx";
+import { MAIN_ID, SiteFooter, SiteHeader } from "../components/SiteChrome.tsx";
 import { GITHUB_URL } from "../data.ts";
 import { SeoJsonLd, guideSchema, pageHead } from "../seo.tsx";
 
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/privacy-policy")({
 });
 
 const SECTION_HEADING =
-  "m-0 mb-4 mt-12 text-[22px] font-bold tracking-[-.02em] text-[#e6edf3]";
+  "m-0 mb-4 mt-12 text-[22px] font-semibold tracking-[-.02em] text-[#e6edf3]";
 const PARAGRAPH = "m-0 mb-4 text-[15px] leading-[1.7] text-[#9aa4b0]";
 const CODE_INLINE =
   "rounded-md border border-[#232c36] bg-[#0d1219] px-[6px] py-[2px] font-mono text-[13px] text-[#cdd6e0]";
@@ -68,7 +68,7 @@ const COLLECTED: Array<{ event: string; when: string; extra: string }> = [
 
 function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-[#0a0d12] text-[#e6edf3]">
+    <div className="min-h-dvh bg-[#0a0d12] text-[#e6edf3]">
       <SeoJsonLd
         data={guideSchema({
           title: "Privacy Policy — Easy Complete",
@@ -79,7 +79,7 @@ function PrivacyPage() {
       />
       <SiteHeader active="docs" />
 
-      <main className="mx-auto max-w-190 px-7 pb-24 pt-14">
+      <main id={MAIN_ID} className="mx-auto max-w-190 px-7 pb-24 pt-14">
         <nav
           aria-label="Breadcrumb"
           className="mb-10 font-mono text-xs text-[#65707d]"
@@ -94,11 +94,19 @@ function PrivacyPage() {
           <span className="px-2">/</span>
           <span>Privacy Policy</span>
         </nav>
-        <p className="mb-3 font-mono text-xs uppercase tracking-[.22em] text-(--accent)">
+        <p className="mb-3 font-mono text-xs text-(--accent)">
           Privacy Policy
         </p>
+<<<<<<< Updated upstream
         <h1 className="m-0 mb-4 text-[36px] font-bold leading-[1.1] tracking-[-.03em]">
           Your commands never leave your Mac.
+||||||| Stash base
+        <h1 className="m-0 mb-4 text-[36px] font-bold leading-[1.1] tracking-[-.03em]">
+          What leaves your Mac, and what doesn't.
+=======
+        <h1 className="m-0 mb-4 text-[36px] font-semibold leading-[1.1] tracking-[-.03em]">
+          What leaves your Mac, and what doesn't.
+>>>>>>> Stashed changes
         </h1>
         <p className={PARAGRAPH}>
           Easy Complete's autocomplete engine runs entirely on-device: parsing
@@ -123,7 +131,7 @@ function PrivacyPage() {
         <div className="mb-4 overflow-x-auto rounded-[14px] border border-[#1c232d]">
           <table className="w-full border-collapse text-left text-[14px]">
             <thead>
-              <tr className="border-b border-[#1c232d] bg-[#0d1219] font-mono text-[12.5px] uppercase tracking-wider text-[#6e7884]">
+              <tr className="border-b border-[#1c232d] bg-[#0d1219] font-mono text-[12.5px] text-[#6e7884]">
                 <th className="px-4 py-3 font-medium">Event</th>
                 <th className="px-4 py-3 font-medium">When</th>
                 <th className="px-4 py-3 font-medium">Extra data</th>
@@ -196,6 +204,118 @@ function PrivacyPage() {
           }
         </pre>
 
+<<<<<<< Updated upstream
+||||||| Stash base
+        <h2 className={SECTION_HEADING}>Every network request</h2>
+        <p className={PARAGRAPH}>
+          Usage statistics are only one of the ways the app can reach the
+          network. There is currently no single switch that turns all of them
+          off. If package names or internal hostnames must never leave your
+          machine, disable completions for the affected commands or block
+          outbound traffic for the app and the processes it starts.
+        </p>
+        <div className="mb-4 overflow-x-auto rounded-[14px] border border-[#1c232d]">
+          <table className="w-full border-collapse text-left text-[14px]">
+            <thead>
+              <tr className="border-b border-[#1c232d] bg-[#0d1219] font-mono text-[12.5px] uppercase tracking-wider text-[#6e7884]">
+                <th className="px-4 py-3 font-medium">Source</th>
+                <th className="px-4 py-3 font-medium">What is contacted</th>
+                <th className="px-4 py-3 font-medium">How to turn off</th>
+              </tr>
+            </thead>
+            <tbody>
+              {NETWORK_REQUESTS.map((row) => (
+                <tr
+                  key={row.source}
+                  className="border-b border-[#141a21] last:border-b-0"
+                >
+                  <td className="px-4 py-3 font-mono text-[13px] text-(--accent)">
+                    {row.source}
+                  </td>
+                  <td className="px-4 py-3 leading-[1.55] text-[#9aa4b0]">
+                    {row.target}
+                  </td>
+                  <td className="px-4 py-3 font-mono text-[12.5px] leading-[1.55] text-[#9aa4b0]">
+                    {row.off}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <h2 className={SECTION_HEADING}>What stays on your Mac</h2>
+        <p className={PARAGRAPH}>
+          To suggest commands you have run before, the terminal integration
+          records each command with its working directory, shell, exit code and
+          timestamps in{" "}
+          <code className={CODE_INLINE}>
+            ~/Library/Application Support/easy-complete/data.sqlite3
+          </code>
+          . The file is readable only by your user account and is never
+          uploaded. Commands are stored as typed, so a secret passed on the
+          command line is stored too. Recording continues when history
+          suggestions are hidden. Versions before v2.5.1 also appended the same
+          data to a plain-text <code className={CODE_INLINE}>history</code> file
+          in that folder. Nothing reads it, so you can delete it.
+        </p>
+
+=======
+        <h2 className={SECTION_HEADING}>Every network request</h2>
+        <p className={PARAGRAPH}>
+          Usage statistics are only one of the ways the app can reach the
+          network. There is currently no single switch that turns all of them
+          off. If package names or internal hostnames must never leave your
+          machine, disable completions for the affected commands or block
+          outbound traffic for the app and the processes it starts.
+        </p>
+        <div className="mb-4 overflow-x-auto rounded-[14px] border border-[#1c232d]">
+          <table className="w-full border-collapse text-left text-[14px]">
+            <thead>
+              <tr className="border-b border-[#1c232d] bg-[#0d1219] font-mono text-[12.5px] text-[#6e7884]">
+                <th className="px-4 py-3 font-medium">Source</th>
+                <th className="px-4 py-3 font-medium">What is contacted</th>
+                <th className="px-4 py-3 font-medium">How to turn off</th>
+              </tr>
+            </thead>
+            <tbody>
+              {NETWORK_REQUESTS.map((row) => (
+                <tr
+                  key={row.source}
+                  className="border-b border-[#141a21] last:border-b-0"
+                >
+                  <td className="px-4 py-3 font-mono text-[13px] text-(--accent)">
+                    {row.source}
+                  </td>
+                  <td className="px-4 py-3 leading-[1.55] text-[#9aa4b0]">
+                    {row.target}
+                  </td>
+                  <td className="px-4 py-3 font-mono text-[12.5px] leading-[1.55] text-[#9aa4b0]">
+                    {row.off}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <h2 className={SECTION_HEADING}>What stays on your Mac</h2>
+        <p className={PARAGRAPH}>
+          To suggest commands you have run before, the terminal integration
+          records each command with its working directory, shell, exit code and
+          timestamps in{" "}
+          <code className={CODE_INLINE}>
+            ~/Library/Application Support/easy-complete/data.sqlite3
+          </code>
+          . The file is readable only by your user account and is never
+          uploaded. Commands are stored as typed, so a secret passed on the
+          command line is stored too. Recording continues when history
+          suggestions are hidden. Versions before v2.5.1 also appended the same
+          data to a plain-text <code className={CODE_INLINE}>history</code> file
+          in that folder. Nothing reads it, so you can delete it.
+        </p>
+
+>>>>>>> Stashed changes
         <h2 className={SECTION_HEADING}>Questions</h2>
         <p className={PARAGRAPH}>
           The telemetry implementation is open source — you can audit exactly

@@ -21,6 +21,9 @@
 @theme {
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
   --font-display: "Space Grotesk", system-ui, sans-serif;
+  /* Every bare `transition-*` utility picks up the base curve. */
+  --default-transition-duration: 200ms;
+  --default-transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 html,
@@ -33,6 +36,17 @@ body {
   color: #e6edf3;
   font-family: var(--font-display);
   -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+:where(a, button, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 
 ::selection {
@@ -69,70 +83,6 @@ body {
   animation: ec-pop 0.16s var(--ease-out-quart);
 }
 
-@keyframes ec-marquee {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-  to {
-    /* Exactly one copy of the track — the loop point is invisible. */
-    transform: translate3d(-50%, 0, 0);
-  }
-}
-
-.ec-marquee-track {
-  animation: ec-marquee 42s linear infinite;
-  will-change: transform;
-}
-
-.ec-marquee:hover .ec-marquee-track {
-  animation-play-state: paused;
-}
-
-/* Fade the logos out at both edges instead of cutting them off. */
-.ec-marquee {
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent,
-    #000 9%,
-    #000 91%,
-    transparent
-  );
-  mask-image: linear-gradient(
-    to right,
-    transparent,
-    #000 9%,
-    #000 91%,
-    transparent
-  );
-}
-
-.ec-reveal {
-  opacity: 0;
-  transform: translate3d(0, 22px, 0);
-  transition:
-    opacity 0.56s var(--ease-out-quint),
-    transform 0.56s var(--ease-out-quint);
-}
-
-.ec-reveal.is-visible {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
-}
-
-.ec-action:hover {
-  transform: translate3d(0, -2px, 0);
-}
-
-.ec-action:active {
-  transform: translate3d(0, 0, 0) scale(0.98);
-  transition-duration: 100ms;
-}
-
-.ec-card:active {
-  transform: translate3d(0, -1px, 0) scale(0.995);
-  transition-duration: 100ms;
-}
-
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -143,17 +93,7 @@ body {
     transition-duration: 0.01ms !important;
   }
 
-  .ec-reveal {
-    opacity: 1;
-    transform: none;
-    filter: none;
-  }
-
   .ec-blink {
-    animation: none;
-  }
-
-  .ec-marquee-track {
     animation: none;
   }
 }

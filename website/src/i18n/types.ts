@@ -38,7 +38,6 @@ export const LOCALE_LABEL: Record<Locale, string> = {
  * drift between the English and Chinese pages.
  */
 export interface HomeCopy {
-  badge: string;
   heroHeading: string;
   heroSubheading: string;
   downloadCta: string;

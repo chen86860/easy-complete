@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import {
   SiteFooter,
   SiteHeader,
+  MAIN_ID,
   type LocaleHrefs,
 } from "./SiteChrome.tsx";
 import { LOCALE_PREFIX, type Locale } from "../i18n/types.ts";
@@ -13,7 +14,7 @@ const RELATED_GUIDES_HEADING: Record<Locale, string> = {
 };
 
 export const GUIDE_HEADING =
-  "m-0 mb-4 mt-12 text-[24px] font-bold tracking-[-.025em] text-[#e6edf3]";
+  "m-0 mb-4 mt-12 text-[24px] font-semibold tracking-[-.025em] text-[#e6edf3]";
 export const GUIDE_PARAGRAPH =
   "m-0 mb-5 text-[16px] leading-[1.75] text-[#9aa4b0]";
 export const GUIDE_CODE =
@@ -40,10 +41,10 @@ export function GuidePage({
   const homePath = prefix || "/";
 
   return (
-    <div className="min-h-screen bg-[#0a0d12] text-[#e6edf3]">
+    <div className="min-h-dvh bg-[#0a0d12] text-[#e6edf3]">
       <SiteHeader active="docs" locale={locale} hrefs={hrefs} />
 
-      <main className="mx-auto max-w-215 px-7 pb-24 pt-14">
+      <main id={MAIN_ID} className="mx-auto max-w-215 px-7 pb-24 pt-14">
         <nav
           aria-label="Breadcrumb"
           className="mb-10 font-mono text-xs text-[#65707d]"
@@ -65,10 +66,10 @@ export function GuidePage({
           <span>{eyebrow}</span>
         </nav>
 
-        <p className="mb-4 font-mono text-xs uppercase tracking-[.22em] text-(--accent)">
+        <p className="mb-4 font-mono text-xs text-(--accent)">
           {eyebrow}
         </p>
-        <h1 className="m-0 mb-5 max-w-190 text-[clamp(2.4rem,7vw,4.7rem)] font-bold leading-[.98] tracking-[-.045em] text-balance">
+        <h1 className="m-0 mb-5 max-w-190 text-[clamp(2.4rem,7vw,4.7rem)] font-semibold leading-[.98] tracking-[-.025em] text-balance">
           {title}
         </h1>
         <p className="m-0 mb-12 max-w-180 text-[19px] leading-[1.65] text-[#9aa4b0]">
@@ -108,7 +109,7 @@ export function RelatedGuides({
 }) {
   return (
     <section className="mt-16 border-t border-[#1c232d] pt-9">
-      <h2 className="m-0 mb-5 text-[22px] font-bold">
+      <h2 className="m-0 mb-5 text-[22px] font-semibold">
         {RELATED_GUIDES_HEADING[locale]}
       </h2>
       <div className="grid gap-3 sm:grid-cols-2">

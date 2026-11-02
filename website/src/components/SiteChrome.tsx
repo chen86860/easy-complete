@@ -26,8 +26,8 @@ const FOOTER_LABELS: Record<
     docs: "Docs",
     install: "Install",
     troubleshooting: "Troubleshooting",
-    privacy: "Privacy Policy",
-    moreTools: "EMMMM.DEV Tools",
+    privacy: "Privacy policy",
+    moreTools: "More tools from EMMMM.DEV",
   },
   "zh-CN": {
     docs: "文档",
@@ -144,7 +144,7 @@ export function LocaleMenu({
         aria-expanded={open}
         aria-label={MENU_TRIGGER_LABEL[locale]}
         title={MENU_TRIGGER_LABEL[locale]}
-        className="inline-flex items-center gap-1 rounded-lg border border-[#2b333d] px-2.5 py-1.75 text-[#9aa4b0] transition-colors hover:border-[#475060] hover:bg-[#141a22] hover:text-[#e6edf3]"
+        className="inline-flex h-9 items-center gap-1 rounded-lg border border-[#2b333d] px-2.5 text-[#9aa4b0] transition-colors hover:border-[#475060] hover:bg-[#141a22] hover:text-[#e6edf3]"
       >
         <GlobeIcon />
         <ChevronDownIcon />
@@ -153,7 +153,7 @@ export function LocaleMenu({
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-[calc(100%+8px)] z-50 min-w-44 overflow-hidden rounded-xl border border-[#242d38] bg-[#0d1219] py-1 shadow-[0_22px_48px_-16px_rgba(0,0,0,.85)]"
+          className="absolute right-0 top-[calc(100%+8px)] z-50 min-w-44 overflow-hidden rounded-xl border border-[#242d38] bg-[#0d1219] py-1 shadow-[0_24px_48px_-16px_rgba(0,0,0,.85)]"
         >
           {items.map((item) => {
             const checked = pref === item;
@@ -164,7 +164,7 @@ export function LocaleMenu({
                 role="menuitemradio"
                 aria-checked={checked}
                 onClick={() => choose(item)}
-                className={`flex w-full items-center gap-2.5 px-3.5 py-2 text-left text-sm transition-colors hover:bg-[#151c26] ${
+                className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-[#151c26] ${
                   checked ? "text-(--accent)" : "text-[#cdd6e0]"
                 }`}
               >
@@ -186,6 +186,19 @@ const DOWNLOAD_LABEL: Record<Locale, string> = {
   "zh-CN": "下载",
 };
 
+const SKIP_LABEL: Record<Locale, string> = {
+  en: "Skip to content",
+  "zh-CN": "跳到主要内容",
+};
+
+const MENU_TOGGLE_LABEL: Record<Locale, { open: string; close: string }> = {
+  en: { open: "Open menu", close: "Close menu" },
+  "zh-CN": { open: "打开菜单", close: "关闭菜单" },
+};
+
+/** The id every page puts on its `<main>`, for the skip link. */
+export const MAIN_ID = "main";
+
 function navLinks(locale: Locale) {
   const prefix = LOCALE_PREFIX[locale];
   const labels = NAV_LABELS[locale];
@@ -194,6 +207,21 @@ function navLinks(locale: Locale) {
     { href: `${homePath}#features`, label: labels.features, key: "features" },
     { href: `${prefix}/docs`, label: labels.docs, key: "docs" },
   ] as const;
+}
+
+/** The mobile menu carries the nav plus the two guides people look for most. */
+function mobileMenuLinks(locale: Locale) {
+  const labels = FOOTER_LABELS[locale];
+  const [install, troubleshooting] = footerLinks(locale).slice(1, 3);
+  return [
+    ...navLinks(locale),
+    { href: install!.href, label: labels.install, key: "install" },
+    {
+      href: troubleshooting!.href,
+      label: labels.troubleshooting,
+      key: "troubleshooting",
+    },
+  ];
 }
 
 interface FooterLink {
@@ -217,6 +245,22 @@ function footerLinks(locale: Locale): FooterLink[] {
   ];
 }
 
+/** Two bars that turn into an X; animated on the base curve. */
+function MenuIcon({ open }: { open: boolean }) {
+  const bar =
+    "absolute left-0 h-0.5 w-full rounded-full bg-current transition-transform duration-500 ease-(--ease-out-quint)";
+  return (
+    <span aria-hidden="true" className="relative block h-3 w-4.5">
+      <span
+        className={`${bar} top-0.5 ${open ? "translate-y-1 rotate-45" : ""}`}
+      />
+      <span
+        className={`${bar} bottom-0.5 ${open ? "-translate-y-1 -rotate-45" : ""}`}
+      />
+    </span>
+  );
+}
+
 interface SiteHeaderProps {
   /** `transparent` sits over the home hero glow; `bordered` is for inner pages. */
   variant?: "transparent" | "bordered";
@@ -233,89 +277,185 @@ export function SiteHeader({
   hrefs,
 }: SiteHeaderProps = {}) {
   // The transparent variant sits over the hero glow, so it only takes on a
-  // backdrop once the page has scrolled under it.
+  // backdrop once a sentinel at the very top of the page scrolls out of view.
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (variant !== "transparent") return;
+    const node = sentinelRef.current;
+    if (variant !== "transparent" || !node) return;
 
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    const observer = new IntersectionObserver(([entry]) =>
+      setScrolled(!entry?.isIntersecting),
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
   }, [variant]);
 
-  const opaque = variant !== "transparent" || scrolled;
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+    const closeOnDesktop = window.matchMedia("(min-width: 40rem)");
+    const onResize = () => closeOnDesktop.matches && setMenuOpen(false);
+
+    document.documentElement.style.overflow = "hidden";
+    document.addEventListener("keydown", onKeyDown);
+    closeOnDesktop.addEventListener("change", onResize);
+    return () => {
+      document.documentElement.style.overflow = "";
+      document.removeEventListener("keydown", onKeyDown);
+      closeOnDesktop.removeEventListener("change", onResize);
+    };
+  }, [menuOpen]);
+
+  const opaque = variant !== "transparent" || scrolled || menuOpen;
 
   return (
-    <header
-      className={`sticky top-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-200 ${
-        opaque
-          ? "border-b border-[#161d25] bg-[#0a0d12]/85 backdrop-blur-md supports-[backdrop-filter]:bg-[#0a0d12]/70"
-          : "border-b border-transparent bg-transparent"
-      }`}
-    >
-      <div className="mx-auto flex max-w-310 items-center gap-5 px-7 py-3.5">
-        <a
-          href={LOCALE_PREFIX[locale] || "/"}
-          className="flex items-center gap-2.5 font-mono text-[16px] font-bold tracking-tight"
-        >
-          <img
-            src={logoUrl}
-            alt=""
-            className="h-8 w-8 rounded-[9px] shadow-[0_0_24px_-12px_var(--accent)]"
-          />
-          <span>Easy Complete</span>
-        </a>
+    <>
+      <a
+        href={`#${MAIN_ID}`}
+        className="sr-only rounded-lg bg-(--accent) px-4 py-2 text-sm font-medium text-[#06140a] focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-60"
+      >
+        {SKIP_LABEL[locale]}
+      </a>
+      <div
+        ref={sentinelRef}
+        aria-hidden="true"
+        className="pointer-events-none absolute top-0 left-0 h-2 w-px"
+      />
 
-        <nav className="ml-auto flex items-center gap-2 text-sm sm:gap-6.5">
-          {navLinks(locale).map((link) => (
+      <header className="sticky top-0 z-50 px-3 pt-3 sm:px-5">
+        <div
+          className={`mx-auto flex max-w-310 items-center gap-3 rounded-2xl border py-2 pr-2 pl-3 sm:gap-5 transition-[background-color,border-color] duration-300 sm:pl-5 ${
+            opaque
+              ? "border-[#1c232d] bg-[#0a0d12]/85 backdrop-blur-md"
+              : "border-transparent bg-transparent"
+          }`}
+        >
+          <a
+            href={LOCALE_PREFIX[locale] || "/"}
+            className="flex shrink-0 items-center gap-2.5 rounded-lg font-mono text-base font-medium whitespace-nowrap"
+          >
+            <img
+              src={logoUrl}
+              alt=""
+              className="h-8 w-8 rounded-lg"
+            />
+            <span>Easy Complete</span>
+          </a>
+
+          <nav className="ml-auto flex min-w-0 items-center gap-2 text-sm sm:gap-6">
+            {navLinks(locale).map((link) => (
+              <a
+                key={link.key}
+                href={link.href}
+                aria-current={active === link.key ? "page" : undefined}
+                className={`hidden rounded-md transition-colors sm:inline ${
+                  active === link.key
+                    ? "text-(--accent)"
+                    : "text-[#9aa4b0] hover:text-[#e6edf3]"
+                }`}
+              >
+                {link.label}
+              </a>
+            ))}
+
+            {hrefs && <LocaleMenu locale={locale} hrefs={hrefs} />}
+
+            <a
+              href={GITHUB_URL}
+              onClick={() =>
+                captureEvent("website_github_clicked", {
+                  locale,
+                  placement: "header",
+                })
+              }
+              aria-label="Easy Complete on GitHub"
+              className="hidden h-9 items-center gap-2 rounded-lg border border-[#2b333d] px-3 text-[#e6edf3] transition-[color,background-color,border-color,scale] hover:border-[#475060] hover:bg-[#141a22] active:scale-[.98] sm:inline-flex"
+            >
+              <GitHubIcon />
+              <span>GitHub</span>
+            </a>
+            <a
+              href={DOWNLOAD_URL}
+              onClick={() =>
+                captureEvent("website_download_clicked", {
+                  locale,
+                  placement: "header",
+                })
+              }
+              className="hidden h-9 items-center gap-2 rounded-lg bg-(--accent) px-4 font-medium whitespace-nowrap text-[#06140a] transition-[filter,scale] hover:brightness-110 active:scale-[.98] sm:inline-flex"
+            >
+              <AppleIcon />
+              {DOWNLOAD_LABEL[locale]}
+            </a>
+
+            <button
+              type="button"
+              onClick={() => setMenuOpen((value) => !value)}
+              aria-expanded={menuOpen}
+              aria-controls="site-mobile-menu"
+              aria-label={MENU_TOGGLE_LABEL[locale][menuOpen ? "close" : "open"]}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-[#cdd6e0] transition-colors hover:bg-[#141a22] hover:text-[#e6edf3] sm:hidden"
+            >
+              <MenuIcon open={menuOpen} />
+            </button>
+          </nav>
+        </div>
+      </header>
+
+      <div
+        id="site-mobile-menu"
+        inert={!menuOpen}
+        className={`fixed inset-0 z-40 bg-[#0a0d12]/95 px-6 pt-24 pb-10 backdrop-blur-md transition-opacity duration-300 sm:hidden ${
+          menuOpen ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+      >
+        <nav className="flex flex-col">
+          {[
+            ...mobileMenuLinks(locale),
+            { href: GITHUB_URL, label: "GitHub", key: "github" },
+          ].map((link, index) => (
             <a
               key={link.key}
               href={link.href}
+              onClick={() => setMenuOpen(false)}
               aria-current={active === link.key ? "page" : undefined}
-              className={`hidden transition-colors sm:inline ${
+              style={{ transitionDelay: menuOpen ? `${index * 60}ms` : "0ms" }}
+              className={`border-b border-[#161d25] py-4 text-2xl font-medium transition-[opacity,translate,color] duration-500 ease-(--ease-out-quint) ${
+                menuOpen ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
+              } ${
                 active === link.key
                   ? "text-(--accent)"
-                  : "text-[#9aa4b0] hover:text-[#e6edf3]"
+                  : "text-[#e6edf3] hover:text-(--accent)"
               }`}
             >
               {link.label}
             </a>
           ))}
-
-          {hrefs && <LocaleMenu locale={locale} hrefs={hrefs} />}
-
-          <a
-            href={GITHUB_URL}
-            onClick={() =>
-              captureEvent("website_github_clicked", {
-                locale,
-                placement: "header",
-              })
-            }
-            aria-label="Easy Complete on GitHub"
-            className="inline-flex items-center gap-1.75 rounded-lg border border-[#2b333d] px-3.25 py-1.75 text-[#e6edf3] transition-colors hover:border-[#475060] hover:bg-[#141a22]"
-          >
-            <GitHubIcon />
-            <span className="hidden sm:inline">GitHub</span>
-          </a>
-          <a
-            href={DOWNLOAD_URL}
-            onClick={() =>
-              captureEvent("website_download_clicked", {
-                locale,
-                placement: "header",
-              })
-            }
-            className="inline-flex items-center gap-1.75 rounded-lg bg-(--accent) px-4 py-2 font-semibold text-[#06140a] transition hover:brightness-110 hover:shadow-[0_8px_24px_-8px_var(--accent-line)]"
-          >
-            <AppleIcon />
-            {DOWNLOAD_LABEL[locale]}
-          </a>
         </nav>
+        <a
+          href={DOWNLOAD_URL}
+          onClick={() =>
+            captureEvent("website_download_clicked", {
+              locale,
+              placement: "mobile_menu",
+            })
+          }
+          style={{ transitionDelay: menuOpen ? "300ms" : "0ms" }}
+          className={`mt-8 flex items-center justify-center gap-2 rounded-xl bg-(--accent) px-5 py-3.5 text-base font-medium text-[#06140a] transition-[opacity,translate,filter] duration-500 hover:brightness-110 active:scale-[.98] ${
+            menuOpen ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
+          }`}
+        >
+          <AppleIcon />
+          {DOWNLOAD_LABEL[locale]}
+        </a>
       </div>
-    </header>
+    </>
   );
 }
 

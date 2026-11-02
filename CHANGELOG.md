@@ -2,6 +2,7 @@
 
 ## v2.5.0-beta.2
 
+- fix: the drag-to-grant Accessibility panel now appears when macOS is not in English. It found System Settings by its English window owner name, which is localized (for example "系统设置"), so the panel never showed and the flying tile stayed stuck by the button
 - feat: support the Herdr desktop app (`dev.herdr.app`). Completions now appear in its terminals, and the popup follows the caret through the input method, like Ghostty and Zed. Herdr was not recognized before, so the popup stayed hidden whenever it was in front (#205)
 - change: shells in Rex no longer launch `ecterm`. Rex picks each pane's agent icon from its foreground process, which `ecterm` hid, so Claude Code, Codex and other agents showed the default icon. Rex is not a supported terminal yet, so this costs no completions there
 

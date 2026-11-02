@@ -178,13 +178,21 @@ static void drawTile(NSRect bounds, NSImage *icon, NSString *name, BOOL dark) {
 @end
 
 static CGRect currentSettingsFrame(void) {
+    // Match by process, not kCGWindowOwnerName: the owner name is localized
+    // ("系统设置" on a Chinese system), so a name match finds nothing there.
+    NSMutableSet<NSNumber *> *pids = [NSMutableSet set];
+    for (NSRunningApplication *app in
+         [NSRunningApplication runningApplicationsWithBundleIdentifier:settingsBundleID]) {
+        [pids addObject:@(app.processIdentifier)];
+    }
+    if (pids.count == 0) {
+        return CGRectNull;
+    }
     NSArray *windows = CFBridgingRelease(CGWindowListCopyWindowInfo(
         kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements, kCGNullWindowID));
     CGRect best = CGRectNull;
     for (NSDictionary *window in windows) {
-        NSString *owner = window[(id)kCGWindowOwnerName];
-        if (![owner isEqualToString:@"System Settings"] &&
-            ![owner isEqualToString:@"System Preferences"]) {
+        if (![pids containsObject:@([window[(id)kCGWindowOwnerPID] intValue])]) {
             continue;
         }
         if ([window[(id)kCGWindowLayer] integerValue] != 0) {

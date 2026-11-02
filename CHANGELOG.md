@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.5.0-beta.2
+
+- feat: support the Herdr desktop app (`dev.herdr.app`). Completions now appear in its terminals, and the popup follows the caret through the input method, like Ghostty and Zed. Herdr was not recognized before, so the popup stayed hidden whenever it was in front (#205)
+
 ## v2.5.0-beta.1
 
 - feat: granting Accessibility is now drag and drop. "Grant Accessibility" opens the Accessibility list in System Settings with a small panel beside it; drag the Easy Complete tile into the list and the panel closes once access is granted. The panel only shows while System Settings is in front, has a close button, and can be reopened from the setup page or the menu bar icon. Its text follows the dashboard language (English or Chinese). Adapted from [Hex](https://github.com/anomalyco/hex)

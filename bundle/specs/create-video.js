@@ -1,1 +1,1 @@
-var e={name:"create-video",description:"CLI used to create remotion video project",icon:"https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/static/img/logo-small.png"},o=e;export{o as default};
+var e={name:"create-video",description:"CLI used to create remotion video project",icon:"spec://localhost/icons/remote/297aff953f6d305f.png"},o=e;export{o as default};

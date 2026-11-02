@@ -29,3 +29,5 @@ auditConfig:
   ignoreGhsas:
     # braces 3.0.3 via micromatch (tailwindcss 3 build tooling). No fixed release is published.
     - GHSA-vfj7-8cjw-p6xm
+minimumReleaseAgeExclude:
+  - '@chen86860/autocomplete-specs@3.1.1'

@@ -8,6 +8,7 @@ import { createRequire } from "node:module";
 import { promisify } from "node:util";
 import { createHash } from "node:crypto";
 import { generateEcSpec } from "./generate-ec-spec.mjs";
+import { localizeSpecIcons } from "./localize-spec-icons.mjs";
 
 const execFileAsync = promisify(execFile);
 const require = createRequire(import.meta.url);
@@ -435,6 +436,9 @@ if (sourceMode === "dependency") {
 } else {
   throw new Error(`Unsupported BUNDLED_SPECS_SOURCE: ${sourceMode}`);
 }
+
+// Bundle the remote icons the specs reference so rendering suggestions stays offline.
+await localizeSpecIcons(outDir);
 
 // The upstream package has no spec for our own CLI, so generate it from clap and
 // append it to the freshly written bundle. Must run last: the sync modes above

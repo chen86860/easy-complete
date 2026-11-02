@@ -1,1 +1,1 @@
-var e={name:"create-remix",icon:"https://remix.run/favicon-light.1.png",options:[{name:["-h","--help"],description:"Display help for command"},{name:["-v","--version"],description:"Display version for command"}]},i=e;export{i as default};
+var e={name:"create-remix",icon:"spec://localhost/icons/remote/4e202ee3c40fc0e7.png",options:[{name:["-h","--help"],description:"Display help for command"},{name:["-v","--version"],description:"Display version for command"}]},o=e;export{o as default};

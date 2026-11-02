@@ -28,8 +28,8 @@ importers:
   .:
     devDependencies:
       '@chen86860/autocomplete-specs':
-        specifier: 3.1.0
-        version: 3.1.0
+        specifier: 3.1.1
+        version: 3.1.1
       '@vitest/coverage-v8':
         specifier: ^4.1.12
         version: 4.1.12(vitest@4.1.12)
@@ -634,8 +634,8 @@ packages:
   '@bufbuild/protoplugin@2.13.0':
     resolution: {integrity: sha512-32eMChKaL/A8Hh5AfMmXSdnuyznN85uoEjoyWiWeRrvtQOtpqX/v1R9PDe0g9vMIgzznK9inMT3CUaal0kjLUQ==}
 
-  '@chen86860/autocomplete-specs@3.1.0':
-    resolution: {integrity: sha512-4+ODetigET+gp9/Q2z8RwGvZ3Z5OTKtnt+TVj2XJLtyKAaQI+HNCT2T8iKFJx9hXLWV9xnEKuqZbeGvjy/Spcg==}
+  '@chen86860/autocomplete-specs@3.1.1':
+    resolution: {integrity: sha512-csBBmosAPv0dxgvM2ZhctGaCeKWCe286bO9JMGEDIED1fbmzsrtRxMIPIfxSaI38X31olsRIQbFSw+jKi0524Q==}
     engines: {node: '>=20', pnpm: '>=9'}
 
   '@cspotcode/source-map-support@0.8.1':
@@ -3002,7 +3002,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@chen86860/autocomplete-specs@3.1.0':
+  '@chen86860/autocomplete-specs@3.1.1':
     dependencies:
       '@fig/autocomplete-generators': 2.4.0
       '@fig/autocomplete-helpers': 1.0.7

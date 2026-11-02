@@ -69,7 +69,7 @@ for the full list of what is and isn't collected.
   [Apple Terminal](https://support.apple.com/guide/terminal/welcome/mac),
   [Ghostty](https://ghostty.org/), [Kitty](https://sw.kovidgoyal.net/kitty/),
   [WezTerm](https://wezterm.org/), [Alacritty](https://alacritty.org/),
-  [Zed](https://zed.dev/) and [Otty](https://otty.sh/), plus the integrated terminals in
+  [Zed](https://zed.dev/), [Otty](https://otty.sh/) and [Herdr](https://herdr.dev/), plus the integrated terminals in
   [VS Code](https://code.visualstudio.com/), [Cursor](https://cursor.com/),
   [Kiro](https://kiro.dev/), [ChatGPT (Codex)](https://openai.com/codex/) and
   [JetBrains IDEs](https://www.jetbrains.com/). Also works inside
@@ -181,7 +181,7 @@ ec settings <key> <value>       # change a setting
 Most terminals work out of the box via the PTY integration — including iTerm2, Apple
 Terminal, JetBrains IDE terminals, ChatGPT (Codex), and VS Code along with editors built on
 it (Cursor, Windsurf, Trae, Kiro). Terminals that bypass the standard PTY path
-(**Ghostty, Kitty, WezTerm, Zed, Alacritty, Otty**) additionally rely on the bundled input
+(**Ghostty, Kitty, WezTerm, Zed, Alacritty, Otty, Herdr**) additionally rely on the bundled input
 method for cursor tracking — this is registered automatically during install.
 
 Terminal multiplexers work too: completions appear inside **tmux** and **Zellij** panes,

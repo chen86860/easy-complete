@@ -28,6 +28,7 @@ pub const MACOS_TERMINALS: &[Terminal] = &[
     Terminal::Otty,
     Terminal::Codex,
     Terminal::Kiro,
+    Terminal::Herdr,
 ];
 
 /// Terminals that Linux supports
@@ -178,6 +179,8 @@ pub enum Terminal {
     Codex,
     /// Kiro <https://kiro.dev/>
     Kiro,
+    /// Herdr desktop app <https://herdr.dev/>, a GPUI client for the herdr agent multiplexer
+    Herdr,
 
     /// Custom terminal to support user/custom entries
     Custom(CustomTerminal),
@@ -224,6 +227,7 @@ impl fmt::Display for Terminal {
             Terminal::Otty => write!(f, "Otty"),
             Terminal::Codex => write!(f, "ChatGPT"),
             Terminal::Kiro => write!(f, "Kiro"),
+            Terminal::Herdr => write!(f, "Herdr"),
             Terminal::Custom(custom_terminal) => write!(f, "{}", custom_terminal.name),
         }
     }
@@ -259,6 +263,7 @@ impl Terminal {
             Some("guake") => return Some(Terminal::Guake),
             Some("ghostty") => return Some(Terminal::Ghostty),
             Some("otty") => return Some(Terminal::Otty),
+            Some("herdr") => return Some(Terminal::Herdr),
             _ => (),
         };
 
@@ -394,6 +399,7 @@ impl Terminal {
             Terminal::Otty => "otty".into(),
             Terminal::Codex => "codex".into(),
             Terminal::Kiro => "kiro".into(),
+            Terminal::Herdr => "herdr".into(),
             Terminal::Custom(custom_terminal) => custom_terminal.id.clone().into(),
         }
     }
@@ -427,6 +433,7 @@ impl Terminal {
             Terminal::Otty => Some("io.appmakes.otty".into()),
             Terminal::Codex => Some("com.openai.codex".into()),
             Terminal::Kiro => Some("dev.kiro.desktop".into()),
+            Terminal::Herdr => Some("dev.herdr.app".into()),
             Terminal::Custom(custom_terminal) => custom_terminal.macos.bundle_id.clone().map(Cow::Owned),
             _ => None,
         }
@@ -458,6 +465,7 @@ impl Terminal {
             "io.appmakes.otty" => Terminal::Otty,
             "com.openai.codex" => Terminal::Codex,
             "dev.kiro.desktop" => Terminal::Kiro,
+            "dev.herdr.app" => Terminal::Herdr,
             // TODO: the following line does not account for Android Studio
             _ if bundle.starts_with("com.jetbrains.") | bundle.starts_with("com.google.") => {
                 Terminal::IntelliJ(IntelliJVariant::from_bundle_id(bundle))
@@ -480,6 +488,7 @@ impl Terminal {
                 | Terminal::Rio
                 | Terminal::Ghostty
                 | Terminal::Otty
+                | Terminal::Herdr
         ) || self.as_custom().is_some_and(|c| c.macos.input_method)
     }
 
@@ -544,6 +553,8 @@ impl Terminal {
             // Main binary is ChatGPT; the PTY host is Contents/Resources/codex (lowercase).
             Terminal::Codex => &["ChatGPT", "Codex", "codex"],
             Terminal::Kiro => &["Kiro", "kiro"],
+            // Panes are spawned by the `herdr-core` daemon, not by the app itself.
+            Terminal::Herdr => &["Herdr", "herdr-core"],
 
             Terminal::Ssh => &["sshd"],
             Terminal::Tmux => &["tmux", "tmux: server"],
@@ -929,5 +940,19 @@ mod tests {
         assert!(!Terminal::Kiro.supports_macos_input_method());
         assert!(!Terminal::Kiro.supports_fancy_boxes());
         assert!(Terminal::Kiro.executable_names().contains(&"Kiro"));
+    }
+
+    #[test]
+    fn test_herdr_detection() {
+        assert_eq!(Terminal::from_bundle_id("dev.herdr.app"), Some(Terminal::Herdr));
+        assert_eq!(Terminal::Herdr.to_bundle_id().as_deref(), Some("dev.herdr.app"));
+        assert_eq!(Terminal::Herdr.internal_id(), "herdr");
+        assert!(MACOS_TERMINALS.contains(&Terminal::Herdr));
+
+        // GPUI + libghostty-vt: the terminal view reports the caret through
+        // `firstRectForCharacterRange`, the same IME path as Zed.
+        assert!(Terminal::Herdr.supports_macos_input_method());
+        assert!(!Terminal::Herdr.is_xterm());
+        assert!(Terminal::Herdr.executable_names().contains(&"herdr-core"));
     }
 }

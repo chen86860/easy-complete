@@ -46,6 +46,15 @@ echo "Regenerating THIRD_PARTY_NOTICES.txt..."
 (cd "$REPO_DIR" && node scripts/generate-third-party-notices.mjs)
 
 echo "Done. Next steps:"
-echo "  1. Add a ## v${VERSION} entry to both CHANGELOG.md (English) and CHANGELOG.zh-CN.md (Chinese)"
-echo "  2. git add -A && git commit -m \"chore: bump version to v${VERSION}\"  # includes Cargo.lock"
-echo "  3. git tag v${VERSION} && git push origin main --tags"
+# Prereleases get no CHANGELOG section (see AGENTS.md); the stable release covers them.
+# Same pattern release.yml uses to publish a tag as a prerelease.
+if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+-(alpha|beta|rc)(\.[0-9A-Za-z-]+)*$ ]]; then
+  echo "  (prerelease: no CHANGELOG entry; put any notes in the GitHub prerelease body)"
+  echo "  1. git add -A && git commit -m \"chore: bump version to v${VERSION}\"  # includes Cargo.lock"
+  echo "  2. git tag v${VERSION} && git push origin main --tags"
+else
+  echo "  1. Add a ## v${VERSION} entry to both CHANGELOG.md (English) and CHANGELOG.zh-CN.md (Chinese),"
+  echo "     covering every change since the previous stable release"
+  echo "  2. git add -A && git commit -m \"chore: bump version to v${VERSION}\"  # includes Cargo.lock"
+  echo "  3. git tag v${VERSION} && git push origin main --tags"
+fi

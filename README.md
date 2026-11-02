@@ -35,11 +35,13 @@ a lightweight, fully local alternative to Fig.
 
 You get fish-shell-style suggestions for hundreds of CLIs (`git`, `npm`, `docker`,
 `cargo`, …): flags, subcommands, file paths, and arguments, completed as you type.
-Autocomplete runs fully on-device — no account, no cloud calls, no AI requests, and
-your commands never leave your Mac. The app collects anonymous usage statistics
-(app opens, daily completion counts — never command content), which you can disable
-any time with `ec telemetry disable`. See the [Privacy page](https://easy-complete.emmmm.dev/privacy-policy)
-for the full list of what is and isn't collected.
+Autocomplete runs on-device, with no account and no AI requests. The app collects
+anonymous usage statistics (app opens, daily completion counts, never command content),
+which you can disable any time with `ec telemetry disable`. It also checks GitHub for
+updates, and a few specs look up live data while you type: the npm-family specs send the
+package name you are typing to the npm registry, for example. The
+[Privacy page](https://easy-complete.emmmm.dev/privacy-policy) lists every network
+request, what stays on your Mac, and how to turn each one off.
 
 <p align="center">
   <img src="./.github/media/screenshot.png" alt="Easy Complete autocomplete in action">
@@ -63,8 +65,9 @@ for the full list of what is and isn't collected.
 
 - **IDE-style inline completions** — subcommands, flags, arguments and file paths for
   hundreds of CLIs, rendered in a native overlay that follows your terminal cursor.
-- **Fully offline** — completion specs are bundled into the `.app` at build time and
-  loaded from disk. There is no network fallback, no account, and no AI request.
+- **Bundled specs** — completion specs and their icons are bundled into the `.app` at
+  build time and loaded from disk. There is no network fallback, no account, and no AI
+  request.
 - **Works with the terminals you already use** — [iTerm2](https://iterm2.com/),
   [Apple Terminal](https://support.apple.com/guide/terminal/welcome/mac),
   [Ghostty](https://ghostty.org/), [Kitty](https://sw.kovidgoyal.net/kitty/),

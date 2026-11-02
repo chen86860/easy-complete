@@ -34,9 +34,11 @@
 
 你会在输入 `git`、`npm`、`docker`、`cargo` 等数百种命令行工具时，获得类似 fish shell 的
 建议：参数、子命令、文件路径、选项，边打边补。
-自动补全完全在本机运行——无需账号、无云端调用、无 AI 请求，你的命令内容永远不会离开你的
-Mac。应用会收集匿名使用统计（打开次数、每日补全次数——绝不包含命令内容），可随时通过
-`ec telemetry disable` 关闭。完整的采集清单见[隐私页面](https://easy-complete.emmmm.dev/privacy-policy)。
+自动补全在本机运行，无需账号，也没有 AI 请求。应用会收集匿名使用统计（打开次数、每日补全
+次数，绝不包含命令内容），可随时通过 `ec telemetry disable` 关闭。此外，应用会向 GitHub
+检查更新；少数 spec 会在输入时查询在线数据，例如 npm 系列的 spec 会把你正在输入的包名发给
+npm registry。所有联网请求、留在本机的数据以及各自的关闭方式，见
+[隐私页面](https://easy-complete.emmmm.dev/privacy-policy)。
 
 <p align="center">
   <img src="./.github/media/screenshot.png" alt="Easy Complete 自动补全效果">
@@ -60,8 +62,8 @@ Mac。应用会收集匿名使用统计（打开次数、每日补全次数—�
 
 - **IDE 风格的行内补全** —— 为数百种 CLI 提供子命令、参数、选项和文件路径补全，以跟随
   终端光标的原生浮层呈现。
-- **完全离线** —— 补全 spec 在构建时打包进 `.app`，运行时直接从本地读取，**没有**网络
-  回退，无需账号，也不发起任何 AI 请求。
+- **内置 spec** —— 补全 spec 及其图标在构建时打包进 `.app`，运行时直接从本地读取，
+  **没有**网络回退，无需账号，也不发起任何 AI 请求。
 - **兼容你正在用的终端** —— [iTerm2](https://iterm2.com/)、
   [Apple Terminal](https://support.apple.com/zh-cn/guide/terminal/welcome/mac)、
   [Ghostty](https://ghostty.org/)、[Kitty](https://sw.kovidgoyal.net/kitty/)、

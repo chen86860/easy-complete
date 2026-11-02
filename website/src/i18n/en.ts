@@ -10,7 +10,7 @@ import {
 import type { DocsCopy, HomeCopy } from "./types.ts";
 
 export const homeCopyEn: HomeCopy = {
-  badge: "macOS · 100% local · open source",
+  badge: "macOS · local-first · open source",
   heroHeading: "Autocomplete for your macOS terminal",
   heroSubheading:
     "Fish-shell-style suggestions for hundreds of CLIs — git, npm, docker, cargo. Native, fast, and entirely on-device.",

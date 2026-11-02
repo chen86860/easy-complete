@@ -4,7 +4,7 @@ import { GITHUB_URL } from "../data.ts";
 import { SeoJsonLd, guideSchema, pageHead } from "../seo.tsx";
 
 const PRIVACY_DESCRIPTION =
-  "What anonymous usage data Easy Complete collects, what it never collects, and how to turn telemetry off.";
+  "What anonymous usage data Easy Complete collects, every network request the app can make, what stays on your Mac, and how to turn each one off.";
 
 export const Route = createFileRoute("/privacy-policy")({
   head: () =>
@@ -66,6 +66,40 @@ const COLLECTED: Array<{ event: string; when: string; extra: string }> = [
   },
 ];
 
+const NETWORK_REQUESTS: Array<{ source: string; target: string; off: string }> =
+  [
+    {
+      source: "Usage statistics",
+      target:
+        "ana.emmmm.dev (our PostHog proxy) — the events listed above, nothing else",
+      off: "ec telemetry disable",
+    },
+    {
+      source: "Update checks",
+      target:
+        "github.com — the appcast.xml release feed, and the new build when one is installed",
+      off: "ec settings app.disableAutoupdates true",
+    },
+    {
+      source: "Dynamic completions",
+      target:
+        "A few completion specs look up live data while you type. The npm, pnpm, yarn, bun, ni and similar specs send the package name you are typing to api.npms.io and registry.npmjs.org; cargo sends it to crates.io. This happens before you press Enter, and a private registry setting does not redirect it",
+      off: `ec settings autocomplete.disableForCommands '["pnpm","npm"]'`,
+    },
+    {
+      source: "CLIs you already use",
+      target:
+        "Some suggestions come from running the tool itself (for example gh or kubectl), which talks to its own server with your existing credentials",
+      off: "autocomplete.disableForCommands, as above",
+    },
+    {
+      source: "ec issue",
+      target:
+        "Opens a GitHub issue form in your browser, pre-filled with diagnostics: app and macOS versions, hardware, current directory, shell, terminal and PATH, with your username masked. Nothing is posted until you submit it",
+      off: "Only runs when you invoke it",
+    },
+  ];
+
 function PrivacyPage() {
   return (
     <div className="min-h-screen bg-[#0a0d12] text-[#e6edf3]">
@@ -98,17 +132,17 @@ function PrivacyPage() {
           Privacy Policy
         </p>
         <h1 className="m-0 mb-4 text-[36px] font-bold leading-[1.1] tracking-[-.03em]">
-          Your commands never leave your Mac.
+          What leaves your Mac, and what doesn't.
         </h1>
         <p className={PARAGRAPH}>
-          Easy Complete's autocomplete engine runs entirely on-device: parsing
-          your command line, generating suggestions, and rendering the overlay
-          all happen locally, with no account and no cloud calls. Separately
-          from that, the app collects a small set of{" "}
-          <strong className="text-[#cdd6e0]">anonymous usage statistics</strong>{" "}
-          so we know how many people use it and whether completions are useful.
-          This page lists exactly what is sent, what is never sent, and how to
-          turn it off.
+          Easy Complete's autocomplete engine runs on-device: parsing your
+          command line, generating suggestions, and rendering the overlay all
+          happen locally, with no account and no AI requests. The app collects a
+          small set of{" "}
+          <strong className="text-[#cdd6e0]">anonymous usage statistics</strong>
+          , checks for updates, and a few completion specs look up live data
+          over the network. This page lists every one of those requests, what
+          stays on your Mac, and how to turn each one off.
         </p>
 
         <h2 className={SECTION_HEADING}>What we collect</h2>
@@ -186,15 +220,71 @@ function PrivacyPage() {
 
         <h2 className={SECTION_HEADING}>Turning it off</h2>
         <p className={PARAGRAPH}>
-          Telemetry is on by default and can be disabled at any time with a
-          single command — the setting is respected by every event, including
-          install and uninstall reporting:
+          Telemetry and automatic update checks are on by default. Turn them off
+          from the About page in the dashboard, or from the CLI. Both settings
+          apply to the running app straight away, with no restart, and telemetry
+          is respected by every event, including install and uninstall
+          reporting:
         </p>
         <pre className="mb-4 overflow-x-auto rounded-[14px] border border-[#1c232d] bg-[#0d1219] p-5 font-mono text-[13px] leading-[1.6] text-[#cdd6e0]">
           {
-            "ec telemetry disable   # turn off\nec telemetry status    # check current state"
+            "ec telemetry disable                       # stop usage statistics\nec settings app.disableAutoupdates true    # stop update checks\nec telemetry status                        # check current state"
           }
         </pre>
+
+        <h2 className={SECTION_HEADING}>Every network request</h2>
+        <p className={PARAGRAPH}>
+          Usage statistics are only one of the ways the app can reach the
+          network. There is currently no single switch that turns all of them
+          off. If package names or internal hostnames must never leave your
+          machine, disable completions for the affected commands or block
+          outbound traffic for the app and the processes it starts.
+        </p>
+        <div className="mb-4 overflow-x-auto rounded-[14px] border border-[#1c232d]">
+          <table className="w-full border-collapse text-left text-[14px]">
+            <thead>
+              <tr className="border-b border-[#1c232d] bg-[#0d1219] font-mono text-[12.5px] uppercase tracking-wider text-[#6e7884]">
+                <th className="px-4 py-3 font-medium">Source</th>
+                <th className="px-4 py-3 font-medium">What is contacted</th>
+                <th className="px-4 py-3 font-medium">How to turn off</th>
+              </tr>
+            </thead>
+            <tbody>
+              {NETWORK_REQUESTS.map((row) => (
+                <tr
+                  key={row.source}
+                  className="border-b border-[#141a21] last:border-b-0"
+                >
+                  <td className="px-4 py-3 font-mono text-[13px] text-(--accent)">
+                    {row.source}
+                  </td>
+                  <td className="px-4 py-3 leading-[1.55] text-[#9aa4b0]">
+                    {row.target}
+                  </td>
+                  <td className="px-4 py-3 font-mono text-[12.5px] leading-[1.55] text-[#9aa4b0]">
+                    {row.off}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <h2 className={SECTION_HEADING}>What stays on your Mac</h2>
+        <p className={PARAGRAPH}>
+          To suggest commands you have run before, the terminal integration
+          records each command with its working directory, shell, exit code and
+          timestamps in{" "}
+          <code className={CODE_INLINE}>
+            ~/Library/Application Support/easy-complete/data.sqlite3
+          </code>
+          . The file is readable only by your user account and is never
+          uploaded. Commands are stored as typed, so a secret passed on the
+          command line is stored too. Recording continues when history
+          suggestions are hidden. Versions before v2.5.1 also appended the same
+          data to a plain-text <code className={CODE_INLINE}>history</code> file
+          in that folder. Nothing reads it, so you can delete it.
+        </p>
 
         <h2 className={SECTION_HEADING}>Questions</h2>
         <p className={PARAGRAPH}>
@@ -216,7 +306,8 @@ function PrivacyPage() {
           .
         </p>
         <p className="mt-10 font-mono text-[12.5px] text-[#5d6773]">
-          Last updated: July 2026 · Applies to Easy Complete v2.0.41 and later
+          Last updated: November 2026 · Applies to Easy Complete v2.5.1 and
+          later
         </p>
       </main>
 

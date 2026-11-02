@@ -28,8 +28,8 @@ const featureData: Omit<Feature, "glyph">[] = [
     desc: "Built in Rust. Milliseconds to suggest, with no lag between you and your keystrokes.",
   },
   {
-    title: "100% local",
-    desc: "No cloud, no account, no AI calls. Your commands never leave your machine.",
+    title: "Local-first",
+    desc: "No account, no AI calls. Specs and icons are bundled, and suggestions are built on your Mac.",
   },
   {
     title: "Themeable",
@@ -103,7 +103,7 @@ export const reasons: Reason[] = [
   {
     num: "03",
     title: "Privacy by default",
-    desc: "Completions run entirely on-device — your commands never leave your Mac. Only anonymous usage counts are collected, and one command turns them off.",
+    desc: "Completions are built on your Mac. Anonymous usage counts are the only telemetry, and one command turns them off. The privacy page lists every network request.",
   },
   {
     num: "04",
@@ -228,7 +228,7 @@ export const faqs: Faq[] = [
   {
     question: "Does Easy Complete run locally?",
     answer:
-      "Yes. Autocomplete runs fully on-device — no account, no cloud calls, no AI requests, and your commands never leave your Mac.",
+      "Yes. Suggestions are built on your Mac, with no account and no AI requests. A few specs, such as npm and cargo, look up package names online while you type; the privacy page lists every network request and how to turn it off.",
   },
   {
     question: "What data does Easy Complete collect?",

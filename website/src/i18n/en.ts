@@ -10,12 +10,6 @@ import {
 import type { DocsCopy, HomeCopy } from "./types.ts";
 
 export const homeCopyEn: HomeCopy = {
-<<<<<<< Updated upstream
-  badge: "macOS · 100% local · open source",
-||||||| Stash base
-  badge: "macOS · local-first · open source",
-=======
->>>>>>> Stashed changes
   heroHeading: "Autocomplete for your macOS terminal",
   heroSubheading:
     "Subcommands, flags, and file paths for hundreds of CLIs like git, npm, docker, and cargo, in a native popup at your cursor. Completions are built on your Mac.",

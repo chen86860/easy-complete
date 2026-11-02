@@ -29,16 +29,8 @@ const featureDataZh: Array<Omit<Feature, "glyph">> = [
     desc: "用 Rust 编写,在原生窗口中绘制,建议跟得上你的输入",
   },
   {
-<<<<<<< Updated upstream
     title: "100% 本地",
     desc: "无云端、无账号、无 AI 调用。你的命令永远不会离开这台机器",
-||||||| Stash base
-    title: "本地优先",
-    desc: "无账号、无 AI 调用。spec 和图标随应用打包，建议在本机生成",
-=======
-    title: "在你的 Mac 上运行",
-    desc: "无账号、无 AI 调用。spec 和图标随应用打包，建议在本机生成",
->>>>>>> Stashed changes
   },
   {
     title: "可换主题",
@@ -223,12 +215,6 @@ const docSectionsZh: DocSection[] = [
 const NEW_TERMINAL_NAMES_ZH = "Kiro";
 
 export const homeCopyZh: HomeCopy = {
-<<<<<<< Updated upstream
-  badge: "macOS · 100% 本地 · 开源",
-||||||| Stash base
-  badge: "macOS · 本地优先 · 开源",
-=======
->>>>>>> Stashed changes
   heroHeading: "为 macOS 终端而生的自动补全",
   heroSubheading:
     "为 git、npm、docker、cargo 等数百种命令行工具补全子命令、参数和文件路径,弹窗就出现在光标旁。补全在本机生成",

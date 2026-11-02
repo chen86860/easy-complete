@@ -132,7 +132,7 @@ const en = {
   "permission.shellIntegration.repair": "Install Shell Hooks",
   "permission.inputMethod.title": "Input Method Integration",
   "permission.inputMethod.description":
-    "Only needed for cursor tracking in Kitty, Alacritty, Zed, Ghostty, and WezTerm. Terminal.app and iTerm2 work without it. macOS will ask you to allow it: it only reads the cursor position, never what you type.",
+    "Only needed for cursor tracking in terminals like Ghostty, Kitty, WezTerm, Alacritty, Zed, and JetBrains IDEs. Terminal.app and iTerm2 work without it. macOS will ask you to allow it: it only reads the cursor position, never what you type.",
   "permission.inputMethod.repair": "Install Input Method",
   "permission.optional": "Optional",
   "permission.checkError": "Unable to check this requirement.",
@@ -280,7 +280,7 @@ const zhCN: Record<TranslationKey, string> = {
   "permission.shellIntegration.repair": "安装 Shell 钩子",
   "permission.inputMethod.title": "输入法集成",
   "permission.inputMethod.description":
-    "仅在 Kitty、Alacritty、Zed、Ghostty 和 WezTerm 中用于跟踪光标位置，Terminal.app 和 iTerm2 无需安装。安装时 macOS 会请求你允许：它只读取光标位置，不会读取你输入的内容。",
+    "仅在 Ghostty、Kitty、WezTerm、Alacritty、Zed、JetBrains IDE 等终端中用于跟踪光标位置，Terminal.app 和 iTerm2 无需安装。安装时 macOS 会请求你允许：它只读取光标位置，不会读取你输入的内容。",
   "permission.inputMethod.repair": "安装输入法",
   "permission.optional": "可选",
   "permission.checkError": "无法检查此要求。",

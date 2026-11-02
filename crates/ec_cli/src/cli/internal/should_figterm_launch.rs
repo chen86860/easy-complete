@@ -12,6 +12,7 @@ const Q_TERM_DISABLED: &str = "Q_TERM_DISABLED";
 const INSIDE_EMACS: &str = "INSIDE_EMACS";
 const TERM_PROGRAM: &str = "TERM_PROGRAM";
 const WARP_TERMINAL: &str = "WarpTerminal";
+const REX_TERMINAL: &str = "rex";
 
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 #[allow(dead_code)]
@@ -255,6 +256,18 @@ pub fn should_figterm_launch_exit_status(ctx: &Context, quiet: bool) -> u8 {
         return 1;
     }
 
+    // Check for Rex. Rex picks the agent icon for a pane from the foreground process of its
+    // own pty; under ecterm that is always ecterm, so every agent shows the default icon.
+    // Rex is not a supported terminal yet, so ecterm would add no completions there anyway.
+    if let Ok(term_program) = env.get(TERM_PROGRAM)
+        && term_program == REX_TERMINAL
+    {
+        if !quiet {
+            writeln!(stdout(), "❌ {TERM_PROGRAM} = {REX_TERMINAL}").ok();
+        }
+        return 1;
+    }
+
     // Check for SecureCRT
     if let Ok(cf_bundle_identifier) = env.get("__CFBundleIdentifier")
         && cf_bundle_identifier == "com.vandyke.SecureCRT"
@@ -445,6 +458,7 @@ mod tests {
             test(INSIDE_EMACS).env(&[(INSIDE_EMACS, "1")]).expect(1),
             test(WARP_TERMINAL).env(&[(TERM_PROGRAM, WARP_TERMINAL)]).expect(1),
             test(WARP_TERMINAL).env(&[(TERM_PROGRAM, WARP_TERMINAL)]).expect(1),
+            test(REX_TERMINAL).env(&[(TERM_PROGRAM, REX_TERMINAL)]).expect(1),
             test("In CI").env(&[("CI", "1")]).expect(1),
             test(format!("In ssh without {Q_PARENT}"))
                 .env(&[("SSH_CLIENT", "1")])

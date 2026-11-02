@@ -103,7 +103,7 @@ Three cooperating native processes communicate via Unix domain sockets (protobuf
 
 ### macOS Input Method (IME)
 
-`fig_input_method` is an IMKit helper app (`EasyCompleteInputMethod.app`) bundled inside the main `.app` at `Contents/Helpers/`. It enables cursor position tracking in terminals that bypass the standard PTY path (Ghostty, Otty, Kitty, WezTerm, Zed, Alacritty).
+`fig_input_method` is an IMKit helper app (`EasyCompleteInputMethod.app`) bundled inside the main `.app` at `Contents/Helpers/`. It enables cursor position tracking in terminals that bypass the standard PTY path (Ghostty, Otty, Herdr, Kitty, WezTerm, Zed, Alacritty).
 
 - The IME self-registers with TIS on startup via `TISRegisterInputSource` (requires NSApplication context)
 - Integration install/uninstall is managed via `ec integrations install input-method`

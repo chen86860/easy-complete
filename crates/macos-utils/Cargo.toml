@@ -7,6 +7,9 @@ publish.workspace = true
 version.workspace = true
 license.workspace = true
 
+[build-dependencies]
+cc = "1.2.44"
+
 [target.'cfg(target_os = "macos")'.dependencies]
 block2.workspace = true
 core-graphics.workspace = true

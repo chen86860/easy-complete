@@ -137,15 +137,20 @@ pub fn handle_event(menu_event: &MenuEvent, proxy: &EventLoopProxy) {
         ACCESSIBILITY_MENU_ID => {
             #[cfg(target_os = "macos")]
             {
-                use macos_utils::accessibility::{open_accessibility, prompt_for_accessibility};
+                use macos_utils::accessibility::{
+                    GuideLocale, open_accessibility, prompt_for_accessibility, show_accessibility_guide,
+                };
 
-                // `prompt_for_accessibility` only raises the system dialog while macOS still
-                // considers the app un-prompted; once the bundle is listed — even with a stale
-                // entry that no longer grants anything — it returns silently. Always open the
-                // settings pane too so the user has somewhere to go in that case.
-                prompt_for_accessibility();
-                if !open_accessibility() {
-                    error!("Failed to open Accessibility settings");
+                let locale =
+                    GuideLocale::from_setting(fig_settings::settings::get_string_opt("dashboard.language").as_deref());
+                if !show_accessibility_guide(locale) {
+                    // Outside a `.app` bundle there is nothing to drag. `prompt_for_accessibility`
+                    // only raises the system dialog while macOS still considers the app
+                    // un-prompted, so open the settings pane too.
+                    prompt_for_accessibility();
+                    if !open_accessibility() {
+                        error!("Failed to open Accessibility settings");
+                    }
                 }
             }
         },

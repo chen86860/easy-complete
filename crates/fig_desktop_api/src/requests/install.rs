@@ -105,9 +105,14 @@ where
                         open_accessibility,
                         accessibility_is_enabled,
                         prompt_for_accessibility,
+                        show_accessibility_guide,
+                        GuideLocale,
                     };
 
-                    if !accessibility_is_enabled() && !prompt_for_accessibility() {
+                    let locale = GuideLocale::from_setting(
+                        fig_settings::settings::get_string_opt("dashboard.language").as_deref(),
+                    );
+                    if !accessibility_is_enabled() && !show_accessibility_guide(locale) && !prompt_for_accessibility() {
                         open_accessibility();
                     }
 

@@ -3520,6 +3520,7 @@ dependencies = [
  "accessibility-sys",
  "appkit-nsworkspace-bindings",
  "block2 0.5.1",
+ "cc",
  "cocoa",
  "core-foundation 0.10.1",
  "core-graphics 0.25.0",

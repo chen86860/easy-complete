@@ -3,8 +3,8 @@ use std::sync::Mutex;
 use fig_os_shim::{Context, ContextArcProvider, ContextProvider};
 use fig_proto::local::command_response::Response as CommandResponseTypes;
 use fig_proto::local::{
-    BundleMetadataResponse, DebugModeCommand, DiagnosticsCommand, DiagnosticsResponse, LogLevelCommand,
-    LogLevelResponse, OpenBrowserCommand, OpenUiElementCommand, QuitCommand, UiElement,
+    BundleMetadataResponse, DebugModeCommand, DiagnosticsCommand, DiagnosticsResponse, InputMethodCommand,
+    LogLevelCommand, LogLevelResponse, OpenBrowserCommand, OpenUiElementCommand, QuitCommand, UiElement,
 };
 use fig_remote_ipc::figterm::FigtermState;
 use fig_settings::StateProvider;
@@ -211,5 +211,38 @@ pub async fn bundle_metadata(ctx: &Context) -> LocalResult {
             code: None,
             message: Some(format!("Failed to get the bundled metadata: {:?}", err)),
         }),
+    }
+}
+
+/// Runs an input method action for the CLI inside the app, so macOS's "Allow … to enable …?"
+/// prompt names Easy Complete rather than the `ec` binary. Only install is handled; the CLI does
+/// everything else itself.
+pub async fn input_method(command: InputMethodCommand) -> LocalResult {
+    cfg_if::cfg_if! {
+        if #[cfg(target_os = "macos")] {
+            use fig_integrations::Integration;
+            use fig_integrations::input_method::InputMethod;
+            use fig_proto::local::InputMethodAction;
+
+            match command.actions() {
+                InputMethodAction::Install => match InputMethod::default().install().await {
+                    Ok(()) => Ok(LocalResponse::Success(None)),
+                    Err(err) => Err(LocalResponse::Error {
+                        code: None,
+                        message: Some(format!("Could not install input method: {err}")),
+                    }),
+                },
+                action => Err(LocalResponse::Error {
+                    code: None,
+                    message: Some(format!("Unsupported input method action: {action:?}")),
+                }),
+            }
+        } else {
+            let _ = command;
+            Err(LocalResponse::Error {
+                code: None,
+                message: Some("Input method is only supported on macOS".to_owned()),
+            })
+        }
     }
 }

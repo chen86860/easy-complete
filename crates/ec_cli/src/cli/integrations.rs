@@ -171,7 +171,7 @@ async fn install(integration: Integration, silent: bool) -> Result<()> {
         Integration::InputMethod => {
             cfg_if::cfg_if! {
                 if #[cfg(target_os = "macos")] {
-                    fig_integrations::input_method::InputMethod::default().install().await?;
+                    install_input_method().await?;
                     installed = true;
                     status = Some("You must restart your terminal to finish installing the input method.");
                     Ok(())
@@ -451,4 +451,37 @@ mod command_tests {
         }
         assert_eq!(selected_shells(None), vec![Shell::Bash, Shell::Zsh, Shell::Fish]);
     }
+}
+
+/// Installs the input method through the running desktop app when possible, so macOS's
+/// "Allow … to enable …?" prompt names Easy Complete instead of `ec`. Falls back to installing
+/// from this process when the app is not running or predates the command.
+#[cfg(target_os = "macos")]
+async fn install_input_method() -> Result<()> {
+    use fig_proto::local::InputMethodAction;
+    use fig_proto::local::command_response::Response;
+
+    match fig_ipc::local::input_method_command(InputMethodAction::Install).await {
+        Ok(Some(fig_proto::local::CommandResponse {
+            response: Some(Response::Success(_)),
+            ..
+        })) => return Ok(()),
+        Ok(Some(fig_proto::local::CommandResponse {
+            response: Some(Response::Error(err)),
+            ..
+        })) if err.message.as_deref() != Some("Unknown command") => {
+            return Err(eyre::eyre!(
+                err.message
+                    .unwrap_or_else(|| "Could not install input method".to_owned())
+            ));
+        },
+        Ok(response) => tracing::debug!(
+            ?response,
+            "Desktop app did not install the input method, installing here"
+        ),
+        Err(err) => tracing::debug!(%err, "Desktop app unreachable, installing the input method here"),
+    }
+
+    fig_integrations::input_method::InputMethod::default().install().await?;
+    Ok(())
 }

@@ -68,11 +68,13 @@ pub async fn bundle_metadata_command() -> Result<BundleMetadataResponse> {
     }
 }
 
-pub async fn input_method_command(action: InputMethodAction) -> Result<()> {
+/// Asks the desktop app to run an input method action and waits for its answer. Installing can
+/// wait on macOS's own "enable input source" prompt, hence the long timeout.
+pub async fn input_method_command(action: InputMethodAction) -> Result<Option<CommandResponse>> {
     let command = command::Command::InputMethod(InputMethodCommand {
         actions: Some(action.into()),
     });
-    send_command_to_socket(command).await
+    send_recv_command_to_socket_with_timeout(command, Duration::from_secs(120)).await
 }
 
 pub async fn prompt_accessibility_command() -> Result<()> {

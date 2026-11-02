@@ -3,6 +3,7 @@
 ## v2.5.0-beta.2
 
 - 新功能：支持 Herdr 桌面版（`dev.herdr.app`）。其终端中现在会弹出补全，弹窗通过输入法跟随光标，与 Ghostty、Zed 相同。此前 Herdr 未被识别，位于前台时补全弹窗始终不显示（#205）
+- 变更：Rex 中的 Shell 不再启动 `ecterm`。Rex 根据窗格的前台进程显示 Agent 图标，`ecterm` 会挡住前台进程，导致 Claude Code、Codex 等 Agent 只显示默认图标。Rex 目前还不是受支持的终端，因此不会因此失去补全
 
 ## v2.5.0-beta.1
 

@@ -3,6 +3,7 @@
 ## v2.5.0-beta.2
 
 - feat: support the Herdr desktop app (`dev.herdr.app`). Completions now appear in its terminals, and the popup follows the caret through the input method, like Ghostty and Zed. Herdr was not recognized before, so the popup stayed hidden whenever it was in front (#205)
+- change: shells in Rex no longer launch `ecterm`. Rex picks each pane's agent icon from its foreground process, which `ecterm` hid, so Claude Code, Codex and other agents showed the default icon. Rex is not a supported terminal yet, so this costs no completions there
 
 ## v2.5.0-beta.1
 

@@ -1,6 +1,7 @@
 import {
   SiteFooter,
   SiteHeader,
+  MAIN_ID,
   type LocaleHrefs,
 } from "./SiteChrome.tsx";
 import {
@@ -21,7 +22,7 @@ function DocCard({ link }: { link: DocLink }) {
       {...(link.external
         ? { target: "_blank", rel: "noreferrer noopener" }
         : {})}
-      className="group flex min-w-0 flex-col rounded-[14px] border border-[#1c232d] bg-[#0d1219] px-5 py-4.5 transition-[transform,border-color,background-color] duration-200 ease-[var(--ease-out-quart)] hover:-translate-y-0.5 hover:border-(--accent-line) hover:bg-[#0f151d]"
+      className="group flex min-w-0 flex-col rounded-[14px] border border-[#1c232d] bg-[#0d1219] px-5 py-4.5 transition-[transform,border-color,background-color] duration-500 hover:-translate-y-0.5 hover:border-(--accent-line) hover:bg-[#0f151d]"
     >
       <span className="font-semibold text-[#e6edf3] group-hover:text-(--accent)">
         {link.label}{" "}
@@ -45,7 +46,7 @@ const INTEGRATION_BADGE: Record<TerminalIntegration, string> = {
 function TerminalMatrix({ copy }: { copy: DocsCopy }) {
   return (
     <div className="mt-6 divide-y divide-[#1c232d] overflow-hidden rounded-[14px] border border-[#1c232d] bg-[#0d1219]">
-      <div className="hidden grid-cols-[minmax(0,1fr)_10.5rem_minmax(0,1.6fr)] gap-5 bg-[#0b1016] px-5 py-3 font-mono text-[11px] uppercase tracking-wider text-[#65707d] sm:grid">
+      <div className="hidden grid-cols-[minmax(0,1fr)_10.5rem_minmax(0,1.6fr)] gap-5 bg-[#0b1016] px-5 py-3 font-mono text-[11px] text-[#65707d] sm:grid">
         <span>{copy.terminalColumn}</span>
         <span>{copy.trackingColumn}</span>
         <span>{copy.notesColumn}</span>
@@ -58,7 +59,7 @@ function TerminalMatrix({ copy }: { copy: DocsCopy }) {
           <span className="flex flex-wrap items-center gap-2 font-medium text-[#e6edf3]">
             {terminal.name}
             {terminal.isNew && (
-              <span className="rounded-full bg-(--accent-soft) px-1.75 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-(--accent)">
+              <span className="rounded-full bg-(--accent-soft) px-1.75 py-0.5 font-mono text-[10px] font-medium text-(--accent)">
                 {copy.newBadge}
               </span>
             )}
@@ -92,16 +93,16 @@ export function DocsPageView({
 
   return (
     <>
-      <div className="min-h-screen bg-[#0a0d12] text-[#e6edf3]">
+      <div className="min-h-dvh bg-[#0a0d12] text-[#e6edf3]">
         <SiteHeader active="docs" locale={locale} hrefs={hrefs} />
 
-        <main className="mx-auto max-w-295 px-7 pb-24 pt-14">
-          <p className="mb-4 font-mono text-xs uppercase tracking-[.22em] text-(--accent)">
+        <main id={MAIN_ID} className="mx-auto max-w-295 px-7 pb-24 pt-14">
+          <p className="mb-4 font-mono text-xs text-(--accent)">
             {copy.eyebrow}
           </p>
           <div className="grid gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-end">
             <div className="min-w-0">
-              <h1 className="m-0 mb-5 max-w-190 text-[clamp(2.4rem,6vw,4rem)] font-bold leading-[1.02] tracking-[-.04em] text-balance [overflow-wrap:anywhere]">
+              <h1 className="m-0 mb-5 max-w-190 text-[clamp(2.4rem,6vw,4rem)] font-semibold leading-[1.02] tracking-[-.025em] text-balance [overflow-wrap:anywhere]">
                 {copy.heading}
               </h1>
               <p className="m-0 max-w-180 text-[19px] leading-[1.65] text-[#9aa4b0]">
@@ -110,7 +111,7 @@ export function DocsPageView({
             </div>
 
             <aside className="min-w-0 rounded-[14px] border border-[#1c232d] bg-[#0d1219] px-5.5 py-5">
-              <p className="m-0 mb-3 font-mono text-[11px] uppercase tracking-wider text-[#65707d]">
+              <p className="m-0 mb-3 font-mono text-[11px] text-[#65707d]">
                 {copy.quickStart}
               </p>
               <pre className="m-0 mb-4 overflow-x-auto rounded-xl border border-[#1c232d] bg-[#0b0f15] p-3.5 font-mono text-[12.5px] leading-[1.7] text-[#cdd6e0]">
@@ -142,7 +143,7 @@ export function DocsPageView({
               id={section.id}
               className="mt-16 scroll-mt-24 border-t border-[#141a21] pt-10"
             >
-              <h2 className="m-0 mb-2.5 text-[26px] font-bold leading-[1.15] tracking-[-.025em]">
+              <h2 className="m-0 mb-2.5 text-[26px] font-semibold leading-[1.15] tracking-[-.025em]">
                 {section.title}
               </h2>
               <p className="m-0 mb-6 max-w-170 text-[16px] leading-[1.65] text-[#828d99]">

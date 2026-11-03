@@ -70,7 +70,7 @@ function ZhFigAlternativePage() {
 
         <div className="my-9 overflow-x-auto rounded-[14px] border border-[#1c232d]">
           <table className="w-full min-w-155 border-collapse text-left text-sm">
-            <thead className="border-b border-[#1c232d] bg-[#0d1219] font-mono text-xs uppercase tracking-wider text-[#65707d]">
+            <thead className="border-b border-[#1c232d] bg-[#0d1219] font-mono text-xs text-[#65707d]">
               <tr>
                 <th className="px-5 py-4">能力</th>
                 <th className="px-5 py-4">Easy Complete</th>

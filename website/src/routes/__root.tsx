@@ -50,14 +50,14 @@ export const Route = createRootRoute({
 
 function NotFoundComponent() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-[#0a0d12] px-7 text-center text-[#e6edf3]">
+    <main className="flex min-h-dvh flex-col items-center justify-center bg-[#0a0d12] px-7 text-center text-[#e6edf3]">
       {/* React 19 hoists these into <head>; the route head has no 404 hook. */}
       <title>Page not found — Easy Complete</title>
       <meta name="robots" content="noindex, follow" />
-      <p className="mb-3 font-mono text-sm uppercase tracking-[.22em] text-(--accent)">
+      <p className="mb-3 font-mono text-sm text-(--accent)">
         404
       </p>
-      <h1 className="m-0 mb-4 text-[38px] font-bold tracking-[-.03em] sm:text-[52px]">
+      <h1 className="m-0 mb-4 text-[38px] font-semibold tracking-[-.03em] sm:text-[52px]">
         Page not found.
       </h1>
       <p className="m-0 mb-8 max-w-130 text-[16px] leading-[1.6] text-[#909aa6]">

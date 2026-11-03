@@ -156,7 +156,7 @@ export function homeSchema(locale: Locale = "en") {
         "@id": `${origin}/#software`,
         name: SITE_NAME,
         applicationCategory: "DeveloperApplication",
-        operatingSystem: "macOS 12 or later on Apple Silicon",
+        operatingSystem: "macOS 15 or later on Apple Silicon",
         description: HOME_DESCRIPTION,
         url: absoluteUrl(homePath),
         image: `${origin}/og-image.png`,
@@ -167,7 +167,7 @@ export function homeSchema(locale: Locale = "en") {
         downloadUrl:
           "https://github.com/chen86860/easy-complete/releases/latest/download/Easy-Complete-arm64.dmg",
         codeRepository: "https://github.com/chen86860/easy-complete",
-        softwareRequirements: "macOS 12 or later; Apple Silicon (ARM64)",
+        softwareRequirements: "macOS 15 or later; Apple Silicon (ARM64)",
         license: "https://opensource.org/license/mit",
         publisher: { "@id": PUBLISHER_ID },
         offers: {

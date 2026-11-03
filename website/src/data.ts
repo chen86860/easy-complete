@@ -13,19 +13,19 @@ const glyphs = ["›_", "⌘", "◳", "⚡", "◆", "◐", "⊞", "$", "⇥"];
 const featureData: Omit<Feature, "glyph">[] = [
   {
     title: "Inline completions",
-    desc: "IDE-style suggestions the instant you type — subcommands, flags, arguments and file paths, ranked for what you actually mean.",
+    desc: "Suggestions as you type, the way your editor does it — subcommands, flags, arguments and file paths, ranked for what you actually mean.",
   },
   {
     title: "Hundreds of CLIs",
-    desc: "Out-of-the-box specs for git, npm, docker, cargo, aws, kubectl and many more popular tools.",
+    desc: "Bundled specs for git, npm, docker, cargo, aws, kubectl and many more popular tools.",
   },
   {
     title: "Native overlay",
-    desc: "A lightweight native window that floats right at your cursor — not a clunky shell hack.",
+    desc: "A lightweight native window that floats right at your cursor — not escape codes drawn into your prompt.",
   },
   {
-    title: "Fast & lightweight",
-    desc: "Built in Rust. Milliseconds to suggest, with no lag between you and your keystrokes.",
+    title: "Native and light",
+    desc: "Written in Rust and drawn in a native window, so suggestions keep up with your typing.",
   },
   {
     title: "Local-first",
@@ -33,19 +33,19 @@ const featureData: Omit<Feature, "glyph">[] = [
   },
   {
     title: "Themeable",
-    desc: "Match your terminal's vibe — ships with themes like GitHub Dark and more.",
+    desc: "Match your terminal's colors with GitHub Dark and the other built-in themes.",
   },
   {
     title: "Works everywhere",
-    desc: "Most terminals work out of the box; Ghostty, Otty, Kitty, WezTerm, Zed and Alacritty get pixel-accurate tracking.",
+    desc: "Most terminals work out of the box; Ghostty, Otty, Kitty, WezTerm, Zed and Alacritty also get cursor tracking accurate to the pixel.",
   },
   {
     title: "In-IDE terminals",
     desc: "Completions follow you into VS Code, Cursor, Kiro, ChatGPT (Codex), and JetBrains IDE terminals.",
   },
   {
-    title: "One-command setup",
-    desc: "./install.sh builds, installs and wires up shell integration — then just start typing.",
+    title: "Set up in one command",
+    desc: "Install with Homebrew or the DMG. Shell integration sets itself up on first launch, so you can start typing.",
   },
 ];
 
@@ -108,7 +108,7 @@ export const reasons: Reason[] = [
   {
     num: "04",
     title: "Open source",
-    desc: "A focused local completion engine built for fast terminal autocomplete.",
+    desc: "MIT licensed. Read the code, file an issue, or build it yourself from the GitHub repository.",
   },
 ];
 

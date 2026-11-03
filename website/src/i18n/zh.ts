@@ -25,8 +25,8 @@ const featureDataZh: Array<Omit<Feature, "glyph">> = [
     desc: "紧贴光标的轻量原生窗口,不是靠转义序列在提示符里硬画出来的",
   },
   {
-    title: "快且轻",
-    desc: "用 Rust 编写,毫秒级给出建议,你的击键和补全之间没有延迟",
+    title: "原生且轻量",
+    desc: "用 Rust 编写,在原生窗口中绘制,建议跟得上你的输入",
   },
   {
     title: "本地优先",
@@ -45,8 +45,8 @@ const featureDataZh: Array<Omit<Feature, "glyph">> = [
     desc: "补全会跟着你进入 VS Code、Cursor、Kiro、ChatGPT(Codex)以及 JetBrains 系 IDE 的终端",
   },
   {
-    title: "一条命令装好",
-    desc: "./install.sh 完成构建、安装并接好 Shell 集成——之后直接开始输入即可",
+    title: "一条命令完成安装",
+    desc: "用 Homebrew 或 DMG 安装,首次启动时自动配置 Shell 集成,装好就能直接输入",
   },
 ];
 
@@ -74,7 +74,7 @@ const reasonsZh: Reason[] = [
   {
     num: "04",
     title: "开源",
-    desc: "一个专注的本地补全引擎,为快速的终端自动补全而生",
+    desc: "MIT 协议。可以阅读源码、提交 issue,或从 GitHub 仓库自行构建",
   },
 ];
 
@@ -215,10 +215,9 @@ const docSectionsZh: DocSection[] = [
 const NEW_TERMINAL_NAMES_ZH = "Kiro";
 
 export const homeCopyZh: HomeCopy = {
-  badge: "macOS · 本地优先 · 开源",
   heroHeading: "为 macOS 终端而生的自动补全",
   heroSubheading:
-    "为数百种命令行工具提供 fish 风格的补全建议——git、npm、docker、cargo。原生、快速，而且完全在本机运行",
+    "为 git、npm、docker、cargo 等数百种命令行工具补全子命令、参数和文件路径,弹窗就出现在光标旁。补全在本机生成",
   downloadCta: "下载 DMG",
   githubCta: "在 GitHub 查看",
   brewDivider: "或用 Homebrew 安装",
@@ -265,7 +264,7 @@ export const homeCopyZh: HomeCopy = {
 
   ctaHeading: "别再背参数了",
   ctaSubheading: "让终端替你记住",
-  ctaFootnote: "需要 macOS 12+ · Apple Silicon(ARM64) · MIT",
+  ctaFootnote: "需要 macOS 15+ · Apple Silicon(ARM64) · MIT",
   ctaTagline: "一个专注的本地补全引擎,为快速的终端自动补全而生",
   features: featuresZh,
   reasons: reasonsZh,
@@ -283,7 +282,7 @@ export const docsCopyZh: DocsCopy = {
   quickStart: "快速开始",
   installGuideCta: "完整安装指南",
   downloadCta: "下载 DMG",
-  requirements: "macOS 12+ · Apple Silicon(ARM64)",
+  requirements: "macOS 15+ · Apple Silicon(ARM64)",
   terminalColumn: "终端",
   trackingColumn: "光标跟踪",
   notesColumn: "说明",

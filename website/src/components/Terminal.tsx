@@ -247,57 +247,57 @@ export function Terminal({ showKeys = true, demoSpeed = 1 }: TerminalProps) {
   const frame = frames[f] ?? frames[0];
   const cap = (active: boolean) =>
     [
-      "inline-flex items-center justify-center min-w-7.5 h-[27px] px-[9px]",
-      "rounded-[7px] border font-mono text-xs transition-all duration-150",
+      "inline-flex items-center justify-center min-w-8 h-7 px-2",
+      "rounded-md border font-mono text-xs transition-[color,background-color,border-color] duration-150",
       active
-        ? "border-[var(--accent)] text-(--accent) bg-(--accent-soft) shadow-[0_0_0_1px_var(--accent),0_0_14px_var(--accent-glow)]"
+        ? "border-(--accent) text-(--accent) bg-(--accent-soft)"
         : "border-[#2a333e] bg-[#10161f] text-[#8b95a1]",
     ].join(" ");
 
   return (
     <div className="w-full font-mono">
-      <div className="w-full overflow-hidden rounded-[13px] border border-[#222a35] bg-[#0b0f15] shadow-[0_30px_70px_-28px_rgba(0,0,0,.8),0_0_0_1px_rgba(255,255,255,.02)]">
+      <div className="w-full overflow-hidden rounded-2xl border border-[#222a35] bg-[#0b0f15] shadow-[0_32px_72px_-28px_rgba(0,0,0,.8)]">
         {/* Title bar */}
-        <div className="flex items-center gap-2 border-b border-[#1d2530] bg-[#10161f] px-3.5 py-2.75">
-          <span className="h-2.75 w-2.75 flex-none rounded-full bg-[#ff5f57]" />
-          <span className="h-2.75 w-2.75 flex-none rounded-full bg-[#febc2e]" />
-          <span className="h-2.75 w-2.75 flex-none rounded-full bg-[#28c840]" />
-          <span className="flex-1 text-center text-xs tracking-[.02em] text-[#5d6773]">
+        <div className="flex items-center gap-2 border-b border-[#1d2530] bg-[#10161f] px-4 py-3">
+          <span className="h-3 w-3 flex-none rounded-full bg-[#ff5f57]" />
+          <span className="h-3 w-3 flex-none rounded-full bg-[#febc2e]" />
+          <span className="h-3 w-3 flex-none rounded-full bg-[#28c840]" />
+          <span className="flex-1 text-center text-xs text-[#5d6773]">
             ec — zsh — 80×24
           </span>
-          <span className="inline-flex items-center gap-1.25 text-[11px] text-(--accent)">
-            <span className="h-1.5 w-1.5 rounded-full bg-(--accent) shadow-[0_0_8px_var(--accent)]" />
+          <span className="inline-flex items-center gap-1.5 text-[11px] text-(--accent)">
+            <span className="h-1.5 w-1.5 rounded-full bg-(--accent)" />
             live
           </span>
         </div>
 
         {/* Screen */}
-        <div className="relative h-62 overflow-hidden px-4.5 pb-5 pt-4.5 text-sm leading-[1.7]">
+        <div className="relative h-64 overflow-hidden px-5 pt-5 pb-5 text-sm leading-[1.7]">
           <div className="flex flex-wrap items-center whitespace-pre">
-            <span className="mr-2.25 text-[#586471]">~/web-app</span>
-            <span className="mr-2.25 font-bold text-(--accent)">❯</span>
+            <span className="mr-2 text-[#586471]">~/web-app</span>
+            <span className="mr-2 text-(--accent)">❯</span>
             <span className="text-[#eaf0f6]">{frame.cmd}</span>
             {frame.ghost && (
               <span className="text-[#586471]">{frame.ghost}</span>
             )}
-            <span className="ec-blink ml-0.5 inline-block h-4.25 w-2 rounded-[1px] bg-(--accent)" />
+            <span className="ec-blink ml-0.5 inline-block h-4 w-2 rounded-[1px] bg-(--accent)" />
           </div>
 
           {frame.menu.length > 0 && (
-            <div className="ec-pop absolute left-4.5 top-13 w-[calc(100%-36px)] overflow-hidden rounded-[11px] border border-[#2a323d] bg-[#0e141d] shadow-[0_22px_48px_-14px_rgba(0,0,0,.85)] sm:left-24 sm:w-max sm:max-w-[84%]">
+            <div className="ec-pop absolute top-14 left-5 w-[calc(100%-40px)] overflow-hidden rounded-xl border border-[#2a323d] bg-[#0e141d] shadow-[0_22px_48px_-14px_rgba(0,0,0,.85)] sm:left-24 sm:w-max sm:max-w-[84%]">
               {frame.menu.map((m, i) => {
                 const selected = i === frame.sel;
                 return (
                   <div
                     key={m.name}
-                    className={`flex min-w-0 items-center gap-2.5 px-3.25 py-2 ${
+                    className={`flex min-w-0 items-center gap-3 px-3 py-2 ${
                       selected
                         ? "bg-(--accent-soft) shadow-[inset_2px_0_0_var(--accent)]"
                         : ""
                     }`}
                   >
                     <span
-                      className="flex-none min-w-7.5 font-mono text-[10px] font-bold uppercase tracking-wider"
+                      className="flex-none min-w-8 font-mono text-[11px]"
                       style={{ color: badgeColor[m.t] }}
                     >
                       {m.t}
@@ -311,7 +311,7 @@ export function Terminal({ showKeys = true, demoSpeed = 1 }: TerminalProps) {
                   </div>
                 );
               })}
-              <div className="flex gap-3.5 border-t border-[#1f2630] px-3.25 py-2 text-[11px] text-[#4d5663]">
+              <div className="flex gap-4 border-t border-[#1f2630] px-3 py-2 text-[11px] text-[#4d5663]">
                 ↑↓ navigate · ⇥ accept · esc dismiss
               </div>
             </div>
@@ -323,15 +323,15 @@ export function Terminal({ showKeys = true, demoSpeed = 1 }: TerminalProps) {
         <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
           <span className={cap(frame.key === "up")}>↑</span>
           <span className={cap(frame.key === "down")}>↓</span>
-          <span className="ml-0.5 mr-2 font-(--font-display) text-xs text-[#5d6773]">
+          <span className="mr-3 font-(--font-display) text-xs text-[#65707d]">
             navigate
           </span>
           <span className={cap(frame.key === "tab")}>⇥</span>
-          <span className="ml-0.5 mr-2 font-(--font-display) text-xs text-[#5d6773]">
+          <span className="mr-3 font-(--font-display) text-xs text-[#65707d]">
             accept
           </span>
           <span className={cap(frame.key === "esc")}>esc</span>
-          <span className="ml-0.5 font-(--font-display) text-xs text-[#5d6773]">
+          <span className="font-(--font-display) text-xs text-[#65707d]">
             dismiss
           </span>
         </div>

@@ -1,16 +1,14 @@
 import { createContext, useContext } from "react";
 
 const en = {
-  "app.settings": "Settings",
   "nav.appearance": "Appearance",
   "nav.general": "General",
   "nav.behavior": "Autocomplete",
   "nav.about": "About",
   "nav.saveError": "Error saving",
-  "section.aboutDescription": "App info, updates, and project links",
 
   "theme.title": "Theme",
-  "theme.automatic": "Automatic",
+  "theme.basic": "Basic",
   "theme.lightThemes": "Light Themes",
   "theme.darkThemes": "Dark Themes",
   "theme.dark": "Dark",
@@ -32,7 +30,6 @@ const en = {
   "appearance.dimensions": "Popup Size",
   "appearance.maxWidth": "Max Width",
   "appearance.maxHeight": "Max Height",
-  "general.performance": "Performance",
   "autocomplete.popup": "Popup",
   "behavior.showAfterTabDescription":
     "Keep the popup hidden until you press Tab. With a single match, Tab completes it directly",
@@ -41,7 +38,6 @@ const en = {
   "behavior.historyModeDescription":
     "Suggest past commands from your shell's own history (zsh, bash or fish). Easy Complete keeps no separate record",
   "autocomplete.runDirectly": "Run as Typed",
-  "autocomplete.exceptions": "Exceptions",
   "autocomplete.disableForCommands": "Turn Off for Commands",
   "autocomplete.disableForCommandsDescription":
     "Comma-separated, such as npm, pnpm. These commands get no suggestions and no online lookups",
@@ -51,7 +47,7 @@ const en = {
     "The popup shrinks to fit shorter content. The default is 50px wider when history suggestions are on",
   "appearance.maxHeightDescription": "Longer lists scroll",
 
-  "behavior.startupAndTrigger": "Startup",
+  "behavior.startupAndTrigger": "Startup & Background",
   "behavior.launchAtLogin": "Launch at Login",
   "behavior.silentLaunch": "Silent Launch",
   "behavior.silentLaunchDescription":
@@ -76,10 +72,10 @@ const en = {
   "behavior.keyboardAndInsertion": "Keys & Insertion",
   "behavior.tabBehavior": "Tab Key",
   "behavior.tabBehaviorDescription":
-    "What Tab does while the suggestion list is open. Shift+Tab always moves up",
-  "behavior.tabPrefixThenNavigate": "Insert prefix, else move down",
-  "behavior.tabPrefixOnly": "Insert shared prefix only",
-  "behavior.tabPrefixThenInsert": "Insert prefix, else accept",
+    "What Tab does while the list is open. The prefix is the start every suggestion shares. Shift+Tab always moves up",
+  "behavior.tabPrefixThenNavigate": "Prefix, else move down",
+  "behavior.tabPrefixOnly": "Prefix only",
+  "behavior.tabPrefixThenInsert": "Prefix, else accept",
   "behavior.tabNavigateOnly": "Move down only",
   "behavior.insertTrailingSpace": "Insert Trailing Space",
   "behavior.showAutoExecuteSuggestion": "Show Run-as-Typed Entry (↪)",
@@ -88,9 +84,9 @@ const en = {
   "behavior.executeAfterTrailingSpace": "Pin After a Trailing Space",
   "behavior.executeAfterTrailingSpaceDescription":
     "Put the ↪ entry first when the command ends with a space",
-  "behavior.runDangerousCommands": "Include Dangerous Commands",
+  "behavior.runDangerousCommands": "Allow for Dangerous Commands",
   "behavior.runDangerousCommandsDescription":
-    "Also offer ↪ for commands marked dangerous, such as rm -rf, so a single Enter runs them. Turn on with care",
+    "Commands marked dangerous, such as rm -rf, also get ↪, so a single Enter runs them",
   "behavior.history": "History",
   "behavior.historyMode": "History Suggestions",
   "behavior.showWithCompletions": "With completions",
@@ -176,16 +172,14 @@ export type Locale = "en" | "zh-CN";
 export type LocalePreference = "system" | Locale;
 
 const zhCN: Record<TranslationKey, string> = {
-  "app.settings": "设置",
   "nav.appearance": "外观",
   "nav.general": "通用",
   "nav.behavior": "补全",
   "nav.about": "关于",
   "nav.saveError": "保存失败",
-  "section.aboutDescription": "应用信息、更新与项目链接",
 
   "theme.title": "主题",
-  "theme.automatic": "自动",
+  "theme.basic": "基础",
   "theme.lightThemes": "浅色主题",
   "theme.darkThemes": "深色主题",
   "theme.dark": "深色",
@@ -206,7 +200,6 @@ const zhCN: Record<TranslationKey, string> = {
   "appearance.dimensions": "弹窗尺寸",
   "appearance.maxWidth": "最大宽度",
   "appearance.maxHeight": "最大高度",
-  "general.performance": "性能",
   "autocomplete.popup": "弹出方式",
   "behavior.showAfterTabDescription":
     "补全弹窗默认隐藏，按 Tab 才显示；只有一个候选时直接补全",
@@ -215,7 +208,6 @@ const zhCN: Record<TranslationKey, string> = {
   "behavior.historyModeDescription":
     "从 shell 自己的历史（zsh、bash 或 fish）中建议用过的命令，Easy Complete 不额外记录",
   "autocomplete.runDirectly": "直接运行",
-  "autocomplete.exceptions": "例外",
   "autocomplete.disableForCommands": "为这些命令关闭补全",
   "autocomplete.disableForCommandsDescription":
     "用逗号分隔，例如 npm, pnpm。这些命令不再显示补全，也不会联网查询",
@@ -225,7 +217,7 @@ const zhCN: Record<TranslationKey, string> = {
     "内容较少时弹窗会自动缩小。开启历史建议后默认值加宽 50px",
   "appearance.maxHeightDescription": "超出高度的列表可以滚动",
 
-  "behavior.startupAndTrigger": "启动",
+  "behavior.startupAndTrigger": "启动与后台",
   "behavior.launchAtLogin": "登录时启动",
   "behavior.silentLaunch": "静默启动",
   "behavior.silentLaunchDescription":
@@ -250,11 +242,11 @@ const zhCN: Record<TranslationKey, string> = {
   "behavior.keyboardAndInsertion": "按键与插入",
   "behavior.tabBehavior": "Tab 键行为",
   "behavior.tabBehaviorDescription":
-    "补全列表打开时 Tab 键的作用，Shift+Tab 始终向上移动",
-  "behavior.tabPrefixThenNavigate": "补全公共前缀，否则下移一项",
-  "behavior.tabPrefixOnly": "仅补全公共前缀",
-  "behavior.tabPrefixThenInsert": "补全公共前缀，否则插入选中项",
-  "behavior.tabNavigateOnly": "仅下移一项",
+    "列表打开时 Tab 的作用。前缀指所有候选共同的开头部分；Shift+Tab 始终上移",
+  "behavior.tabPrefixThenNavigate": "补全前缀，否则下移",
+  "behavior.tabPrefixOnly": "只补全前缀",
+  "behavior.tabPrefixThenInsert": "补全前缀，否则采用",
+  "behavior.tabNavigateOnly": "只下移",
   "behavior.insertTrailingSpace": "自动插入尾随空格",
   "behavior.showAutoExecuteSuggestion": "显示「直接运行」项（↪）",
   "behavior.showAutoExecuteSuggestionDescription":
@@ -262,9 +254,9 @@ const zhCN: Record<TranslationKey, string> = {
   "behavior.executeAfterTrailingSpace": "空格结尾时置顶",
   "behavior.executeAfterTrailingSpaceDescription":
     "命令以空格结尾时，把 ↪ 排到第一项",
-  "behavior.runDangerousCommands": "包含危险命令",
+  "behavior.runDangerousCommands": "危险命令也可直接运行",
   "behavior.runDangerousCommandsDescription":
-    "对 rm -rf 等标记为危险的命令也显示 ↪，一按 Enter 就会执行，请谨慎开启",
+    "rm -rf 等被标记为危险的命令也会显示 ↪，按一下 Enter 就会执行",
   "behavior.history": "历史记录",
   "behavior.historyMode": "历史建议",
   "behavior.showWithCompletions": "与补全一起显示",

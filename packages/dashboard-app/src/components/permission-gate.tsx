@@ -79,12 +79,7 @@ function PermissionRow({
         type="button"
         disabled={!canRepair || busy || blocked}
         onClick={() => onRepair(permission.id)}
-        className={clsx(
-          "min-w-[130px] rounded-[9px] border-0 px-3 py-1.5 text-[13px] font-semibold outline-none",
-          canRepair && !busy && !blocked
-            ? "bg-[var(--dashboard-accent-color)] text-white"
-            : "bg-[var(--ds-control-disabled-bg)] text-[var(--ds-control-disabled-fg)]",
-        )}
+        className="mac-button mac-button-primary min-w-[130px]"
       >
         {busy ? t("permission.working") : permission.repairLabel}
       </button>
@@ -158,7 +153,7 @@ export function PermissionGate({
             type="button"
             onClick={onRefresh}
             disabled={refreshing || repairing !== null}
-            className="rounded-[9px] border-0 bg-[var(--ds-control-bg)] px-3 py-1.5 text-[13px] font-semibold text-[var(--ds-label)] outline-none disabled:text-[var(--ds-control-disabled-fg)]"
+            className="mac-button"
           >
             {refreshing ? t("permission.checking") : t("permission.checkAgain")}
           </button>
@@ -166,7 +161,7 @@ export function PermissionGate({
             type="button"
             onClick={onRepairAll}
             disabled={repairing !== null}
-            className="rounded-[9px] border-0 bg-[var(--dashboard-accent-color)] px-3 py-1.5 text-[13px] font-semibold text-white outline-none disabled:bg-[var(--ds-control-disabled-bg)] disabled:text-[var(--ds-control-disabled-fg)]"
+            className="mac-button mac-button-primary"
           >
             {repairing ? t("permission.working") : t("permission.fixAll")}
           </button>

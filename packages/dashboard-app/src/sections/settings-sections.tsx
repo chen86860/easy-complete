@@ -54,12 +54,7 @@ function AboutActionButton({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={clsx(
-        "inline-flex cursor-pointer items-center gap-[6px] whitespace-nowrap rounded-[9px] border border-[var(--ds-separator)]",
-        "bg-[var(--ds-button-bg)] px-3 py-1.5 text-[12px] font-medium text-[var(--ds-button-fg)]",
-        "transition-colors hover:bg-[var(--ds-button-bg-hover)] disabled:cursor-default disabled:opacity-60",
-        className,
-      )}
+      className={clsx("mac-button", className)}
     >
       {icon}
       {label}
@@ -83,11 +78,7 @@ function AboutLinkButton({
         event.preventDefault();
         void openExternalUrl(href);
       }}
-      className={clsx(
-        "inline-flex shrink-0 items-center gap-[6px] whitespace-nowrap rounded-[9px] border border-[var(--ds-separator)]",
-        "bg-[var(--ds-button-bg)] px-3 py-1.5 text-[12px] font-medium text-[var(--ds-button-fg)] no-underline",
-        "transition-colors hover:bg-[var(--ds-button-bg-hover)]",
-      )}
+      className="mac-button shrink-0"
     >
       {icon}
       {label}
@@ -147,16 +138,12 @@ export function GeneralSection({
         <Row
           label={t("behavior.showMenubarIcon")}
           description={t("behavior.showMenubarIconDescription")}
-          last
         >
           <Toggle
             checked={!settingOrDefault(settings, SETTINGS.HIDE_MENUBAR_ICON)}
             onChange={(value) => set(SETTINGS.HIDE_MENUBAR_ICON, !value)}
           />
         </Row>
-      </Card>
-
-      <Card title={t("general.performance")}>
         <Row
           label={t("behavior.keepAutocompleteReady")}
           description={t("behavior.keepAutocompleteReadyDescription")}
@@ -217,13 +204,27 @@ export function AutocompleteSection({
         <Row
           label={t("behavior.firstTokenCompletion")}
           description={t("behavior.firstTokenCompletionDescription")}
-          last
         >
           <Toggle
             checked={Boolean(
               settingOrDefault(settings, SETTINGS.FIRST_COMMAND_COMPLETION),
             )}
             onChange={(value) => set(SETTINGS.FIRST_COMMAND_COMPLETION, value)}
+          />
+        </Row>
+        <Row
+          label={t("autocomplete.disableForCommands")}
+          description={t("autocomplete.disableForCommandsDescription")}
+          last
+        >
+          <TextInput
+            value={
+              Array.isArray(disabledCommands) ? disabledCommands.join(", ") : ""
+            }
+            placeholder={t("autocomplete.disableForCommandsPlaceholder")}
+            onChange={(value) =>
+              set(SETTINGS.DISABLE_FOR_COMMANDS, parseCommandList(value))
+            }
           />
         </Row>
       </Card>
@@ -342,6 +343,7 @@ export function AutocompleteSection({
                 onChange={(value) =>
                   set(SETTINGS.IMMEDIATELY_RUN_DANGEROUS_COMMANDS, value)
                 }
+                danger
               />
             </Row>
           </>
@@ -383,24 +385,6 @@ export function AutocompleteSection({
             value={String(settings[SETTINGS.HISTORY_COMMAND] ?? "")}
             placeholder={t("behavior.historyCommandPlaceholder")}
             onChange={(value) => set(SETTINGS.HISTORY_COMMAND, value || null)}
-          />
-        </Row>
-      </Card>
-
-      <Card title={t("autocomplete.exceptions")}>
-        <Row
-          label={t("autocomplete.disableForCommands")}
-          description={t("autocomplete.disableForCommandsDescription")}
-          last
-        >
-          <TextInput
-            value={
-              Array.isArray(disabledCommands) ? disabledCommands.join(", ") : ""
-            }
-            placeholder={t("autocomplete.disableForCommandsPlaceholder")}
-            onChange={(value) =>
-              set(SETTINGS.DISABLE_FOR_COMMANDS, parseCommandList(value))
-            }
           />
         </Row>
       </Card>

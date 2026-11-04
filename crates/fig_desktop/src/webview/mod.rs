@@ -1293,9 +1293,9 @@ fn system_accent_css_color() -> String {
     "AccentColor".to_string()
 }
 
-/// Must match the sidebar width in `packages/dashboard-app` (`w-[226px]`).
+/// Must match the sidebar width in `packages/dashboard-app` (`w-[232px]`).
 #[cfg(target_os = "macos")]
-const DASHBOARD_SIDEBAR_WIDTH: f64 = 226.0;
+const DASHBOARD_SIDEBAR_WIDTH: f64 = 232.0;
 
 /// Installs an `NSVisualEffectView` (sidebar material) beneath the dashboard webview so the
 /// sidebar region shows the native macOS translucent material — blurred while the window is

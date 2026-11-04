@@ -23,32 +23,29 @@ export function Row({
   return (
     <div
       className={clsx(
-        "relative flex min-h-[54px] items-center justify-between gap-4 py-3 pr-[18px]",
-        nested ? "bg-[var(--ds-card-inset)] pl-[34px]" : "pl-[18px]",
+        "relative flex min-h-[40px] items-center justify-between gap-4 py-2.5 pr-3.5",
+        nested ? "bg-[var(--ds-card-inset)] pl-[34px]" : "pl-3.5",
       )}
     >
       {last ? null : (
         <span
           aria-hidden
           className={clsx(
-            "absolute bottom-0 right-0 h-px",
+            "absolute bottom-0 right-3.5 h-px",
             nested
               ? "left-[34px] bg-[var(--ds-separator-weak)]"
-              : "left-0 bg-[var(--ds-separator)]",
+              : "left-3.5 bg-[var(--ds-separator)]",
           )}
         />
       )}
       <div className="min-w-0 flex-1">
         <div
-          className={clsx(
-            "font-medium leading-[1.35] text-[var(--ds-label)]",
-            nested ? "text-[13px]" : "text-[14px]",
-          )}
+          className={clsx("text-[13px] leading-[1.35] text-[var(--ds-label)]")}
         >
           {label}
         </div>
         {description ? (
-          <div className="mt-0.5 max-w-[36rem] text-[12px] leading-[1.4] text-[var(--ds-label-secondary)]">
+          <div className="mt-0.5 max-w-[36rem] text-[11px] leading-[1.4] text-[var(--ds-label-secondary)]">
             {description}
           </div>
         ) : null}
@@ -68,11 +65,11 @@ export function Card({
   return (
     <section className="mb-5">
       {title ? (
-        <div className="mb-2 pl-5 text-[13px] font-semibold tracking-[-0.01em] text-[var(--ds-label-muted)]">
+        <div className="mb-1.5 pl-3.5 text-[13px] font-semibold text-[var(--ds-label)]">
           {title}
         </div>
       ) : null}
-      <div className="overflow-hidden rounded-[14px] border border-[var(--ds-card-border)] bg-[var(--ds-card-bg)] shadow-[inset_0_0_0_0.5px_var(--ds-card-inset)]">
+      <div className="overflow-hidden rounded-xl border border-[var(--ds-card-border)] bg-[var(--ds-card-bg)] shadow-[inset_0_0_0_0.5px_var(--ds-card-inset)]">
         {children}
       </div>
     </section>

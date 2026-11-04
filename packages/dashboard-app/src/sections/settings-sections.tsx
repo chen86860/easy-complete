@@ -95,7 +95,7 @@ function AboutLinkButton({
   );
 }
 
-export function AppearanceSection({
+export function GeneralSection({
   settings,
   set,
 }: {
@@ -124,82 +124,6 @@ export function AppearanceSection({
         </Row>
       </Card>
 
-      <Card title={t("theme.title")}>
-        <ThemePicker
-          value={String(settingOrDefault(settings, SETTINGS.THEME))}
-          onChange={(value) => set(SETTINGS.THEME, value)}
-        />
-      </Card>
-
-      <Card title={t("appearance.typography")}>
-        <Row
-          label={t("appearance.fontFamily")}
-          description={t("appearance.fontFamilyDescription")}
-        >
-          <TextInput
-            value={String(settings[SETTINGS.FONT_FAMILY] ?? "")}
-            placeholder={t("appearance.systemDefault")}
-            onChange={(value) => set(SETTINGS.FONT_FAMILY, value || null)}
-          />
-        </Row>
-        <Row label={t("appearance.fontSize")} last>
-          <NumberInput
-            value={Number(settingOrDefault(settings, SETTINGS.FONT_SIZE))}
-            min={10}
-            max={24}
-            unit="px"
-            onChange={(value) => set(SETTINGS.FONT_SIZE, value)}
-          />
-        </Row>
-      </Card>
-
-      <Card title={t("appearance.dimensions")}>
-        <Row label={t("appearance.maxWidth")}>
-          <NumberInput
-            value={Number(
-              settings[SETTINGS.WIDTH] ?? getDefaultWidth(settings),
-            )}
-            min={150}
-            max={800}
-            step={10}
-            unit="px"
-            onChange={(value) => set(SETTINGS.WIDTH, value)}
-          />
-        </Row>
-        <Row label={t("appearance.maxHeight")} last>
-          <NumberInput
-            value={Number(settingOrDefault(settings, SETTINGS.HEIGHT))}
-            min={80}
-            max={600}
-            step={10}
-            unit="px"
-            onChange={(value) => set(SETTINGS.HEIGHT, value)}
-          />
-        </Row>
-      </Card>
-    </>
-  );
-}
-
-export function BehaviorSection({
-  settings,
-  set,
-}: {
-  settings: SettingsMap;
-  set: SettingSetter;
-}) {
-  const { t } = useI18n();
-  // The stored setting is negative (`hideAutoExecuteSuggestion`) and is read
-  // that way by the autocomplete app and the CLI, so it stays as-is. Only the
-  // UI is flipped, so the toggle reads positively and enabling it reveals the
-  // sub-settings rather than hiding them.
-  const showAutoExecute = !settingOrDefault(
-    settings,
-    SETTINGS.HIDE_AUTO_EXECUTE_SUGGESTION,
-  );
-
-  return (
-    <>
       <Card title={t("behavior.startupAndTrigger")}>
         <Row label={t("behavior.launchAtLogin")}>
           <Toggle
@@ -223,15 +147,20 @@ export function BehaviorSection({
         <Row
           label={t("behavior.showMenubarIcon")}
           description={t("behavior.showMenubarIconDescription")}
+          last
         >
           <Toggle
             checked={!settingOrDefault(settings, SETTINGS.HIDE_MENUBAR_ICON)}
             onChange={(value) => set(SETTINGS.HIDE_MENUBAR_ICON, !value)}
           />
         </Row>
+      </Card>
+
+      <Card title={t("general.performance")}>
         <Row
           label={t("behavior.keepAutocompleteReady")}
           description={t("behavior.keepAutocompleteReadyDescription")}
+          last
         >
           <Toggle
             checked={Boolean(
@@ -240,12 +169,61 @@ export function BehaviorSection({
             onChange={(value) => set(SETTINGS.KEEP_AUTOCOMPLETE_READY, value)}
           />
         </Row>
-        <Row label={t("behavior.showAfterTab")} last>
+      </Card>
+    </>
+  );
+}
+
+function parseCommandList(value: string): string[] | null {
+  const commands = value
+    .split(/[\s,]+/)
+    .map((command) => command.trim())
+    .filter(Boolean);
+  return commands.length > 0 ? [...new Set(commands)] : null;
+}
+
+export function AutocompleteSection({
+  settings,
+  set,
+}: {
+  settings: SettingsMap;
+  set: SettingSetter;
+}) {
+  const { t } = useI18n();
+  // The stored setting is negative (`hideAutoExecuteSuggestion`) and is read
+  // that way by the autocomplete app and the CLI, so it stays as-is. Only the
+  // UI is flipped, so the toggle reads positively and enabling it reveals the
+  // sub-settings rather than hiding them.
+  const showAutoExecute = !settingOrDefault(
+    settings,
+    SETTINGS.HIDE_AUTO_EXECUTE_SUGGESTION,
+  );
+  const disabledCommands = settings[SETTINGS.DISABLE_FOR_COMMANDS];
+
+  return (
+    <>
+      <Card title={t("autocomplete.popup")}>
+        <Row
+          label={t("behavior.showAfterTab")}
+          description={t("behavior.showAfterTabDescription")}
+        >
           <Toggle
             checked={Boolean(
               settingOrDefault(settings, SETTINGS.ONLY_SHOW_ON_TAB),
             )}
             onChange={(value) => set(SETTINGS.ONLY_SHOW_ON_TAB, value)}
+          />
+        </Row>
+        <Row
+          label={t("behavior.firstTokenCompletion")}
+          description={t("behavior.firstTokenCompletionDescription")}
+          last
+        >
+          <Toggle
+            checked={Boolean(
+              settingOrDefault(settings, SETTINGS.FIRST_COMMAND_COMPLETION),
+            )}
+            onChange={(value) => set(SETTINGS.FIRST_COMMAND_COMPLETION, value)}
           />
         </Row>
       </Card>
@@ -258,17 +236,6 @@ export function BehaviorSection({
           <Toggle
             checked={Boolean(settingOrDefault(settings, SETTINGS.FUZZY_SEARCH))}
             onChange={(value) => set(SETTINGS.FUZZY_SEARCH, value)}
-          />
-        </Row>
-        <Row
-          label={t("behavior.firstTokenCompletion")}
-          description={t("behavior.firstTokenCompletionDescription")}
-        >
-          <Toggle
-            checked={Boolean(
-              settingOrDefault(settings, SETTINGS.FIRST_COMMAND_COMPLETION),
-            )}
-            onChange={(value) => set(SETTINGS.FIRST_COMMAND_COMPLETION, value)}
           />
         </Row>
         <Row label={t("behavior.sortOrder")} last>
@@ -311,7 +278,11 @@ export function BehaviorSection({
             onChange={(value) => set(SETTINGS.TAB_KEYBINDING, value)}
           />
         </Row>
-        <Row label={t("behavior.insertTrailingSpace")}>
+        <Row
+          label={t("behavior.insertTrailingSpace")}
+          description={t("behavior.insertTrailingSpaceDescription")}
+          last
+        >
           <Toggle
             checked={Boolean(
               settingOrDefault(settings, SETTINGS.INSERT_SPACE_AUTOMATICALLY),
@@ -321,6 +292,9 @@ export function BehaviorSection({
             }
           />
         </Row>
+      </Card>
+
+      <Card title={t("autocomplete.runDirectly")}>
         <Row
           label={t("behavior.showAutoExecuteSuggestion")}
           description={t("behavior.showAutoExecuteSuggestionDescription")}
@@ -375,7 +349,10 @@ export function BehaviorSection({
       </Card>
 
       <Card title={t("behavior.history")}>
-        <Row label={t("behavior.historyMode")}>
+        <Row
+          label={t("behavior.historyMode")}
+          description={t("behavior.historyModeDescription")}
+        >
           <Select
             value={String(settingOrDefault(settings, SETTINGS.HISTORY_MODE))}
             options={[
@@ -406,6 +383,103 @@ export function BehaviorSection({
             value={String(settings[SETTINGS.HISTORY_COMMAND] ?? "")}
             placeholder={t("behavior.historyCommandPlaceholder")}
             onChange={(value) => set(SETTINGS.HISTORY_COMMAND, value || null)}
+          />
+        </Row>
+      </Card>
+
+      <Card title={t("autocomplete.exceptions")}>
+        <Row
+          label={t("autocomplete.disableForCommands")}
+          description={t("autocomplete.disableForCommandsDescription")}
+          last
+        >
+          <TextInput
+            value={
+              Array.isArray(disabledCommands) ? disabledCommands.join(", ") : ""
+            }
+            placeholder={t("autocomplete.disableForCommandsPlaceholder")}
+            onChange={(value) =>
+              set(SETTINGS.DISABLE_FOR_COMMANDS, parseCommandList(value))
+            }
+          />
+        </Row>
+      </Card>
+    </>
+  );
+}
+
+export function AppearanceSection({
+  settings,
+  set,
+}: {
+  settings: SettingsMap;
+  set: SettingSetter;
+}) {
+  const { t } = useI18n();
+
+  return (
+    <>
+      <Card title={t("theme.title")}>
+        <ThemePicker
+          value={String(settingOrDefault(settings, SETTINGS.THEME))}
+          onChange={(value) => set(SETTINGS.THEME, value)}
+        />
+      </Card>
+
+      <Card title={t("appearance.typography")}>
+        <Row
+          label={t("appearance.fontFamily")}
+          description={t("appearance.fontFamilyDescription")}
+        >
+          <TextInput
+            value={String(settings[SETTINGS.FONT_FAMILY] ?? "")}
+            placeholder={t("appearance.systemDefault")}
+            onChange={(value) => set(SETTINGS.FONT_FAMILY, value || null)}
+          />
+        </Row>
+        <Row
+          label={t("appearance.fontSize")}
+          description={t("appearance.fontSizeDescription")}
+          last
+        >
+          <NumberInput
+            value={Number(settingOrDefault(settings, SETTINGS.FONT_SIZE))}
+            min={10}
+            max={24}
+            unit="px"
+            onChange={(value) => set(SETTINGS.FONT_SIZE, value)}
+          />
+        </Row>
+      </Card>
+
+      <Card title={t("appearance.dimensions")}>
+        <Row
+          label={t("appearance.maxWidth")}
+          description={t("appearance.maxWidthDescription")}
+        >
+          <NumberInput
+            value={Number(
+              settings[SETTINGS.WIDTH] ?? getDefaultWidth(settings),
+            )}
+            min={150}
+            max={800}
+            step={10}
+            unit="px"
+            onChange={(value) => set(SETTINGS.WIDTH, value)}
+          />
+        </Row>
+        <Row
+          label={t("appearance.maxHeight")}
+          description={t("appearance.maxHeightDescription")}
+          last
+        >
+          <NumberInput
+            value={Number(settingOrDefault(settings, SETTINGS.HEIGHT))}
+            min={80}
+            max={600}
+            step={10}
+            unit="px"
+            onChange={(value) => set(SETTINGS.HEIGHT, value)}
           />
         </Row>
       </Card>

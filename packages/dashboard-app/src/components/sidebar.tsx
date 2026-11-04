@@ -2,7 +2,13 @@ import type React from "react";
 import clsx from "clsx";
 import type { Section } from "../types";
 import { useI18n } from "../i18n";
-import { IconAbout, IconAppearance, IconBehavior, IconWarning } from "./icons";
+import {
+  IconAbout,
+  IconAdvanced,
+  IconAppearance,
+  IconBehavior,
+  IconWarning,
+} from "./icons";
 import { preventScrollBounce } from "../utils/prevent-scroll-bounce";
 
 export function Sidebar({
@@ -16,12 +22,17 @@ export function Sidebar({
 }) {
   const { t } = useI18n();
   const nav: Array<{ id: Section; label: string; icon: React.ReactNode }> = [
+    { id: "general", label: t("nav.general"), icon: <IconAdvanced /> },
+    {
+      id: "autocomplete",
+      label: t("nav.behavior"),
+      icon: <IconBehavior />,
+    },
     {
       id: "appearance",
       label: t("nav.appearance"),
       icon: <IconAppearance />,
     },
-    { id: "behavior", label: t("nav.behavior"), icon: <IconBehavior /> },
     { id: "about", label: t("nav.about"), icon: <IconAbout /> },
   ];
 

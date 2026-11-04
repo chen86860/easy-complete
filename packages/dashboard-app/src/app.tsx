@@ -17,7 +17,7 @@ import type { Section } from "./types";
 export default function App() {
   const { settings, saving, set } = useDashboardSettings();
   const permissionCheck = usePermissionCheck();
-  const [section, setSection] = useState<Section>("appearance");
+  const [section, setSection] = useState<Section>("general");
 
   useDashboardShortcuts();
   useDashboardNavigation(setSection);

@@ -2,7 +2,8 @@ import { useEffect, useRef } from "react";
 import {
   AboutSection,
   AppearanceSection,
-  BehaviorSection,
+  AutocompleteSection,
+  GeneralSection,
 } from "../sections/settings-sections";
 import { useI18n } from "../i18n";
 import type { Section, SettingSetter, SettingsMap } from "../types";
@@ -21,8 +22,9 @@ export function DashboardContent({
   const scrollRef = useRef<HTMLElement>(null);
   const sectionMeta: Record<Section, { title: string; description?: string }> =
     {
+      general: { title: t("nav.general") },
+      autocomplete: { title: t("nav.behavior") },
       appearance: { title: t("nav.appearance") },
-      behavior: { title: t("nav.behavior") },
       about: {
         title: t("nav.about"),
         description: t("section.aboutDescription"),
@@ -53,11 +55,14 @@ export function DashboardContent({
           ) : null}
         </header>
 
+        {section === "general" ? (
+          <GeneralSection settings={settings} set={set} />
+        ) : null}
+        {section === "autocomplete" ? (
+          <AutocompleteSection settings={settings} set={set} />
+        ) : null}
         {section === "appearance" ? (
           <AppearanceSection settings={settings} set={set} />
-        ) : null}
-        {section === "behavior" ? (
-          <BehaviorSection settings={settings} set={set} />
         ) : null}
         {section === "about" ? (
           <AboutSection settings={settings} set={set} />

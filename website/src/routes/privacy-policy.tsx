@@ -128,9 +128,7 @@ function PrivacyPage() {
           <span className="px-2">/</span>
           <span>Privacy Policy</span>
         </nav>
-        <p className="mb-3 font-mono text-xs text-(--accent)">
-          Privacy Policy
-        </p>
+        <p className="mb-3 font-mono text-xs text-(--accent)">Privacy Policy</p>
         <h1 className="m-0 mb-4 text-[36px] font-semibold leading-[1.1] tracking-[-.03em]">
           What leaves your Mac, and what doesn't.
         </h1>
@@ -282,7 +280,7 @@ function PrivacyPage() {
             ~/Library/Application Support/easy-complete/data.sqlite3
           </code>{" "}
           and a plain-text <code className={CODE_INLINE}>history</code> file
-          next to it. From v2.5.1 the app deletes both records when it starts.
+          next to it. From v2.6.0 the app deletes both records when it starts.
         </p>
         <p className={PARAGRAPH}>
           Diagnostic logs are written to your user's temporary folder and hold
@@ -312,7 +310,7 @@ function PrivacyPage() {
           .
         </p>
         <p className="mt-10 font-mono text-[12.5px] text-[#5d6773]">
-          Last updated: November 2026 · Applies to Easy Complete v2.5.1 and
+          Last updated: November 2026 · Applies to Easy Complete v2.6.0 and
           later
         </p>
       </main>

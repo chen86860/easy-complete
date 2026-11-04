@@ -17,7 +17,7 @@ use crate::utils::is_cargo_debug_build;
 const PREVIOUS_VERSION_KEY: &str = "desktop.versionAtPreviousLaunch";
 
 /// Removes command history recorded by earlier versions: the rows in `data.sqlite3` and the
-/// plain-text `history` file written before v2.5.1. Nothing records or reads either one anymore;
+/// plain-text `history` file written before v2.6.0. Nothing records or reads either one anymore;
 /// history suggestions come from the shell's own history.
 fn purge_recorded_history() {
     match fig_settings::history::History::new().purge() {
@@ -35,7 +35,7 @@ fn purge_recorded_history() {
     }
 }
 
-/// Deletes the input method log on each update. Before v2.5.1 the input method logged at trace
+/// Deletes the input method log on each update. Before v2.6.0 the input method logged at trace
 /// level, which made `imk.log` a timeline of every app the user typed in. The migration below
 /// restarts the input method on the new binary, which only logs errors.
 #[cfg(target_os = "macos")]

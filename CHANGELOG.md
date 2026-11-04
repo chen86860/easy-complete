@@ -1,7 +1,14 @@
 # Changelog
 
-## v2.5.1
+**English** · [简体中文](./CHANGELOG.zh-CN.md)
 
+## v2.6.0
+
+- change: the settings window is reorganized into General, Autocomplete, Appearance and About, styled like System Settings with native switches and pop-up buttons, and every setting now explains what it does
+- new: turn off completions for specific commands from the settings window
+- fix: the settings window follows the system accent color
+- fix: the Launch at Login switch no longer flips back while it applies
+- new: when you are up to date, the update dialog links to the version history
 - change: Easy Complete no longer records the commands you run. History suggestions read your shell's own history, so its settings apply, such as skipping commands that start with a space. On launch the app deletes the history earlier versions stored in `data.sqlite3` and the plain-text `history` file
 - fix: bash history now shows up in history suggestions
 - change: the input method logs errors only, instead of every app you type in. The old log is deleted on update

@@ -16,6 +16,39 @@ use crate::utils::is_cargo_debug_build;
 
 const PREVIOUS_VERSION_KEY: &str = "desktop.versionAtPreviousLaunch";
 
+/// Removes command history recorded by earlier versions: the rows in `data.sqlite3` and the
+/// plain-text `history` file written before v2.5.1. Nothing records or reads either one anymore;
+/// history suggestions come from the shell's own history.
+fn purge_recorded_history() {
+    match fig_settings::history::History::new().purge() {
+        Ok(true) => tracing::info!("Purged recorded command history"),
+        Ok(false) => {},
+        Err(err) => error!(%err, "Failed to purge recorded command history"),
+    }
+
+    if let Ok(dir) = fig_util::directories::fig_data_dir() {
+        match std::fs::remove_file(dir.join("history")) {
+            Ok(()) => tracing::info!("Removed legacy plain-text history file"),
+            Err(err) if err.kind() == std::io::ErrorKind::NotFound => {},
+            Err(err) => error!(%err, "Failed to remove legacy plain-text history file"),
+        }
+    }
+}
+
+/// Deletes the input method log on each update. Before v2.5.1 the input method logged at trace
+/// level, which made `imk.log` a timeline of every app the user typed in. The migration below
+/// restarts the input method on the new binary, which only logs errors.
+#[cfg(target_os = "macos")]
+fn remove_input_method_log() {
+    if let Ok(dir) = fig_util::directories::logs_dir() {
+        match std::fs::remove_file(dir.join("imk.log")) {
+            Ok(()) => tracing::info!("Removed input method log"),
+            Err(err) if err.kind() == std::io::ErrorKind::NotFound => {},
+            Err(err) => error!(%err, "Failed to remove input method log"),
+        }
+    }
+}
+
 #[cfg(target_os = "macos")]
 fn run_input_method_migration() {
     use fig_integrations::input_method::InputMethod;
@@ -110,8 +143,11 @@ pub async fn run_install(ctx: Arc<Context>, ignore_immediate_update: bool, is_st
     #[cfg(target_os = "macos")]
     // Add any items that are only once per version
     if should_run_macos_install {
+        remove_input_method_log();
         run_input_method_migration();
     }
+
+    purge_recorded_history();
 
     // Runs on every launch, unlike the once-per-version install script below.
     #[cfg(target_os = "macos")]

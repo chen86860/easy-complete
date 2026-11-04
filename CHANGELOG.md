@@ -2,7 +2,11 @@
 
 ## v2.5.1
 
-- change: completed commands are no longer also appended to a plain-text `history` file in `~/Library/Application Support/easy-complete/`. Nothing read it; history suggestions keep using the local database. You can delete the old file
+- change: Easy Complete no longer records the commands you run. History suggestions read your shell's own history, so its settings apply, such as skipping commands that start with a space. On launch the app deletes the history earlier versions stored in `data.sqlite3` and the plain-text `history` file
+- fix: bash history now shows up in history suggestions
+- change: the input method logs errors only, instead of every app you type in. The old log is deleted on update
+- change: `ec uninstall` and `scripts/uninstall.sh` also delete the logs
+- change: the completion overlay no longer loads images from the web
 - change: completion spec icons are bundled with the app instead of loading from GitHub and tool websites. Icons whose source no longer exists show the generic icon
 - change: refresh the packages suggested after `npx`, `pnpx` and `bunx`: retired Fig tools and deprecated packages are gone, and current tools such as `@tanstack/cli`, `create-vite`, `create-expo-app`, `shadcn`, `vitest` and `wrangler` are in
 - fix: settings changed outside the app, such as `ec telemetry disable` or `ec settings app.disableAutoupdates true`, now apply to the running app without a restart

@@ -16,7 +16,6 @@ use tokio::process::Command;
 use tracing::{debug, error, trace, warn};
 
 use crate::event_handler::EventHandler;
-use crate::history::HistorySender;
 use crate::interceptor::KeyInterceptor;
 use crate::pty::AsyncMasterPty;
 use crate::{
@@ -253,7 +252,6 @@ pub async fn process_figterm_message(
     main_loop_tx: Sender<MainLoopEvent>,
     response_tx: Sender<FigtermResponseMessage>,
     term: &Term<EventHandler>,
-    _history_sender: &HistorySender,
     pty_master: &mut Box<dyn AsyncMasterPty + Send + Sync>,
     key_interceptor: &mut KeyInterceptor,
     _session_id: &str,

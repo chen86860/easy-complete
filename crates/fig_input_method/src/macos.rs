@@ -32,7 +32,9 @@ fn register_self_with_tis() {
 #[tokio::main]
 pub async fn main() {
     let _log_guard = initialize_logging(LogArgs {
-        log_level: Some("trace".to_owned()),
+        // Same as the other processes: Q_LOG_LEVEL, else errors only. The input method sees every
+        // app the user types in, so verbose levels must stay opt-in.
+        log_level: None,
         log_to_stdout: true,
         log_file_path: Some(directories::logs_dir().expect("home dir must be set").join("imk.log")),
         delete_old_log_file: false,

@@ -23,7 +23,7 @@ import {
   SETTINGS,
   getSetting,
 } from "@easy-complete/api-bindings-wrappers";
-import { History, Settings } from "@easy-complete/api-bindings";
+import { Settings } from "@easy-complete/api-bindings";
 import {
   AnnotatedCommand,
   HistoryEntry,
@@ -55,7 +55,6 @@ type HistorySource = {
 
 const historySources: Record<string, HistorySource> = {
   zsh: { entries: [] },
-  fig: { entries: [] },
   bash: { entries: [] },
   fish: { entries: [] },
   customCommand: { entries: [] },
@@ -237,30 +236,6 @@ export const loadHistorySource = async (
   return { entries: slimEntries, historyValueIndex };
 };
 
-const loadFigHistory = async (): Promise<HistoryEntry[]> =>
-  History.query(
-    // Explicit oldest-first ordering: suggestion ranking walks these entries
-    // backwards to surface the most recent match, so it must not rely on
-    // sqlite's default row order.
-    "SELECT command, shell, session_id, cwd, start_time, exit_code FROM history ORDER BY id ASC",
-    [],
-  ).then((history) =>
-    history.map(
-      (entry) =>
-        ({
-          text: entry.command,
-          context: {
-            cwd: entry.cwd,
-            shell: entry.shell,
-            exitCode: entry.exit_code,
-            terminalSession: entry.session_id,
-            time: entry.start_time,
-          },
-          commands: [],
-        }) as HistoryEntry,
-    ),
-  );
-
 /**
  * Sources load serially and each one parses every entry against its spec, so a
  * full load takes seconds. `onSourceLoaded` fires after each source lands
@@ -307,21 +282,12 @@ export const loadHistory = async (
     return result;
   };
 
-  const entries = await loadFigHistory();
-  const start = performance.now();
-  historySources.fig = await loadHistorySource(entries, aliases);
-  historyLogger.info("Got fig history", {
-    ...historySources.fig,
-    time: performance.now() - start,
-  });
-  onSourceLoaded?.();
-
   const command = getSetting<string>(SETTINGS.HISTORY_COMMAND);
   if (command) {
     loadHistoryCommand(command);
   } else {
     await loadHistoryCommand("fc -R; fc -ln 1", "zsh").catch(() => {});
-    await loadHistoryCommand("fc -ln 1", "bash").catch(() => {});
+    await loadHistoryCommand("history -r; fc -ln 1", "bash").catch(() => {});
     await loadHistoryCommand("history search", "fish").catch(() => {});
   }
 };
@@ -440,10 +406,6 @@ export const getHistoryArgSuggestions = (
     allValues.push(...getValuesFromSource(historySources[shell]));
   }
 
-  if (allValues.length === 0) {
-    allValues.push(...getValuesFromSource(historySources.fig));
-  }
-
   return allValues;
 };
 
@@ -477,13 +439,6 @@ export const getFullHistorySuggestions = (
     );
   } else if (shell in historySources) {
     historyEntries.push(...historySources[shell].entries);
-  }
-
-  // Same fallback as getHistoryArgSuggestions: if we can't tell which shell the
-  // user is in, or that shell's history failed to load, fall back to the
-  // recorded history in the local database rather than showing nothing.
-  if (historyEntries.length === 0) {
-    historyEntries.push(...historySources.fig.entries);
   }
 
   // History sources are ordered oldest-first. Walk them backwards so the most

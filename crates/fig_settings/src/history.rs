@@ -63,6 +63,19 @@ impl History {
         Ok(self.db()?.pool.get()?)
     }
 
+    /// Deletes every recorded command and compacts the file so the rows don't linger in free pages.
+    /// Returns whether anything was deleted. Commands are no longer recorded, but an `ecterm` started
+    /// before an upgrade keeps the old binary, so this runs on every launch rather than once.
+    pub fn purge(&self) -> Result<bool> {
+        let conn = self.conn()?;
+        let has_rows: bool = conn.query_row("SELECT EXISTS(SELECT 1 FROM history)", [], |row| row.get(0))?;
+        if has_rows {
+            conn.execute("DELETE FROM history", [])?;
+            conn.execute("VACUUM", [])?;
+        }
+        Ok(has_rows)
+    }
+
     pub fn insert_command_history(&self, command_info: &CommandInfo) -> Result<()> {
         trace!("Inserting command into history: {:?}", command_info);
         // Insert the command into the history table
@@ -343,6 +356,24 @@ mod tests {
     #[test]
     fn history_new_test() {
         let _ = History::new();
+    }
+
+    #[test]
+    fn purge_deletes_all_rows() {
+        let history = History::mock();
+        assert!(!history.purge().unwrap(), "nothing to purge in an empty table");
+
+        history
+            .insert_command_history(&CommandInfo {
+                command: Some("export TOKEN=secret".into()),
+                ..Default::default()
+            })
+            .unwrap();
+        assert_eq!(history.all_rows().unwrap().len(), 1);
+
+        assert!(history.purge().unwrap());
+        assert!(history.all_rows().unwrap().is_empty());
+        assert!(!history.purge().unwrap());
     }
 
     #[test]

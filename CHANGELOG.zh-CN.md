@@ -2,7 +2,11 @@
 
 ## v2.5.1
 
-- 变更：执行过的命令不再额外写入 `~/Library/Application Support/easy-complete/` 下的明文 `history` 文件。该文件没有任何地方读取，历史建议继续使用本地数据库；旧文件可以直接删除
+- 变更：Easy Complete 不再记录你执行的命令。历史建议改为读取 shell 自己的历史，因此会遵守 shell 的设置（例如以空格开头的命令不进历史）。应用启动时会删除旧版本存在 `data.sqlite3` 中的历史和明文 `history` 文件
+- 修复：bash 的历史现在会出现在历史建议中
+- 变更：输入法只记录错误日志，不再记录你在各个应用中的输入活动；升级时会删除旧日志
+- 变更：`ec uninstall` 和 `scripts/uninstall.sh` 会一并删除日志
+- 变更：补全浮层不再从网络加载图片
 - 变更：补全 spec 图标改为随应用打包，不再从 GitHub 和各工具官网加载。源地址已失效的图标显示为通用图标
 - 变更：更新 `npx`、`pnpx`、`bunx` 后面推荐的包：移除 Fig 已停服的工具和已废弃的包，新增 `@tanstack/cli`、`create-vite`、`create-expo-app`、`shadcn`、`vitest`、`wrangler` 等常用工具
 - 修复：在应用外修改的设置（如 `ec telemetry disable`、`ec settings app.disableAutoupdates true`）现在无需重启即可对运行中的应用生效

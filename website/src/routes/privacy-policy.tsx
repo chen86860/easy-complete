@@ -272,18 +272,24 @@ function PrivacyPage() {
 
         <h2 className={SECTION_HEADING}>What stays on your Mac</h2>
         <p className={PARAGRAPH}>
-          To suggest commands you have run before, the terminal integration
-          records each command with its working directory, shell, exit code and
-          timestamps in{" "}
+          Easy Complete does not keep its own record of the commands you run.
+          History suggestions read your shell's own history (zsh, bash or fish,
+          or the command you set as the history source) when they are needed, so
+          your shell's settings decide what is in it — including skipping
+          commands that start with a space. Earlier versions recorded every
+          command in{" "}
           <code className={CODE_INLINE}>
             ~/Library/Application Support/easy-complete/data.sqlite3
-          </code>
-          . The file is readable only by your user account and is never
-          uploaded. Commands are stored as typed, so a secret passed on the
-          command line is stored too. Recording continues when history
-          suggestions are hidden. Versions before v2.5.1 also appended the same
-          data to a plain-text <code className={CODE_INLINE}>history</code> file
-          in that folder. Nothing reads it, so you can delete it.
+          </code>{" "}
+          and a plain-text <code className={CODE_INLINE}>history</code> file
+          next to it. From v2.5.1 the app deletes both records when it starts.
+        </p>
+        <p className={PARAGRAPH}>
+          Diagnostic logs are written to your user's temporary folder and hold
+          errors only, unless you raise the level with{" "}
+          <code className={CODE_INLINE}>Q_LOG_LEVEL</code>. They are readable
+          only by your user account, never uploaded, and removed by{" "}
+          <code className={CODE_INLINE}>ec uninstall</code>.
         </p>
 
         <h2 className={SECTION_HEADING}>Questions</h2>

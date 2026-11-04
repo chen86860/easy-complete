@@ -1,6 +1,5 @@
 pub mod cli;
 mod event_handler;
-pub mod history;
 pub mod input;
 pub mod interceptor;
 pub mod ipc;
@@ -400,8 +399,6 @@ fn figterm_main(command: Option<&[String]>) -> Result<()> {
 
         let (main_loop_tx, main_loop_rx) = flume::bounded::<MainLoopEvent>(16);
 
-        let history_sender = history::spawn_history_task().await;
-
         // Spawn thread to handle figterm ipc
         let incoming_receiver = spawn_figterm_ipc(&session_id).await?;
 
@@ -417,7 +414,7 @@ fn figterm_main(command: Option<&[String]>) -> Result<()> {
 
         let mut processor = Processor::new();
         let size = SizeInfo::new(pty_size.rows as usize, pty_size.cols as usize);
-        let event_sender = EventHandler::new(remote_sender.clone(), history_sender.clone(), main_loop_tx.clone());
+        let event_sender = EventHandler::new(remote_sender.clone(), main_loop_tx.clone());
         let mut term = alacritty_terminal::Term::new(size, event_sender, 1, session_id.clone());
 
         #[cfg(target_os = "windows")]
@@ -701,7 +698,6 @@ fn figterm_main(command: Option<&[String]>) -> Result<()> {
                                 main_loop_tx.clone(),
                                 sender.clone(),
                                 &term,
-                                &history_sender,
                                 &mut master,
                                 &mut key_interceptor,
                                 &session_id,

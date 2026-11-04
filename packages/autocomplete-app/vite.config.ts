@@ -12,7 +12,7 @@ const csp: Record<string, string> = {
   "script-src": "'self' spec: blob:",
   "style-src": "'self' spec:",
   // spec: serves the spec icons bundled by scripts/localize-spec-icons.mjs.
-  "img-src": "'self' data: fig: icon: spec: https:",
+  "img-src": "'self' data: fig: icon: spec:",
   "connect-src": "'self' spec: api:",
   "object-src": "'none'",
   "frame-src": "'none'",

@@ -28,69 +28,34 @@
   <b>English</b> · <a href="./README.zh-CN.md">简体中文</a>
 </p>
 
-**Easy Complete** is a macOS terminal autocomplete app — IDE-style inline completions
-for your shell, rendered in a native overlay window that follows your cursor. It is a
-local-first terminal completion engine focused purely on autocomplete —
-a lightweight, fully local alternative to Fig.
+**Easy Complete** gives your shell fish-style suggestions for hundreds of CLIs (`git`,
+`npm`, `docker`, `cargo`, …) — subcommands, flags, arguments and file paths, rendered in a
+native overlay that follows your cursor. A lightweight, local-first alternative to Fig.
 
-You get fish-shell-style suggestions for hundreds of CLIs (`git`, `npm`, `docker`,
-`cargo`, …): flags, subcommands, file paths, and arguments, completed as you type.
-Autocomplete runs on-device, with no account and no AI requests. The app collects
-anonymous usage statistics (app opens, daily completion counts, never command content),
-which you can disable any time with `ec telemetry disable`. It also checks GitHub for
-updates, and a few specs look up live data while you type: the npm-family specs send the
-package name you are typing to the npm registry, for example. The
-[Privacy page](https://easy-complete.emmmm.dev/privacy-policy) lists every network
-request, what stays on your Mac, and how to turn each one off.
+Completion runs on-device, with no account and no AI requests. Anonymous usage statistics
+(never command content) can be turned off with `ec telemetry disable`; the
+[Privacy page](https://easy-complete.emmmm.dev/privacy-policy) lists every network request
+and how to disable it.
 
 <p align="center">
   <img src="./.github/media/screenshot.png" alt="Easy Complete autocomplete in action">
 </p>
 
-## Contents
-
-- [Features](#-features)
-- [Requirements](#-requirements)
-- [Install](#-install)
-- [Usage](#-usage)
-- [Uninstall](#-uninstall)
-- [How it works](#-how-it-works)
-- [Development](#-development)
-- [Contributing](#-contributing)
-- [License](#-license)
-
----
-
 ## ✨ Features
 
-- **IDE-style inline completions** — subcommands, flags, arguments and file paths for
-  hundreds of CLIs, rendered in a native overlay that follows your terminal cursor.
-- **Bundled specs** — completion specs and their icons are bundled into the `.app` at
-  build time and loaded from disk. There is no network fallback, no account, and no AI
-  request.
-- **Works with the terminals you already use** — [iTerm2](https://iterm2.com/),
-  [Apple Terminal](https://support.apple.com/guide/terminal/welcome/mac),
-  [Ghostty](https://ghostty.org/), [Kitty](https://sw.kovidgoyal.net/kitty/),
-  [WezTerm](https://wezterm.org/), [Alacritty](https://alacritty.org/),
-  [Zed](https://zed.dev/), [Otty](https://otty.sh/) and [Herdr](https://herdr.dev/), plus the integrated terminals in
-  [VS Code](https://code.visualstudio.com/), [Cursor](https://cursor.com/),
-  [Kiro](https://kiro.dev/), [ChatGPT (Codex)](https://openai.com/codex/) and
-  [JetBrains IDEs](https://www.jetbrains.com/). Also works inside
-  [tmux](https://github.com/tmux/tmux) and [Zellij](https://zellij.dev/).
+- **IDE-style inline completions** for hundreds of CLIs, in a native overlay that follows
+  your terminal cursor.
+- **Ready out of the box** — completions for every supported CLI come with the app, so
+  there is nothing to download or configure.
+- **Works where you already type** — standalone terminals, IDE terminals, tmux and Zellij
+  (see [Supported terminals](#supported-terminals)).
 - **`zsh`, `bash` and `fish`** — shell integration is installed and managed for you.
-
----
 
 ## 💻 Requirements
 
-| Requirement      | Detail                                                                      |
-| ---------------- | --------------------------------------------------------------------------- |
-| Operating system | macOS 12.0 (Monterey) or later                                              |
-| Architecture     | Apple Silicon (arm64) — the published DMG is arm64 only                     |
-| Shells           | `zsh`, `bash`, `fish`                                                       |
-| Permission       | **Accessibility** (required — see [below](#grant-accessibility-permission)) |
-
----
+- macOS 12 (Monterey) or later, Apple Silicon (the published DMG is arm64 only)
+- `zsh`, `bash` or `fish`
+- **Accessibility** permission (see [below](#grant-accessibility-permission))
 
 ## ⚡ Install
 
@@ -100,65 +65,37 @@ request, what stays on your Mac, and how to turn each one off.
 brew install --cask chen86860/tap/easy-complete
 ```
 
-Then launch **Easy Complete** from `/Applications` and follow the setup panel — it
-checks Accessibility permission, shell integration and the input method, and repairs
-anything missing in one click.
+Launch **Easy Complete** from `/Applications` and follow the setup panel — it checks
+Accessibility permission, shell integration and the input method, and repairs anything
+missing in one click.
 
-### Download the DMG manually
+### DMG
 
-[Download latest DMG](https://github.com/chen86860/easy-complete/releases/latest/download/Easy-Complete-arm64.dmg) ·
-[All releases](https://github.com/chen86860/easy-complete/releases)
-
-Open the DMG, drag **Easy Complete.app** into `/Applications`, launch it, and follow the
-same setup panel as above.
+[Download the latest DMG](https://github.com/chen86860/easy-complete/releases/latest/download/Easy-Complete-arm64.dmg),
+drag **Easy Complete.app** into `/Applications`, launch it and follow the same setup panel.
 
 ### Build from source
-
-For development, or if you need to build locally, clone the repository and run the
-installer:
 
 ```bash
 git clone https://github.com/chen86860/easy-complete.git
 cd easy-complete
-./scripts/install.sh
-```
-
-The source installer will:
-
-1. Build the Rust binaries and the TypeScript frontend.
-2. Assemble `Easy Complete.app` and copy it to `/Applications`.
-3. Symlink the `ec` and `ecterm` CLIs into `~/.local/bin`.
-4. Let you enable **Launch at Login** from Settings (a system Login Item on macOS 13+, with a LaunchAgent fallback on macOS 12).
-5. Set up shell integration and register the input method.
-6. **Prompt you to grant Accessibility permission** (required — see below).
-
-When it finishes, reload your shell:
-
-```bash
+./scripts/install.sh   # builds, installs to /Applications, sets up shell integration
 exec $SHELL
 ```
 
 ### Grant Accessibility permission
 
-Easy Complete positions the completion popup relative to your focused terminal
-window, which requires the macOS **Accessibility** permission. The installer triggers
-the system prompt automatically; approve **Easy Complete** in:
+Positioning the popup next to your terminal cursor requires the macOS **Accessibility**
+permission. Approve **Easy Complete** in:
 
 > System Settings → Privacy & Security → Accessibility
 
 If completions never appear, this is almost always the cause. Run `ec doctor` to check,
-and re-trigger the system prompt with:
-
-```bash
-ec debug prompt-accessibility
-```
-
----
+or re-trigger the system prompt with `ec debug prompt-accessibility`.
 
 ## 🚀 Usage
 
-Once installed and granted permission, just start typing in any supported terminal —
-suggestions appear inline as you type.
+Start typing in any supported terminal — suggestions appear inline.
 
 | Key             | Action                            |
 | --------------- | --------------------------------- |
@@ -166,46 +103,35 @@ suggestions appear inline as you type.
 | `⇥` (Tab) / `→` | Accept the highlighted suggestion |
 | `Esc`           | Dismiss the popup                 |
 
-The settings & onboarding dashboard is available from the **Easy Complete menu bar
-icon** (system tray).
-
-Useful CLI commands:
+Settings live in the **Easy Complete menu bar icon**. Useful CLI commands:
 
 ```bash
-ec doctor                       # diagnose common problems
-ec diagnostic                   # print environment / integration status
+ec doctor                              # diagnose common problems
+ec diagnostic                          # print environment / integration status
 ec integrations install input-method   # (re)register the macOS input method
-ec settings list                # view settings
-ec settings <key> <value>       # change a setting
+ec settings list                       # view settings
+ec settings <key> <value>              # change a setting
 ```
 
 ### Supported terminals
 
-Most terminals work out of the box via the PTY integration — including iTerm2, Apple
-Terminal, JetBrains IDE terminals, ChatGPT (Codex), and VS Code along with editors built on
-it (Cursor, Windsurf, Trae, Kiro). Terminals that bypass the standard PTY path
-(**Ghostty, Kitty, WezTerm, Zed, Alacritty, Otty, Herdr**) additionally rely on the bundled input
-method for cursor tracking — this is registered automatically during install.
+| How it works                                      | Terminals                                                                                                                                                                                                                                                                                         |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| PTY integration, out of the box                   | [iTerm2](https://iterm2.com/), [Apple Terminal](https://support.apple.com/guide/terminal/welcome/mac), [VS Code](https://code.visualstudio.com/) and editors built on it ([Cursor](https://cursor.com/), Windsurf, Trae, [Kiro](https://kiro.dev/)), [ChatGPT (Codex)](https://openai.com/codex/) |
+| Plus the bundled input method for cursor tracking | [Ghostty](https://ghostty.org/), [Kitty](https://sw.kovidgoyal.net/kitty/), [WezTerm](https://wezterm.org/), [Zed](https://zed.dev/), [Alacritty](https://alacritty.org/), [Otty](https://otty.sh/), [Herdr](https://herdr.dev/), [JetBrains IDEs](https://www.jetbrains.com/)                    |
+| Multiplexers                                      | [tmux](https://github.com/tmux/tmux), [Zellij](https://zellij.dev/) (including resurrected sessions)                                                                                                                                                                                              |
 
-Terminal multiplexers work too: completions appear inside **tmux** and **Zellij** panes,
-including panes restored from a resurrected Zellij session.
-
----
+The input method is registered automatically during setup.
 
 ## 🗑 Uninstall
-
-First remove the integrations and application data — this works no matter how you
-installed the app:
 
 ```bash
 ec uninstall
 ```
 
-This removes the shell integration, terminal integrations, input method registration,
-LaunchAgent and application data. It surgically removes only Easy Complete's own input
-source from the system preferences (your other keyboard layouts and input methods are
-left untouched). It does **not** delete the app bundle, so finish with the step matching
-your install method:
+This removes the shell and terminal integrations, the input method (only Easy Complete's
+own input source), the LaunchAgent and application data — but not the app itself. Finish
+with the step for your install method, then run `exec $SHELL`:
 
 | Installed via | Then run                                                                   |
 | ------------- | -------------------------------------------------------------------------- |
@@ -213,102 +139,32 @@ your install method:
 | DMG           | Move `/Applications/Easy Complete.app` to the Trash                        |
 | Source        | `./scripts/uninstall.sh` from the repo (does everything above in one pass) |
 
-Finally, reload your shell with `exec $SHELL`.
-
----
-
-## 🧩 How it works
-
-Easy Complete runs as three cooperating native processes that talk over Unix domain
-sockets (Protobuf messages):
-
-| Binary          | Crate         | Role                                                                                                                             |
-| --------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `easy-complete` | `fig_desktop` | Native app host — owns the autocomplete overlay and dashboard (React apps in `wry` WebViews), system tray, and window management |
-| `ecterm`        | `figterm`     | Pseudoterminal between your shell and terminal emulator; intercepts the shell edit buffer to drive completions                   |
-| `ec`            | `ec_cli`      | CLI entry point — `doctor`, `integrations`, `diagnostic`, `settings`, and more                                                    |
-
-Shell hooks (`.zshrc`, `.bashrc`, fish config) report shell state — CWD, command text,
-cursor position — back to `ecterm` on every prompt and keystroke. On macOS, the
-`fig_input_method` helper app reports caret position for terminals that bypass the PTY.
-
-**Identifiers**
-
-- App bundle ID: `dev.emmmm.easy-complete`
-- Input method bundle ID: `dev.emmmm.easy-complete.inputmethod`
-- App bundle: `/Applications/Easy Complete.app`
-
----
-
 ## 🛠 Development
 
-> [AGENTS.md](./AGENTS.md) is the full architecture and contributor guide — crate map,
-> IPC layout, WebView lifecycle, bundled specs and release process. The commands below
-> are just enough to get a local build running.
+Easy Complete is three cooperating processes: the desktop app (`easy-complete`, overlay and
+settings UI), a pseudoterminal (`ecterm`) that reads the shell edit buffer, and the `ec`
+CLI. They talk over Unix sockets using Protobuf.
 
-### Toolchain
-
-- Rust `1.97.0` (pinned in `rust-toolchain.toml`), edition 2024
-- Node `>=24 <25`, pnpm `11.14` (pinned by `packageManager` in `package.json`)
-- Turborepo for the TypeScript build graph
-
-### Rust
+[AGENTS.md](./AGENTS.md) is the full architecture and contributor guide: toolchain, crate
+map, IPC, build and test commands, bundled specs and the release process. To get a local
+build running:
 
 ```bash
-# Build all release binaries
-cargo build --release -p fig_desktop -p figterm -p ec_cli -p fig_input_method
-
-# Run a single crate in dev mode
-cargo run --bin ec -- <subcommand>
-cargo run --bin easy-complete
-
-cargo clippy --locked --workspace --color always -- -D warnings   # lint (CI: -D warnings)
-cargo fmt                                                         # format
-cargo test -p <crate_name>                                        # test a crate
+./scripts/install.sh    # build and install the app
+pnpm dev:autocomplete   # watch the autocomplete UI (port 3124)
 ```
-
-### TypeScript
-
-```bash
-pnpm turbo build --filter="./packages/*"   # build all packages
-pnpm dev:autocomplete                       # watch the autocomplete UI (port 3124)
-pnpm lint                                   # lint
-pnpm test                                   # run Vitest
-```
-
-In dev, Vite serves the WebView UIs on localhost and `fig_desktop` connects to those
-instead of the bundled `Contents/Resources/`.
-
-### Project layout
-
-| Path        | Contents                                                                   |
-| ----------- | -------------------------------------------------------------------------- |
-| `crates/`   | Rust workspace — desktop app, PTY, CLI, input method, IPC, integrations    |
-| `packages/` | TypeScript workspace — overlay UI, dashboard UI, spec parser, IPC bindings |
-| `proto/`    | Protobuf definitions shared by the Rust and TypeScript sides               |
-| `scripts/`  | Install, uninstall, app bundling, DMG, release and spec-sync scripts       |
-| `website/`  | Product website                                                            |
-
-See [AGENTS.md](./AGENTS.md) for the per-crate and per-package breakdown.
-
----
 
 ## 🤝 Contributing
 
 Issues and pull requests are welcome.
 
-- **Report a bug** — `ec issue` opens a pre-filled report with your diagnostics
-  attached, or use the [issue templates](https://github.com/chen86860/easy-complete/issues/new/choose)
-  directly. Please include `ec doctor` output.
-- **Before opening a PR** — read [AGENTS.md](./AGENTS.md), and make sure
-  `cargo clippy --locked --workspace -- -D warnings`, `cargo fmt`, `pnpm lint` and
-  `pnpm test` all pass.
-- **Commits** follow [Conventional Commits](https://www.conventionalcommits.org/)
-  (`feat:`, `fix:`, `refactor:`, `chore:`).
-- **Security issues** — please follow [SECURITY.md](./SECURITY.md) instead of filing a
-  public issue.
-
----
+- **Report a bug** — `ec issue` opens a pre-filled report with your diagnostics attached,
+  or use the [issue templates](https://github.com/chen86860/easy-complete/issues/new/choose).
+  Please include `ec doctor` output.
+- **Before opening a PR** — make sure `cargo clippy --locked --workspace -- -D warnings`,
+  `cargo fmt`, `pnpm lint` and `pnpm test` all pass. Commits follow
+  [Conventional Commits](https://www.conventionalcommits.org/).
+- **Security issues** — follow [SECURITY.md](./SECURITY.md) instead of filing a public issue.
 
 ## 📜 License
 

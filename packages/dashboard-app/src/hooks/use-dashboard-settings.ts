@@ -8,6 +8,10 @@ export function useDashboardSettings() {
   const [saving, setSaving] = useState<string | null>(null);
   const savingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const writeVersion = useRef(0);
+  // Writes still waiting on the native side. A change notification that lands
+  // mid-write can carry the old value, so it must not overwrite the optimistic
+  // one; the write re-reads settings itself when it finishes.
+  const pendingWrites = useRef(0);
 
   useEffect(() => {
     Settings.current()
@@ -19,10 +23,17 @@ export function useDashboardSettings() {
     let unsubscribe: (() => void) | undefined;
     Settings.didChange
       .subscribe(() => {
+        if (pendingWrites.current > 0) return { unsubscribe: false };
+        const version = writeVersion.current;
         Settings.current()
-          .then((nextSettings: Record<string, unknown>) =>
-            setSettings(nextSettings as SettingsMap),
-          )
+          .then((nextSettings: Record<string, unknown>) => {
+            if (
+              pendingWrites.current === 0 &&
+              version === writeVersion.current
+            ) {
+              setSettings(nextSettings as SettingsMap);
+            }
+          })
           .catch(() => {});
         return { unsubscribe: false };
       })
@@ -40,12 +51,17 @@ export function useDashboardSettings() {
 
     if (savingTimer.current) clearTimeout(savingTimer.current);
     setSettings((previous) => ({ ...previous, [key]: value }));
+    pendingWrites.current += 1;
 
     try {
-      if (value === null || value === undefined) {
-        await Settings.remove(key);
-      } else {
-        await Settings.set(key, value);
+      try {
+        if (value === null || value === undefined) {
+          await Settings.remove(key);
+        } else {
+          await Settings.set(key, value);
+        }
+      } finally {
+        pendingWrites.current -= 1;
       }
       const nextSettings = (await Settings.current()) as SettingsMap;
       if (currentWrite === writeVersion.current) {

@@ -270,24 +270,38 @@ function PrivacyPage() {
 
         <h2 className={SECTION_HEADING}>What stays on your Mac</h2>
         <p className={PARAGRAPH}>
-          Easy Complete does not keep its own record of the commands you run.
-          History suggestions read your shell's own history (zsh, bash or fish,
-          or the command you set as the history source) when they are needed, so
-          your shell's settings decide what is in it — including skipping
-          commands that start with a space. Earlier versions recorded every
-          command in{" "}
-          <code className={CODE_INLINE}>
-            ~/Library/Application Support/easy-complete/data.sqlite3
-          </code>{" "}
-          and a plain-text <code className={CODE_INLINE}>history</code> file
-          next to it. From v2.6.0 the app deletes both records when it starts.
+          Easy Complete keeps no record of the commands you run. History
+          suggestions read your shell's own history (zsh, bash or fish, or the
+          command you set as the history source) when they are needed, so your
+          shell's settings decide what is in it, including skipping commands
+          that start with a space. Versions before v2.6.0 also stored every
+          command; the app deletes those records when it starts.
         </p>
+        <p className={PARAGRAPH}>What the app does keep, all of it local:</p>
+        <ul className="m-0 mb-4 list-disc pl-5 text-[15px] leading-[1.8] text-[#9aa4b0]">
+          <li>
+            <code className={CODE_INLINE}>
+              ~/Library/Application Support/easy-complete/data.sqlite3
+            </code>
+            : the random device ID used for usage statistics, today&apos;s
+            completion counts until they are sent, and setup state such as the
+            last version that ran and whether Accessibility is granted. It holds
+            no commands, and only your user account can read it.
+          </li>
+          <li>
+            <code className={CODE_INLINE}>settings.json</code> in the same
+            folder: your settings.
+          </li>
+          <li>
+            Diagnostic logs in your user&apos;s temporary folder. They hold
+            errors only unless you raise the level with{" "}
+            <code className={CODE_INLINE}>Q_LOG_LEVEL</code>, and only your user
+            account can read them.
+          </li>
+        </ul>
         <p className={PARAGRAPH}>
-          Diagnostic logs are written to your user's temporary folder and hold
-          errors only, unless you raise the level with{" "}
-          <code className={CODE_INLINE}>Q_LOG_LEVEL</code>. They are readable
-          only by your user account, never uploaded, and removed by{" "}
-          <code className={CODE_INLINE}>ec uninstall</code>.
+          None of it is uploaded, and{" "}
+          <code className={CODE_INLINE}>ec uninstall</code> removes all of it.
         </p>
 
         <h2 className={SECTION_HEADING}>Questions</h2>

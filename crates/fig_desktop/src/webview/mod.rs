@@ -844,11 +844,9 @@ impl WebviewManager {
                                 // Non-dashboard windows retain their existing hide behavior.
                                 window_state.window.set_visible(false);
                             },
-                            WryWindowEvent::ThemeChanged(theme) => window_state.set_theme(match theme {
-                                TaoTheme::Light => Some(WryTheme::Light),
-                                TaoTheme::Dark => Some(WryTheme::Dark),
-                                _ => None,
-                            }),
+                            // No ThemeChanged arm: pinning the window to the reported theme
+                            // stopped it following the system after the first switch. The
+                            // window's appearance comes from `app.theme` (None = follow system).
                             WryWindowEvent::Focused(focused) => {
                                 if window_state.window_id == DASHBOARD_ID {
                                     // Mirror native focus so the sidebar can dim its selection

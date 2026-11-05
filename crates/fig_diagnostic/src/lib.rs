@@ -117,12 +117,13 @@ impl EnvVarDiagnostic {
         let username = username_path_prefix();
         let env_vars = std::env::vars()
             .filter(|(key, _)| {
-                let fig_var = fig_util::env_var::ALL.contains(&key.as_str());
+                // The session ID is a random UUID that helps no one reading a public issue.
+                let fig_var =
+                    fig_util::env_var::ALL.contains(&key.as_str()) && key != fig_util::env_var::QTERM_SESSION_ID;
                 let other_var = [
                     // General env vars
                     "SHELL",
                     "DISPLAY",
-                    "PATH",
                     "TERM",
                     "ZDOTDIR",
                     // Linux vars
@@ -141,6 +142,10 @@ impl EnvVarDiagnostic {
                 fig_var || other_var
             })
             .map(|(key, value)| {
+                // These can point anywhere, so report only that they are set.
+                if key == "ZDOTDIR" || key == fig_util::env_var::Q_ZDOTDIR {
+                    return (key, "set".to_owned());
+                }
                 // sanitize username from values
                 match &username {
                     Some(username) => (key, value.replace(username, "/USER")),
@@ -156,8 +161,6 @@ impl EnvVarDiagnostic {
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct CurrentEnvironment {
-    pub cwd: Option<String>,
-    pub cli_path: Option<String>,
     pub os: Os,
     pub shell_path: Option<String>,
     pub shell_version: Option<String>,
@@ -189,10 +192,6 @@ impl CurrentEnvironment {
         let shell_path = Pid::current().parent().and_then(|pid| pid.exe()).map(scrub);
         let shell_version = Shell::current_shell_version().await.map(|(_, v)| v).ok();
 
-        let cwd = ctx.env().current_dir().ok().map(scrub);
-
-        let cli_path = ctx.env().current_dir().ok().map(scrub);
-
         let os = ctx.platform().os();
         let terminal = Terminal::parent_terminal(&ctx);
 
@@ -205,8 +204,6 @@ impl CurrentEnvironment {
         CurrentEnvironment {
             shell_path,
             shell_version,
-            cwd,
-            cli_path,
             os,
             terminal,
             in_cloudshell,

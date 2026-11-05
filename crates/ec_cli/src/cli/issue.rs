@@ -115,13 +115,14 @@ impl IssueCreator {
 
         let os = diagnostics.system_info.os.map(ToString::to_string);
 
-        let diagnostic_info = match diagnostics.user_readable() {
+        let mut diagnostic_info = match diagnostics.user_readable() {
             Ok(diagnostics) => diagnostics,
             Err(err) => {
                 eprintln!("Error getting diagnostics: {err}");
                 "Error occurred while generating diagnostics".to_owned()
             },
         };
+        diagnostic_info.push_str(&troubleshooting_info().await);
 
         let url = self.build_url(&diagnostics.build_details.version, os.as_deref(), &diagnostic_info)?;
 
@@ -131,6 +132,25 @@ impl IssueCreator {
 
         Ok(url)
     }
+}
+
+/// The running app's version and the `ec doctor` results, as TOML sections to append to the
+/// diagnostics. Statuses only: failure reasons can contain paths.
+async fn troubleshooting_info() -> String {
+    let app_version = match super::diagnostics::get_diagnostics().await {
+        Ok(response) => response.app_version.unwrap_or_else(|| "unknown".to_owned()),
+        Err(_) => "not running".to_owned(),
+    };
+    format_troubleshooting_info(&app_version, &super::doctor::doctor_report().await)
+}
+
+fn format_troubleshooting_info(app_version: &str, checks: &[(String, &str)]) -> String {
+    let quote = |value: &str| format!("\"{}\"", value.replace('\\', "\\\\").replace('"', "\\\""));
+    let mut info = format!("\n[app]\nrunning-version = {}\n\n[doctor]\n", quote(app_version));
+    for (name, status) in checks {
+        info.push_str(&format!("{} = {}\n", quote(name), quote(status)));
+    }
+    info
 }
 
 #[cfg(test)]
@@ -151,6 +171,21 @@ mod tests {
 
     fn query_params(url: &url::Url) -> HashMap<String, String> {
         url.query_pairs().into_owned().collect()
+    }
+
+    #[test]
+    fn troubleshooting_info_is_valid_toml_sections() {
+        let info = format_troubleshooting_info(
+            "2.6.0",
+            &[
+                ("zsh ~/.zshrc integration check".to_owned(), "ok"),
+                ("Accessibility enabled".to_owned(), "error"),
+            ],
+        );
+        assert_eq!(
+            info,
+            "\n[app]\nrunning-version = \"2.6.0\"\n\n[doctor]\n\"zsh ~/.zshrc integration check\" = \"ok\"\n\"Accessibility enabled\" = \"error\"\n"
+        );
     }
 
     #[test]

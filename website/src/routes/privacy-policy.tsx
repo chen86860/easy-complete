@@ -95,7 +95,7 @@ const NETWORK_REQUESTS: Array<{ source: string; target: string; off: string }> =
     {
       source: "ec issue",
       target:
-        "Opens a GitHub issue form in your browser, pre-filled with diagnostics: app and macOS versions, hardware, current directory, shell, terminal and PATH, with your username masked. Nothing is posted until you submit it",
+        "Opens a GitHub issue form in your browser, pre-filled with diagnostics: app and macOS versions, hardware, shell, terminal and which ec doctor checks pass, with your username masked. Nothing is posted until you submit it",
       off: "Only runs when you invoke it",
     },
   ];

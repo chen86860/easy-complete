@@ -13,6 +13,7 @@
 - fix: bash history now shows up in history suggestions
 - change: the input method logs errors only, instead of every app you type in. The old log is deleted on update
 - change: `ec uninstall` and `scripts/uninstall.sh` also delete the logs
+- change: `ec issue` no longer attaches your `PATH` or current directory. It adds the running app version and which `ec doctor` checks pass instead
 - change: the completion overlay no longer loads images from the web
 - change: completion spec icons are bundled with the app instead of loading from GitHub and tool websites. Icons whose source no longer exists show the generic icon
 - change: refresh the packages suggested after `npx`, `pnpx` and `bunx`: retired Fig tools and deprecated packages are gone, and current tools such as `@tanstack/cli`, `create-vite`, `create-expo-app`, `shadcn`, `vitest` and `wrangler` are in

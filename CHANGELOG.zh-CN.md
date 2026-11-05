@@ -13,6 +13,7 @@
 - 修复：bash 的历史现在会出现在历史建议中
 - 变更：输入法只记录错误日志，不再记录你在各个应用中的输入活动；升级时会删除旧日志
 - 变更：`ec uninstall` 和 `scripts/uninstall.sh` 会一并删除日志
+- 变更：`ec issue` 不再附带 `PATH` 和当前目录，改为附带正在运行的 App 版本，以及 `ec doctor` 各项检查是否通过
 - 变更：补全浮层不再从网络加载图片
 - 变更：补全 spec 图标改为随应用打包，不再从 GitHub 和各工具官网加载。源地址已失效的图标显示为通用图标
 - 变更：更新 `npx`、`pnpx`、`bunx` 后面推荐的包：移除 Fig 已停服的工具和已废弃的包，新增 `@tanstack/cli`、`create-vite`、`create-expo-app`、`shadcn`、`vitest`、`wrangler` 等常用工具

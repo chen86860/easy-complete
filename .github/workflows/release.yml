@@ -48,19 +48,32 @@ jobs:
 
       # No actions/cache here: caches saved from a tag are scoped to that tag, so the next
       # release could never restore them. They only filled the repository's 10 GB quota.
-      # bash 4+ (mapfile) and jq run the release steps; protobuf builds fig_proto.
+      # bash 4+ (mapfile) and jq run the release steps.
       - name: Install build dependencies
         env:
           HOMEBREW_NO_REQUIRE_TAP_TRUST: 1
           HOMEBREW_NO_AUTO_UPDATE: 1
           HOMEBREW_NO_INSTALL_CLEANUP: 1
           HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
-        run: brew install bash create-dmg jq protobuf
+        run: brew install bash create-dmg jq
 
+      # The official prebuilt protoc, the same version and checksum fig_proto's build.rs falls
+      # back to. `brew install protobuf` pours abseil as well and takes several times longer.
+      - name: Install protoc
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/protoc.zip" \
+            "https://github.com/protocolbuffers/protobuf/releases/download/v26.1/protoc-26.1-osx-aarch_64.zip"
+          echo "26a29befa8891ecc48809958c909d284f2b9539a2eb47f22cadc631fe6abe8fd  $RUNNER_TEMP/protoc.zip" | shasum -a 256 -c -
+          unzip -q -o "$RUNNER_TEMP/protoc.zip" -d "$RUNNER_TEMP/protoc"
+          echo "$RUNNER_TEMP/protoc/bin" >> "$GITHUB_PATH"
+      # Only what this job runs: rust-toolchain.toml also lists rustfmt and rust-analyzer.
+      # RUSTUP_TOOLCHAIN pins the same channel without making rustup install those.
       - name: Set up Rust
         run: |
-          rustup show
-          rustup target add aarch64-apple-darwin
+          channel="$(sed -n 's/^channel = "\(.*\)"/\1/p' rust-toolchain.toml)"
+          rustup toolchain install "$channel" --profile minimal
+          echo "RUSTUP_TOOLCHAIN=$channel" >> "$GITHUB_ENV"
 
       - uses: Swatinem/rust-cache@v2
         with:

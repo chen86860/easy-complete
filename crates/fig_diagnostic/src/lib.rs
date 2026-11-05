@@ -125,6 +125,9 @@ impl EnvVarDiagnostic {
                     "SHELL",
                     "DISPLAY",
                     "TERM",
+                    // Identify terminals that set no bundle ID or aren't detected
+                    "TERM_PROGRAM",
+                    "TERM_PROGRAM_VERSION",
                     "ZDOTDIR",
                     // Linux vars
                     "XDG_CURRENT_DESKTOP",

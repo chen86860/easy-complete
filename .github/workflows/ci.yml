@@ -122,12 +122,28 @@ jobs:
       - name: Verify Apple Silicon runner
         run: test "$(uname -m)" = "arm64"
 
-      # fish and shellcheck back the shell-integration tests in ec_cli; protobuf builds fig_proto.
-      - name: Install build dependencies
-        run: brew install fish protobuf shellcheck
+      # fish and shellcheck back the shell-integration tests in ec_cli.
+      - name: Install test dependencies
+        run: brew install fish shellcheck
 
+      # The official prebuilt protoc, the same version and checksum fig_proto's build.rs falls
+      # back to. `brew install protobuf` pours abseil as well and takes several times longer.
+      - name: Install protoc
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/protoc.zip" \
+            "https://github.com/protocolbuffers/protobuf/releases/download/v26.1/protoc-26.1-osx-aarch_64.zip"
+          echo "26a29befa8891ecc48809958c909d284f2b9539a2eb47f22cadc631fe6abe8fd  $RUNNER_TEMP/protoc.zip" | shasum -a 256 -c -
+          unzip -q -o "$RUNNER_TEMP/protoc.zip" -d "$RUNNER_TEMP/protoc"
+          echo "$RUNNER_TEMP/protoc/bin" >> "$GITHUB_PATH"
+
+      # Only what this job runs: rust-toolchain.toml also lists rustfmt and rust-analyzer.
+      # RUSTUP_TOOLCHAIN pins the same channel without making rustup install those.
       - name: Set up Rust
-        run: rustup show
+        run: |
+          channel="$(sed -n 's/^channel = "\(.*\)"/\1/p' rust-toolchain.toml)"
+          rustup toolchain install "$channel" --profile minimal -c clippy
+          echo "RUSTUP_TOOLCHAIN=$channel" >> "$GITHUB_ENV"
 
       - uses: Swatinem/rust-cache@v2
         with:
@@ -159,11 +175,24 @@ jobs:
       - name: Verify Apple Silicon runner
         run: test "$(uname -m)" = "arm64"
 
-      - name: Install build dependencies
-        run: brew install protobuf
+      # The official prebuilt protoc, the same version and checksum fig_proto's build.rs falls
+      # back to. `brew install protobuf` pours abseil as well and takes several times longer.
+      - name: Install protoc
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/protoc.zip" \
+            "https://github.com/protocolbuffers/protobuf/releases/download/v26.1/protoc-26.1-osx-aarch_64.zip"
+          echo "26a29befa8891ecc48809958c909d284f2b9539a2eb47f22cadc631fe6abe8fd  $RUNNER_TEMP/protoc.zip" | shasum -a 256 -c -
+          unzip -q -o "$RUNNER_TEMP/protoc.zip" -d "$RUNNER_TEMP/protoc"
+          echo "$RUNNER_TEMP/protoc/bin" >> "$GITHUB_PATH"
 
+      # Only what this job runs: rust-toolchain.toml also lists rustfmt and rust-analyzer.
+      # RUSTUP_TOOLCHAIN pins the same channel without making rustup install those.
       - name: Set up Rust
-        run: rustup show
+        run: |
+          channel="$(sed -n 's/^channel = "\(.*\)"/\1/p' rust-toolchain.toml)"
+          rustup toolchain install "$channel" --profile minimal
+          echo "RUSTUP_TOOLCHAIN=$channel" >> "$GITHUB_ENV"
 
       - uses: Swatinem/rust-cache@v2
         with:

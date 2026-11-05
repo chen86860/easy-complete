@@ -80,6 +80,20 @@ where
                 }
             }
 
+            // Onboarding milestones: the dashboard polls Status until the gate passes.
+            match action {
+                InstallAction::Status if errs.is_empty() => {
+                    fig_telemetry::track_once("onboarding_shell_integration_ready", serde_json::json!({}));
+                },
+                InstallAction::Install if !errs.is_empty() => {
+                    fig_telemetry::track_with_props(
+                        "onboarding_install_failed",
+                        serde_json::json!({ "component": "dotfiles" }),
+                    );
+                },
+                _ => {},
+            }
+
             match action {
                 InstallAction::Install | InstallAction::Uninstall => integration_result(match &errs[..] {
                     [] => Ok(()),
@@ -127,8 +141,13 @@ where
                 if #[cfg(target_os = "macos")] {
                     use macos_utils::accessibility::accessibility_is_enabled;
 
+                    let enabled = accessibility_is_enabled();
+                    if enabled {
+                        fig_telemetry::track_once("onboarding_accessibility_granted", serde_json::json!({}));
+                    }
+
                     ServerOriginatedSubMessage::InstallResponse(InstallResponse {
-                        response: Some(Response::InstallationStatus(if accessibility_is_enabled() {
+                        response: Some(Response::InstallationStatus(if enabled {
                             InstallationStatus::Installed.into()
                         } else {
                             InstallationStatus::NotInstalled.into()

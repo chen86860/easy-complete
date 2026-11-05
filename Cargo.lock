@@ -1882,6 +1882,7 @@ dependencies = [
  "fig_os_shim",
  "fig_proto",
  "fig_settings",
+ "fig_telemetry",
  "fig_util",
  "fnv",
  "macos-utils",

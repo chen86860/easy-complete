@@ -52,6 +52,13 @@ impl fig_remote_ipc::RemoteHookHandler for RemoteHook {
             session.context.clone_from(&hook.context);
         });
 
+        // The first edit buffer from a session means the shell integration reached us: the
+        // onboarding step between "app installed" and "first suggestion shown".
+        if let Some(terminal) = hook.context.as_ref().and_then(|context| context.terminal.as_deref()) {
+            fig_telemetry::set_last_terminal(&terminal_internal_id(terminal));
+        }
+        fig_telemetry::track_once("first_terminal_session", serde_json::json!({}));
+
         let utf16_cursor_position = hook
             .text
             .get(..hook.cursor as usize)
@@ -278,5 +285,31 @@ impl fig_remote_ipc::RemoteHookHandler for RemoteHook {
             .await?;
 
         Ok(None)
+    }
+}
+
+/// figterm reports the terminal's display name ("iTerm 2"); telemetry uses the internal id
+/// ("iterm") that CLI-origin events already carry, so both land in the same breakdown.
+fn terminal_internal_id(display_name: &str) -> String {
+    fig_util::terminal::MACOS_TERMINALS
+        .iter()
+        .chain(fig_util::terminal::LINUX_TERMINALS)
+        .chain(fig_util::terminal::SPECIAL_TERMINALS)
+        .find(|terminal| terminal.to_string() == display_name)
+        .map_or_else(
+            || display_name.to_owned(),
+            |terminal| terminal.internal_id().into_owned(),
+        )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::terminal_internal_id;
+
+    #[test]
+    fn terminal_display_names_map_to_internal_ids() {
+        assert_eq!(terminal_internal_id("iTerm 2"), "iterm");
+        assert_eq!(terminal_internal_id("macOS"), "terminal");
+        assert_eq!(terminal_internal_id("Some New Terminal"), "Some New Terminal");
     }
 }

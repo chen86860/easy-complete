@@ -4,8 +4,19 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+# A new push to the PR cancels the run for the previous push.
+concurrency:
+  group: merge-conflicts-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
   check-merge-conflicts:
+    # PRs into main need no check: the merge itself is the comparison. Skipping at job level
+    # reports success, so the check never sits pending.
+    if: github.base_ref != 'main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

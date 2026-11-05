@@ -134,7 +134,7 @@ jobs:
           # dev/test artifacts only; the dist job keeps its own cache.
           shared-key: macos-26-arm64-test
           env-vars: MACOSX_DEPLOYMENT_TARGET
-          save-if: ${{ github.ref == 'refs/heads/main' }}
+          save-if: ${{ github.ref == 'refs/heads/main' || github.head_ref == 'ci/speed-up-actions' }}
 
       - name: Clippy
         run: cargo clippy --locked --workspace --color always -- -D warnings
@@ -170,7 +170,7 @@ jobs:
           # Shared with release.yml, which restores it for the app build.
           shared-key: macos-26-arm64-dist
           env-vars: MACOSX_DEPLOYMENT_TARGET
-          save-if: ${{ github.ref == 'refs/heads/main' }}
+          save-if: ${{ github.ref == 'refs/heads/main' || github.head_ref == 'ci/speed-up-actions' }}
 
       - name: Build release binaries (dist profile)
         run: cargo build --locked --profile dist -p fig_desktop -p figterm -p ec_cli -p fig_input_method

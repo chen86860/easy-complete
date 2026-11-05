@@ -62,9 +62,6 @@ fish shell 的建议——子命令、选项、参数和文件路径，以跟随
 brew install --cask chen86860/tap/easy-complete
 ```
 
-从 `/Applications` 启动 **Easy Complete**，按设置面板的引导操作即可——它会检查辅助功能
-权限、shell 集成和输入法，缺什么可一键修复。
-
 ### DMG
 
 [下载最新版 DMG](https://github.com/chen86860/easy-complete/releases/latest/download/Easy-Complete-arm64.dmg)，

@@ -65,10 +65,6 @@ and how to disable it.
 brew install --cask chen86860/tap/easy-complete
 ```
 
-Launch **Easy Complete** from `/Applications` and follow the setup panel — it checks
-Accessibility permission, shell integration and the input method, and repairs anything
-missing in one click.
-
 ### DMG
 
 [Download the latest DMG](https://github.com/chen86860/easy-complete/releases/latest/download/Easy-Complete-arm64.dmg),

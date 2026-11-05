@@ -89,6 +89,18 @@ fi
 info "Generating bundled 'ec' completion spec..."
 EC_BINARY="${TARGET_DIR}/ec" node "${REPO_DIR}/scripts/generate-ec-spec.mjs"
 
+# NUL-separated Mach-O files (thin or universal) under $1. Reads each file's magic bytes in one
+# process: running `file` per file costs ~8s on the ~1,300 files the bundle holds, mostly specs.
+macho_files() {
+  # shellcheck disable=SC2016 # Perl code, expanded by perl rather than the shell.
+  find "$1" -type f -print0 | xargs -0 perl -e '
+    for my $f (@ARGV) {
+      open(my $h, "<:raw", $f) or next;
+      read($h, my $magic, 4) == 4 or next;
+      print "$f\0" if $magic =~ /\A(?:\xcf\xfa\xed\xfe|\xce\xfa\xed\xfe|\xfe\xed\xfa\xcf|\xfe\xed\xfa\xce|\xca\xfe\xba\xbe)\z/;
+    }'
+}
+
 info "Embedding Sparkle.framework..."
 SPARKLE_FRAMEWORK="${SPARKLE_FRAMEWORK:-$("${REPO_DIR}/scripts/fetch-sparkle.sh")}"
 [ -d "$SPARKLE_FRAMEWORK" ] || { echo "error: Sparkle framework not found: $SPARKLE_FRAMEWORK" >&2; exit 1; }
@@ -101,13 +113,13 @@ cp -R "$SPARKLE_FRAMEWORK" "$FRAMEWORKS_DIR/"
 # Sparkle ships as a universal framework. The application is ARM64-only, so
 # remove Intel slices before signing and packaging the bundle.
 while IFS= read -r -d '' binary; do
-  if file -b "$binary" | grep -q "Mach-O universal binary"; then
+  if [ "$(lipo -archs "$binary")" != "arm64" ]; then
     thinned="${binary}.arm64"
     lipo "$binary" -thin arm64 -output "$thinned"
     chmod "$(stat -f '%Lp' "$binary")" "$thinned"
     mv "$thinned" "$binary"
   fi
-done < <(find "${FRAMEWORKS_DIR}/Sparkle.framework" -type f -print0)
+done < <(macho_files "${FRAMEWORKS_DIR}/Sparkle.framework")
 
 SPARKLE_PUBLIC_KEY_ENTRY=""
 if [ -n "${SPARKLE_PUBLIC_ED_KEY:-}" ]; then
@@ -161,14 +173,12 @@ cp "crates/fig_input_method/Info.plist" "${IM_APP}/Contents/"
 cp crates/fig_input_method/resources/*  "${IM_APP}/Contents/Resources/" 2>/dev/null || true
 
 while IFS= read -r -d '' binary; do
-  if file -b "$binary" | grep -q "Mach-O"; then
-    archs="$(lipo -archs "$binary")"
-    if [ "$archs" != "arm64" ]; then
-      echo "error: non-ARM64 binary in app bundle: $binary ($archs)" >&2
-      exit 1
-    fi
+  archs="$(lipo -archs "$binary")"
+  if [ "$archs" != "arm64" ]; then
+    echo "error: non-ARM64 binary in app bundle: $binary ($archs)" >&2
+    exit 1
   fi
-done < <(find "$STAGING_BUNDLE" -type f -print0)
+done < <(macho_files "$STAGING_BUNDLE")
 
 cat > "${STAGING_BUNDLE}/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>

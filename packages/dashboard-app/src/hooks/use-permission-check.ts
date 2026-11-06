@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Install } from "@easy-complete/api-bindings";
+import { Install, State } from "@easy-complete/api-bindings";
 import { useI18n } from "../i18n";
 
 export type PermissionId = "accessibility" | "shellIntegration" | "inputMethod";
@@ -14,6 +14,8 @@ export type PermissionRequirement = {
   requires?: PermissionId[];
   /** Optional permissions are offered but never block the dashboard or "Fix All". */
   optional?: boolean;
+  /** Set when the step can be skipped for good instead of done. */
+  skippable?: boolean;
 };
 
 export type PermissionStatus = PermissionRequirement & {
@@ -22,13 +24,18 @@ export type PermissionStatus = PermissionRequirement & {
 };
 
 const REQUIREMENTS: Array<
-  Pick<PermissionRequirement, "id" | "requires" | "optional">
+  Pick<PermissionRequirement, "id" | "requires" | "optional" | "skippable">
 > = [
   { id: "accessibility" },
   { id: "shellIntegration", requires: ["accessibility"] },
   // Only terminals that bypass the accessibility path (Ghostty, Kitty, ...) need it.
   { id: "inputMethod", optional: true },
 ];
+
+/** Written by the desktop app on launch: installed terminals that need the input method. */
+const INPUT_METHOD_TERMINALS_KEY = "input-method.needed-by";
+/** Set once the user skips the input method in the gate, so it never blocks again (#206). */
+const INPUT_METHOD_SKIPPED_KEY = "input-method.gate-skipped";
 
 const asMessage = (error: unknown, fallback: string) =>
   error instanceof Error ? error.message : fallback;
@@ -49,6 +56,43 @@ export function usePermissionCheck() {
     {},
   );
   const [repairing, setRepairing] = useState<PermissionId | "all" | null>(null);
+  // Terminals on this Mac that need the input method, unless the user skipped it.
+  const [inputMethodTerminals, setInputMethodTerminals] = useState<string[]>(
+    [],
+  );
+
+  useEffect(() => {
+    Promise.all([
+      State.get(INPUT_METHOD_TERMINALS_KEY),
+      State.get(INPUT_METHOD_SKIPPED_KEY),
+    ])
+      .then(([terminals, skipped]) => {
+        if (!skipped && Array.isArray(terminals)) {
+          setInputMethodTerminals(
+            terminals.filter((t) => typeof t === "string"),
+          );
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const skip = useCallback((id: PermissionId) => {
+    if (id !== "inputMethod") return;
+    State.set(INPUT_METHOD_SKIPPED_KEY, true).catch(() => {});
+    setInputMethodTerminals([]);
+  }, []);
+
+  // With such a terminal installed the input method is a real step: it blocks
+  // the gate and "Fix All" installs it, but it can be skipped for good.
+  const requirements = useMemo(
+    () =>
+      REQUIREMENTS.map((requirement) =>
+        requirement.id === "inputMethod" && inputMethodTerminals.length > 0
+          ? { ...requirement, optional: false, skippable: true }
+          : requirement,
+      ),
+    [inputMethodTerminals],
+  );
 
   const checkOne = useCallback(
     async (id: PermissionId) => {
@@ -102,14 +146,14 @@ export function usePermissionCheck() {
     setRepairing("all");
 
     try {
-      for (const requirement of REQUIREMENTS) {
+      for (const requirement of requirements) {
         if (requirement.optional) continue;
         await repair(requirement.id);
       }
     } finally {
       setRepairing(null);
     }
-  }, [repair]);
+  }, [repair, requirements]);
 
   useEffect(() => {
     refresh().catch(() => {});
@@ -136,15 +180,21 @@ export function usePermissionCheck() {
 
   const permissions = useMemo<PermissionStatus[]>(
     () =>
-      REQUIREMENTS.map((requirement) => ({
+      requirements.map((requirement) => ({
         ...requirement,
         title: t(`permission.${requirement.id}.title`),
-        description: t(`permission.${requirement.id}.description`),
+        description:
+          requirement.id === "inputMethod" && requirement.skippable
+            ? t("permission.inputMethod.neededBy").replace(
+                "{terminals}",
+                inputMethodTerminals.join(", "),
+              )
+            : t(`permission.${requirement.id}.description`),
         repairLabel: t(`permission.${requirement.id}.repair`),
         state: states[requirement.id],
         detail: details[requirement.id],
       })),
-    [details, states, t],
+    [details, inputMethodTerminals, requirements, states, t],
   );
 
   const ready = permissions.every(
@@ -163,5 +213,6 @@ export function usePermissionCheck() {
     refresh,
     repair,
     repairAll,
+    skip,
   } as const;
 }

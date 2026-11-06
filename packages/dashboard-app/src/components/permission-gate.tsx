@@ -35,6 +35,7 @@ function PermissionRow({
   repairing,
   primary,
   onRepair,
+  onSkip,
 }: {
   permission: PermissionStatus;
   allPermissions: PermissionStatus[];
@@ -42,6 +43,7 @@ function PermissionRow({
   /** The window's one default button: set on the only step left to do. */
   primary: boolean;
   onRepair: (id: PermissionId) => void;
+  onSkip: (id: PermissionId) => void;
 }) {
   const { t } = useI18n();
   const busy = repairing === permission.id || repairing === "all";
@@ -86,17 +88,29 @@ function PermissionRow({
 
       {/* A finished step has nothing left to press. */}
       {canRepair ? (
-        <button
-          type="button"
-          disabled={busy || blocked}
-          onClick={() => onRepair(permission.id)}
-          className={clsx(
-            "mac-button min-w-[130px]",
-            primary && "mac-button-primary",
-          )}
-        >
-          {busy ? t("permission.working") : permission.repairLabel}
-        </button>
+        <div className="flex flex-shrink-0 items-center gap-2">
+          {permission.skippable ? (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => onSkip(permission.id)}
+              className="mac-button"
+            >
+              {t("permission.skip")}
+            </button>
+          ) : null}
+          <button
+            type="button"
+            disabled={busy || blocked}
+            onClick={() => onRepair(permission.id)}
+            className={clsx(
+              "mac-button min-w-[130px]",
+              primary && "mac-button-primary",
+            )}
+          >
+            {busy ? t("permission.working") : permission.repairLabel}
+          </button>
+        </div>
       ) : null}
     </div>
   );
@@ -112,6 +126,7 @@ export function PermissionGate({
   onRefresh,
   onRepair,
   onRepairAll,
+  onSkip,
   telemetryEnabled,
   onTelemetryChange,
 }: {
@@ -124,6 +139,7 @@ export function PermissionGate({
   onRefresh: () => void;
   onRepair: (id: PermissionId) => void;
   onRepairAll: () => void;
+  onSkip: (id: PermissionId) => void;
   telemetryEnabled: boolean;
   onTelemetryChange: (value: boolean) => void;
 }) {
@@ -167,6 +183,7 @@ export function PermissionGate({
               repairing={repairing}
               primary={!showFixAll && pending[0]?.id === permission.id}
               onRepair={onRepair}
+              onSkip={onSkip}
             />
           ))}
         </div>

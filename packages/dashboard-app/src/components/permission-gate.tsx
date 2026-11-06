@@ -7,7 +7,7 @@ import type {
 } from "../hooks/use-permission-check";
 import { useI18n } from "../i18n";
 import { Toggle } from "./controls";
-import { Card, Row } from "./settings-layout";
+import { RowLabelContext } from "./row-label";
 import { IconCheck, IconWarning } from "./icons";
 
 function StatusBadge({ state }: { state: PermissionState }) {
@@ -189,16 +189,32 @@ export function PermissionGate({
           ) : null}
         </div>
 
-        <div className="mt-5">
-          <Card>
-            <Row
-              label={t("permission.shareUsageData")}
-              description={t("permission.shareUsageDataDescription")}
-              last
+        {/* Same card, padding and type as the permission rows above. */}
+        <div className="mt-5 overflow-hidden rounded-[14px] border border-[var(--ds-card-border)] bg-[var(--ds-card-bg-solid)] shadow-[inset_0_0_0_0.5px_var(--ds-card-inset)]">
+          <div className="flex items-center justify-between gap-5 px-[18px] py-4">
+            <div className="min-w-0 flex-1">
+              <div
+                id="share-usage-label"
+                className="text-[14px] font-semibold leading-5 text-[var(--ds-label)]"
+              >
+                {t("permission.shareUsageData")}
+              </div>
+              <div
+                id="share-usage-description"
+                className="mt-1 text-[12px] leading-[17px] text-[var(--ds-label-secondary)]"
+              >
+                {t("permission.shareUsageDataDescription")}
+              </div>
+            </div>
+            <RowLabelContext.Provider
+              value={{
+                labelId: "share-usage-label",
+                descriptionId: "share-usage-description",
+              }}
             >
               <Toggle checked={telemetryEnabled} onChange={onTelemetryChange} />
-            </Row>
-          </Card>
+            </RowLabelContext.Provider>
+          </div>
         </div>
       </div>
     </main>

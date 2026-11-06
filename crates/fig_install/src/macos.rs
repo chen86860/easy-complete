@@ -47,6 +47,16 @@ pub(crate) async fn uninstall_desktop(ctx: &fig_os_shim::Context) -> Result<(), 
         }
     }
 
+    // Delete logs, which sit outside the data dir in the per-user temp dir
+    if let Ok(logs_dir) = directories::logs_dir()
+        && logs_dir.exists()
+    {
+        fs::remove_dir_all(&logs_dir)
+            .await
+            .map_err(|err| warn!("Failed to remove {logs_dir:?}: {err}"))
+            .ok();
+    }
+
     let app_path = fig_util::app_bundle_path();
     if app_path.exists() {
         fs::remove_dir_all(&app_path)

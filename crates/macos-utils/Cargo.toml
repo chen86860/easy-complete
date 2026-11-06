@@ -29,11 +29,14 @@ objc2-app-kit = { workspace = true, features = [
 ] }
 objc2-foundation = { workspace = true, features = [
     "block2",
+    "NSArray",
     "NSDictionary",
     "NSDistributedNotificationCenter",
     "NSEnumerator",
+    "NSLocale",
     "NSOperation",
     "NSProcessInfo",
+    "NSString",
 ] }
 dashmap.workspace = true
 flume = "0.12.0"

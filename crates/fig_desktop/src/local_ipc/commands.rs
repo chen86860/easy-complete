@@ -70,6 +70,7 @@ pub async fn diagnostic(_: DiagnosticsCommand, figterm_state: &FigtermState) -> 
     };
 
     let response = DiagnosticsResponse {
+        app_version: Some(env!("CARGO_PKG_VERSION").into()),
         autocomplete_active: Some(platform::autocomplete_active()),
         #[cfg(target_os = "macos")]
         path_to_bundle: macos_utils::bundle::get_bundle_path()

@@ -15,7 +15,9 @@ PLIST_PATH="${LAUNCH_AGENTS}/${BUNDLE_ID}.plist"
 INPUT_METHODS_DIR="${HOME}/Library/Input Methods"
 IME_SYMLINK="${INPUT_METHODS_DIR}/EasyCompleteInputMethod.app"
 APP_SUPPORT="${HOME}/Library/Application Support/${APP_NAME}"
-LOGS_DIR="${HOME}/.local/share/${APP_NAME}"
+# Logs live in the per-user temp dir (fig_util::directories::logs_dir). getconf, not $TMPDIR,
+# so an unset TMPDIR can never turn this into a relative path.
+LOGS_DIR="$(getconf DARWIN_USER_TEMP_DIR)eclog"
 
 GREEN='\033[0;32m'; YELLOW='\033[0;33m'; RED='\033[0;31m'; NC='\033[0m'
 info()  { echo -e "${GREEN}==>${NC} $*"; }
@@ -147,7 +149,7 @@ rm -f "${HOME}/.config/fish/conf.d/99_fig_post.fish"
 # ── 8. Remove application data ────────────────────────────────────────────────
 info "Removing application data..."
 rm -rf "$APP_SUPPORT"
-rm -rf "$LOGS_DIR"
+[[ "$LOGS_DIR" == /*/eclog ]] && rm -rf "$LOGS_DIR"
 
 # IPC sockets / temp dirs
 rm -rf "${TMPDIR}ecrun"  2>/dev/null || true

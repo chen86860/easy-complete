@@ -383,6 +383,7 @@ impl WindowState {
                         // Count hidden→visible transitions only, not every reposition.
                         if !self.window.is_visible() {
                             fig_telemetry::count("autocomplete_shown");
+                            fig_telemetry::track_once("first_autocomplete_shown", serde_json::json!({}));
                         }
                         for session in figterm_state.inner.lock().linked_sessions.values_mut() {
                             let _ = session

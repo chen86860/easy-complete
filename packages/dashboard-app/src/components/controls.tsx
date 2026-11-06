@@ -1,61 +1,76 @@
 import clsx from "clsx";
 
+// WebKit's `switch` attribute renders the system switch, so it tracks the
+// macOS version, the accent color (set on the app root), dark mode and
+// Increase Contrast without any styling of our own. React has no typing for
+// the attribute, hence the spread.
+const NATIVE_SWITCH = { switch: "" } as Record<string, string>;
+
 export function Toggle({
   checked,
   onChange,
+  danger,
 }: {
   checked: boolean;
   onChange: (value: boolean) => void;
+  /** Tints the "on" state red, for settings whose on state carries risk. */
+  danger?: boolean;
 }) {
   return (
-    <button
+    <input
+      type="checkbox"
+      {...NATIVE_SWITCH}
+      checked={checked}
+      onChange={(event) => onChange(event.currentTarget.checked)}
       className={clsx(
-        "native-toggle group relative h-5 w-[38px] flex-shrink-0 rounded-full border-0 p-0",
-        "shadow-[inset_0_0_0_0.5px_var(--ds-control-inset)] transition-colors duration-150",
-        checked
-          ? "bg-[var(--dashboard-accent-color)]"
-          : "bg-[var(--ds-control-bg)]",
+        "native-switch m-0 flex-shrink-0",
+        danger && "[accent-color:var(--ds-red)]",
       )}
-      role="switch"
-      aria-checked={checked}
-      onClick={() => onChange(!checked)}
-    >
-      <span
-        className={clsx(
-          "absolute left-[3px] top-[3px] block h-3.5 w-5 rounded-full bg-white",
-          "shadow-[0_0_0_0.5px_rgba(0,0,0,0.04),0_0.5px_1px_rgba(0,0,0,0.08)]",
-          "transition-transform duration-150 ease-[cubic-bezier(0.28,0.11,0.32,1)] group-active:scale-95",
-          checked ? "translate-x-3" : "translate-x-0",
-        )}
-      />
-    </button>
+    />
   );
 }
 
+/**
+ * The System Settings pop-up button: value plus a chevron in a gray circle at
+ * rest; on hover the whole control gets the gray capsule and the circle fades.
+ * The native <select> stays underneath for the menu and keyboard handling.
+ */
 export function Select({
   value,
   options,
   onChange,
+  disabled,
 }: {
   value: string;
   options: { value: string; label: string }[];
   onChange: (value: string) => void;
+  disabled?: boolean;
 }) {
   return (
-    <select
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
-      className={clsx(
-        "dashboard-select min-w-[136px] appearance-none rounded-[10px] border-0",
-        "bg-[var(--ds-control-bg)] py-1.5 pl-3 pr-[30px] text-[13px] text-[var(--ds-control-fg)] outline-none",
-      )}
-    >
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
+    <span className="mac-popup" data-disabled={disabled || undefined}>
+      <select
+        value={value}
+        disabled={disabled}
+        onChange={(event) => onChange(event.target.value)}
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      <span className="mac-popup-chevron" aria-hidden>
+        <svg width="8" height="11" viewBox="0 0 8 11" fill="none">
+          <path
+            d="M1 4 4 1l3 3M1 7l3 3 3-3"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </span>
+    </span>
   );
 }
 
@@ -88,7 +103,7 @@ export function NumberInput({
         if (!Number.isNaN(nextValue)) onChange(nextValue);
         else event.currentTarget.value = String(value);
       }}
-      className="dashboard-number-input w-[78px] rounded-[10px] border-0 bg-[var(--ds-control-bg)] py-1.5 pl-2.5 text-right text-[13px] text-[var(--ds-control-fg)] outline-none"
+      className="dashboard-field dashboard-number-input w-[78px] text-right"
     />
   );
 
@@ -120,7 +135,7 @@ export function TextInput({
       defaultValue={value}
       placeholder={placeholder}
       onBlur={(event) => onChange(event.currentTarget.value)}
-      className="w-[156px] rounded-[10px] border-0 bg-[var(--ds-control-bg)] px-2.5 py-1.5 text-[13px] text-[var(--ds-control-fg)] outline-none"
+      className="dashboard-field w-[200px]"
     />
   );
 }

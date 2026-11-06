@@ -1,15 +1,14 @@
 import { createContext, useContext } from "react";
 
 const en = {
-  "app.settings": "Settings",
   "nav.appearance": "Appearance",
-  "nav.behavior": "Behavior",
+  "nav.general": "General",
+  "nav.behavior": "Autocomplete",
   "nav.about": "About",
   "nav.saveError": "Error saving",
-  "section.aboutDescription": "App info, updates, and project links",
 
   "theme.title": "Theme",
-  "theme.automatic": "Automatic",
+  "theme.basic": "Basic",
   "theme.lightThemes": "Light Themes",
   "theme.darkThemes": "Dark Themes",
   "theme.dark": "Dark",
@@ -24,64 +23,82 @@ const en = {
   "appearance.simplifiedChinese": "简体中文",
   "appearance.typography": "Typography",
   "appearance.fontFamily": "Font Family",
-  "appearance.fontFamilyDescription": "Font used in the autocomplete popup",
+  "appearance.fontFamilyDescription":
+    "Name of a font installed on your Mac, such as JetBrains Mono. Leave empty for the system font",
   "appearance.systemDefault": "System default",
   "appearance.fontSize": "Font Size",
-  "appearance.dimensions": "Dimensions",
+  "appearance.dimensions": "Popup Size",
   "appearance.maxWidth": "Max Width",
   "appearance.maxHeight": "Max Height",
+  "autocomplete.popup": "Popup",
+  "behavior.showAfterTabDescription":
+    "Keep the popup hidden until you press Tab. With a single match, Tab completes it directly",
+  "behavior.insertTrailingSpaceDescription":
+    "Add a space after an accepted subcommand or option so you can keep typing",
+  "behavior.historyModeDescription":
+    "Suggest past commands from your shell's own history (zsh, bash or fish). Easy Complete keeps no separate record",
+  "autocomplete.runDirectly": "Run as Typed",
+  "autocomplete.disableForCommands": "Turn Off for Commands",
+  "autocomplete.disableForCommandsDescription":
+    "Comma-separated, such as npm, pnpm. These commands get no suggestions and no online lookups",
+  "autocomplete.disableForCommandsPlaceholder": "e.g. npm, pnpm",
+  "appearance.fontSizeDescription": "Text size in the popup",
+  "appearance.maxWidthDescription":
+    "The popup shrinks to fit shorter content. The default is 50px wider when history suggestions are on",
+  "appearance.maxHeightDescription": "Longer lists scroll",
 
-  "behavior.startupAndTrigger": "Startup & Trigger",
+  "behavior.startupAndTrigger": "Startup & Background",
   "behavior.launchAtLogin": "Launch at Login",
   "behavior.silentLaunch": "Silent Launch",
   "behavior.silentLaunchDescription":
     "Start in the background without opening this settings window. Reopen settings from the menu bar icon",
   "behavior.showMenubarIcon": "Show Menu Bar Icon",
   "behavior.showMenubarIconDescription":
-    "Show the Easy Complete icon in the menu bar. When hidden, reopen settings by launching again while it is running",
-  "behavior.keepAutocompleteReady": "Always Keep Suggestions Ready",
+    "When hidden, open Easy Complete again from Applications or Spotlight to reach settings",
+  "behavior.keepAutocompleteReady": "Always Keep Autocomplete Ready",
   "behavior.keepAutocompleteReadyDescription":
-    "Stay loaded with no terminals connected: faster first suggestion, more memory",
-  "behavior.showAfterTab": "Show Suggestions After Tab",
-  "behavior.suggestions": "Suggestions",
+    "Stay loaded even with no terminal connected: the first suggestion appears faster, but it uses more memory",
+  "behavior.showAfterTab": "Show Only After Tab",
+  "behavior.suggestions": "Matching & Sorting",
   "behavior.fuzzyMatching": "Fuzzy Matching",
   "behavior.fuzzyMatchingDescription":
-    "Match close character sequences instead of exact prefixes",
+    "Match when the typed characters appear in order, not only at the start of the name",
   "behavior.firstTokenCompletion": "Suggest Commands While Typing",
   "behavior.firstTokenCompletionDescription":
     "Suggest matching commands from your PATH while typing the first word, such as git for gi. Subcommands still need a space after the command",
   "behavior.sortOrder": "Sort Order",
-  "behavior.byRelevance": "By Relevance",
+  "behavior.byRelevance": "Recently used first",
   "behavior.alphabetical": "Alphabetical",
-  "behavior.keyboardAndInsertion": "Keyboard & Insertion",
+  "behavior.keyboardAndInsertion": "Keys & Insertion",
   "behavior.tabBehavior": "Tab Key",
   "behavior.tabBehaviorDescription":
-    "What Tab does while the suggestion list is open. Shift+Tab always moves up",
-  "behavior.tabPrefixThenNavigate": "Insert prefix, else move down",
-  "behavior.tabPrefixOnly": "Insert shared prefix only",
-  "behavior.tabPrefixThenInsert": "Insert prefix, else accept",
+    "What Tab does while the list is open. The prefix is the start every suggestion shares. Shift+Tab always moves up",
+  "behavior.tabPrefixThenNavigate": "Prefix, else move down",
+  "behavior.tabPrefixOnly": "Prefix only",
+  "behavior.tabPrefixThenInsert": "Prefix, else accept",
   "behavior.tabNavigateOnly": "Move down only",
   "behavior.insertTrailingSpace": "Insert Trailing Space",
-  "behavior.showAutoExecuteSuggestion": "Show Immediately Execute",
+  "behavior.showAutoExecuteSuggestion": "Show Run-as-Typed Entry (↪)",
   "behavior.showAutoExecuteSuggestionDescription":
-    "Add an entry to the list that runs the command as typed when you press Enter",
+    "Press Enter on it to run the command exactly as typed. Not shown when Show Only After Tab is on",
   "behavior.executeAfterTrailingSpace": "Pin After a Trailing Space",
   "behavior.executeAfterTrailingSpaceDescription":
-    "Move it to the top of the list when the command ends with a space",
-  "behavior.runDangerousCommands": "Include Dangerous Commands",
+    "Put the ↪ entry first when the command ends with a space",
+  "behavior.runDangerousCommands": "Allow for Dangerous Commands",
   "behavior.runDangerousCommandsDescription":
-    "Show it for dangerous suggestions too, such as rm -rf",
+    "Commands marked dangerous, such as rm -rf, also get ↪, so a single Enter runs them",
   "behavior.history": "History",
-  "behavior.historyMode": "History Mode",
-  "behavior.showWithCompletions": "Show with completions",
+  "behavior.historyMode": "History Suggestions",
+  "behavior.showWithCompletions": "With completions",
   "behavior.historyOnly": "History only",
   "behavior.off": "Off",
-  "behavior.mergeAllShells": "Merge All Shells",
-  "behavior.mergeAllShellsDescription": "Include bash, zsh, and fish history",
-  "behavior.historyCommand": "History Command",
+  "behavior.mergeAllShells": "Merge zsh and bash History",
+  "behavior.mergeAllShellsDescription":
+    "In zsh or bash, read the history of both shells",
+  "behavior.historyCommand": "History Source Command",
   "behavior.historyCommandDescription":
-    "Shell command to read history from. Leave empty for the default",
-  "behavior.historyCommandPlaceholder": "e.g. atuin search",
+    "A command that prints one past command per line, such as atuin search --cmd-only. Used instead of your shell's history",
+  "behavior.historyCommandPlaceholder": "Default",
 
   "about.troubleshooting": "Troubleshooting",
   "about.somethingNotWorking": "Something not working?",
@@ -100,16 +117,16 @@ const en = {
   "about.version": "Version",
   "about.checkForUpdates": "Check for Updates",
   "about.updates": "Updates",
-  "about.checkAutomatically": "Check for Updates Automatically",
+  "about.checkAutomatically": "Update Automatically",
   "about.checkAutomaticallyDescription":
-    "Download updates automatically and notify when they are ready",
+    "Check once a day, download new versions in the background, and notify you when they are ready",
   "about.betaUpdates": "Receive Beta Updates",
   "about.betaUpdatesDescription":
     "Get prerelease builds before the stable release. They may be less stable",
   "about.privacy": "Privacy",
   "about.shareUsageData": "Share Anonymous Usage Data",
   "about.shareUsageDataDescription":
-    "Anonymous statistics only, never commands or personal data",
+    "App and macOS version, shell and terminal name, and daily counts of completions shown and accepted. Never commands or paths",
   "about.privacyPolicy": "Privacy Policy",
   "about.privacyPolicyDescription": "See what's collected and how to opt out",
   "about.viewPolicy": "View Policy",
@@ -128,7 +145,7 @@ const en = {
   "permission.accessibility.repair": "Grant Accessibility",
   "permission.shellIntegration.title": "Shell Integration",
   "permission.shellIntegration.description":
-    "Injects hooks into .zshrc / .bashrc so Easy Complete can track your shell state.",
+    "Adds hooks to your zsh, bash and fish config so Easy Complete can track your shell state.",
   "permission.shellIntegration.repair": "Install Shell Hooks",
   "permission.inputMethod.title": "Input Method Integration",
   "permission.inputMethod.description":
@@ -147,7 +164,7 @@ const en = {
   "permission.fixAll": "Fix All",
   "permission.shareUsageData": "Share anonymous usage data",
   "permission.shareUsageDataDescription":
-    "Helps us understand install counts and which macOS versions are in use. No commands, paths, or personal data are collected. You can change this anytime in About → Privacy.",
+    "Helps us understand how Easy Complete is used: app and macOS version, shell and terminal name, and daily counts of completions shown and accepted. Never commands, paths, or personal data. Change this anytime in About → Privacy.",
 } as const;
 
 export type TranslationKey = keyof typeof en;
@@ -155,15 +172,14 @@ export type Locale = "en" | "zh-CN";
 export type LocalePreference = "system" | Locale;
 
 const zhCN: Record<TranslationKey, string> = {
-  "app.settings": "设置",
   "nav.appearance": "外观",
-  "nav.behavior": "行为",
+  "nav.general": "通用",
+  "nav.behavior": "补全",
   "nav.about": "关于",
   "nav.saveError": "保存失败",
-  "section.aboutDescription": "应用信息、更新与项目链接",
 
   "theme.title": "主题",
-  "theme.automatic": "自动",
+  "theme.basic": "基础",
   "theme.lightThemes": "浅色主题",
   "theme.darkThemes": "深色主题",
   "theme.dark": "深色",
@@ -177,63 +193,81 @@ const zhCN: Record<TranslationKey, string> = {
   "appearance.simplifiedChinese": "简体中文",
   "appearance.typography": "字体",
   "appearance.fontFamily": "字体名称",
-  "appearance.fontFamilyDescription": "补全弹窗使用的字体",
+  "appearance.fontFamilyDescription":
+    "填写本机已安装的字体名，例如 JetBrains Mono；留空使用系统字体",
   "appearance.systemDefault": "系统默认",
   "appearance.fontSize": "字体大小",
-  "appearance.dimensions": "尺寸",
+  "appearance.dimensions": "弹窗尺寸",
   "appearance.maxWidth": "最大宽度",
   "appearance.maxHeight": "最大高度",
+  "autocomplete.popup": "弹出方式",
+  "behavior.showAfterTabDescription":
+    "补全弹窗默认隐藏，按 Tab 才显示；只有一个候选时直接补全",
+  "behavior.insertTrailingSpaceDescription":
+    "采用子命令或选项后自动加一个空格，方便继续输入",
+  "behavior.historyModeDescription":
+    "从 shell 自己的历史（zsh、bash 或 fish）中建议用过的命令，Easy Complete 不额外记录",
+  "autocomplete.runDirectly": "直接运行",
+  "autocomplete.disableForCommands": "为这些命令关闭补全",
+  "autocomplete.disableForCommandsDescription":
+    "用逗号分隔，例如 npm, pnpm。这些命令不再显示补全，也不会联网查询",
+  "autocomplete.disableForCommandsPlaceholder": "例如 npm, pnpm",
+  "appearance.fontSizeDescription": "补全弹窗中的文字大小",
+  "appearance.maxWidthDescription":
+    "内容较少时弹窗会自动缩小。开启历史建议后默认值加宽 50px",
+  "appearance.maxHeightDescription": "超出高度的列表可以滚动",
 
-  "behavior.startupAndTrigger": "启动与触发",
+  "behavior.startupAndTrigger": "启动与后台",
   "behavior.launchAtLogin": "登录时启动",
   "behavior.silentLaunch": "静默启动",
   "behavior.silentLaunchDescription":
     "启动时不打开本设置窗口，直接在后台运行。需要设置时点击菜单栏图标",
   "behavior.showMenubarIcon": "显示菜单栏图标",
   "behavior.showMenubarIconDescription":
-    "在菜单栏中显示图标。隐藏后，可在程序运行时再次启动打开设置",
-  "behavior.keepAutocompleteReady": "始终保持联想就绪",
+    "隐藏后，从「应用程序」或 Spotlight 再次打开 Easy Complete 即可进入设置",
+  "behavior.keepAutocompleteReady": "始终保持补全就绪",
   "behavior.keepAutocompleteReadyDescription":
-    "没有终端连接时仍保持就绪：首次建议更快，内存占用更高",
-  "behavior.showAfterTab": "按 Tab 后显示建议",
-  "behavior.suggestions": "补全建议",
+    "没有终端连接时也保持加载：第一次补全更快，但占用更多内存",
+  "behavior.showAfterTab": "按 Tab 才显示",
+  "behavior.suggestions": "匹配与排序",
   "behavior.fuzzyMatching": "模糊匹配",
-  "behavior.fuzzyMatchingDescription": "匹配相近字符序列，而非仅匹配前缀",
+  "behavior.fuzzyMatchingDescription":
+    "输入的字符只要按顺序出现在名称中即可匹配，不必从开头输入",
   "behavior.firstTokenCompletion": "输入时提示命令名",
   "behavior.firstTokenCompletionDescription":
     "输入第一个词时从 PATH 中提示匹配的命令，例如输入 gi 提示 git。子命令仍需先输入空格",
   "behavior.sortOrder": "排序方式",
-  "behavior.byRelevance": "按相关性",
+  "behavior.byRelevance": "最近使用优先",
   "behavior.alphabetical": "按字母顺序",
-  "behavior.keyboardAndInsertion": "键盘与插入",
+  "behavior.keyboardAndInsertion": "按键与插入",
   "behavior.tabBehavior": "Tab 键行为",
   "behavior.tabBehaviorDescription":
-    "补全列表打开时 Tab 键的作用，Shift+Tab 始终向上移动",
-  "behavior.tabPrefixThenNavigate": "补全公共前缀，否则下移一项",
-  "behavior.tabPrefixOnly": "仅补全公共前缀",
-  "behavior.tabPrefixThenInsert": "补全公共前缀，否则插入选中项",
-  "behavior.tabNavigateOnly": "仅下移一项",
+    "列表打开时 Tab 的作用。前缀指所有候选共同的开头部分；Shift+Tab 始终上移",
+  "behavior.tabPrefixThenNavigate": "补全前缀，否则下移",
+  "behavior.tabPrefixOnly": "只补全前缀",
+  "behavior.tabPrefixThenInsert": "补全前缀，否则采用",
+  "behavior.tabNavigateOnly": "只下移",
   "behavior.insertTrailingSpace": "自动插入尾随空格",
-  "behavior.showAutoExecuteSuggestion": "显示立即执行",
+  "behavior.showAutoExecuteSuggestion": "显示「直接运行」项（↪）",
   "behavior.showAutoExecuteSuggestionDescription":
-    "在列表中加入「立即执行」项，选中后按 Enter 直接运行当前命令",
+    "选中后按 Enter，按当前输入原样运行命令。开启「按 Tab 才显示」时不显示",
   "behavior.executeAfterTrailingSpace": "空格结尾时置顶",
   "behavior.executeAfterTrailingSpaceDescription":
-    "命令以空格结尾时，把它排到列表第一项",
-  "behavior.runDangerousCommands": "包含危险命令",
+    "命令以空格结尾时，把 ↪ 排到第一项",
+  "behavior.runDangerousCommands": "危险命令也可直接运行",
   "behavior.runDangerousCommandsDescription":
-    "对标记为危险的建议（例如 rm -rf）也显示",
+    "rm -rf 等被标记为危险的命令也会显示 ↪，按一下 Enter 就会执行",
   "behavior.history": "历史记录",
-  "behavior.historyMode": "历史记录模式",
-  "behavior.showWithCompletions": "与补全建议一起显示",
-  "behavior.historyOnly": "仅显示历史记录",
+  "behavior.historyMode": "历史建议",
+  "behavior.showWithCompletions": "与补全一起显示",
+  "behavior.historyOnly": "只显示历史",
   "behavior.off": "关闭",
-  "behavior.mergeAllShells": "合并所有 Shell",
-  "behavior.mergeAllShellsDescription": "包含 bash、zsh、fish 的历史记录",
-  "behavior.historyCommand": "历史记录命令",
+  "behavior.mergeAllShells": "合并 zsh 和 bash 历史",
+  "behavior.mergeAllShellsDescription": "在 zsh 或 bash 中同时读取两者的历史",
+  "behavior.historyCommand": "历史来源命令",
   "behavior.historyCommandDescription":
-    "用作历史记录来源的 Shell 命令，留空则使用默认",
-  "behavior.historyCommandPlaceholder": "例如 atuin search",
+    "每行输出一条历史命令的命令，例如 atuin search --cmd-only，用来代替 shell 自带的历史",
+  "behavior.historyCommandPlaceholder": "默认",
 
   "about.troubleshooting": "故障排查",
   "about.somethingNotWorking": "遇到问题？",
@@ -251,13 +285,15 @@ const zhCN: Record<TranslationKey, string> = {
   "about.version": "版本",
   "about.checkForUpdates": "检查更新",
   "about.updates": "更新",
-  "about.checkAutomatically": "自动检查更新",
-  "about.checkAutomaticallyDescription": "自动下载更新，并在准备完成后通知我",
+  "about.checkAutomatically": "自动更新",
+  "about.checkAutomaticallyDescription":
+    "每天检查一次，在后台下载新版本，准备好后通知你",
   "about.betaUpdates": "接收 Beta 版更新",
   "about.betaUpdatesDescription": "在正式版发布前获取预览版本，稳定性可能较低",
   "about.privacy": "隐私",
   "about.shareUsageData": "共享匿名使用数据",
-  "about.shareUsageDataDescription": "仅包含匿名统计数据，不包含命令或个人数据",
+  "about.shareUsageDataDescription":
+    "应用和 macOS 版本、shell 和终端名称，以及每天补全的显示和采用次数，绝不包含命令或路径",
   "about.privacyPolicy": "隐私政策",
   "about.privacyPolicyDescription": "查看收集的数据以及如何选择退出",
   "about.viewPolicy": "查看政策",
@@ -276,7 +312,7 @@ const zhCN: Record<TranslationKey, string> = {
   "permission.accessibility.repair": "授予辅助功能权限",
   "permission.shellIntegration.title": "Shell 集成",
   "permission.shellIntegration.description":
-    "向 .zshrc / .bashrc 注入钩子，使 Easy Complete 能够跟踪 Shell 状态。",
+    "向 zsh、bash、fish 的配置文件添加钩子，使 Easy Complete 能够跟踪 Shell 状态。",
   "permission.shellIntegration.repair": "安装 Shell 钩子",
   "permission.inputMethod.title": "输入法集成",
   "permission.inputMethod.description":
@@ -294,7 +330,7 @@ const zhCN: Record<TranslationKey, string> = {
   "permission.fixAll": "全部修复",
   "permission.shareUsageData": "共享匿名使用数据",
   "permission.shareUsageDataDescription":
-    "帮助我们了解安装数量和使用中的 macOS 版本。不会收集命令、路径或个人数据，你可以随时在“关于 → 隐私”中更改。",
+    "帮助我们了解 Easy Complete 的使用情况：应用和 macOS 版本、shell 和终端名称，以及每天补全的显示和采用次数。不会收集命令、路径或个人数据，你可以随时在“关于 → 隐私”中更改。",
 };
 
 const dictionaries: Record<Locale, Record<TranslationKey, string>> = {

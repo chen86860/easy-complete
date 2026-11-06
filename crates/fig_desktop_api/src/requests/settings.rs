@@ -46,18 +46,12 @@ pub async fn update(request: UpdateSettingsPropertyRequest) -> RequestResult {
                 let enabled = value
                     .as_bool()
                     .ok_or_else(|| "app.launchOnStartup must be a boolean".to_owned())?;
-                let previous = fig_settings::settings::get_value(key)
-                    .map_err(|err| format!("Failed reading previous {key}: {err}"))?;
-                fig_settings::settings::set_value(key, value.clone())
-                    .map_err(|err| format!("Failed setting {key}: {err}"))?;
-                if let Err(err) = fig_integrations::login_item::set_enabled(enabled) {
-                    match previous {
-                        Some(previous) => fig_settings::settings::set_value(key, previous),
-                        None => fig_settings::settings::remove_value(key),
-                    }
-                    .map_err(|rollback_err| format!("{err}; failed rolling back {key}: {rollback_err}"))?;
-                    return Err(format!("Failed updating launch at login: {err}").into());
-                }
+                // Register the login item before writing the file. The write fires a settings-changed
+                // notification, and readers report this key from the live login-item status; writing
+                // first let them read the old status and flip the dashboard switch back mid-toggle.
+                fig_integrations::login_item::set_enabled(enabled)
+                    .map_err(|err| format!("Failed updating launch at login: {err}"))?;
+                fig_settings::settings::set_value(key, value).map_err(|err| format!("Failed setting {key}: {err}"))?;
                 return RequestResult::success();
             }
             fig_settings::settings::set_value(key, value).map_err(|err| format!("Failed setting {key}: {err}"))?;

@@ -9,8 +9,8 @@ use std::fs::read_to_string;
 use std::future::Future;
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
-use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use anstream::{eprintln, println};
@@ -306,6 +306,11 @@ where
     fn analytics_event_name(&self) -> String {
         let name = self.name().to_ascii_lowercase();
         Regex::new(r"[^a-zA-Z0-9]+").unwrap().replace_all(&name, "_").into()
+    }
+
+    /// Name used in bug reports. Override when [`DoctorCheck::name`] can contain a path.
+    fn report_name(&self) -> Cow<'static, str> {
+        self.name()
     }
 
     async fn get_type(&self, _: &T, _platform: Platform) -> DoctorCheckType {
@@ -823,6 +828,14 @@ impl DoctorCheck<Option<Shell>> for DotfileCheck {
         let path = self.short_path();
         let shell = self.integration.get_shell();
         format!("{shell} {path} integration check").into()
+    }
+
+    fn report_name(&self) -> Cow<'static, str> {
+        // The path follows ZDOTDIR, which can point outside the home directory.
+        let path = self.integration.path();
+        let file_name = path.file_name().unwrap_or_default().to_string_lossy();
+        let shell = self.integration.get_shell();
+        format!("{shell} {file_name} integration check").into()
     }
 
     fn analytics_event_name(&self) -> String {
@@ -1592,13 +1605,15 @@ where
     T: Sync + Send,
     Fut: Future<Output = Result<T>>,
 {
-    if config.all {
+    if config.all && config.report.is_none() {
         println!("{}", header.as_ref().dark_grey());
     }
     let mut context = match get_context().await {
         Ok(c) => c,
         Err(e) => {
-            println!("Failed to get context: {e:?}");
+            if config.report.is_none() {
+                println!("Failed to get context: {e:?}");
+            }
             if config.all {
                 config.failed.store(true, Ordering::Relaxed);
                 return Ok(());
@@ -1629,7 +1644,14 @@ where
             result = Err(DoctorError::error(reason));
         }
 
-        if config.all || result.is_err() {
+        if let Some(report) = config.report {
+            let status = match &result {
+                Ok(()) => "ok",
+                Err(DoctorError::Warning(_)) => "warning",
+                Err(DoctorError::Error { .. }) => "error",
+            };
+            report.lock().unwrap().push((check.report_name().into_owned(), status));
+        } else if config.all || result.is_err() {
             stop_spinner(spinner.take())?;
             print_status_result(&name, &result, config.all);
         }
@@ -1676,7 +1698,7 @@ where
         }
     }
 
-    if config.all {
+    if config.all && config.report.is_none() {
         println!();
     }
 
@@ -1726,6 +1748,24 @@ struct CheckConfiguration<'a> {
     all: bool,
     strict: bool,
     failed: &'a AtomicBool,
+    /// Collects each check's name and status instead of printing it. Requires `all`.
+    report: Option<&'a Mutex<Vec<(String, &'static str)>>>,
+}
+
+/// Runs every check in the observational `--all` mode and returns each check's name and status
+/// (`ok`, `warning` or `error`), printing nothing. Failure reasons are left out because they can
+/// contain paths; this is meant for public bug reports.
+pub async fn doctor_report() -> Vec<(String, &'static str)> {
+    let failed = AtomicBool::new(false);
+    let report = Mutex::new(vec![]);
+    let config = CheckConfiguration {
+        all: true,
+        strict: false,
+        failed: &failed,
+        report: Some(&report),
+    };
+    run_all_checks(config, &mut None).await.ok();
+    report.into_inner().unwrap()
 }
 
 // Doctor
@@ -1750,6 +1790,7 @@ pub async fn doctor_cli(all: bool, strict: bool) -> Result<ExitCode> {
         all,
         strict,
         failed: &failed,
+        report: None,
     };
 
     let mut spinner: Option<Spinner> = None;
@@ -1775,164 +1816,7 @@ pub async fn doctor_cli(all: bool, strict: bool) -> Result<ExitCode> {
         .ok();
     }
 
-    let shell_integrations: Vec<_> = [Shell::Bash, Shell::Zsh, Shell::Fish]
-        .into_iter()
-        .map(|shell| shell.get_shell_integrations(&Env::new()))
-        .collect::<Result<Vec<_>, fig_integrations::Error>>()?
-        .into_iter()
-        .flatten()
-        .map(|integration| DotfileCheck { integration })
-        .collect();
-
-    let mut all_dotfile_checks: Vec<&dyn DoctorCheck<_>> = vec![];
-    all_dotfile_checks.extend(shell_integrations.iter().map(|p| p as &dyn DoctorCheck<_>));
-
-    let status: Result<()> = async {
-        run_checks_with_context(
-            "Let's check your dotfiles...",
-            all_dotfile_checks,
-            get_shell_context,
-            config,
-            &mut spinner,
-        )
-        .await?;
-
-        run_checks(
-            format!("Let's make sure {PRODUCT_NAME} is set up correctly..."),
-            vec![
-                &FigBinCheck,
-                #[cfg(unix)]
-                &LocalBinPathCheck,
-                #[cfg(target_os = "windows")]
-                &WindowsConsoleCheck,
-                &SettingsCorruptionCheck,
-                &FigIntegrationsCheck,
-            ],
-            config,
-            &mut spinner,
-        )
-        .await?;
-
-        if fig_util::manifest::is_full() {
-            run_checks(
-                "Let's make sure the app is running...".into(),
-                vec![&AppRunningCheck, &DesktopSocketCheck],
-                config,
-                &mut spinner,
-            )
-            .await?;
-        }
-
-        run_checks(
-            "Let's see if the app is in a working state...".into(),
-            vec![
-                #[cfg(unix)]
-                &PtySocketCheck,
-                &AutocompleteDevModeCheck,
-                &PluginDevModeCheck,
-                &DashboardHostCheck,
-                &AutocompleteHostCheck,
-            ],
-            config,
-            &mut spinner,
-        )
-        .await?;
-
-        run_checks(
-            "Let's check if your system is compatible...".into(),
-            vec![
-                &SystemVersionCheck,
-                &BashVersionCheck,
-                &FishVersionCheck,
-                #[cfg(target_os = "macos")]
-                &ToolboxInstalledCheck,
-            ],
-            config,
-            &mut spinner,
-        )
-        .await?;
-
-        if fig_util::manifest::is_minimal() {
-            return Ok(());
-        }
-
-        #[cfg(target_os = "macos")]
-        {
-            run_checks_with_context(
-                format!("Let's check {}...", format!("{CLI_BINARY_NAME} diagnostic").bold()),
-                vec![
-                    &ShellCompatibilityCheck,
-                    &BundlePathCheck,
-                    &AutocompleteEnabledCheck,
-                    &CliPathCheck,
-                    &AccessibilityCheck,
-                    &DotfilesSymlinkedCheck,
-                ],
-                super::diagnostics::get_diagnostics,
-                config,
-                &mut spinner,
-            )
-            .await?;
-        }
-
-        #[cfg(target_os = "linux")]
-        {
-            use checks::linux::{
-                DisplayServerCheck, GnomeExtensionCheck, IBusConnectionCheck, IBusEnvCheck, IBusRunningCheck,
-                SandboxCheck, get_linux_context,
-            };
-            // Linux desktop checks
-            if fig_util::manifest::is_full() && !fig_util::system_info::is_remote() {
-                run_checks_with_context(
-                    "Let's check Linux integrations",
-                    vec![
-                        &DisplayServerCheck,
-                        &IBusEnvCheck,
-                        &GnomeExtensionCheck,
-                        &IBusRunningCheck,
-                        &IBusConnectionCheck,
-                        // &DesktopCompatibilityCheck, // we need a better way of getting the data
-                        &SandboxCheck,
-                    ],
-                    get_linux_context,
-                    config,
-                    &mut spinner,
-                )
-                .await?;
-            }
-        }
-
-        #[cfg(target_os = "linux")]
-        {
-            if fig_util::manifest::is_full() && !fig_util::system_info::is_remote() {
-                run_checks_with_context(
-                    format!("Let's check {}...", format!("{CLI_BINARY_NAME} diagnostic").bold()),
-                    vec![&AutocompleteActiveCheck],
-                    super::diagnostics::get_diagnostics,
-                    config,
-                    &mut spinner,
-                )
-                .await?;
-            }
-        }
-
-        run_checks_with_context(
-            "Let's check your terminal integrations...",
-            vec![
-                &SupportedTerminalCheck,
-                &ItermBashIntegrationCheck,
-                #[cfg(target_os = "macos")]
-                &ImeStatusCheck,
-            ],
-            get_terminal_context,
-            config,
-            &mut spinner,
-        )
-        .await?;
-
-        Ok(())
-    }
-    .await;
+    let status = run_all_checks(config, &mut spinner).await;
 
     let is_error = status.is_err() || failed.load(Ordering::Relaxed);
 
@@ -1972,6 +1856,164 @@ pub async fn doctor_cli(all: bool, strict: bool) -> Result<ExitCode> {
     }
 
     Ok(if is_error { ExitCode::FAILURE } else { ExitCode::SUCCESS })
+}
+
+async fn run_all_checks(config: CheckConfiguration<'_>, spinner: &mut Option<Spinner>) -> Result<()> {
+    let shell_integrations: Vec<_> = [Shell::Bash, Shell::Zsh, Shell::Fish]
+        .into_iter()
+        .map(|shell| shell.get_shell_integrations(&Env::new()))
+        .collect::<Result<Vec<_>, fig_integrations::Error>>()?
+        .into_iter()
+        .flatten()
+        .map(|integration| DotfileCheck { integration })
+        .collect();
+
+    let mut all_dotfile_checks: Vec<&dyn DoctorCheck<_>> = vec![];
+    all_dotfile_checks.extend(shell_integrations.iter().map(|p| p as &dyn DoctorCheck<_>));
+
+    run_checks_with_context(
+        "Let's check your dotfiles...",
+        all_dotfile_checks,
+        get_shell_context,
+        config,
+        spinner,
+    )
+    .await?;
+
+    run_checks(
+        format!("Let's make sure {PRODUCT_NAME} is set up correctly..."),
+        vec![
+            &FigBinCheck,
+            #[cfg(unix)]
+            &LocalBinPathCheck,
+            #[cfg(target_os = "windows")]
+            &WindowsConsoleCheck,
+            &SettingsCorruptionCheck,
+            &FigIntegrationsCheck,
+        ],
+        config,
+        spinner,
+    )
+    .await?;
+
+    if fig_util::manifest::is_full() {
+        run_checks(
+            "Let's make sure the app is running...".into(),
+            vec![&AppRunningCheck, &DesktopSocketCheck],
+            config,
+            spinner,
+        )
+        .await?;
+    }
+
+    run_checks(
+        "Let's see if the app is in a working state...".into(),
+        vec![
+            #[cfg(unix)]
+            &PtySocketCheck,
+            &AutocompleteDevModeCheck,
+            &PluginDevModeCheck,
+            &DashboardHostCheck,
+            &AutocompleteHostCheck,
+        ],
+        config,
+        spinner,
+    )
+    .await?;
+
+    run_checks(
+        "Let's check if your system is compatible...".into(),
+        vec![
+            &SystemVersionCheck,
+            &BashVersionCheck,
+            &FishVersionCheck,
+            #[cfg(target_os = "macos")]
+            &ToolboxInstalledCheck,
+        ],
+        config,
+        spinner,
+    )
+    .await?;
+
+    if fig_util::manifest::is_minimal() {
+        return Ok(());
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        run_checks_with_context(
+            format!("Let's check {}...", format!("{CLI_BINARY_NAME} diagnostic").bold()),
+            vec![
+                &ShellCompatibilityCheck,
+                &BundlePathCheck,
+                &AutocompleteEnabledCheck,
+                &CliPathCheck,
+                &AccessibilityCheck,
+                &DotfilesSymlinkedCheck,
+            ],
+            super::diagnostics::get_diagnostics,
+            config,
+            spinner,
+        )
+        .await?;
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        use checks::linux::{
+            DisplayServerCheck, GnomeExtensionCheck, IBusConnectionCheck, IBusEnvCheck, IBusRunningCheck, SandboxCheck,
+            get_linux_context,
+        };
+        // Linux desktop checks
+        if fig_util::manifest::is_full() && !fig_util::system_info::is_remote() {
+            run_checks_with_context(
+                "Let's check Linux integrations",
+                vec![
+                    &DisplayServerCheck,
+                    &IBusEnvCheck,
+                    &GnomeExtensionCheck,
+                    &IBusRunningCheck,
+                    &IBusConnectionCheck,
+                    // &DesktopCompatibilityCheck, // we need a better way of getting the data
+                    &SandboxCheck,
+                ],
+                get_linux_context,
+                config,
+                spinner,
+            )
+            .await?;
+        }
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        if fig_util::manifest::is_full() && !fig_util::system_info::is_remote() {
+            run_checks_with_context(
+                format!("Let's check {}...", format!("{CLI_BINARY_NAME} diagnostic").bold()),
+                vec![&AutocompleteActiveCheck],
+                super::diagnostics::get_diagnostics,
+                config,
+                spinner,
+            )
+            .await?;
+        }
+    }
+
+    run_checks_with_context(
+        "Let's check your terminal integrations...",
+        vec![
+            &SupportedTerminalCheck,
+            &ItermBashIntegrationCheck,
+            #[cfg(target_os = "macos")]
+            &ImeStatusCheck,
+        ],
+        get_terminal_context,
+        config,
+        spinner,
+    )
+    .await?;
+
+    Ok(())
 }
 
 #[cfg(test)]
@@ -2032,6 +2074,7 @@ mod command_tests {
             all: true,
             strict: false,
             failed: &failed,
+            report: None,
         };
         run_checks("test".into(), vec![&first, &second], config, &mut None)
             .await
@@ -2043,6 +2086,23 @@ mod command_tests {
     }
 
     #[tokio::test]
+    async fn report_collects_statuses_without_reasons() {
+        let failed = AtomicBool::new(false);
+        let report = Mutex::new(vec![]);
+        let config = CheckConfiguration {
+            all: true,
+            strict: false,
+            failed: &failed,
+            report: Some(&report),
+        };
+        run_checks("test".into(), vec![&WarningCheck], config, &mut None)
+            .await
+            .unwrap();
+        let name = WarningCheck.name().into_owned();
+        assert_eq!(report.into_inner().unwrap(), vec![(name, "warning")]);
+    }
+
+    #[tokio::test]
     async fn strict_warnings_fail_in_both_modes() {
         for all in [false, true] {
             for strict in [false, true] {
@@ -2051,6 +2111,7 @@ mod command_tests {
                     all,
                     strict,
                     failed: &failed,
+                    report: None,
                 };
                 let result = run_checks("test".into(), vec![&WarningCheck], config, &mut None).await;
                 assert_eq!(result.is_err() || failed.load(Ordering::Relaxed), strict);
@@ -2065,6 +2126,7 @@ mod command_tests {
             all: true,
             strict: false,
             failed: &failed,
+            report: None,
         };
         run_checks_with_context(
             "test",

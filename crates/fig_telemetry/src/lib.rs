@@ -9,6 +9,8 @@ const TELEMETRY_ENABLED_KEY: &str = "telemetry.enabled";
 const DEVICE_ID_KEY: &str = "telemetry.device_id";
 const LAST_HEARTBEAT_KEY: &str = "telemetry.last_heartbeat_ts";
 const COUNTER_KEY_PREFIX: &str = "telemetry.count.";
+const ONCE_KEY_PREFIX: &str = "telemetry.once.";
+const LAST_TERMINAL_KEY: &str = "telemetry.last_terminal";
 
 const QUEUE_FILE_NAME: &str = "telemetry_queue.jsonl";
 /// Oldest events are dropped beyond this, so a long offline stretch
@@ -19,6 +21,10 @@ const HEARTBEAT_INTERVAL_SECS: i64 = 24 * 60 * 60;
 static POSTHOG_ENDPOINT: std::sync::OnceLock<String> = std::sync::OnceLock::new();
 static POSTHOG_API_KEY: std::sync::OnceLock<String> = std::sync::OnceLock::new();
 static QUEUE_LOCK: tokio::sync::Mutex<()> = tokio::sync::Mutex::const_new(());
+/// In-process memo of [`track_once`] events already sent, so hot paths skip the state db.
+static ONCE_SENT: std::sync::Mutex<Vec<&'static str>> = std::sync::Mutex::new(Vec::new());
+/// In-process memo of the last value written by [`set_last_terminal`].
+static LAST_TERMINAL: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
 
 /// Call once at app startup.
 /// `endpoint` — Cloudflare Workers URL proxying to your PostHog instance,
@@ -84,11 +90,30 @@ fn shell_name() -> String {
 }
 
 /// Best-effort terminal emulator detection from the process hierarchy.
-/// Meaningful for CLI-origin events; desktop-origin events (launched by
-/// launchd, no terminal ancestor) report "unknown".
+/// Desktop-origin events have no terminal ancestor (launched by launchd), so
+/// they fall back to the terminal of the last session that used autocomplete,
+/// recorded by [`set_last_terminal`].
 fn terminal_name() -> String {
     fig_util::terminal::Terminal::parent_terminal(&fig_os_shim::Context::new())
-        .map_or_else(|| "unknown".into(), |t| t.internal_id().into_owned())
+        .map(|t| t.internal_id().into_owned())
+        .or_else(|| fig_settings::state::get_string(LAST_TERMINAL_KEY).ok().flatten())
+        .unwrap_or_else(|| "unknown".into())
+}
+
+/// Records the terminal of the session autocomplete last served, so desktop-origin
+/// events (the daily heartbeat especially) can be broken down by terminal.
+/// Cheap to call on every keystroke: the state db is only written on change.
+pub fn set_last_terminal(terminal: &str) {
+    let Ok(mut last) = LAST_TERMINAL.lock() else { return };
+    if last.as_deref() == Some(terminal) {
+        return;
+    }
+    fig_settings::state::set_value(LAST_TERMINAL_KEY, terminal).ok();
+    *last = Some(terminal.to_owned());
+}
+
+fn locale() -> &'static str {
+    fig_util::system_info::preferred_language().unwrap_or("unknown")
 }
 
 fn queue_path() -> Option<PathBuf> {
@@ -116,6 +141,7 @@ fn build_event(event: &str, extra_props: Value) -> Value {
         "os_version":  os_version_string(),
         "shell":       shell_name(),
         "terminal":    terminal_name(),
+        "locale":      locale(),
     });
     if let (Some(obj), Some(extra)) = (props.as_object_mut(), extra_props.as_object()) {
         obj.extend(extra.iter().map(|(k, v)| (k.clone(), v.clone())));
@@ -168,6 +194,27 @@ pub fn track_with_props(event: &'static str, extra_props: Value) {
             enqueue(&body).await;
         }
     });
+}
+
+/// Sends `event` at most once per device, e.g. an onboarding milestone.
+/// Cheap to call repeatedly: after the first call it is an in-memory check.
+pub fn track_once(event: &'static str, extra_props: Value) {
+    if !is_enabled() || !is_configured() {
+        return;
+    }
+    {
+        let Ok(mut sent) = ONCE_SENT.lock() else { return };
+        if sent.contains(&event) {
+            return;
+        }
+        sent.push(event);
+    }
+    let key = format!("{ONCE_KEY_PREFIX}{event}");
+    if fig_settings::state::get_bool_or(&key, false) {
+        return;
+    }
+    fig_settings::state::set_value(&key, true).ok();
+    track_with_props(event, extra_props);
 }
 
 /// Like [`track_with_props`] but awaits the send. For short-lived CLI

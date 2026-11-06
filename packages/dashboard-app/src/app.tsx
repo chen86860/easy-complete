@@ -17,14 +17,14 @@ import type { Section } from "./types";
 export default function App() {
   const { settings, saving, set } = useDashboardSettings();
   const permissionCheck = usePermissionCheck();
-  const [section, setSection] = useState<Section>("appearance");
+  const [section, setSection] = useState<Section>("general");
 
   useDashboardShortcuts();
   useDashboardNavigation(setSection);
   useWindowFocus();
 
   return (
-    <div className="relative flex h-screen select-none overflow-hidden bg-transparent font-sans text-[var(--ds-label)] antialiased [accent-color:var(--dashboard-accent-color)] [overscroll-behavior:none] [-webkit-touch-callout:none] [--dashboard-accent-color:AccentColor]">
+    <div className="relative flex h-screen select-none overflow-hidden bg-transparent font-sans text-[var(--ds-label)] [accent-color:var(--dashboard-accent-color)] [overscroll-behavior:none] [-webkit-touch-callout:none]">
       <DashboardWindowChrome />
       <PermissionGate
         permissions={permissionCheck.permissions}

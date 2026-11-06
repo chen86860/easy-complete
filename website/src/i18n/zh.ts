@@ -29,8 +29,8 @@ const featureDataZh: Array<Omit<Feature, "glyph">> = [
     desc: "用 Rust 编写,在原生窗口中绘制,建议跟得上你的输入",
   },
   {
-    title: "100% 本地",
-    desc: "无云端、无账号、无 AI 调用。你的命令永远不会离开这台机器",
+    title: "本地优先",
+    desc: "无账号、无 AI 调用。spec 和图标随应用打包，建议在本机生成",
   },
   {
     title: "可换主题",
@@ -69,7 +69,7 @@ const reasonsZh: Reason[] = [
   {
     num: "03",
     title: "默认保护隐私",
-    desc: "补全完全在本机完成——命令内容不会离开你的 Mac。仅收集匿名使用计数,一条命令即可关闭",
+    desc: "补全在本机生成。遥测只有匿名使用计数,一条命令即可关闭;所有联网请求都列在隐私页面",
   },
   {
     num: "04",
@@ -87,7 +87,7 @@ const faqsZh: Faq[] = [
   {
     question: "Easy Complete 在本地运行吗?",
     answer:
-      "是的。补全完全在本机完成——无账号、无云端请求、无 AI 调用,命令内容不会离开你的 Mac",
+      "是的。建议在本机生成,无账号、无 AI 调用。少数 spec(如 npm、cargo)会在输入时联网查询包名;所有联网请求及关闭方式见隐私页面",
   },
   {
     question: "Easy Complete 会收集哪些数据?",

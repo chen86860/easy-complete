@@ -334,6 +334,8 @@ message DiagnosticsResponse {
   optional fig_common.ShellContext shell_context = 25;
   optional bool intercept_enabled = 26;
   optional bool intercept_global_enabled = 27;
+  // Version of the running desktop app; unset by apps older than 2.6.0
+  optional string app_version = 28;
 }
 
 message LogLevelResponse {

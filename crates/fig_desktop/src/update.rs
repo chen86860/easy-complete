@@ -282,6 +282,41 @@ mod macos {
         }
     }
 
+    /// Re-applies `app.disableAutoupdates` to a running updater. The controller only reads the
+    /// setting when it is created, so without this a toggle takes effect only after a restart.
+    pub fn sync_automatic_checks() {
+        fn apply() {
+            let enabled = !fig_settings::settings::get_bool_or("app.disableAutoupdates", false);
+            let controller = if enabled {
+                ensure_controller()
+            } else {
+                // Don't load Sparkle just to switch it off.
+                controller_slot()
+                    .lock()
+                    .ok()
+                    .and_then(|slot| *slot)
+                    .map(|ptr| ptr as id)
+            };
+            let Some(controller) = controller else { return };
+
+            // SAFETY: SPUUpdater exposes automaticallyChecksForUpdates as a settable property.
+            unsafe {
+                let updater: id = msg_send![controller, updater];
+                if updater != nil {
+                    let flag = if enabled { YES } else { NO };
+                    let _: () = msg_send![updater, setAutomaticallyChecksForUpdates: flag];
+                    info!(enabled, "Applied automatic update check setting");
+                }
+            }
+        }
+
+        if is_main_thread() {
+            apply();
+        } else {
+            dispatch::Queue::main().exec_async(apply);
+        }
+    }
+
     pub fn check_for_update(show_webview: bool) -> bool {
         // Sparkle's checkForUpdates: and checkForUpdatesInBackground must be called on the
         // main thread. When invoked from a tokio worker thread (e.g. via the WebView API
@@ -303,6 +338,14 @@ pub fn start_automatic_checks() {
 
 #[cfg(not(target_os = "macos"))]
 pub fn start_automatic_checks() {}
+
+#[cfg(target_os = "macos")]
+pub fn sync_automatic_checks() {
+    macos::sync_automatic_checks();
+}
+
+#[cfg(not(target_os = "macos"))]
+pub fn sync_automatic_checks() {}
 
 #[cfg(target_os = "macos")]
 pub async fn check_for_update(show_webview: bool, _relaunch_dashboard: bool) -> bool {

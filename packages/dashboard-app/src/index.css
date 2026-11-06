@@ -9,6 +9,15 @@
   color-scheme: light dark;
 
   --ds-content-bg: #fbfbfd;
+  --ds-field-bg: #ffffff;
+  --ds-field-border: rgba(60, 60, 67, 0.22);
+  --ds-fill: rgba(0, 0, 0, 0.06);
+  --ds-fill-hover: rgba(0, 0, 0, 0.09);
+  --ds-fill-pressed: rgba(0, 0, 0, 0.14);
+  /* Fallback only: the native host sets the real system accent inline on
+     <html> (and again on NSSystemColorsDidChange). WebKit resolves the CSS
+     AccentColor keyword to blue here, so it must never override that value. */
+  --dashboard-accent-color: AccentColor;
   --ds-top-rgb: 251 251 253;
   --ds-top-highlight: rgba(255, 255, 255, 0.62);
   --ds-sidebar-bg: #f5f5f7;
@@ -66,6 +75,11 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --ds-content-bg: #1e1e1e;
+    --ds-field-bg: rgba(255, 255, 255, 0.06);
+    --ds-field-border: rgba(235, 235, 245, 0.18);
+    --ds-fill: rgba(255, 255, 255, 0.1);
+    --ds-fill-hover: rgba(255, 255, 255, 0.14);
+    --ds-fill-pressed: rgba(255, 255, 255, 0.2);
     --ds-top-rgb: 30 30 30;
     --ds-top-highlight: rgba(255, 255, 255, 0.06);
     --ds-sidebar-bg: #1c1c1e;
@@ -140,7 +154,8 @@ body {
   padding: 0;
   background: var(--ds-content-bg);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  -webkit-font-smoothing: antialiased;
+  /* Default smoothing, like AppKit text. `antialiased` drops the stem
+     darkening macOS applies to native labels and makes the UI read thin. */
 }
 
 /* On macOS an NSVisualEffectView (sidebar material) sits behind the webview;
@@ -180,22 +195,12 @@ html.dashboard-native-vibrancy .dashboard-sidebar {
   box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.14);
 }
 
-.dashboard-sidebar-item-active .dashboard-sidebar-icon {
-  color: #fff;
-}
-
 /* Like System Settings: the selection falls back to gray and the material
    turns solid while the window is unfocused. */
 html.dashboard-window-blurred .dashboard-sidebar-item-active {
   background: var(--ds-sidebar-blurred-bg);
   color: var(--ds-sidebar-item);
   box-shadow: none;
-}
-
-html.dashboard-window-blurred
-  .dashboard-sidebar-item-active
-  .dashboard-sidebar-icon {
-  color: var(--ds-sidebar-icon);
 }
 
 button,
@@ -211,56 +216,129 @@ textarea {
   user-select: text;
 }
 
-.native-toggle {
-  outline: none;
-  --native-toggle-press-scale: 1;
-}
-
-.native-toggle:focus-visible {
-  outline: 3px solid
-    color-mix(
-      in srgb,
-      var(--dashboard-accent-color, AccentColor) 28%,
-      transparent
-    );
-  outline-offset: 2px;
-}
-
-.native-toggle:active {
-  --native-toggle-press-scale: 0.96;
-}
-
 @layer components {
-  .dashboard-top-blur {
-    @apply pointer-events-none sticky inset-x-0 top-0 z-[8] -mb-[60px] h-[60px] backdrop-blur-[18px] backdrop-saturate-[1.35];
+  /* macOS text field: white well, hairline border, accent focus ring. */
+  .dashboard-field {
+    @apply rounded-md px-2 py-1 text-[13px] outline-none;
+    background: var(--ds-field-bg);
+    color: var(--ds-label);
+    box-shadow: inset 0 0 0 0.5px var(--ds-field-border);
+  }
+
+  .dashboard-field::placeholder {
+    color: var(--ds-label-tertiary);
+  }
+
+  .dashboard-field:focus {
+    box-shadow:
+      inset 0 0 0 0.5px var(--ds-field-border),
+      0 0 0 3.5px
+        color-mix(in srgb, var(--dashboard-accent-color) 45%, transparent);
+  }
+
+  .mac-popup {
+    @apply relative inline-flex items-center rounded-lg transition-colors duration-100;
+  }
+
+  .mac-popup select {
+    @apply max-w-[240px] appearance-none border-0 bg-transparent py-1 pl-2.5 pr-8 text-right text-[13px] outline-none;
+    color: var(--ds-label);
+    text-align-last: right;
+  }
+
+  .mac-popup-chevron {
+    @apply pointer-events-none absolute right-1 flex h-5 w-5 items-center justify-center rounded-full transition-colors duration-100;
+    background: var(--ds-fill);
+    color: var(--ds-label);
+  }
+
+  .mac-popup:not([data-disabled]):hover {
+    background: var(--ds-fill);
+  }
+
+  .mac-popup:not([data-disabled]):hover .mac-popup-chevron {
+    background: transparent;
+  }
+
+  .mac-popup:not([data-disabled]):active {
+    background: var(--ds-fill-pressed);
+  }
+
+  .mac-popup:has(select:focus-visible) {
+    box-shadow: 0 0 0 3px
+      color-mix(in srgb, var(--dashboard-accent-color) 45%, transparent);
+  }
+
+  .mac-popup[data-disabled] select,
+  .mac-popup[data-disabled] .mac-popup-chevron {
+    color: var(--ds-label-tertiary);
+  }
+
+  /* macOS 26 push buttons: capsules, a gray fill for ordinary actions and the
+     system accent for the one primary action. */
+  .mac-button {
+    @apply inline-flex h-7 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border-0 px-3.5 text-[13px] font-medium no-underline outline-none transition-[background-color,filter] duration-100;
+    background: var(--ds-fill);
+    color: var(--ds-label);
+  }
+
+  .mac-button:not(:disabled):hover {
+    background: var(--ds-fill-hover);
+  }
+
+  .mac-button:not(:disabled):active {
+    background: var(--ds-fill-pressed);
+  }
+
+  .mac-button-primary {
+    background: var(--dashboard-accent-color);
+    color: #fff;
+  }
+
+  .mac-button-primary:not(:disabled):hover {
+    background: var(--dashboard-accent-color);
+    filter: brightness(1.06);
+  }
+
+  .mac-button-primary:not(:disabled):active {
+    background: var(--dashboard-accent-color);
+    filter: brightness(0.9);
+  }
+
+  .mac-button:disabled {
+    background: var(--ds-fill);
+    color: var(--ds-label-tertiary);
+  }
+
+  .mac-button:focus-visible {
+    box-shadow: 0 0 0 3px
+      color-mix(in srgb, var(--dashboard-accent-color) 45%, transparent);
+  }
+
+  /* System Settings icon tile: a top-lit gradient, a hairline edge and a
+     soft drop, so the tile still reads as its own shape on any accent. */
+  .sidebar-tile {
+    @apply flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-[5px] leading-none text-white;
     background: linear-gradient(
       180deg,
-      rgb(var(--ds-top-rgb) / 0.86) 0%,
-      rgb(var(--ds-top-rgb) / 0.58) 48%,
-      rgb(var(--ds-top-rgb) / 0) 100%
+      color-mix(in srgb, var(--tile) 72%, #fff) 0%,
+      var(--tile) 100%
     );
     box-shadow:
-      inset 0 1px 0 var(--ds-top-highlight),
-      inset 0 -1px 0
-        color-mix(in srgb, var(--dashboard-accent-color) 10%, transparent);
-    -webkit-backdrop-filter: blur(18px) saturate(1.35);
-    -webkit-mask-image: linear-gradient(
-      180deg,
-      #000 0%,
-      #000 52%,
-      transparent 100%
-    );
-    mask-image: linear-gradient(180deg, #000 0%, #000 52%, transparent 100%);
+      inset 0 0 0 0.5px rgba(0, 0, 0, 0.14),
+      0 0.5px 1px rgba(0, 0, 0, 0.18);
+  }
+
+  /* On the accent-filled selection a slightly deeper drop lifts the tile, so
+     a same-colored one (blue on the default accent) still reads as a shape. */
+  .dashboard-sidebar-item-active .sidebar-tile {
+    box-shadow:
+      inset 0 0 0 0.5px rgba(0, 0, 0, 0.14),
+      0 1px 2px rgba(0, 0, 0, 0.28);
   }
 
   .dashboard-window-drag-region {
     @apply absolute inset-x-0 top-0 z-10 h-[52px];
-  }
-
-  .dashboard-select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238e8e93'/%3E%3C/svg%3E");
-    background-position: right 12px center;
-    background-repeat: no-repeat;
   }
 
   .dashboard-number-input {

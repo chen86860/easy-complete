@@ -7,25 +7,18 @@ use flume::Sender;
 use tracing::level_filters::LevelFilter;
 use tracing::{debug, error};
 
-use crate::history::{HistoryCommand, HistorySender};
 use crate::{INSERT_ON_NEW_CMD, MainLoopEvent, shell_state_to_context};
 
 pub struct EventHandler {
     socket_sender: Sender<Hostbound>,
-    history_sender: HistorySender,
     main_loop_sender: Sender<MainLoopEvent>,
     csi_u_enabled: bool,
 }
 
 impl EventHandler {
-    pub fn new(
-        socket_sender: Sender<Hostbound>,
-        history_sender: HistorySender,
-        main_loop_sender: Sender<MainLoopEvent>,
-    ) -> Self {
+    pub fn new(socket_sender: Sender<Hostbound>, main_loop_sender: Sender<MainLoopEvent>) -> Self {
         Self {
             socket_sender,
-            history_sender,
             main_loop_sender,
             csi_u_enabled: fig_settings::settings::get_bool_or("qterm.csi-u.enabled", false),
         }
@@ -99,10 +92,6 @@ impl EventListener for EventHandler {
                 let hook = new_postexec_hook(context, command_info.command.clone(), command_info.exit_code);
                 let message = hook_to_message(hook);
                 if let Err(err) = self.socket_sender.send(message) {
-                    error!(%err, "Sender error");
-                }
-
-                if let Err(err) = self.history_sender.send(HistoryCommand::Insert(command_info.clone())) {
                     error!(%err, "Sender error");
                 }
             },

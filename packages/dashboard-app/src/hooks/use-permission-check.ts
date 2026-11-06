@@ -37,6 +37,19 @@ const INPUT_METHOD_TERMINALS_KEY = "input-method.needed-by";
 /** Set once the user skips the input method in the gate, so it never blocks again (#206). */
 const INPUT_METHOD_SKIPPED_KEY = "input-method.gate-skipped";
 
+/** The first three names, then "and others", so a long list stays one line. */
+function terminalList(
+  names: string[],
+  t: (
+    key: "permission.terminalListSeparator" | "permission.terminalListMore",
+  ) => string,
+) {
+  const list = names.slice(0, 3).join(t("permission.terminalListSeparator"));
+  return names.length > 3
+    ? t("permission.terminalListMore").replace("{list}", list)
+    : list;
+}
+
 const asMessage = (error: unknown, fallback: string) =>
   error instanceof Error ? error.message : fallback;
 
@@ -187,7 +200,7 @@ export function usePermissionCheck() {
           requirement.id === "inputMethod" && requirement.skippable
             ? t("permission.inputMethod.neededBy").replace(
                 "{terminals}",
-                inputMethodTerminals.join(", "),
+                terminalList(inputMethodTerminals, t),
               )
             : t(`permission.${requirement.id}.description`),
         repairLabel: t(`permission.${requirement.id}.repair`),

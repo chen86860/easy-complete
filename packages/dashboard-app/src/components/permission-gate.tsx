@@ -60,7 +60,10 @@ function PermissionRow({
           <div className="text-[14px] font-semibold leading-5 text-[var(--ds-label)]">
             {permission.title}
           </div>
-          <StatusBadge state={permission.state} />
+          {/* A step still to do is marked by its button; only finished ones get a badge. */}
+          {permission.state === "ready" ? (
+            <StatusBadge state={permission.state} />
+          ) : null}
           {permission.optional ? (
             <span className="text-[12px] text-[var(--ds-label-tertiary)]">
               {t("permission.optional")}

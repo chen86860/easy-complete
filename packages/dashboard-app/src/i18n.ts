@@ -139,32 +139,31 @@ const en = {
   "permission.status.ready": "Ready",
   "permission.status.missing": "Needs setup",
   "permission.status.error": "Needs attention",
-  "permission.accessibility.title": "Accessibility Permission",
+  "permission.accessibility.title": "Accessibility",
   "permission.accessibility.description":
-    "Required to read the focused terminal window and position completions.",
+    "Finds the focused terminal and places the popup.",
   "permission.accessibility.repair": "Grant Accessibility",
   "permission.shellIntegration.title": "Shell Integration",
   "permission.shellIntegration.description":
-    "Adds hooks to your zsh, bash and fish config so Easy Complete can track your shell state.",
-  "permission.shellIntegration.repair": "Install Shell Hooks",
-  "permission.inputMethod.title": "Input Method Integration",
+    "Adds a hook to your zsh, bash and fish config.",
+  "permission.shellIntegration.repair": "Install",
+  "permission.inputMethod.title": "Input Method",
   "permission.inputMethod.description":
-    "Only needed for cursor tracking in terminals like Ghostty, Kitty, WezTerm, Alacritty, Zed, and JetBrains IDEs. Terminal.app and iTerm2 work without it. macOS will ask you to allow it: it only reads the cursor position, never what you type.",
-  "permission.inputMethod.repair": "Install Input Method",
+    "Tracks the cursor in Ghostty, Kitty, WezTerm and similar terminals. Reads only the cursor position.",
+  "permission.inputMethod.repair": "Install",
   "permission.optional": "Optional",
   "permission.checkError": "Unable to check this requirement.",
-  "permission.accessibilityFirst":
-    "Grant Accessibility first to enable this step.",
+  "permission.accessibilityFirst": "Needs Accessibility first.",
   "permission.working": "Working...",
   "permission.finishSetup": "Finish Setup",
   "permission.finishSetupDescription":
-    "Easy Complete needs these permissions before settings can be used.",
+    "Grant these to start using Easy Complete.",
   "permission.checking": "Checking...",
   "permission.checkAgain": "Check Again",
   "permission.fixAll": "Fix All",
   "permission.shareUsageData": "Share anonymous usage data",
   "permission.shareUsageDataDescription":
-    "Helps us understand how Easy Complete is used: app and macOS version, shell and terminal name, and daily counts of completions shown and accepted. Never commands, paths, or personal data. Change this anytime in About → Privacy.",
+    "App and macOS version, shell, terminal and daily completion counts. Never commands or paths. Change it in About → Privacy.",
 } as const;
 
 export type TranslationKey = keyof typeof en;
@@ -306,31 +305,30 @@ const zhCN: Record<TranslationKey, string> = {
   "permission.status.ready": "已就绪",
   "permission.status.missing": "需要设置",
   "permission.status.error": "需要处理",
-  "permission.accessibility.title": "辅助功能权限",
-  "permission.accessibility.description":
-    "用于读取当前聚焦的终端窗口并定位补全弹窗。",
-  "permission.accessibility.repair": "授予辅助功能权限",
+  "permission.accessibility.title": "辅助功能",
+  "permission.accessibility.description": "用于找到当前终端并放置补全弹窗。",
+  "permission.accessibility.repair": "授予权限",
   "permission.shellIntegration.title": "Shell 集成",
   "permission.shellIntegration.description":
-    "向 zsh、bash、fish 的配置文件添加钩子，使 Easy Complete 能够跟踪 Shell 状态。",
-  "permission.shellIntegration.repair": "安装 Shell 钩子",
-  "permission.inputMethod.title": "输入法集成",
+    "在 zsh、bash、fish 的配置文件中添加钩子。",
+  "permission.shellIntegration.repair": "安装",
+  "permission.inputMethod.title": "输入法",
   "permission.inputMethod.description":
-    "仅在 Ghostty、Kitty、WezTerm、Alacritty、Zed、JetBrains IDE 等终端中用于跟踪光标位置，Terminal.app 和 iTerm2 无需安装。安装时 macOS 会请求你允许：它只读取光标位置，不会读取你输入的内容。",
-  "permission.inputMethod.repair": "安装输入法",
+    "在 Ghostty、Kitty、WezTerm 等终端中跟踪光标，只读取光标位置。",
+  "permission.inputMethod.repair": "安装",
   "permission.optional": "可选",
   "permission.checkError": "无法检查此要求。",
-  "permission.accessibilityFirst": "请先授予辅助功能权限，再执行此步骤。",
+  "permission.accessibilityFirst": "需要先授予辅助功能权限。",
   "permission.working": "处理中…",
   "permission.finishSetup": "完成设置",
   "permission.finishSetupDescription":
-    "使用设置前，Easy Complete 需要以下权限。",
+    "授予以下权限后即可开始使用 Easy Complete。",
   "permission.checking": "检查中…",
   "permission.checkAgain": "重新检查",
   "permission.fixAll": "全部修复",
   "permission.shareUsageData": "共享匿名使用数据",
   "permission.shareUsageDataDescription":
-    "帮助我们了解 Easy Complete 的使用情况：应用和 macOS 版本、shell 和终端名称，以及每天补全的显示和采用次数。不会收集命令、路径或个人数据，你可以随时在「关于 → 隐私」中更改。",
+    "应用和系统版本、shell、终端及每日补全次数，不含命令和路径。可在「关于 → 隐私」中关闭。",
 };
 
 const dictionaries: Record<Locale, Record<TranslationKey, string>> = {

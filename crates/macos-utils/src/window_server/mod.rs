@@ -3,6 +3,7 @@
 mod ax_observer;
 mod ui_element;
 use std::boxed::Box;
+use std::collections::HashMap;
 use std::ffi::c_void;
 use std::hash::Hash;
 use std::pin::Pin;
@@ -10,9 +11,10 @@ use std::sync::OnceLock;
 
 use accessibility_sys::{
     AXError, AXIsProcessTrusted, AXObserverRef, AXUIElement, AXUIElementCreateApplication, AXUIElementRef,
-    kAXApplicationActivatedNotification, kAXApplicationShownNotification, kAXFocusedUIElementChangedNotification,
-    kAXFocusedWindowChangedNotification, kAXMainWindowChangedNotification, kAXUIElementDestroyedNotification,
-    kAXWindowCreatedNotification, kAXWindowMovedNotification, kAXWindowResizedNotification, pid_t,
+    kAXApplicationActivatedNotification, kAXApplicationShownNotification, kAXErrorCannotComplete,
+    kAXFocusedUIElementChangedNotification, kAXFocusedWindowChangedNotification, kAXMainWindowChangedNotification,
+    kAXUIElementDestroyedNotification, kAXWindowCreatedNotification, kAXWindowMovedNotification,
+    kAXWindowResizedNotification, pid_t,
 };
 use ax_observer::AXObserver;
 use core_foundation::base::TCFType;
@@ -22,7 +24,7 @@ use flume::Sender;
 use objc2::mutability::InteriorMutable;
 use objc2::rc::{Allocated, Retained};
 use objc2::runtime::AnyObject;
-use objc2::{ClassType, DeclaredClass, declare_class, msg_send_id, sel};
+use objc2::{ClassType, DeclaredClass, declare_class, msg_send, msg_send_id, sel};
 use objc2_app_kit::{
     NSApplicationActivationPolicy, NSRunningApplication, NSWorkspace, NSWorkspaceActiveSpaceDidChangeNotification,
     NSWorkspaceDidActivateApplicationNotification, NSWorkspaceDidLaunchApplicationNotification,
@@ -86,6 +88,20 @@ pub const XTERM_BUNDLE_IDS: &[&str] = &[
     "com.openai.codex",
     "dev.kiro.desktop",
 ];
+
+/// An app that is still starting up (IntelliJ and other JVM apps take seconds) rejects every
+/// accessibility notification with `kAXErrorCannotComplete`. Without a retry it is never tracked,
+/// since it is already frontmost and sends no further activation, and the overlay keeps following
+/// whichever window was focused before it.
+const MAX_REGISTRATION_RETRIES: u8 = 10;
+const REGISTRATION_RETRY_DELAY_SECS: f64 = 0.5;
+
+/// Retries only when the app said it is not ready yet; any other rejection is permanent.
+fn should_retry_registration(rejected: &[(&str, AXError)], attempts: u8) -> bool {
+    attempts < MAX_REGISTRATION_RETRIES
+        && !rejected.is_empty()
+        && rejected.iter().all(|(_, err)| *err == kAXErrorCannotComplete)
+}
 
 const TRACKED_NOTIFICATIONS: &[&str] = &[
     kAXWindowCreatedNotification,
@@ -167,6 +183,9 @@ unsafe impl Sync for WindowServer {}
 pub struct WindowServerInner {
     observers: DashMap<ApplicationSpecifier, AXObserver<AccessibilityCallbackData>, fnv::FnvBuildHasher>,
     sender: Sender<WindowServerEvent>,
+    registration_attempts: HashMap<pid_t, u8>,
+    /// Set by `register` when the app was not ready; the observer schedules the retry.
+    pending_retry: Option<Retained<NSRunningApplication>>,
 }
 
 impl WindowServer {
@@ -263,6 +282,7 @@ declare_class! {
             let inner = self.ivars().handler as *mut WindowServerInner;
             let inner = unsafe { &mut *inner };
             inner.did_activate_application(notif);
+            self.schedule_pending_retry(inner);
         }
 
         #[method(activeSpaceChanged:)]
@@ -284,6 +304,22 @@ declare_class! {
             let inner = self.ivars().handler as *mut WindowServerInner;
             let inner = unsafe { &mut *inner };
             inner.did_launch_application(notif);
+            self.schedule_pending_retry(inner);
+        }
+
+        #[method(retryRegistration:)]
+        fn retry_registration(&self, app: &NSRunningApplication) {
+            let inner = self.ivars().handler as *mut WindowServerInner;
+            let inner = unsafe { &mut *inner };
+            unsafe {
+                if app.isTerminated() {
+                    inner.registration_attempts.remove(&app.processIdentifier());
+                    return;
+                }
+                // Only claim focus if the app is still in front; the user may have moved on.
+                inner.register(app, app.isActive());
+            }
+            self.schedule_pending_retry(inner);
         }
     }
 }
@@ -292,6 +328,20 @@ impl ObserverClass {
     pub fn new(handler: *mut c_void) -> Retained<Self> {
         unsafe { msg_send_id![Self::alloc(), initWithHandler:handler] }
     }
+
+    /// Runs on the main run loop like the notifications, so `register` never races itself.
+    fn schedule_pending_retry(&self, inner: &mut WindowServerInner) {
+        if let Some(app) = inner.pending_retry.take() {
+            unsafe {
+                let _: () = msg_send![
+                    self,
+                    performSelector: sel!(retryRegistration:),
+                    withObject: &*app,
+                    afterDelay: REGISTRATION_RETRY_DELAY_SECS
+                ];
+            }
+        }
+    }
 }
 
 impl WindowServerInner {
@@ -299,6 +349,8 @@ impl WindowServerInner {
         Self {
             observers: Default::default(),
             sender,
+            registration_attempts: HashMap::new(),
+            pending_retry: None,
         }
     }
 
@@ -306,6 +358,8 @@ impl WindowServerInner {
         let pin = Box::pin(Self {
             observers: Default::default(),
             sender,
+            registration_attempts: HashMap::new(),
+            pending_retry: None,
         });
         let handler = &*pin as *const Self as *mut c_void;
         let r = ObserverClass::new(handler);
@@ -424,9 +478,21 @@ impl WindowServerInner {
         }
 
         if subscribed.is_empty() {
-            warn!("Error setting up tracking for '{bundle_id:?}': every notification was rejected");
+            let attempts = self.registration_attempts.entry(key.pid).or_insert(0);
+            if should_retry_registration(&rejected, *attempts) {
+                *attempts += 1;
+                debug!(
+                    attempt = *attempts,
+                    "{bundle_id:?} is not ready for accessibility yet, will retry"
+                );
+                self.pending_retry = Some(ns_app.retain());
+            } else {
+                self.registration_attempts.remove(&key.pid);
+                warn!("Error setting up tracking for '{bundle_id:?}': every notification was rejected");
+            }
             return;
         }
+        self.registration_attempts.remove(&key.pid);
 
         debug!(?subscribed, "Began tracking {bundle_id:?}");
         self.observers.insert(key, observer);
@@ -450,6 +516,8 @@ impl WindowServerInner {
             }
         }
 
+        // Apps already running at startup are not retried; one still launching sends didLaunch.
+        self.pending_retry = None;
         info!("Tracking {:?} applications", self.observers.len());
     }
 
@@ -619,6 +687,21 @@ mod tests {
         // subscribing it everywhere risks hiding the overlay mid-keystroke.
         let ghostty = tracked_notifications("com.mitchellh.ghostty");
         assert!(!ghostty.contains(&kAXFocusedUIElementChangedNotification));
+    }
+
+    #[test]
+    fn registration_retries_only_while_the_app_is_starting_up() {
+        let not_ready = [(kAXWindowCreatedNotification, kAXErrorCannotComplete)];
+        assert!(should_retry_registration(&not_ready, 0));
+        assert!(!should_retry_registration(&not_ready, MAX_REGISTRATION_RETRIES));
+
+        // -25207 (notification unsupported) never resolves, so retrying would only spin.
+        let mixed = [
+            (kAXWindowCreatedNotification, kAXErrorCannotComplete),
+            (kAXFocusedWindowChangedNotification, -25207),
+        ];
+        assert!(!should_retry_registration(&mixed, 0));
+        assert!(!should_retry_registration(&[], 0));
     }
 
     #[test]

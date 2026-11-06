@@ -7,13 +7,207 @@ on:
     branches: [main]
   # release.yml runs this as a gate, so a tag that fails CI never ships.
   workflow_call:
+    inputs:
+      dist-build:
+        description: Smoke-build the dist profile. The release job builds it anyway, so it skips this.
+        type: boolean
+        default: true
+
+# A new push to a PR cancels the PR's older run. Every other run (main, tags, the release gate)
+# gets its own group via run_id, so no commit on main is ever cancelled or skipped as pending.
+concurrency:
+  group: ci-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
 
+env:
+  CARGO_TERM_COLOR: always
+  # Keep aligned with release.yml so the dist dependency cache is shared.
+  MACOSX_DEPLOYMENT_TARGET: "12.0"
+  HOMEBREW_NO_AUTO_UPDATE: 1
+  HOMEBREW_NO_INSTALL_CLEANUP: 1
+  HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
+
 jobs:
+  # Decides which areas a change touches, so docs-only changes run nothing and a frontend-only PR
+  # skips the macOS jobs. Jobs are skipped with a job-level `if` rather than workflow `paths`
+  # filters: a skipped job reports success, while a workflow that never starts leaves a
+  # required check pending forever and blocks the merge.
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      rust: ${{ steps.areas.outputs.rust }}
+      javascript: ${{ steps.areas.outputs.javascript }}
+      website: ${{ steps.areas.outputs.website }}
+    steps:
+      - id: areas
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          PR: ${{ github.event.pull_request.number }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          all() { printf 'rust=true\njavascript=true\nwebsite=true\n' >> "$GITHUB_OUTPUT"; exit 0; }
+
+          case "$EVENT" in
+            pull_request)
+              files="$(gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR/files" --jq '.[].filename')" ;;
+            push)
+              # main runs everything unless the push is docs only. Unknown ranges (new branch,
+              # force push, >300 files) fall back to a full run.
+              [[ "$BEFORE" =~ ^0+$ ]] && all
+              compare="$(gh api "repos/$GITHUB_REPOSITORY/compare/$BEFORE...$AFTER")" || all
+              [ "$(jq '.files | length' <<<"$compare")" -lt 300 ] || all
+              files="$(jq -r '.files[].filename' <<<"$compare")" ;;
+            *) all ;;
+          esac
+
+          rust=false javascript=false website=false
+          while IFS= read -r f; do
+            [ -n "$f" ] || continue
+            case "$f" in
+              # Docs: no job reads them. website/ is excluded: its pages are built from source.
+              website/*) website=true; continue ;;
+              *.md | docs/* | LICENSE | NOTICE | .github/ISSUE_TEMPLATE/* | .claude/*) continue ;;
+              # Release-only inputs: CI has no check that reads them.
+              bundle/* | themes/* | assets/* | THIRD_PARTY_NOTICES.txt) continue ;;
+              .github/workflows/*) rust=true javascript=true website=true ;;
+              crates/* | Cargo.toml | Cargo.lock | rust-toolchain.toml | .cargo/* | .rustfmt.toml) rust=true ;;
+              packages/* | package.json | pnpm-lock.yaml | pnpm-workspace.yaml | turbo.json \
+                | vitest.config.ts | .prettierrc | .lintstagedrc.mjs | .husky/*) javascript=true ;;
+              # proto/, scripts/ and anything unlisted feed both stacks.
+              *) rust=true javascript=true ;;
+            esac
+          done <<<"$files"
+
+          if [ "$EVENT" = push ] && { $rust || $javascript || $website; }; then all; fi
+          printf 'rust=%s\njavascript=%s\nwebsite=%s\n' "$rust" "$javascript" "$website" | tee -a "$GITHUB_OUTPUT"
+
+  rust-fmt:
+    name: Rust / Format
+    needs: changes
+    if: needs.changes.outputs.rust == 'true'
+    # Formatting is platform independent, so it stays off the 5-runner macOS pool.
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      # Only rustfmt: the toolchain file would also pull clippy, rust-analyzer and the
+      # aarch64-apple-darwin std, none of which formatting needs.
+      - name: Install rustfmt
+        run: rustup toolchain install "$(sed -n 's/^channel = "\(.*\)"/\1/p' rust-toolchain.toml)" --profile minimal -c rustfmt
+      - name: Check formatting
+        run: cargo +"$(sed -n 's/^channel = "\(.*\)"/\1/p' rust-toolchain.toml)" fmt --check
+
+  rust-test:
+    name: Rust / Clippy & Test
+    needs: changes
+    if: needs.changes.outputs.rust == 'true'
+    # Match the release runner (see release.yml) so clippy and tests exercise
+    # the same macOS 26 SDK the shipped binaries are linked against.
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Verify Apple Silicon runner
+        run: test "$(uname -m)" = "arm64"
+
+      # fish and shellcheck back the shell-integration tests in ec_cli.
+      - name: Install test dependencies
+        run: brew install fish shellcheck
+
+      # The official prebuilt protoc, the same version and checksum fig_proto's build.rs falls
+      # back to. `brew install protobuf` pours abseil as well and takes several times longer.
+      - name: Install protoc
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/protoc.zip" \
+            "https://github.com/protocolbuffers/protobuf/releases/download/v26.1/protoc-26.1-osx-aarch_64.zip"
+          echo "26a29befa8891ecc48809958c909d284f2b9539a2eb47f22cadc631fe6abe8fd  $RUNNER_TEMP/protoc.zip" | shasum -a 256 -c -
+          unzip -q -o "$RUNNER_TEMP/protoc.zip" -d "$RUNNER_TEMP/protoc"
+          echo "$RUNNER_TEMP/protoc/bin" >> "$GITHUB_PATH"
+
+      # Only what this job runs: rust-toolchain.toml also lists rustfmt and rust-analyzer.
+      # RUSTUP_TOOLCHAIN pins the same channel without making rustup install those.
+      - name: Set up Rust
+        run: |
+          channel="$(sed -n 's/^channel = "\(.*\)"/\1/p' rust-toolchain.toml)"
+          rustup toolchain install "$channel" --profile minimal -c clippy
+          echo "RUSTUP_TOOLCHAIN=$channel" >> "$GITHUB_ENV"
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          # dev/test artifacts only; the dist job keeps its own cache.
+          shared-key: macos-26-arm64-test
+          env-vars: MACOSX_DEPLOYMENT_TARGET
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+
+      - name: Clippy
+        run: cargo clippy --locked --workspace --color always -- -D warnings
+
+      - name: Test
+        run: cargo test --workspace --locked
+
+  # Smoke-build the shipped binaries with the distribution profile so that profile-specific
+  # breakage (panic = "abort", LTO, strip) is caught in CI rather than only during a release.
+  # Mirrors scripts/build-app.sh. Runs beside the test job: it is the longest step.
+  rust-dist:
+    name: Rust / Dist build
+    needs: changes
+    # `inputs` is empty outside workflow_call, and null == false in expressions, so compare the
+    # rendered string: only an explicit `dist-build: false` skips the job.
+    if: needs.changes.outputs.rust == 'true' && format('{0}', inputs.dist-build) != 'false'
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Verify Apple Silicon runner
+        run: test "$(uname -m)" = "arm64"
+
+      # The official prebuilt protoc, the same version and checksum fig_proto's build.rs falls
+      # back to. `brew install protobuf` pours abseil as well and takes several times longer.
+      - name: Install protoc
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/protoc.zip" \
+            "https://github.com/protocolbuffers/protobuf/releases/download/v26.1/protoc-26.1-osx-aarch_64.zip"
+          echo "26a29befa8891ecc48809958c909d284f2b9539a2eb47f22cadc631fe6abe8fd  $RUNNER_TEMP/protoc.zip" | shasum -a 256 -c -
+          unzip -q -o "$RUNNER_TEMP/protoc.zip" -d "$RUNNER_TEMP/protoc"
+          echo "$RUNNER_TEMP/protoc/bin" >> "$GITHUB_PATH"
+
+      # Only what this job runs: rust-toolchain.toml also lists rustfmt and rust-analyzer.
+      # RUSTUP_TOOLCHAIN pins the same channel without making rustup install those.
+      - name: Set up Rust
+        run: |
+          channel="$(sed -n 's/^channel = "\(.*\)"/\1/p' rust-toolchain.toml)"
+          rustup toolchain install "$channel" --profile minimal
+          echo "RUSTUP_TOOLCHAIN=$channel" >> "$GITHUB_ENV"
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          # Shared with release.yml, which restores it for the app build.
+          shared-key: macos-26-arm64-dist
+          env-vars: MACOSX_DEPLOYMENT_TARGET
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build release binaries (dist profile)
+        run: cargo build --locked --profile dist -p fig_desktop -p figterm -p ec_cli -p fig_input_method
+
   javascript:
     name: JavaScript
+    needs: changes
+    if: needs.changes.outputs.javascript == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -27,9 +221,7 @@ jobs:
         with:
           node-version-file: package.json
           cache: pnpm
-          cache-dependency-path: |
-            pnpm-lock.yaml
-            website/pnpm-lock.yaml
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
         env:
@@ -45,6 +237,25 @@ jobs:
       - name: Test packages
         run: pnpm test:ci
 
+  website:
+    name: Website
+    needs: changes
+    if: needs.changes.outputs.website == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6.0.10
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: package.json
+          cache: pnpm
+          cache-dependency-path: website/pnpm-lock.yaml
+
       - name: Install website dependencies
         env:
           HUSKY: 0
@@ -52,49 +263,3 @@ jobs:
 
       - name: Build website
         run: pnpm -C website build
-
-  rust:
-    name: Rust
-    # Match the release runner (see release.yml) so clippy and tests exercise
-    # the same macOS 26 SDK the shipped binaries are linked against.
-    runs-on: macos-26
-    timeout-minutes: 45
-    env:
-      # Keep these aligned with release.yml so cached dist dependencies are reusable.
-      CARGO_TERM_COLOR: always
-      MACOSX_DEPLOYMENT_TARGET: "12.0"
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Verify Apple Silicon runner
-        run: test "$(uname -m)" = "arm64"
-
-      - name: Install build dependencies
-        env:
-          HOMEBREW_NO_AUTO_UPDATE: 1
-        run: brew install fish protobuf shellcheck
-
-      - name: Set up Rust
-        run: rustup show
-
-      - uses: Swatinem/rust-cache@v2
-        with:
-          # Tags can restore main's cache; caches from other tags are isolated.
-          shared-key: macos-26-arm64
-          env-vars: MACOSX_DEPLOYMENT_TARGET
-          save-if: ${{ github.ref == 'refs/heads/main' }}
-
-      - name: Check formatting
-        run: cargo fmt --check
-
-      - name: Clippy
-        run: cargo clippy --locked --workspace --color always -- -D warnings
-
-      - name: Test
-        run: cargo test --workspace --locked
-
-      # Smoke-build the shipped binaries with the distribution profile so that
-      # profile-specific breakage (panic = "abort", LTO, strip) is caught in CI
-      # rather than only surfacing during a release. Mirrors scripts/build-app.sh.
-      - name: Build release binaries (dist profile)
-        run: cargo build --locked --profile dist -p fig_desktop -p figterm -p ec_cli -p fig_input_method

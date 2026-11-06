@@ -18,25 +18,27 @@ env:
 jobs:
   # Tags are often pushed from branches that never opened a PR, so CI would
   # otherwise not run on what ships.
+  # Runs beside the app build: only the publish job waits for it, so a tag that fails CI
+  # still never ships. The app build compiles the dist profile itself, so CI skips that job.
   ci:
     name: CI
     uses: ./.github/workflows/ci.yml
+    with:
+      dist-build: false
     permissions:
       contents: read
+      pull-requests: read
 
   build-arm-dmg:
     name: Build ARM DMG
-    needs: ci
     # macOS 26 SDK is required: the system only grants Liquid Glass window
     # chrome (traffic lights, materials) to binaries linked against it. A
     # macos-15 runner links the 15.x SDK and silently ships the legacy look.
     runs-on: macos-26
     timeout-minutes: 90
+    outputs:
+      notes: ${{ steps.changelog.outputs.notes }}
     steps:
-      - name: Record start time
-        id: start
-        run: echo "started_at=$(date +%s)" >> "$GITHUB_OUTPUT"
-
       - uses: actions/checkout@v7
 
       - name: Verify Apple Silicon runner
@@ -44,44 +46,51 @@ jobs:
           test "$(uname -m)" = "arm64"
           sw_vers
 
-      - name: Cache Homebrew packages
-        uses: actions/cache@v6
-        with:
-          path: ~/Library/Caches/Homebrew/downloads
-          key: brew-${{ runner.arch }}-bash-create-dmg-fish-jq-protobuf-shellcheck-zsh-v1
-
+      # No actions/cache here: caches saved from a tag are scoped to that tag, so the next
+      # release could never restore them. They only filled the repository's 10 GB quota.
+      # bash 4+ (mapfile) and jq run the release steps.
       - name: Install build dependencies
         env:
           HOMEBREW_NO_REQUIRE_TAP_TRUST: 1
           HOMEBREW_NO_AUTO_UPDATE: 1
-        run: brew install bash create-dmg fish jq protobuf shellcheck zsh
+          HOMEBREW_NO_INSTALL_CLEANUP: 1
+          HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
+        run: brew install bash create-dmg jq
 
-      - name: Cache Sparkle framework
-        uses: actions/cache@v6
-        with:
-          path: build/sparkle
-          key: sparkle-${{ env.SPARKLE_VERSION }}
-
+      # The official prebuilt protoc, the same version and checksum fig_proto's build.rs falls
+      # back to. `brew install protobuf` pours abseil as well and takes several times longer.
+      - name: Install protoc
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/protoc.zip" \
+            "https://github.com/protocolbuffers/protobuf/releases/download/v26.1/protoc-26.1-osx-aarch_64.zip"
+          echo "26a29befa8891ecc48809958c909d284f2b9539a2eb47f22cadc631fe6abe8fd  $RUNNER_TEMP/protoc.zip" | shasum -a 256 -c -
+          unzip -q -o "$RUNNER_TEMP/protoc.zip" -d "$RUNNER_TEMP/protoc"
+          echo "$RUNNER_TEMP/protoc/bin" >> "$GITHUB_PATH"
+      # Only what this job runs: rust-toolchain.toml also lists rustfmt and rust-analyzer.
+      # RUSTUP_TOOLCHAIN pins the same channel without making rustup install those.
       - name: Set up Rust
         run: |
-          rustup show
-          rustup target add aarch64-apple-darwin
+          channel="$(sed -n 's/^channel = "\(.*\)"/\1/p' rust-toolchain.toml)"
+          rustup toolchain install "$channel" --profile minimal
+          echo "RUSTUP_TOOLCHAIN=$channel" >> "$GITHUB_ENV"
 
       - uses: Swatinem/rust-cache@v2
         with:
-          # Reuse the dist dependencies warmed by CI on main instead of a tag-only cache.
-          shared-key: macos-26-arm64
+          # Reuse the dist dependencies warmed by CI's dist job on main instead of a tag-only cache.
+          shared-key: macos-26-arm64-dist
           env-vars: MACOSX_DEPLOYMENT_TARGET
           save-if: "false"
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v6.0.10
 
+      # No `cache: pnpm`: the cache would be tag scoped as well (see above).
       - name: Set up Node
         uses: actions/setup-node@v7
         with:
           node-version-file: package.json
-          cache: pnpm
+          package-manager-cache: false
 
       - name: Install JS dependencies
         env:
@@ -287,17 +296,6 @@ jobs:
           PY
           find dist/sparkle -maxdepth 1 -name '*.delta' -print
 
-      - name: Classify release channel
-        if: startsWith(github.ref, 'refs/tags/')
-        id: release_channel
-        run: |
-          set -euo pipefail
-          if [[ "$GITHUB_REF_NAME" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+-(alpha|beta|rc)(\.[0-9A-Za-z-]+)*$ ]]; then
-            echo "is_prerelease=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "is_prerelease=false" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Upload build artifact
         if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v7
@@ -309,8 +307,31 @@ jobs:
             dist/sparkle/appcast.xml
             dist/sparkle/*.delta
 
+  # Publishing waits for both CI and the build. It only uploads and edits text, so it runs on
+  # Ubuntu and leaves the macOS pool to the builds.
+  publish:
+    name: Publish release
+    needs: [ci, build-arm-dmg]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: Easy-Complete-arm64
+          path: dist
+
+      - name: Classify release channel
+        id: release_channel
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF_NAME" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+-(alpha|beta|rc)(\.[0-9A-Za-z-]+)*$ ]]; then
+            echo "is_prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Attach DMG to GitHub Release
-        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v3
         with:
           files: |
@@ -321,7 +342,7 @@ jobs:
           fail_on_unmatched_files: false
           prerelease: ${{ steps.release_channel.outputs.is_prerelease == 'true' }}
           body: |
-            ${{ steps.changelog.outputs.notes }}
+            ${{ needs.build-arm-dmg.outputs.notes }}
 
             ---
 
@@ -341,9 +362,10 @@ jobs:
       # A feed already carrying a newer version (e.g. a beta when an older line gets a hotfix)
       # is left alone.
       - name: Publish beta update feed
-        if: startsWith(github.ref, 'refs/tags/')
         env:
           GH_TOKEN: ${{ github.token }}
+          # This job has no checkout, so gh cannot infer the repository from a git remote.
+          GH_REPO: ${{ github.repository }}
           FEED_TAG: beta-feed
         run: |
           set -euo pipefail
@@ -386,7 +408,7 @@ jobs:
           gh release upload "$FEED_TAG" dist/sparkle/appcast.xml --clobber
 
       - name: Update Homebrew tap
-        if: startsWith(github.ref, 'refs/tags/') && steps.release_channel.outputs.is_prerelease != 'true'
+        if: steps.release_channel.outputs.is_prerelease != 'true'
         env:
           HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
           HOMEBREW_TAP_REPO: chen86860/homebrew-tap
@@ -403,7 +425,7 @@ jobs:
           CASK="$TAP_DIR/Casks/easy-complete.rb"
 
           git clone --depth 1 "https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/${HOMEBREW_TAP_REPO}.git" "$TAP_DIR"
-          sed -i '' -E \
+          sed -i -E \
             -e "s/^  version \".*\"$/  version \"${APP_VERSION}\"/" \
             -e "s/^  sha256 \".*\"$/  sha256 \"${SHA256}\"/" \
             "$CASK"
@@ -420,18 +442,33 @@ jobs:
             commit -am "chore(easy-complete): update to ${APP_VERSION}"
           git -C "$TAP_DIR" push origin HEAD:main
 
+  notify:
+    name: Notify
+    needs: [ci, build-arm-dmg, publish]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
       - name: Send Telegram notification
-        if: always() && env.TELEGRAM_BOT_TOKEN != ''
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           PRODUCT_NAME: Easy Complete
-          BUILD_RESULT: ${{ job.status }}
+          RESULTS: ${{ needs.ci.result }} ${{ needs.build-arm-dmg.result }} ${{ needs.publish.result }}
+          GH_TOKEN: ${{ github.token }}
           GH_ACTOR: ${{ github.actor }}
           GH_REF: ${{ github.ref_name }}
           GH_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          STARTED_AT: ${{ steps.start.outputs.started_at }}
         run: |
+          if [ -z "$TELEGRAM_BOT_TOKEN" ]; then
+            exit 0
+          fi
+          case " $RESULTS " in
+            *" failure "*)   BUILD_RESULT=failure ;;
+            *" cancelled "*) BUILD_RESULT=cancelled ;;
+            *)               BUILD_RESULT=success ;;
+          esac
+          STARTED_AT="$(date -d "$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" --jq .run_started_at)" +%s)"
           ELAPSED=$(( $(date +%s) - STARTED_AT ))
           DURATION="$(( ELAPSED / 60 ))m $(( ELAPSED % 60 ))s"
 
@@ -442,7 +479,7 @@ jobs:
             *)         OVERALL="❓ ${PRODUCT_NAME} 未知" ;;
           esac
 
-          RAW_MSG=$(git log -1 --pretty=format:"%s" HEAD)
+          RAW_MSG=$(gh api "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}" --jq '.commit.message | split("\n")[0]')
           if [ ${#RAW_MSG} -gt 80 ]; then
             COMMIT_MSG="${RAW_MSG:0:80}..."
           else

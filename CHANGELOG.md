@@ -4,21 +4,21 @@
 
 ## v2.6.0
 
-- change: the settings window is reorganized into General, Autocomplete, Appearance and About, styled like System Settings with native switches and pop-up buttons, and every setting now explains what it does
-- new: turn off completions for specific commands from the settings window
-- fix: the settings window follows the system accent color
-- fix: the Launch at Login switch no longer flips back while it applies
-- new: when you are up to date, the update dialog links to the version history
-- change: Easy Complete no longer records the commands you run. History suggestions read your shell's own history, so its settings apply, such as skipping commands that start with a space. On launch the app deletes the history earlier versions stored in `data.sqlite3` and the plain-text `history` file
-- fix: bash history now shows up in history suggestions
-- change: the input method logs errors only, instead of every app you type in. The old log is deleted on update
+- new: turn off completions for specific commands in the settings window
+- new: when you are already up to date, the update dialog links to the version history
+- change: Easy Complete no longer records the commands you run. History suggestions read your shell's own history, so its rules apply, such as skipping commands that start with a space. On launch, the app deletes the history that earlier versions kept in `data.sqlite3` and in the plain-text `history` file
+- change: the input method logs errors only, not every app you type in. The old log is deleted on update
+- change: the completion overlay no longer loads images from the web. Spec icons ship with the app instead of coming from GitHub and tool websites; an icon whose source is gone shows the generic icon
+- change: `ec issue` no longer attaches your `PATH` or current directory. It attaches the running app version, your terminal and its version (`TERM_PROGRAM`), and which `ec doctor` checks pass
 - change: `ec uninstall` and `scripts/uninstall.sh` also delete the logs
-- change: `ec issue` no longer attaches your `PATH` or current directory. It adds the running app version and which `ec doctor` checks pass instead
-- change: the completion overlay no longer loads images from the web
-- change: completion spec icons are bundled with the app instead of loading from GitHub and tool websites. Icons whose source no longer exists show the generic icon
-- change: refresh the packages suggested after `npx`, `pnpx` and `bunx`: retired Fig tools and deprecated packages are gone, and current tools such as `@tanstack/cli`, `create-vite`, `create-expo-app`, `shadcn`, `vitest` and `wrangler` are in
-- fix: settings changed outside the app, such as `ec telemetry disable` or `ec settings app.disableAutoupdates true`, now apply to the running app without a restart
-- docs: the privacy page and README now list every network request the app can make, what stays on your Mac, and how to turn each one off
+- change: anonymous usage stats now include the system language, and record each first-run milestone (first terminal session, first suggestion shown and accepted, setup steps) once per install. `ec telemetry disable` still turns all of it off
+- change: the settings window is reorganized into General, Autocomplete, Appearance and About, with a System Settings look, native switches and pop-up buttons, and a description for every setting
+- change: refresh the packages suggested after `npx`, `pnpx` and `bunx`. Retired Fig tools and deprecated packages are gone; current tools such as `@tanstack/cli`, `create-vite`, `create-expo-app`, `shadcn`, `vitest` and `wrangler` are in
+- fix: bash history now appears in history suggestions
+- fix: settings changed outside the app, such as `ec telemetry disable` or `ec settings app.disableAutoupdates true`, apply to the running app without a restart
+- fix: the settings window follows the system accent color, and keeps following light and dark mode after you switch
+- fix: the Launch at Login switch no longer flips back while it applies
+- docs: the privacy page and README list every network request the app can make, what stays on your Mac, and how to turn each one off
 
 ## v2.5.0
 

@@ -62,7 +62,7 @@ function ZhInstallPage() {
           会自动添加:
         </p>
         <pre className={GUIDE_CODE}>
-          brew install --cask chen86860/tap/easy-complete
+          brew install chen86860/tap/easy-complete
         </pre>
         <p className={GUIDE_PARAGRAPH}>
           想手动安装?下载最新的签名 DMG,打开后把{" "}

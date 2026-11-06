@@ -62,7 +62,7 @@ and how to disable it.
 ### Homebrew (recommended)
 
 ```bash
-brew install --cask chen86860/tap/easy-complete
+brew install chen86860/tap/easy-complete
 ```
 
 ### DMG
@@ -131,7 +131,7 @@ with the step for your install method, then run `exec $SHELL`:
 
 | Installed via | Then run                                                                   |
 | ------------- | -------------------------------------------------------------------------- |
-| Homebrew      | `brew uninstall --cask chen86860/tap/easy-complete`                        |
+| Homebrew      | `brew uninstall chen86860/tap/easy-complete`                               |
 | DMG           | Move `/Applications/Easy Complete.app` to the Trash                        |
 | Source        | `./scripts/uninstall.sh` from the repo (does everything above in one pass) |
 

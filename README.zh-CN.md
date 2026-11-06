@@ -59,7 +59,7 @@ fish shell 的建议——子命令、选项、参数和文件路径，以跟随
 ### Homebrew（推荐）
 
 ```bash
-brew install --cask chen86860/tap/easy-complete
+brew install chen86860/tap/easy-complete
 ```
 
 ### DMG
@@ -127,7 +127,7 @@ ec uninstall
 
 | 安装方式 | 收尾命令                                                      |
 | -------- | ------------------------------------------------------------- |
-| Homebrew | `brew uninstall --cask chen86860/tap/easy-complete`           |
+| Homebrew | `brew uninstall chen86860/tap/easy-complete`                  |
 | DMG      | 把 `/Applications/Easy Complete.app` 移到废纸篓               |
 | 源码     | 在仓库中执行 `./scripts/uninstall.sh`（一步完成上述全部清理） |
 

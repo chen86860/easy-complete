@@ -213,6 +213,18 @@ pub struct ShellScriptShellIntegration {
     pub path: PathBuf,
 }
 
+/// The shell variable `init <shell> pre` leaves the matching post script in, so the post shim
+/// can evaluate it instead of launching the CLI a second time. Never exported: a child shell
+/// runs its own pre.
+pub fn post_script_variable(rcfile: Option<&str>) -> String {
+    let suffix: String = rcfile
+        .unwrap_or_default()
+        .chars()
+        .map(|c| if c.is_ascii_alphanumeric() { c } else { '_' })
+        .collect();
+    format!("__ec_post_{suffix}")
+}
+
 fn get_prefix(s: &str) -> &str {
     match s.find('.') {
         Some(i) => &s[..i],
@@ -237,15 +249,26 @@ impl ShellScriptShellIntegration {
     #[allow(clippy::needless_return)]
     fn get_contents(&self) -> String {
         let Self { shell, when, path } = self;
-        let rcfile = match path.file_name().and_then(|x| x.to_str()) {
-            Some(name) => format!(" --rcfile {}", get_prefix(name)),
+        let rcfile_name = path.file_name().and_then(|x| x.to_str()).map(get_prefix);
+        let rcfile = match rcfile_name {
+            Some(name) => format!(" --rcfile {name}"),
             None => "".into(),
+        };
+        // A zsh or bash pre run hands over the post script in a shell variable; evaluate it
+        // instead of launching the CLI again. An older pre, or one that left it unset because
+        // post owes the input method prompt, falls through to the launch.
+        let wrap_post = |launch: String| match (self.shell, *when) {
+            (Shell::Bash | Shell::Zsh, When::Post) => {
+                let var = post_script_variable(rcfile_name);
+                format!("if [ -n \"${{{var}+x}}\" ]; then eval \"${var}\"; unset {var}; else {launch}; fi")
+            },
+            _ => launch,
         };
         cfg_if!(
             if #[cfg(target_os = "macos")] {
                 return match self.shell {
                     // Check if ~/.local/bin/{CLI_BINARY_NAME} is executable before eval
-                    Shell::Bash | Shell::Zsh => format!("[ -x ~/.local/bin/{CLI_BINARY_NAME} ] && eval \"$(~/.local/bin/{CLI_BINARY_NAME} init {shell} {when}{rcfile})\""),
+                    Shell::Bash | Shell::Zsh => wrap_post(format!("[ -x ~/.local/bin/{CLI_BINARY_NAME} ] && eval \"$(~/.local/bin/{CLI_BINARY_NAME} init {shell} {when}{rcfile})\"")),
                     Shell::Fish => format!("test -x ~/.local/bin/{CLI_BINARY_NAME}; and eval (~/.local/bin/{CLI_BINARY_NAME} init {shell} {when}{rcfile} | string split0)"),
                     Shell::Nu => "".into(),
                 }
@@ -265,7 +288,7 @@ impl ShellScriptShellIntegration {
                     Shell::Bash | Shell::Zsh => {
                         // Check that the current shell is bash
                         let bash_pre = if self.shell.is_bash() { "[ -n \"$BASH_VERSION\" ] && " } else { "" };
-                        format!("{bash_pre}command -v {CLI_BINARY_NAME} >/dev/null 2>&1 && eval \"$({CLI_BINARY_NAME} init {shell} {when}{rcfile})\"")
+                        wrap_post(format!("{bash_pre}command -v {CLI_BINARY_NAME} >/dev/null 2>&1 && eval \"$({CLI_BINARY_NAME} init {shell} {when}{rcfile})\""))
                     }
                     Shell::Nu => "".into(),
                 };

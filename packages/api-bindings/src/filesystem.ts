@@ -37,6 +37,17 @@ export async function read(path: string) {
   return null;
 }
 
+export async function readBinary(path: string) {
+  const response = await sendReadFileRequest({
+    path: filePath({ path, expandTildeInPath: true }),
+    isBinaryFile: true,
+  });
+  if (response.type?.case === "data") {
+    return response.type.value;
+  }
+  return null;
+}
+
 export async function list(path: string) {
   const response = await sendContentsOfDirectoryRequest({
     directory: filePath({ path, expandTildeInPath: true }),

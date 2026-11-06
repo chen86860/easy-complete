@@ -7,7 +7,7 @@ const en = {
   "nav.about": "About",
   "nav.saveError": "Error saving",
 
-  "theme.title": "Theme",
+  "theme.title": "Suggestion Popup Theme",
   "theme.basic": "Basic",
   "theme.lightThemes": "Light Themes",
   "theme.darkThemes": "Dark Themes",
@@ -178,7 +178,7 @@ const zhCN: Record<TranslationKey, string> = {
   "nav.about": "关于",
   "nav.saveError": "保存失败",
 
-  "theme.title": "主题",
+  "theme.title": "补全提示主题",
   "theme.basic": "基础",
   "theme.lightThemes": "浅色主题",
   "theme.darkThemes": "深色主题",

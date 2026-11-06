@@ -1,3 +1,4 @@
+import type React from "react";
 import clsx from "clsx";
 import commandIcon from "../../../../crates/fig_desktop/icons/autocomplete/command.png";
 import { useI18n } from "../i18n";
@@ -105,16 +106,23 @@ function ThemeOption({
   theme,
   label,
   active,
+  focusable,
   onSelect,
 }: {
   theme: ThemeEntry;
   label: string;
   active: boolean;
+  focusable: boolean;
   onSelect: (id: string) => void;
 }) {
   return (
     <button
       type="button"
+      role="radio"
+      aria-checked={active}
+      // Roving focus: Tab enters the group on the selected theme, arrows move.
+      tabIndex={focusable ? 0 : -1}
+      data-theme-id={theme.id}
       onClick={() => onSelect(theme.id)}
       title={label}
       className={clsx(
@@ -122,19 +130,23 @@ function ThemeOption({
       )}
     >
       <div
+        aria-hidden
         className={clsx(
-          "rounded-[13px] border-2 p-1 ",
-          active ? "border-[AccentColor]" : "border-transparent",
+          "theme-option-frame rounded-[13px] border-2 p-1",
+          active
+            ? "theme-option-frame-on border-[AccentColor]"
+            : "border-transparent",
         )}
       >
         <ThemePreview theme={theme} />
       </div>
       <div className="mt-1.5 flex min-w-0 items-center gap-1.5 px-0.5">
         <span
+          aria-hidden
           className={clsx(
             "flex h-3.5 w-3.5 flex-shrink-0 items-center justify-center rounded-full border",
             active
-              ? "border-[AccentColor] bg-[AccentColor]"
+              ? "theme-option-radio-on border-[AccentColor] bg-[AccentColor]"
               : "border-[var(--ds-radio-border)] bg-[var(--ds-radio-bg)]",
           )}
         >
@@ -188,8 +200,39 @@ export function ThemePicker({
     system: t("theme.system"),
   };
 
+  // One radio group across all sections: arrows step through every theme in
+  // reading order and select it, as a native radio group does.
+  const order = groups.flatMap((group) =>
+    group.themes.map((theme) => theme.id),
+  );
+  const focusableId = order.includes(value) ? value : order[0];
+  const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const step =
+      event.key === "ArrowRight" || event.key === "ArrowDown"
+        ? 1
+        : event.key === "ArrowLeft" || event.key === "ArrowUp"
+          ? -1
+          : 0;
+    const current = (event.target as HTMLElement).closest<HTMLElement>(
+      "[data-theme-id]",
+    )?.dataset.themeId;
+    if (step === 0 || current === undefined) return;
+    event.preventDefault();
+    const next =
+      order[(order.indexOf(current) + step + order.length) % order.length];
+    onChange(next);
+    event.currentTarget
+      .querySelector<HTMLElement>(`[data-theme-id="${next}"]`)
+      ?.focus();
+  };
+
   return (
-    <div className="space-y-5 px-4 pb-4 pt-3.5">
+    <div
+      role="radiogroup"
+      aria-label={t("theme.title")}
+      onKeyDown={onKeyDown}
+      className="space-y-5 px-4 pb-4 pt-3.5"
+    >
       {groups.map(({ key, label, themes }) => {
         if (themes.length === 0) {
           return null;
@@ -207,6 +250,7 @@ export function ThemePicker({
                   theme={theme}
                   label={themeLabels[theme.id] ?? theme.label}
                   active={value === theme.id}
+                  focusable={focusableId === theme.id}
                   onSelect={onChange}
                 />
               ))}

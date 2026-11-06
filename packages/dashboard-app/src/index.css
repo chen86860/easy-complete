@@ -14,6 +14,8 @@
   --ds-fill: rgba(0, 0, 0, 0.06);
   --ds-fill-hover: rgba(0, 0, 0, 0.09);
   --ds-fill-pressed: rgba(0, 0, 0, 0.14);
+  /* A selection in an inactive window, as light as a native switch's track then. */
+  --ds-selection-inactive: rgba(0, 0, 0, 0.14);
   /* Fallback only: the native host sets the real system accent inline on
      <html> (and again on NSSystemColorsDidChange). WebKit resolves the CSS
      AccentColor keyword to blue here, so it must never override that value. */
@@ -80,6 +82,7 @@
     --ds-fill: rgba(255, 255, 255, 0.1);
     --ds-fill-hover: rgba(255, 255, 255, 0.14);
     --ds-fill-pressed: rgba(255, 255, 255, 0.2);
+    --ds-selection-inactive: rgba(255, 255, 255, 0.2);
     --ds-top-rgb: 30 30 30;
     --ds-top-highlight: rgba(255, 255, 255, 0.06);
     --ds-sidebar-bg: #1c1c1e;
@@ -197,6 +200,18 @@ html.dashboard-native-vibrancy .dashboard-sidebar {
 
 /* Like System Settings: the selection falls back to gray and the material
    turns solid while the window is unfocused. */
+/* Like native radio buttons, the selected theme turns gray while the window
+   is inactive. */
+html.dashboard-window-blurred .theme-option-frame-on {
+  border-color: var(--ds-selection-inactive);
+}
+/* The radio keeps the unselected ring's gray, a step darker than the frame,
+   so its white dot still reads. */
+html.dashboard-window-blurred .theme-option-radio-on {
+  border-color: var(--ds-radio-border);
+  background: var(--ds-radio-border);
+}
+
 html.dashboard-window-blurred .dashboard-sidebar-item-active {
   background: var(--ds-sidebar-blurred-bg);
   color: var(--ds-sidebar-item);
@@ -275,15 +290,12 @@ textarea {
   }
 
   /* macOS 26 push buttons: capsules, a gray fill for ordinary actions and the
-     system accent for the one primary action. */
+     system accent for the one primary action. Like NSButton, no hover state:
+     only pressing changes them. */
   .mac-button {
     @apply inline-flex h-7 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border-0 px-3.5 text-[13px] font-medium no-underline outline-none transition-[background-color,filter] duration-100;
     background: var(--ds-fill);
     color: var(--ds-label);
-  }
-
-  .mac-button:not(:disabled):hover {
-    background: var(--ds-fill-hover);
   }
 
   .mac-button:not(:disabled):active {
@@ -293,11 +305,6 @@ textarea {
   .mac-button-primary {
     background: var(--dashboard-accent-color);
     color: #fff;
-  }
-
-  .mac-button-primary:not(:disabled):hover {
-    background: var(--dashboard-accent-color);
-    filter: brightness(1.06);
   }
 
   .mac-button-primary:not(:disabled):active {

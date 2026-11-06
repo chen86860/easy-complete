@@ -7,6 +7,7 @@ import type {
 } from "../hooks/use-permission-check";
 import { useI18n } from "../i18n";
 import { Toggle } from "./controls";
+import { RowLabelContext } from "./row-label";
 import { IconCheck, IconWarning } from "./icons";
 
 function StatusBadge({ state }: { state: PermissionState }) {
@@ -169,15 +170,28 @@ export function PermissionGate({
 
         <div className="mt-5 flex items-start justify-between gap-4 rounded-[12px] bg-[var(--ds-chip-bg)] px-4 py-3">
           <div>
-            <div className="text-[13px] font-medium text-[var(--ds-label)]">
+            <div
+              id="share-usage-label"
+              className="text-[13px] font-medium text-[var(--ds-label)]"
+            >
               {t("permission.shareUsageData")}
             </div>
-            <div className="mt-0.5 text-[12px] leading-[1.5] text-[var(--ds-label-secondary)]">
+            <div
+              id="share-usage-description"
+              className="mt-0.5 text-[12px] leading-[1.5] text-[var(--ds-label-secondary)]"
+            >
               {t("permission.shareUsageDataDescription")}
             </div>
           </div>
           <div className="mt-0.5">
-            <Toggle checked={telemetryEnabled} onChange={onTelemetryChange} />
+            <RowLabelContext.Provider
+              value={{
+                labelId: "share-usage-label",
+                descriptionId: "share-usage-description",
+              }}
+            >
+              <Toggle checked={telemetryEnabled} onChange={onTelemetryChange} />
+            </RowLabelContext.Provider>
           </div>
         </div>
       </div>

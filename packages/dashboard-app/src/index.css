@@ -182,16 +182,6 @@ html.dashboard-native-vibrancy .dashboard-sidebar {
   outline: none;
 }
 
-.dashboard-sidebar-item:focus-visible {
-  outline: 3px solid
-    color-mix(
-      in srgb,
-      var(--dashboard-accent-color, AccentColor) 28%,
-      transparent
-    );
-  outline-offset: 1px;
-}
-
 .dashboard-sidebar-item-active {
   background: var(--dashboard-accent-color, #0a60ff);
   color: #fff;

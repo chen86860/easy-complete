@@ -330,7 +330,7 @@ const zhCN: Record<TranslationKey, string> = {
   "permission.fixAll": "全部修复",
   "permission.shareUsageData": "共享匿名使用数据",
   "permission.shareUsageDataDescription":
-    "帮助我们了解 Easy Complete 的使用情况：应用和 macOS 版本、shell 和终端名称，以及每天补全的显示和采用次数。不会收集命令、路径或个人数据，你可以随时在“关于 → 隐私”中更改。",
+    "帮助我们了解 Easy Complete 的使用情况：应用和 macOS 版本、shell 和终端名称，以及每天补全的显示和采用次数。不会收集命令、路径或个人数据，你可以随时在「关于 → 隐私」中更改。",
 };
 
 const dictionaries: Record<Locale, Record<TranslationKey, string>> = {

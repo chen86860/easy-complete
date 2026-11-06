@@ -7,23 +7,24 @@ import type {
 } from "../hooks/use-permission-check";
 import { useI18n } from "../i18n";
 import { Toggle } from "./controls";
-import { RowLabelContext } from "./row-label";
+import { Card, Row } from "./settings-layout";
 import { IconCheck, IconWarning } from "./icons";
 
 function StatusBadge({ state }: { state: PermissionState }) {
   const { t } = useI18n();
 
   return (
+    // Symbol plus colored text, as System Settings marks status; no pill.
     <span
       className={clsx(
-        "inline-flex min-w-[92px] items-center justify-center rounded-full px-2.5 py-1 text-[12px] font-semibold",
+        "inline-flex items-center text-[12px] font-medium",
         state === "ready"
-          ? "bg-[var(--ds-green-bg)] text-[var(--ds-green-text)]"
-          : "bg-[var(--ds-orange-bg)] text-[var(--ds-orange-text)]",
+          ? "text-[var(--ds-green-text)]"
+          : "text-[var(--ds-orange-text)]",
       )}
     >
       {state === "ready" ? <IconCheck /> : <IconWarning />}
-      <span className="ml-1.5">{t(`permission.status.${state}`)}</span>
+      <span className="ml-1">{t(`permission.status.${state}`)}</span>
     </span>
   );
 }
@@ -32,11 +33,14 @@ function PermissionRow({
   permission,
   allPermissions,
   repairing,
+  primary,
   onRepair,
 }: {
   permission: PermissionStatus;
   allPermissions: PermissionStatus[];
   repairing: PermissionId | "all" | null;
+  /** The window's one default button: set on the only step left to do. */
+  primary: boolean;
   onRepair: (id: PermissionId) => void;
 }) {
   const { t } = useI18n();
@@ -46,7 +50,8 @@ function PermissionRow({
   const blockedBy = permission.requires?.find(
     (reqId) => allPermissions.find((p) => p.id === reqId)?.state !== "ready",
   );
-  const blocked = blockedBy !== undefined;
+  // A finished step is never blocked, whatever it depended on.
+  const blocked = canRepair && blockedBy !== undefined;
 
   return (
     <div className="flex min-h-[78px] items-center justify-between gap-5 border-b border-[var(--ds-separator)] px-[18px] py-4 last:border-b-0">
@@ -57,7 +62,7 @@ function PermissionRow({
           </div>
           <StatusBadge state={permission.state} />
           {permission.optional ? (
-            <span className="rounded-full bg-[var(--ds-chip-bg)] px-2 py-0.5 text-[12px] font-medium text-[var(--ds-label-secondary)]">
+            <span className="text-[12px] text-[var(--ds-label-tertiary)]">
               {t("permission.optional")}
             </span>
           ) : null}
@@ -76,14 +81,20 @@ function PermissionRow({
         ) : null}
       </div>
 
-      <button
-        type="button"
-        disabled={!canRepair || busy || blocked}
-        onClick={() => onRepair(permission.id)}
-        className="mac-button mac-button-primary min-w-[130px]"
-      >
-        {busy ? t("permission.working") : permission.repairLabel}
-      </button>
+      {/* A finished step has nothing left to press. */}
+      {canRepair ? (
+        <button
+          type="button"
+          disabled={busy || blocked}
+          onClick={() => onRepair(permission.id)}
+          className={clsx(
+            "mac-button min-w-[130px]",
+            primary && "mac-button-primary",
+          )}
+        >
+          {busy ? t("permission.working") : permission.repairLabel}
+        </button>
+      ) : null}
     </div>
   );
 }
@@ -114,6 +125,13 @@ export function PermissionGate({
   onTelemetryChange: (value: boolean) => void;
 }) {
   const { t } = useI18n();
+  // Optional steps never block the dashboard and "Fix All" skips them.
+  const pending = permissions.filter(
+    (p) => !p.optional && (p.state === "missing" || p.state === "error"),
+  );
+  // One default button per window: "Fix All" when several steps are left,
+  // otherwise the remaining step's own button.
+  const showFixAll = pending.length > 1;
 
   if (ready || import.meta.env.DEV) return <>{children}</>;
 
@@ -144,6 +162,7 @@ export function PermissionGate({
               permission={permission}
               allPermissions={permissions}
               repairing={repairing}
+              primary={!showFixAll && pending[0]?.id === permission.id}
               onRepair={onRepair}
             />
           ))}
@@ -158,41 +177,28 @@ export function PermissionGate({
           >
             {refreshing ? t("permission.checking") : t("permission.checkAgain")}
           </button>
-          <button
-            type="button"
-            onClick={onRepairAll}
-            disabled={repairing !== null}
-            className="mac-button mac-button-primary"
-          >
-            {repairing ? t("permission.working") : t("permission.fixAll")}
-          </button>
+          {showFixAll ? (
+            <button
+              type="button"
+              onClick={onRepairAll}
+              disabled={repairing !== null}
+              className="mac-button mac-button-primary"
+            >
+              {repairing ? t("permission.working") : t("permission.fixAll")}
+            </button>
+          ) : null}
         </div>
 
-        <div className="mt-5 flex items-start justify-between gap-4 rounded-[12px] bg-[var(--ds-chip-bg)] px-4 py-3">
-          <div>
-            <div
-              id="share-usage-label"
-              className="text-[13px] font-medium text-[var(--ds-label)]"
-            >
-              {t("permission.shareUsageData")}
-            </div>
-            <div
-              id="share-usage-description"
-              className="mt-0.5 text-[12px] leading-[1.5] text-[var(--ds-label-secondary)]"
-            >
-              {t("permission.shareUsageDataDescription")}
-            </div>
-          </div>
-          <div className="mt-0.5">
-            <RowLabelContext.Provider
-              value={{
-                labelId: "share-usage-label",
-                descriptionId: "share-usage-description",
-              }}
+        <div className="mt-5">
+          <Card>
+            <Row
+              label={t("permission.shareUsageData")}
+              description={t("permission.shareUsageDataDescription")}
+              last
             >
               <Toggle checked={telemetryEnabled} onChange={onTelemetryChange} />
-            </RowLabelContext.Provider>
-          </div>
+            </Row>
+          </Card>
         </div>
       </div>
     </main>

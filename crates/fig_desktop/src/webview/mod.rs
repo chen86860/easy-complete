@@ -1502,6 +1502,26 @@ pub fn build_autocomplete(
 
     let window = window_builder.build(event_loop)?;
 
+    // Without this the overlay stays on the Space it was created on, so it never shows over
+    // terminals in full-screen Spaces (it pops up on Desktop 1 instead).
+    #[cfg(target_os = "macos")]
+    #[allow(unexpected_cfgs)] // objc's msg_send! expands to a `cargo-clippy` cfg
+    {
+        use objc::runtime::Object;
+        use objc::{msg_send, sel, sel_impl};
+        use tao::platform::macos::WindowExtMacOS;
+
+        // NSWindowCollectionBehaviorCanJoinAllSpaces | NSWindowCollectionBehaviorFullScreenAuxiliary
+        const BEHAVIOR: u64 = (1 << 0) | (1 << 8);
+        let ns_window = window.ns_window().cast::<Object>();
+        let _: () = unsafe { msg_send![ns_window, setCollectionBehavior: BEHAVIOR] };
+
+        let built_while_regular =
+            *crate::platform::ACTIVATION_POLICY.lock().unwrap() == tao::platform::macos::ActivationPolicy::Regular;
+        crate::platform::AUTOCOMPLETE_BUILT_WHILE_REGULAR
+            .store(built_while_regular, std::sync::atomic::Ordering::SeqCst);
+    }
+
     #[cfg(target_os = "linux")]
     {
         use gtk::gdk::WindowTypeHint;

@@ -32,6 +32,7 @@ const EXAMPLE_EVENT = `{
     "os_version": "macOS 26.5.1",
     "shell": "zsh",
     "terminal": "ghostty",
+    "locale": "en-US",
     "count_autocomplete_shown": 142,     // daily totals only
     "count_autocomplete_accepted": 37
   }
@@ -53,6 +54,23 @@ const COLLECTED: Array<{ event: string; when: string; extra: string }> = [
     when: "At most once every 24 hours while the app is running",
     extra:
       "Daily totals of how many times completions were shown and accepted — numbers only",
+  },
+  {
+    event: "first_terminal_session / first_autocomplete_shown / first_autocomplete_accepted",
+    when: "Once per install: the first time a terminal connects, a suggestion appears, and a suggestion is accepted",
+    extra: "—",
+  },
+  {
+    event:
+      "onboarding_shell_integration_ready / onboarding_accessibility_granted / onboarding_install_failed",
+    when: "Once per install when a setup step succeeds; the failure event each time a shell integration install fails",
+    extra: "Which component failed (on failure)",
+  },
+  {
+    event:
+      "autocomplete_webview_created / autocomplete_webview_mounted / autocomplete_preloaded_specs_ready",
+    when: "When the completion overlay is built, finishes loading, and finishes preloading specs",
+    extra: "How long that took, in milliseconds",
   },
   {
     event: "integration_installed",
@@ -147,7 +165,8 @@ function PrivacyPage() {
         <p className={PARAGRAPH}>
           Every event carries the app version, macOS version, your login shell
           name (e.g. <code className={CODE_INLINE}>zsh</code>), the terminal app
-          name when detectable, and a{" "}
+          name when detectable, your macOS language setting (e.g.{" "}
+          <code className={CODE_INLINE}>en-US</code>), and a{" "}
           <strong className="text-[#cdd6e0]">random device ID</strong> — a UUID
           generated on first launch that is not derived from your hardware,
           username, or anything identifying, and resets if you reinstall.

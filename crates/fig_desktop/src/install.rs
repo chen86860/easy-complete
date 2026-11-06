@@ -7,9 +7,9 @@ use fig_util::directories::fig_data_dir;
 #[cfg(target_os = "macos")]
 use macos_utils::bundle::get_bundle_path_for_executable;
 use semver::Version;
-use tracing::{error, warn};
 #[cfg(target_os = "linux")]
 use tracing::info;
+use tracing::{error, warn};
 
 #[allow(unused_imports)]
 use crate::utils::is_cargo_debug_build;
@@ -1104,7 +1104,11 @@ fn installed_input_method_terminals() -> Vec<String> {
         .iter()
         .cloned()
         .chain(std::iter::once(Terminal::Nova))
-        .chain(IntelliJVariant::all().iter().map(|v| Terminal::IntelliJ(Some(v.clone()))))
+        .chain(
+            IntelliJVariant::all()
+                .iter()
+                .map(|v| Terminal::IntelliJ(Some(v.clone()))),
+        )
         .filter(|terminal| terminal.supports_macos_input_method())
         .filter(|terminal| {
             terminal

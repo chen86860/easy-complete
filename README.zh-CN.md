@@ -161,3 +161,6 @@ pnpm dev:autocomplete   # 监听补全 UI（端口 3124）
 [LICENSE](./LICENSE) 中保留其原始版权声明。
 第三方版权与许可证条款集中收录于
 [THIRD_PARTY_NOTICES.txt](./THIRD_PARTY_NOTICES.txt)。
+
+许可证只覆盖代码，不包括 Easy Complete 的名称、Logo 和图标。发布 fork 时须更换名称和图标，详见
+[TRADEMARKS.zh-CN.md](./TRADEMARKS.zh-CN.md)。

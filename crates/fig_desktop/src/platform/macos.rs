@@ -31,7 +31,7 @@ use objc2_foundation::{NSDictionary, NSOperationQueue, ns_string};
 use serde::Serialize;
 use tao::dpi::{LogicalPosition, LogicalSize, Position};
 use tao::platform::macos::{ActivationPolicy, EventLoopWindowTargetExtMacOS, WindowExtMacOS as _};
-use tracing::{debug, error, trace, warn};
+use tracing::{debug, error, info, trace, warn};
 
 use super::{PlatformBoundEvent, PlatformWindow};
 use crate::event::{Event, WindowEvent, WindowPosition};
@@ -61,6 +61,34 @@ static MACOS_VERSION: LazyLock<semver::Version> = LazyLock::new(|| {
 });
 
 pub static ACTIVATION_POLICY: Mutex<ActivationPolicy> = Mutex::new(ActivationPolicy::Regular);
+
+/// Whether the autocomplete overlay was built while the app was `Regular` (dashboard open).
+/// macOS never lets such a window into another app's full-screen Space, even after the app
+/// returns to `Accessory` and whatever its collection behavior says, so it has to be rebuilt.
+pub static AUTOCOMPLETE_BUILT_WHILE_REGULAR: AtomicBool = AtomicBool::new(false);
+
+/// Every activation policy change goes through here so the overlay can be rebuilt when needed.
+pub fn set_activation_policy(window_target: &EventLoopWindowTarget, policy: ActivationPolicy) {
+    let mut policy_lock = ACTIVATION_POLICY.lock().unwrap();
+    if *policy_lock == policy {
+        return;
+    }
+    debug!(?policy, "Setting application policy");
+    *policy_lock = policy;
+    window_target.set_activation_policy_at_runtime(policy);
+
+    if policy == ActivationPolicy::Accessory && AUTOCOMPLETE_BUILT_WHILE_REGULAR.swap(false, Ordering::SeqCst) {
+        info!("Rebuilding the autocomplete overlay so it can show over full-screen apps");
+        if let Some(proxy) = crate::webview::GLOBAL_PROXY.get() {
+            proxy
+                .send_event(Event::AutocompleteRecycleRequested {
+                    age_seconds: 0,
+                    resize_count: 0,
+                })
+                .ok();
+        }
+    }
+}
 
 pub fn activate_app() {
     // LSUIElement/menu-bar apps can switch back from Accessory to Regular without
@@ -527,12 +555,7 @@ impl PlatformStateImpl {
                     }
                 };
 
-                let mut policy_lock = ACTIVATION_POLICY.lock().unwrap();
-                if *policy_lock != policy {
-                    debug!(?policy, "Setting application policy");
-                    *policy_lock = policy;
-                    window_target.set_activation_policy_at_runtime(policy);
-                }
+                set_activation_policy(window_target, policy);
                 Ok(())
             },
             PlatformBoundEvent::AccessibilityUpdateRequested => {

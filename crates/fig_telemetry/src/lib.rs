@@ -11,6 +11,11 @@ const LAST_HEARTBEAT_KEY: &str = "telemetry.last_heartbeat_ts";
 const COUNTER_KEY_PREFIX: &str = "telemetry.count.";
 const ONCE_KEY_PREFIX: &str = "telemetry.once.";
 const LAST_TERMINAL_KEY: &str = "telemetry.last_terminal";
+/// Set on a fresh install: events are queued on disk, not sent, until the dashboard's
+/// permission gate (which carries the telemetry toggle) has been passed.
+const CONSENT_PENDING_KEY: &str = "telemetry.consent_pending";
+/// Every telemetry state key shares this prefix, so disabling can wipe them all.
+const STATE_KEY_PREFIX: &str = "telemetry.";
 
 const QUEUE_FILE_NAME: &str = "telemetry_queue.jsonl";
 /// Oldest events are dropped beyond this, so a long offline stretch
@@ -54,6 +59,39 @@ pub fn init(endpoint: impl Into<String>, api_key: impl Into<String>) {
 
 fn is_enabled() -> bool {
     fig_settings::settings::get_bool_or(TELEMETRY_ENABLED_KEY, true)
+}
+
+fn consent_pending() -> bool {
+    fig_settings::state::get_bool_or(CONSENT_PENDING_KEY, false)
+}
+
+/// Call on a fresh install, before its first event: holds every event in the
+/// offline queue until the user has seen the telemetry toggle. The dashboard
+/// releases the hold by removing the key once its permission gate is passed.
+pub fn hold_until_consent() {
+    fig_settings::state::set_value(CONSENT_PENDING_KEY, true).ok();
+}
+
+/// Deletes everything telemetry keeps locally (device ID, counters, milestones,
+/// queued events) when telemetry is disabled, so re-enabling starts from scratch.
+pub fn purge_if_disabled() {
+    if is_enabled() {
+        return;
+    }
+    if let Ok(map) = fig_settings::state::all() {
+        for key in map.keys().filter(|k| k.starts_with(STATE_KEY_PREFIX)) {
+            fig_settings::state::remove_value(key).ok();
+        }
+    }
+    if let Some(path) = queue_path() {
+        std::fs::remove_file(path).ok();
+    }
+    if let Ok(mut sent) = ONCE_SENT.lock() {
+        sent.clear();
+    }
+    if let Ok(mut last) = LAST_TERMINAL.lock() {
+        *last = None;
+    }
 }
 
 fn is_configured() -> bool {
@@ -104,6 +142,9 @@ fn terminal_name() -> String {
 /// events (the daily heartbeat especially) can be broken down by terminal.
 /// Cheap to call on every keystroke: the state db is only written on change.
 pub fn set_last_terminal(terminal: &str) {
+    if !is_enabled() {
+        return;
+    }
     let Ok(mut last) = LAST_TERMINAL.lock() else { return };
     if last.as_deref() == Some(terminal) {
         return;
@@ -189,7 +230,9 @@ pub fn track_with_props(event: &'static str, extra_props: Value) {
     }
     let body = build_event(event, extra_props);
     tokio::spawn(async move {
-        if let Err(err) = send_event(&body).await {
+        if consent_pending() {
+            enqueue(&body).await;
+        } else if let Err(err) = send_event(&body).await {
             warn!(%err, "Failed to send telemetry event '{event}', queueing for retry");
             enqueue(&body).await;
         }
@@ -225,7 +268,9 @@ pub async fn track_blocking(event: &str, extra_props: Value) {
         return;
     }
     let body = build_event(event, extra_props);
-    if let Err(err) = send_event(&body).await {
+    if consent_pending() {
+        enqueue(&body).await;
+    } else if let Err(err) = send_event(&body).await {
         warn!(%err, "Failed to send telemetry event '{event}', queueing for retry");
         enqueue(&body).await;
     } else {
@@ -260,7 +305,7 @@ async fn enqueue(body: &Value) {
 
 /// Attempt to send every queued event; failures stay queued.
 pub async fn flush_queue() {
-    if !is_enabled() || !is_configured() {
+    if !is_enabled() || !is_configured() || consent_pending() {
         return;
     }
     let Some(path) = queue_path() else { return };
@@ -302,6 +347,9 @@ pub async fn flush_queue() {
 /// Increment a local counter for a high-frequency event. Cheap (one SQLite
 /// write, no network); reported in aggregate with the daily heartbeat.
 pub fn count(event: &str) {
+    if !is_enabled() {
+        return;
+    }
     let key = format!("{COUNTER_KEY_PREFIX}{event}");
     let current = fig_settings::state::get_int_or(&key, 0);
     fig_settings::state::set_value(&key, current + 1).ok();
@@ -316,7 +364,7 @@ fn now_unix() -> i64 {
 /// which are reset on success. Call this periodically (e.g. hourly) from a
 /// long-lived process; it is a no-op when not due.
 pub async fn maybe_send_daily_heartbeat() {
-    if !is_enabled() || !is_configured() {
+    if !is_enabled() || !is_configured() || consent_pending() {
         return;
     }
     let last = fig_settings::state::get_int_or(LAST_HEARTBEAT_KEY, 0);

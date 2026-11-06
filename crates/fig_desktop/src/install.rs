@@ -163,6 +163,7 @@ pub async fn run_install(ctx: Arc<Context>, ignore_immediate_update: bool, is_st
         // terminal that needs it.
         // First run (no previous_version) = fresh install; otherwise = update.
         if previous_version().is_none() {
+            fig_telemetry::hold_until_consent();
             fig_telemetry::track("app_installed");
         } else {
             fig_telemetry::track_with_props(

@@ -97,6 +97,7 @@ pub async fn setup_listeners(notifications_state: Arc<WebviewNotificationsState>
                         if let Some(global) = fig_settings::OldSettings::data_lock().write().as_mut() {
                             global.clone_from(&settings);
                         }
+                        fig_telemetry::purge_if_disabled();
 
                         notifications_state
                             .broadcast_notification_all(

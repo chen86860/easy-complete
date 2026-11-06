@@ -171,6 +171,7 @@ async fn main() -> ExitCode {
     // (autocomplete_shown/accepted etc.) as properties of the heartbeat event.
     tokio::spawn(async {
         loop {
+            fig_telemetry::purge_if_disabled();
             fig_telemetry::maybe_send_daily_heartbeat().await;
             tokio::time::sleep(std::time::Duration::from_secs(60 * 60)).await;
         }

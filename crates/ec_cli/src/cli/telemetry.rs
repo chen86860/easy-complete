@@ -35,6 +35,7 @@ impl TelemetrySubcommand {
             },
             TelemetrySubcommand::Disable => {
                 fig_settings::settings::set_value(TELEMETRY_ENABLED_KEY, false)?;
+                fig_telemetry::purge_if_disabled();
                 Ok(ExitCode::SUCCESS)
             },
             TelemetrySubcommand::Status { format } => {

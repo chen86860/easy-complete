@@ -54,7 +54,7 @@ function PermissionRow({
   const blocked = canRepair && blockedBy !== undefined;
 
   return (
-    <div className="flex min-h-[78px] items-center justify-between gap-5 border-b border-[var(--ds-separator)] px-[18px] py-4 last:border-b-0">
+    <div className="relative flex min-h-[64px] items-center justify-between gap-5 px-3.5 py-3 after:absolute after:inset-x-3.5 after:bottom-0 after:h-px after:bg-[var(--ds-separator)] last:after:hidden">
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2.5">
           <div className="text-[14px] font-semibold leading-5 text-[var(--ds-label)]">
@@ -158,7 +158,7 @@ export function PermissionGate({
           </p>
         </div>
 
-        <div className="overflow-hidden rounded-[14px] border border-[var(--ds-card-border)] bg-[var(--ds-card-bg-solid)] shadow-[inset_0_0_0_0.5px_var(--ds-card-inset)]">
+        <div className="overflow-hidden rounded-xl border border-[var(--ds-card-border)] bg-[var(--ds-card-bg)] shadow-[inset_0_0_0_0.5px_var(--ds-card-inset)]">
           {permissions.map((permission) => (
             <PermissionRow
               key={permission.id}
@@ -193,8 +193,8 @@ export function PermissionGate({
         </div>
 
         {/* Same card, padding and type as the permission rows above. */}
-        <div className="mt-5 overflow-hidden rounded-[14px] border border-[var(--ds-card-border)] bg-[var(--ds-card-bg-solid)] shadow-[inset_0_0_0_0.5px_var(--ds-card-inset)]">
-          <div className="flex items-center justify-between gap-5 px-[18px] py-4">
+        <div className="mt-5 overflow-hidden rounded-xl border border-[var(--ds-card-border)] bg-[var(--ds-card-bg)] shadow-[inset_0_0_0_0.5px_var(--ds-card-inset)]">
+          <div className="flex items-center justify-between gap-5 px-3.5 py-3">
             <div className="min-w-0 flex-1">
               <div
                 id="share-usage-label"

@@ -24,7 +24,7 @@ const SECTION_INTRO = "m-0 mt-3 text-base leading-[1.6] text-[#8b95a1]";
 
 const SECTION = "border-t border-[#141a21] px-7 py-24";
 
-const BREW_INSTALL_COMMAND = "brew install --cask chen86860/tap/easy-complete";
+const BREW_INSTALL_COMMAND = "brew install chen86860/tap/easy-complete";
 
 function CopyIcon({ copied }: { copied: boolean }) {
   return copied ? (

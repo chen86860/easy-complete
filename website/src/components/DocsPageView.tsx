@@ -13,7 +13,7 @@ import { DOWNLOAD_URL } from "../download.ts";
 import { LOCALE_PREFIX, type Locale } from "../i18n/types.ts";
 import type { DocsCopy } from "../i18n/types.ts";
 
-const BREW_INSTALL_COMMAND = "brew install --cask chen86860/tap/easy-complete";
+const BREW_INSTALL_COMMAND = "brew install chen86860/tap/easy-complete";
 
 function DocCard({ link }: { link: DocLink }) {
   return (

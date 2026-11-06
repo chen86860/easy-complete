@@ -60,7 +60,7 @@ function InstallPage() {
           Easy Complete tap is added automatically:
         </p>
         <pre className={GUIDE_CODE}>
-          brew install --cask chen86860/tap/easy-complete
+          brew install chen86860/tap/easy-complete
         </pre>
         <p className={GUIDE_PARAGRAPH}>
           Prefer to install manually? Download the latest signed DMG, open it,

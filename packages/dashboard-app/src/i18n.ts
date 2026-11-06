@@ -151,6 +151,11 @@ const en = {
   "permission.inputMethod.description":
     "Tracks the cursor in Ghostty, Kitty, WezTerm and similar terminals. Reads only the cursor position.",
   "permission.inputMethod.repair": "Install",
+  "permission.inputMethod.neededBy":
+    "Needed to track the cursor in {terminals}. Reads only the cursor position.",
+  "permission.skip": "Skip",
+  "permission.terminalListSeparator": ", ",
+  "permission.terminalListMore": "{list} and others",
   "permission.optional": "Optional",
   "permission.checkError": "Unable to check this requirement.",
   "permission.accessibilityFirst": "Needs Accessibility first.",
@@ -316,6 +321,11 @@ const zhCN: Record<TranslationKey, string> = {
   "permission.inputMethod.description":
     "在 Ghostty、Kitty、WezTerm 等终端中跟踪光标，只读取光标位置。",
   "permission.inputMethod.repair": "安装",
+  "permission.inputMethod.neededBy":
+    "{terminals} 需要它跟踪光标，只读取光标位置。",
+  "permission.skip": "跳过",
+  "permission.terminalListSeparator": "、",
+  "permission.terminalListMore": "{list} 等终端",
   "permission.optional": "可选",
   "permission.checkError": "无法检查此要求。",
   "permission.accessibilityFirst": "需要先授予辅助功能权限。",

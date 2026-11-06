@@ -43,6 +43,7 @@ export default function App() {
         onRefresh={permissionCheck.refresh}
         onRepair={permissionCheck.repair}
         onRepairAll={permissionCheck.repairAll}
+        onSkip={permissionCheck.skip}
         telemetryEnabled={settingOrDefault<boolean>(
           settings,
           SETTINGS.TELEMETRY_ENABLED,

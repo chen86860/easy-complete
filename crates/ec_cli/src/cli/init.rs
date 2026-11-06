@@ -8,7 +8,7 @@ use std::sync::LazyLock;
 use clap::Args;
 use crossterm::style::Stylize;
 use eyre::Result;
-use fig_integrations::shell::{ShellExt, When};
+use fig_integrations::shell::{ShellExt, When, post_script_variable};
 use fig_os_shim::{Context, Env};
 use fig_util::env_var::Q_SHELL;
 use fig_util::{CLI_BINARY_NAME, PRODUCT_NAME, Shell, Terminal, get_parent_process_exe};
@@ -105,22 +105,55 @@ fn guard_source(
     output.join("\n")
 }
 
+fn single_quote(text: &str) -> String {
+    format!("'{}'", text.replace('\'', r#"'\''"#))
+}
+
 async fn shell_init(shell: &Shell, when: &When, rcfile: &Option<String>) -> Result<String> {
+    let mut source = init_source(shell, when, rcfile, PostPrompt::Record)?.unwrap_or_default();
+
+    // Each CLI launch costs 10-30 ms of shell startup, and every rc file runs a pre and a post.
+    // Hand the post script over now so the post shim needs no second launch. When post owes the
+    // input method prompt it is left unset: only a post run may count that prompt, and this pre
+    // may belong to an outer shell that execs into the PTY and never reaches post.
+    if when == &When::Pre
+        && matches!(shell, Shell::Bash | Shell::Zsh)
+        && let Some(post) = init_source(shell, &When::Post, rcfile, PostPrompt::Defer)?
+    {
+        source.push_str(&format!(
+            "\n# shellcheck disable=SC2016,SC2034\n{}={}\n",
+            post_script_variable(rcfile.as_deref()),
+            single_quote(&post)
+        ));
+    }
+
+    Ok(source)
+}
+
+#[derive(PartialEq, Eq)]
+enum PostPrompt {
+    /// Show the input method prompt when it is due and count it.
+    Record,
+    /// Return `None` instead when the prompt is due, without counting it.
+    Defer,
+}
+
+fn init_source(shell: &Shell, when: &When, rcfile: &Option<String>, prompt: PostPrompt) -> Result<Option<String>> {
     // Do not print any shell integrations for `.profile` as it can cause issues on launch
     if std::env::consts::OS == "linux" && matches!(rcfile.as_deref(), Some("profile")) {
-        return Ok("".into());
+        return Ok(Some("".into()));
     }
 
     if !fig_settings::state::get_bool_or(SHELL_INTEGRATIONS_ENABLED_STATE_KEY, true) {
-        return Ok(shell_integrations_disabled_code(*shell));
+        return Ok(Some(shell_integrations_disabled_code(*shell)));
     }
 
     // When the desktop app is not running, skip pre/post hooks entirely so other
     // terminal integrations (VS Code Terminal Suggest, Otty, etc.) keep working.
     if !*IS_SNAPSHOT_TEST && suppress_without_desktop_app(&Env::new()) {
-        return Ok(format!(
+        return Ok(Some(format!(
             "# {PRODUCT_NAME} desktop app is not running; skipping shell integration\n"
-        ));
+        )));
     }
 
     let mut to_source = Vec::new();
@@ -218,12 +251,15 @@ async fn shell_init(shell: &Shell, when: &When, rcfile: &Option<String>) -> Resu
         let prompt_state_key = format!("prompt.input-method.{}.count", terminal.internal_id());
         let prompt_count = fig_settings::state::get_int_or(&prompt_state_key, 0);
         if terminal.supports_macos_input_method() && prompt_count < 2 {
+            if prompt == PostPrompt::Defer {
+                return Ok(None);
+            }
             let _ = fig_settings::state::set_value(&prompt_state_key, prompt_count + 1);
             to_source.push(input_method_prompt_code(*shell, &terminal));
         }
     }
 
-    Ok(to_source.join("\n"))
+    Ok(Some(to_source.join("\n")))
 }
 
 fn shell_integrations_disabled_code(shell: Shell) -> String {

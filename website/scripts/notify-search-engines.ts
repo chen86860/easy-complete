@@ -96,10 +96,11 @@ async function fetchSitemapUrls(): Promise<string[]> {
   const xml = await response.text();
   const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) =>
     match[1]
-      .replace(/&amp;/g, "&")
       .replace(/&lt;/g, "<")
       .replace(/&gt;/g, ">")
-      .replace(/&quot;/g, '"'),
+      .replace(/&quot;/g, '"')
+      // Decode &amp; last so "&amp;lt;" stays "&lt;" instead of becoming "<".
+      .replace(/&amp;/g, "&"),
   );
 
   if (urls.length === 0) throw new Error("No <loc> parsed out of the sitemap");

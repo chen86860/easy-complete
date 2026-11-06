@@ -199,11 +199,32 @@ export function ThemePicker({
   onChange: (id: string) => void;
 }) {
   const { t } = useI18n();
-  const groupLabels: Record<ThemeEntry["appearance"], string> = {
-    system: t("theme.automatic"),
-    light: t("theme.lightThemes"),
-    dark: t("theme.darkThemes"),
-  };
+  // The three basic choices share the first row, so "follow system" no longer
+  // sits alone in a group of its own.
+  const BASIC_IDS = ["system", "light", "dark"];
+  const groups: Array<{ key: string; label: string; themes: ThemeEntry[] }> = [
+    {
+      key: "basic",
+      label: t("theme.basic"),
+      themes: BASIC_IDS.flatMap((id) =>
+        THEMES.filter((theme) => theme.id === id),
+      ),
+    },
+    ...THEME_GROUPS.filter((group) => group.appearance !== "system").map(
+      (group) => ({
+        key: group.appearance,
+        label:
+          group.appearance === "light"
+            ? t("theme.lightThemes")
+            : t("theme.darkThemes"),
+        themes: THEMES.filter(
+          (theme) =>
+            theme.appearance === group.appearance &&
+            !BASIC_IDS.includes(theme.id),
+        ),
+      }),
+    ),
+  ];
   const themeLabels: Partial<Record<string, string>> = {
     dark: t("theme.dark"),
     light: t("theme.light"),
@@ -212,19 +233,15 @@ export function ThemePicker({
 
   return (
     <div className="space-y-5 px-4 pb-4 pt-3.5">
-      {THEME_GROUPS.map((group) => {
-        const themes = THEMES.filter(
-          (theme) => theme.appearance === group.appearance,
-        );
-
+      {groups.map(({ key, label, themes }) => {
         if (themes.length === 0) {
           return null;
         }
 
         return (
-          <section key={group.appearance}>
-            <h3 className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--ds-label-secondary)]">
-              {groupLabels[group.appearance]}
+          <section key={key}>
+            <h3 className="mb-2.5 text-[12px] font-medium text-[var(--ds-label-secondary)]">
+              {label}
             </h3>
             <div className="grid grid-cols-3 gap-x-5 gap-y-4">
               {themes.map((theme) => (

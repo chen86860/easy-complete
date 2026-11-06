@@ -7,11 +7,17 @@ function sectionForPath(path: string): Section {
     return "about";
   }
 
-  if (path === "/behavior") {
-    return "behavior";
+  // `/behavior` is the old name of the autocomplete page; the tray menu and old
+  // deep links may still use it.
+  if (path === "/autocomplete" || path === "/behavior") {
+    return "autocomplete";
   }
 
-  return "appearance";
+  if (path === "/appearance") {
+    return "appearance";
+  }
+
+  return "general";
 }
 
 export function useDashboardNavigation(setSection: (section: Section) => void) {

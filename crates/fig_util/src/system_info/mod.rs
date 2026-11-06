@@ -284,6 +284,25 @@ pub fn in_ci() -> bool {
     *IN_CI.get_or_init(|| fig_os_shim::Env::new().in_ci())
 }
 
+/// The user's preferred UI language, e.g. `en-US` or `zh-Hans-CN`. Cached for the process.
+pub fn preferred_language() -> Option<&'static str> {
+    static LANGUAGE: OnceLock<Option<String>> = OnceLock::new();
+    LANGUAGE
+        .get_or_init(|| {
+            cfg_if! {
+                if #[cfg(target_os = "macos")] {
+                    macos_utils::os::preferred_language()
+                } else {
+                    std::env::var("LANG").ok().and_then(|lang| {
+                        let tag = lang.split('.').next()?.replace('_', "-");
+                        (!tag.is_empty() && tag != "C" && tag != "POSIX").then_some(tag)
+                    })
+                }
+            }
+        })
+        .as_deref()
+}
+
 #[cfg(target_os = "macos")]
 fn raw_system_id() -> Result<String, Error> {
     let output = std::process::Command::new("ioreg")

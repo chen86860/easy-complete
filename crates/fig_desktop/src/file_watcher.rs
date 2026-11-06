@@ -12,6 +12,8 @@ use crate::EventLoopProxy;
 use crate::notification_bus::NOTIFICATION_BUS;
 use crate::webview::notification::WebviewNotificationsState;
 
+const AUTOUPDATE_KEY: &str = "app.disableAutoupdates";
+
 pub async fn setup_listeners(notifications_state: Arc<WebviewNotificationsState>, proxy: EventLoopProxy) {
     let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel();
 
@@ -89,6 +91,13 @@ pub async fn setup_listeners(notifications_state: Arc<WebviewNotificationsState>
                     Ok(settings) => {
                         debug!("Settings file changed");
 
+                        // Native code reads settings from the in-process global copy loaded at
+                        // startup. Refresh it so edits made outside the app (e.g. `ec settings`,
+                        // `ec telemetry disable`) apply without a restart.
+                        if let Some(global) = fig_settings::OldSettings::data_lock().write().as_mut() {
+                            global.clone_from(&settings);
+                        }
+
                         notifications_state
                             .broadcast_notification_all(
                                 &NotificationType::NotifyOnSettingsChange,
@@ -120,6 +129,10 @@ pub async fn setup_listeners(notifications_state: Arc<WebviewNotificationsState>
                                 NOTIFICATION_BUS.send_settings_remove(key, value);
                             },
                         );
+
+                        if prev_settings.get(AUTOUPDATE_KEY) != settings.get(AUTOUPDATE_KEY) {
+                            crate::update::sync_automatic_checks();
+                        }
 
                         prev_settings = settings;
                     },

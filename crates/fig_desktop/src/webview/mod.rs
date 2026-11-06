@@ -544,13 +544,26 @@ impl AutocompleteLifecycle {
             return;
         }
         if let Some(created_at) = self.created_at.as_ref() {
+            // Not sent as telemetry: this waits on the user's first keystroke, so it measures
+            // how soon they type rather than how fast the overlay loads. See `report_mounted`.
             let duration_ms = created_at.elapsed().as_millis() as u64;
             info!(duration_ms, "Autocomplete rendered its first suggestions");
+            self.ready_reported = true;
+        }
+    }
+
+    /// Reports how long the overlay took from creation to its React app mounting: the load time
+    /// the user waits on. Call before [`Self::mark_mounted`], which flips `mounted`.
+    fn report_mounted(&self) {
+        if self.mounted {
+            return;
+        }
+        if let Some(created_at) = self.created_at.as_ref() {
+            let duration_ms = created_at.elapsed().as_millis() as u64;
             fig_telemetry::track_with_props(
-                "autocomplete_webview_ready",
+                "autocomplete_webview_mounted",
                 serde_json::json!({ "duration_ms": duration_ms }),
             );
-            self.ready_reported = true;
         }
     }
 
@@ -844,11 +857,9 @@ impl WebviewManager {
                                 // Non-dashboard windows retain their existing hide behavior.
                                 window_state.window.set_visible(false);
                             },
-                            WryWindowEvent::ThemeChanged(theme) => window_state.set_theme(match theme {
-                                TaoTheme::Light => Some(WryTheme::Light),
-                                TaoTheme::Dark => Some(WryTheme::Dark),
-                                _ => None,
-                            }),
+                            // No ThemeChanged arm: pinning the window to the reported theme
+                            // stopped it following the system after the first switch. The
+                            // window's appearance comes from `app.theme` (None = follow system).
                             WryWindowEvent::Focused(focused) => {
                                 if window_state.window_id == DASHBOARD_ID {
                                     // Mirror native focus so the sidebar can dim its selection
@@ -1054,6 +1065,7 @@ impl WebviewManager {
                                 }
                         },
                         Event::AutocompleteWebviewMounted => {
+                            autocomplete_lifecycle.report_mounted();
                             dispatch_deferred_autocomplete_events(
                                 autocomplete_lifecycle.mark_mounted(),
                                 &self.fig_id_map,
@@ -1293,9 +1305,9 @@ fn system_accent_css_color() -> String {
     "AccentColor".to_string()
 }
 
-/// Must match the sidebar width in `packages/dashboard-app` (`w-[226px]`).
+/// Must match the sidebar width in `packages/dashboard-app` (`w-[232px]`).
 #[cfg(target_os = "macos")]
-const DASHBOARD_SIDEBAR_WIDTH: f64 = 226.0;
+const DASHBOARD_SIDEBAR_WIDTH: f64 = 232.0;
 
 /// Installs an `NSVisualEffectView` (sidebar material) beneath the dashboard webview so the
 /// sidebar region shows the native macOS translucent material — blurred while the window is

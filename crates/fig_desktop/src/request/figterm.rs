@@ -36,6 +36,7 @@ pub async fn insert_text(request: InsertTextRequest, state: &FigtermState) -> Re
                 .send(figterm_command)
                 .map_err(|err| format!("Failed sending command to figterm session: {err}"))?;
             fig_telemetry::count("autocomplete_accepted");
+            fig_telemetry::track_once("first_autocomplete_accepted", serde_json::json!({}));
             RequestResult::success()
         },
         None => RequestResult::error("No figterm sessions"),

@@ -8,6 +8,7 @@ import {
 import clsx from "clsx";
 import type { SettingSetter, SettingsMap } from "../types";
 import { AppLogo } from "../components/app-logo";
+import { PRIVACY_URL, openExternalUrl } from "../utils/external-links";
 import { NumberInput, Select, TextInput, Toggle } from "../components/controls";
 import { IconExternalLink, IconGitHub } from "../components/icons";
 import { Card, Row } from "../components/settings-layout";
@@ -19,17 +20,8 @@ const APP_VERSION = __APP_VERSION__;
 const REPO_URL = "https://github.com/chen86860/easy-complete";
 const RELEASES_URL = `${REPO_URL}/releases`;
 const ISSUES_URL = `${REPO_URL}/issues`;
-const PRIVACY_URL = "https://easy-complete.emmmm.dev/privacy-policy";
 const UPSTREAM_REPO_URL = "https://github.com/aws/amazon-q-developer-cli";
 const OPEN_SOURCE_LICENSES_URL = "ec-internal://open-source-licenses";
-
-async function openExternalUrl(url: string) {
-  try {
-    await Native.open(url);
-  } catch {
-    window.open(url, "_blank", "noopener,noreferrer");
-  }
-}
 
 function AboutActionButton({
   icon,

@@ -8,6 +8,7 @@ import type {
 import { useI18n } from "../i18n";
 import { Toggle } from "./controls";
 import { RowLabelContext } from "./row-label";
+import { PRIVACY_URL, openExternalUrl } from "../utils/external-links";
 import { IconCheck, IconWarning } from "./icons";
 
 function StatusBadge({ state }: { state: PermissionState }) {
@@ -225,7 +226,17 @@ export function PermissionGate({
                 id="share-usage-description"
                 className="mt-1 text-[12px] leading-[17px] text-[var(--ds-label-secondary)]"
               >
-                {t("permission.shareUsageDataDescription")}
+                {t("permission.shareUsageDataDescription")}{" "}
+                <a
+                  href={PRIVACY_URL}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    void openExternalUrl(PRIVACY_URL);
+                  }}
+                  className="text-[var(--dashboard-accent-color,AccentColor)] no-underline hover:underline"
+                >
+                  {t("permission.privacyPolicy")}
+                </a>
               </div>
             </div>
             <RowLabelContext.Provider

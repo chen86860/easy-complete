@@ -158,6 +158,7 @@ const en = {
   "permission.inputMethod.neededBy":
     "Needed to track the cursor in {terminals}. Reads only the cursor position.",
   "permission.skip": "Skip",
+  "permission.privacyPolicy": "Privacy Policy",
   "permission.terminalListSeparator": ", ",
   "permission.terminalListMore": "{list} and others",
   "permission.optional": "Optional",
@@ -333,6 +334,7 @@ const zhCN: Record<TranslationKey, string> = {
   "permission.inputMethod.neededBy":
     "{terminals} 需要它跟踪光标，只读取光标位置。",
   "permission.skip": "跳过",
+  "permission.privacyPolicy": "隐私政策",
   "permission.terminalListSeparator": "、",
   "permission.terminalListMore": "{list} 等终端",
   "permission.optional": "可选",

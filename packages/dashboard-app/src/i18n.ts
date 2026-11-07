@@ -103,12 +103,16 @@ const en = {
   "about.troubleshooting": "Troubleshooting",
   "about.somethingNotWorking": "Something not working?",
   "about.diagnosticDescription":
-    "Run the built-in diagnostic in your terminal — it checks your shell integration, permissions, and background processes, and tells you how to fix any issues.",
+    "Run ec doctor in a terminal to check the shell integration, permissions and background processes",
   "about.copied": "Copied!",
   "about.failed": "Failed",
   "about.copy": "Copy",
-  "about.stillStuck":
-    "Still stuck? Include the diagnostic output in your report.",
+  "about.copyCommand": "Copy Command",
+  "about.openGitHub": "Open GitHub",
+  "about.runDiagnostics": "Run Diagnostics",
+  "about.checkNow": "Check Now",
+  "about.checkingForUpdates": "Checking…",
+  "about.stillStuck": "Include the diagnostic output in your report",
   "about.reportIssue": "Report an Issue",
   "about.tagline": "Terminal autocomplete for macOS",
   "about.copyVersionInfo": "Copy version info",
@@ -119,7 +123,7 @@ const en = {
   "about.updates": "Updates",
   "about.checkAutomatically": "Update Automatically",
   "about.checkAutomaticallyDescription":
-    "Check once a day, download new versions in the background, and notify you when they are ready",
+    "Checks once a day, downloads in the background and installs when you quit Easy Complete",
   "about.betaUpdates": "Receive Beta Updates",
   "about.betaUpdatesDescription":
     "Get prerelease builds before the stable release. They may be less stable",
@@ -182,7 +186,7 @@ const zhCN: Record<TranslationKey, string> = {
   "nav.about": "关于",
   "nav.saveError": "保存失败",
 
-  "theme.title": "补全提示主题",
+  "theme.title": "补全弹窗主题",
   "theme.basic": "基础",
   "theme.lightThemes": "浅色主题",
   "theme.darkThemes": "深色主题",
@@ -191,7 +195,7 @@ const zhCN: Record<TranslationKey, string> = {
   "theme.system": "跟随系统",
   "appearance.language": "语言",
   "appearance.displayLanguage": "显示语言",
-  "appearance.displayLanguageDescription": "选择设置面板使用的语言",
+  "appearance.displayLanguageDescription": "选择设置窗口使用的语言",
   "appearance.followSystem": "跟随系统",
   "appearance.english": "English",
   "appearance.simplifiedChinese": "简体中文",
@@ -210,7 +214,7 @@ const zhCN: Record<TranslationKey, string> = {
   "behavior.insertTrailingSpaceDescription":
     "采用子命令或选项后自动加一个空格，方便继续输入",
   "behavior.historyModeDescription":
-    "从 shell 自己的历史（zsh、bash 或 fish）中建议用过的命令，Easy Complete 不额外记录",
+    "从 Shell 自己的历史（zsh、bash 或 fish）中建议用过的命令，Easy Complete 不额外记录",
   "autocomplete.runDirectly": "直接运行",
   "autocomplete.disableForCommands": "为这些命令关闭补全",
   "autocomplete.disableForCommandsDescription":
@@ -270,17 +274,22 @@ const zhCN: Record<TranslationKey, string> = {
   "behavior.mergeAllShellsDescription": "在 zsh 或 bash 中同时读取两者的历史",
   "behavior.historyCommand": "历史来源命令",
   "behavior.historyCommandDescription":
-    "每行输出一条历史命令的命令，例如 atuin search --cmd-only，用来代替 shell 自带的历史",
+    "每行输出一条历史命令的命令，例如 atuin search --cmd-only，用来代替 Shell 自带的历史",
   "behavior.historyCommandPlaceholder": "默认",
 
   "about.troubleshooting": "故障排查",
   "about.somethingNotWorking": "遇到问题？",
   "about.diagnosticDescription":
-    "在终端中运行内置诊断。它会检查 Shell 集成、权限和后台进程，并提供问题修复建议。",
+    "在终端运行 ec doctor，检查 Shell 集成、权限和后台进程",
   "about.copied": "已复制",
   "about.failed": "复制失败",
   "about.copy": "复制",
-  "about.stillStuck": "仍未解决？请在问题报告中附上诊断输出。",
+  "about.copyCommand": "复制命令",
+  "about.openGitHub": "打开 GitHub",
+  "about.runDiagnostics": "运行诊断",
+  "about.checkNow": "立即检查",
+  "about.checkingForUpdates": "检查中…",
+  "about.stillStuck": "请在报告中附上诊断结果",
   "about.reportIssue": "报告问题",
   "about.tagline": "适用于 macOS 的终端自动补全",
   "about.copyVersionInfo": "复制版本信息",
@@ -291,13 +300,13 @@ const zhCN: Record<TranslationKey, string> = {
   "about.updates": "更新",
   "about.checkAutomatically": "自动更新",
   "about.checkAutomaticallyDescription":
-    "每天检查一次，在后台下载新版本，准备好后通知你",
+    "每天检查一次，在后台下载，退出 Easy Complete 时安装",
   "about.betaUpdates": "接收 Beta 版更新",
   "about.betaUpdatesDescription": "在正式版发布前获取预览版本，稳定性可能较低",
   "about.privacy": "隐私",
   "about.shareUsageData": "共享匿名使用数据",
   "about.shareUsageDataDescription":
-    "应用和 macOS 版本、shell 和终端名称，以及每天补全的显示和采用次数，绝不包含命令或路径",
+    "应用和系统版本、Shell、终端及每日补全次数，不含命令和路径",
   "about.privacyPolicy": "隐私政策",
   "about.privacyPolicyDescription": "查看收集的数据以及如何选择退出",
   "about.viewPolicy": "查看政策",
@@ -338,7 +347,7 @@ const zhCN: Record<TranslationKey, string> = {
   "permission.fixAll": "全部修复",
   "permission.shareUsageData": "共享匿名使用数据",
   "permission.shareUsageDataDescription":
-    "应用和系统版本、shell、终端及每日补全次数，不含命令和路径。可在「关于 → 隐私」中关闭。",
+    "应用和系统版本、Shell、终端及每日补全次数，不含命令和路径。可在「关于 → 隐私」中关闭。",
 };
 
 const dictionaries: Record<Locale, Record<TranslationKey, string>> = {

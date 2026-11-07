@@ -23,6 +23,10 @@ jobs:
     #   github.event.pull_request.user.login == 'new-developer' ||
     #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
 
+    # Pull requests from forks get neither the OIDC token nor the
+    # CLAUDE_CODE_OAUTH_TOKEN secret, so the review can only fail there. Skipped
+    # jobs report success, so a fork's PR is not blocked.
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       contents: read

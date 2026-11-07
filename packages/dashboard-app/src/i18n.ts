@@ -186,7 +186,7 @@ const zhCN: Record<TranslationKey, string> = {
   "nav.about": "关于",
   "nav.saveError": "保存失败",
 
-  "theme.title": "补全提示主题",
+  "theme.title": "补全弹窗主题",
   "theme.basic": "基础",
   "theme.lightThemes": "浅色主题",
   "theme.darkThemes": "深色主题",
@@ -195,7 +195,7 @@ const zhCN: Record<TranslationKey, string> = {
   "theme.system": "跟随系统",
   "appearance.language": "语言",
   "appearance.displayLanguage": "显示语言",
-  "appearance.displayLanguageDescription": "选择设置面板使用的语言",
+  "appearance.displayLanguageDescription": "选择设置窗口使用的语言",
   "appearance.followSystem": "跟随系统",
   "appearance.english": "English",
   "appearance.simplifiedChinese": "简体中文",
@@ -214,7 +214,7 @@ const zhCN: Record<TranslationKey, string> = {
   "behavior.insertTrailingSpaceDescription":
     "采用子命令或选项后自动加一个空格，方便继续输入",
   "behavior.historyModeDescription":
-    "从 shell 自己的历史（zsh、bash 或 fish）中建议用过的命令，Easy Complete 不额外记录",
+    "从 Shell 自己的历史（zsh、bash 或 fish）中建议用过的命令，Easy Complete 不额外记录",
   "autocomplete.runDirectly": "直接运行",
   "autocomplete.disableForCommands": "为这些命令关闭补全",
   "autocomplete.disableForCommandsDescription":
@@ -274,7 +274,7 @@ const zhCN: Record<TranslationKey, string> = {
   "behavior.mergeAllShellsDescription": "在 zsh 或 bash 中同时读取两者的历史",
   "behavior.historyCommand": "历史来源命令",
   "behavior.historyCommandDescription":
-    "每行输出一条历史命令的命令，例如 atuin search --cmd-only，用来代替 shell 自带的历史",
+    "每行输出一条历史命令的命令，例如 atuin search --cmd-only，用来代替 Shell 自带的历史",
   "behavior.historyCommandPlaceholder": "默认",
 
   "about.troubleshooting": "故障排查",
@@ -306,7 +306,7 @@ const zhCN: Record<TranslationKey, string> = {
   "about.privacy": "隐私",
   "about.shareUsageData": "共享匿名使用数据",
   "about.shareUsageDataDescription":
-    "应用和系统版本、shell、终端及每日补全次数，不含命令和路径",
+    "应用和系统版本、Shell、终端及每日补全次数，不含命令和路径",
   "about.privacyPolicy": "隐私政策",
   "about.privacyPolicyDescription": "查看收集的数据以及如何选择退出",
   "about.viewPolicy": "查看政策",
@@ -347,7 +347,7 @@ const zhCN: Record<TranslationKey, string> = {
   "permission.fixAll": "全部修复",
   "permission.shareUsageData": "共享匿名使用数据",
   "permission.shareUsageDataDescription":
-    "应用和系统版本、shell、终端及每日补全次数，不含命令和路径。可在「关于 → 隐私」中关闭。",
+    "应用和系统版本、Shell、终端及每日补全次数，不含命令和路径。可在「关于 → 隐私」中关闭。",
 };
 
 const dictionaries: Record<Locale, Record<TranslationKey, string>> = {

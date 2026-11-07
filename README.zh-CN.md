@@ -46,7 +46,7 @@ fish shell 的建议——子命令、选项、参数和文件路径，以跟随
 - **开箱即用** —— 所有支持的命令行工具的补全都随应用附带，无需额外下载或配置。
 - **兼容你正在用的终端** —— 独立终端、IDE 内置终端、tmux 与 Zellij 均可用
   （见[受支持的终端](#受支持的终端)）。
-- **支持 `zsh`、`bash` 与 `fish`** —— shell 集成由应用自动安装与维护。
+- **支持 `zsh`、`bash` 与 `fish`** —— Shell 集成由应用自动安装与维护。
 
 ## 💻 系统要求
 
@@ -122,7 +122,7 @@ ec settings <key> <value>              # 修改某项设置
 ec uninstall
 ```
 
-它会移除 shell 与终端集成、输入法（只移除 Easy Complete 自己的输入源）、LaunchAgent 和应用
+它会移除 Shell 与终端集成、输入法（只移除 Easy Complete 自己的输入源）、LaunchAgent 和应用
 数据，但不删除应用本身。请按安装方式执行对应的收尾步骤，最后运行 `exec $SHELL`：
 
 | 安装方式 | 收尾命令                                                      |

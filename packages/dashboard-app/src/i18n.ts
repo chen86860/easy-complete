@@ -145,15 +145,15 @@ const en = {
   "permission.status.error": "Needs attention",
   "permission.accessibility.title": "Accessibility",
   "permission.accessibility.description":
-    "Finds the focused terminal and places the popup.",
+    "Finds the focused terminal window and places the popup next to your cursor.",
   "permission.accessibility.repair": "Grant Accessibility",
   "permission.shellIntegration.title": "Shell Integration",
   "permission.shellIntegration.description":
-    "Adds a hook to your zsh, bash and fish config.",
+    "Adds a hook to your zsh, bash and fish config so completions follow the command you type.",
   "permission.shellIntegration.repair": "Install",
   "permission.inputMethod.title": "Input Method",
   "permission.inputMethod.description":
-    "Tracks the cursor in Ghostty, Kitty, WezTerm and similar terminals. Reads only the cursor position.",
+    "Tracks the cursor in Ghostty, Kitty, WezTerm and similar terminals, reading only its position. Terminal.app and iTerm2 don't need it.",
   "permission.inputMethod.repair": "Install",
   "permission.inputMethod.neededBy":
     "Needed to track the cursor in {terminals}. Reads only the cursor position.",
@@ -167,13 +167,13 @@ const en = {
   "permission.working": "Working...",
   "permission.finishSetup": "Finish Setup",
   "permission.finishSetupDescription":
-    "Grant these to start using Easy Complete.",
+    "Easy Complete needs these to show completions in your terminal.",
   "permission.checking": "Checking...",
   "permission.checkAgain": "Check Again",
   "permission.fixAll": "Fix All",
   "permission.shareUsageData": "Share anonymous usage data",
   "permission.shareUsageDataDescription":
-    "App and macOS version, shell, terminal and daily completion counts. Never commands or paths. Change it in About → Privacy.",
+    "Helps improve Easy Complete: app and macOS version, shell, terminal and daily completion counts. Never commands or paths. Change it in About → Privacy.",
 } as const;
 
 export type TranslationKey = keyof typeof en;
@@ -321,15 +321,16 @@ const zhCN: Record<TranslationKey, string> = {
   "permission.status.missing": "需要设置",
   "permission.status.error": "需要处理",
   "permission.accessibility.title": "辅助功能",
-  "permission.accessibility.description": "用于找到当前终端并放置补全弹窗。",
+  "permission.accessibility.description":
+    "用于找到当前聚焦的终端窗口，并把补全弹窗放在光标旁。",
   "permission.accessibility.repair": "授予权限",
   "permission.shellIntegration.title": "Shell 集成",
   "permission.shellIntegration.description":
-    "在 zsh、bash、fish 的配置文件中添加钩子。",
+    "在 zsh、bash、fish 的配置文件中添加钩子，让补全跟上你正在输入的命令。",
   "permission.shellIntegration.repair": "安装",
   "permission.inputMethod.title": "输入法",
   "permission.inputMethod.description":
-    "在 Ghostty、Kitty、WezTerm 等终端中跟踪光标，只读取光标位置。",
+    "在 Ghostty、Kitty、WezTerm 等终端中跟踪光标，只读取光标位置。Terminal.app 和 iTerm2 无需安装。",
   "permission.inputMethod.repair": "安装",
   "permission.inputMethod.neededBy":
     "{terminals} 需要它跟踪光标，只读取光标位置。",
@@ -343,13 +344,13 @@ const zhCN: Record<TranslationKey, string> = {
   "permission.working": "处理中…",
   "permission.finishSetup": "完成设置",
   "permission.finishSetupDescription":
-    "授予以下权限后即可开始使用 Easy Complete。",
+    "授予以下权限后，Easy Complete 即可在终端中显示补全。",
   "permission.checking": "检查中…",
   "permission.checkAgain": "重新检查",
   "permission.fixAll": "全部修复",
   "permission.shareUsageData": "共享匿名使用数据",
   "permission.shareUsageDataDescription":
-    "应用和系统版本、Shell、终端及每日补全次数，不含命令和路径。可在「关于 → 隐私」中关闭。",
+    "帮助改进 Easy Complete：应用和系统版本、Shell、终端及每日补全次数，不含命令和路径。可在「关于 → 隐私」中关闭。",
 };
 
 const dictionaries: Record<Locale, Record<TranslationKey, string>> = {

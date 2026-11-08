@@ -8,6 +8,7 @@ import type {
 import { useI18n } from "../i18n";
 import { Toggle } from "./controls";
 import { RowLabelContext } from "./row-label";
+import { PRIVACY_URL, openExternalUrl } from "../utils/external-links";
 import { IconCheck, IconWarning } from "./icons";
 
 function StatusBadge({ state }: { state: PermissionState }) {
@@ -163,7 +164,9 @@ export function PermissionGate({
   }
 
   return (
-    <main className="flex flex-1 items-center justify-center bg-[var(--ds-content-bg)] px-10">
+    // Top-aligned at a fixed inset, like the settings pages: centering made the
+    // whole page shift whenever a row, note or button appeared or went away.
+    <main className="flex flex-1 items-start justify-center overflow-y-auto bg-[var(--ds-content-bg)] px-10 pb-10 pt-14">
       <div className="w-full max-w-[640px]">
         <div className="mb-4 pl-1">
           <h1 className="m-0 text-[22px] font-[700] text-[var(--ds-label)]">
@@ -210,7 +213,7 @@ export function PermissionGate({
         </div>
 
         {/* Same card, padding and type as the permission rows above. */}
-        <div className="mt-5 overflow-hidden rounded-xl border border-[var(--ds-card-border)] bg-[var(--ds-card-bg)] shadow-[inset_0_0_0_0.5px_var(--ds-card-inset)]">
+        <div className="mt-8 overflow-hidden rounded-xl border border-[var(--ds-card-border)] bg-[var(--ds-card-bg)] shadow-[inset_0_0_0_0.5px_var(--ds-card-inset)]">
           <div className="flex items-center justify-between gap-5 px-3.5 py-3">
             <div className="min-w-0 flex-1">
               <div
@@ -223,7 +226,17 @@ export function PermissionGate({
                 id="share-usage-description"
                 className="mt-1 text-[12px] leading-[17px] text-[var(--ds-label-secondary)]"
               >
-                {t("permission.shareUsageDataDescription")}
+                {t("permission.shareUsageDataDescription")}{" "}
+                <a
+                  href={PRIVACY_URL}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    void openExternalUrl(PRIVACY_URL);
+                  }}
+                  className="text-[var(--dashboard-accent-color,AccentColor)] no-underline hover:underline"
+                >
+                  {t("permission.privacyPolicy")}
+                </a>
               </div>
             </div>
             <RowLabelContext.Provider

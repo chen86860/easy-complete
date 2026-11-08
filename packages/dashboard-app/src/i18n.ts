@@ -103,12 +103,16 @@ const en = {
   "about.troubleshooting": "Troubleshooting",
   "about.somethingNotWorking": "Something not working?",
   "about.diagnosticDescription":
-    "Run the built-in diagnostic in your terminal — it checks your shell integration, permissions, and background processes, and tells you how to fix any issues.",
+    "Run ec doctor in a terminal to check the shell integration, permissions and background processes",
   "about.copied": "Copied!",
   "about.failed": "Failed",
   "about.copy": "Copy",
-  "about.stillStuck":
-    "Still stuck? Include the diagnostic output in your report.",
+  "about.copyCommand": "Copy Command",
+  "about.openGitHub": "Open GitHub",
+  "about.runDiagnostics": "Run Diagnostics",
+  "about.checkNow": "Check Now",
+  "about.checkingForUpdates": "Checking…",
+  "about.stillStuck": "Include the diagnostic output in your report",
   "about.reportIssue": "Report an Issue",
   "about.tagline": "Terminal autocomplete for macOS",
   "about.copyVersionInfo": "Copy version info",
@@ -119,7 +123,7 @@ const en = {
   "about.updates": "Updates",
   "about.checkAutomatically": "Update Automatically",
   "about.checkAutomaticallyDescription":
-    "Check once a day, download new versions in the background, and notify you when they are ready",
+    "Checks once a day, downloads in the background and installs when you quit Easy Complete",
   "about.betaUpdates": "Receive Beta Updates",
   "about.betaUpdatesDescription":
     "Get prerelease builds before the stable release. They may be less stable",
@@ -141,19 +145,20 @@ const en = {
   "permission.status.error": "Needs attention",
   "permission.accessibility.title": "Accessibility",
   "permission.accessibility.description":
-    "Finds the focused terminal and places the popup.",
+    "Finds the focused terminal window and places the popup next to your cursor.",
   "permission.accessibility.repair": "Grant Accessibility",
   "permission.shellIntegration.title": "Shell Integration",
   "permission.shellIntegration.description":
-    "Adds a hook to your zsh, bash and fish config.",
+    "Adds a hook to your zsh, bash and fish config so completions follow the command you type.",
   "permission.shellIntegration.repair": "Install",
   "permission.inputMethod.title": "Input Method",
   "permission.inputMethod.description":
-    "Tracks the cursor in Ghostty, Kitty, WezTerm and similar terminals. Reads only the cursor position.",
+    "Tracks the cursor in Ghostty, Kitty, WezTerm and similar terminals, reading only its position. Terminal.app and iTerm2 don't need it.",
   "permission.inputMethod.repair": "Install",
   "permission.inputMethod.neededBy":
     "Needed to track the cursor in {terminals}. Reads only the cursor position.",
   "permission.skip": "Skip",
+  "permission.privacyPolicy": "Privacy Policy",
   "permission.terminalListSeparator": ", ",
   "permission.terminalListMore": "{list} and others",
   "permission.optional": "Optional",
@@ -162,13 +167,13 @@ const en = {
   "permission.working": "Working...",
   "permission.finishSetup": "Finish Setup",
   "permission.finishSetupDescription":
-    "Grant these to start using Easy Complete.",
+    "Easy Complete needs these to show completions in your terminal.",
   "permission.checking": "Checking...",
   "permission.checkAgain": "Check Again",
   "permission.fixAll": "Fix All",
   "permission.shareUsageData": "Share anonymous usage data",
   "permission.shareUsageDataDescription":
-    "App and macOS version, shell, terminal and daily completion counts. Never commands or paths. Change it in About → Privacy.",
+    "Helps improve Easy Complete: app and macOS version, shell, terminal and daily completion counts. Never commands or paths. Change it in About → Privacy.",
 } as const;
 
 export type TranslationKey = keyof typeof en;
@@ -182,7 +187,7 @@ const zhCN: Record<TranslationKey, string> = {
   "nav.about": "关于",
   "nav.saveError": "保存失败",
 
-  "theme.title": "补全提示主题",
+  "theme.title": "补全弹窗主题",
   "theme.basic": "基础",
   "theme.lightThemes": "浅色主题",
   "theme.darkThemes": "深色主题",
@@ -191,7 +196,7 @@ const zhCN: Record<TranslationKey, string> = {
   "theme.system": "跟随系统",
   "appearance.language": "语言",
   "appearance.displayLanguage": "显示语言",
-  "appearance.displayLanguageDescription": "选择设置面板使用的语言",
+  "appearance.displayLanguageDescription": "选择设置窗口使用的语言",
   "appearance.followSystem": "跟随系统",
   "appearance.english": "English",
   "appearance.simplifiedChinese": "简体中文",
@@ -210,7 +215,7 @@ const zhCN: Record<TranslationKey, string> = {
   "behavior.insertTrailingSpaceDescription":
     "采用子命令或选项后自动加一个空格，方便继续输入",
   "behavior.historyModeDescription":
-    "从 shell 自己的历史（zsh、bash 或 fish）中建议用过的命令，Easy Complete 不额外记录",
+    "从 Shell 自己的历史（zsh、bash 或 fish）中建议用过的命令，Easy Complete 不额外记录",
   "autocomplete.runDirectly": "直接运行",
   "autocomplete.disableForCommands": "为这些命令关闭补全",
   "autocomplete.disableForCommandsDescription":
@@ -270,17 +275,22 @@ const zhCN: Record<TranslationKey, string> = {
   "behavior.mergeAllShellsDescription": "在 zsh 或 bash 中同时读取两者的历史",
   "behavior.historyCommand": "历史来源命令",
   "behavior.historyCommandDescription":
-    "每行输出一条历史命令的命令，例如 atuin search --cmd-only，用来代替 shell 自带的历史",
+    "每行输出一条历史命令的命令，例如 atuin search --cmd-only，用来代替 Shell 自带的历史",
   "behavior.historyCommandPlaceholder": "默认",
 
   "about.troubleshooting": "故障排查",
   "about.somethingNotWorking": "遇到问题？",
   "about.diagnosticDescription":
-    "在终端中运行内置诊断。它会检查 Shell 集成、权限和后台进程，并提供问题修复建议。",
+    "在终端运行 ec doctor，检查 Shell 集成、权限和后台进程",
   "about.copied": "已复制",
   "about.failed": "复制失败",
   "about.copy": "复制",
-  "about.stillStuck": "仍未解决？请在问题报告中附上诊断输出。",
+  "about.copyCommand": "复制命令",
+  "about.openGitHub": "打开 GitHub",
+  "about.runDiagnostics": "运行诊断",
+  "about.checkNow": "立即检查",
+  "about.checkingForUpdates": "检查中…",
+  "about.stillStuck": "请在报告中附上诊断结果",
   "about.reportIssue": "报告问题",
   "about.tagline": "适用于 macOS 的终端自动补全",
   "about.copyVersionInfo": "复制版本信息",
@@ -291,13 +301,13 @@ const zhCN: Record<TranslationKey, string> = {
   "about.updates": "更新",
   "about.checkAutomatically": "自动更新",
   "about.checkAutomaticallyDescription":
-    "每天检查一次，在后台下载新版本，准备好后通知你",
+    "每天检查一次，在后台下载，退出 Easy Complete 时安装",
   "about.betaUpdates": "接收 Beta 版更新",
   "about.betaUpdatesDescription": "在正式版发布前获取预览版本，稳定性可能较低",
   "about.privacy": "隐私",
   "about.shareUsageData": "共享匿名使用数据",
   "about.shareUsageDataDescription":
-    "应用和 macOS 版本、shell 和终端名称，以及每天补全的显示和采用次数，绝不包含命令或路径",
+    "应用和系统版本、Shell、终端及每日补全次数，不含命令和路径",
   "about.privacyPolicy": "隐私政策",
   "about.privacyPolicyDescription": "查看收集的数据以及如何选择退出",
   "about.viewPolicy": "查看政策",
@@ -311,19 +321,21 @@ const zhCN: Record<TranslationKey, string> = {
   "permission.status.missing": "需要设置",
   "permission.status.error": "需要处理",
   "permission.accessibility.title": "辅助功能",
-  "permission.accessibility.description": "用于找到当前终端并放置补全弹窗。",
+  "permission.accessibility.description":
+    "用于找到当前聚焦的终端窗口，并把补全弹窗放在光标旁。",
   "permission.accessibility.repair": "授予权限",
   "permission.shellIntegration.title": "Shell 集成",
   "permission.shellIntegration.description":
-    "在 zsh、bash、fish 的配置文件中添加钩子。",
+    "在 zsh、bash、fish 的配置文件中添加钩子，让补全跟上你正在输入的命令。",
   "permission.shellIntegration.repair": "安装",
   "permission.inputMethod.title": "输入法",
   "permission.inputMethod.description":
-    "在 Ghostty、Kitty、WezTerm 等终端中跟踪光标，只读取光标位置。",
+    "在 Ghostty、Kitty、WezTerm 等终端中跟踪光标，只读取光标位置。Terminal.app 和 iTerm2 无需安装。",
   "permission.inputMethod.repair": "安装",
   "permission.inputMethod.neededBy":
     "{terminals} 需要它跟踪光标，只读取光标位置。",
   "permission.skip": "跳过",
+  "permission.privacyPolicy": "隐私政策",
   "permission.terminalListSeparator": "、",
   "permission.terminalListMore": "{list} 等终端",
   "permission.optional": "可选",
@@ -332,13 +344,13 @@ const zhCN: Record<TranslationKey, string> = {
   "permission.working": "处理中…",
   "permission.finishSetup": "完成设置",
   "permission.finishSetupDescription":
-    "授予以下权限后即可开始使用 Easy Complete。",
+    "授予以下权限后，Easy Complete 即可在终端中显示补全。",
   "permission.checking": "检查中…",
   "permission.checkAgain": "重新检查",
   "permission.fixAll": "全部修复",
   "permission.shareUsageData": "共享匿名使用数据",
   "permission.shareUsageDataDescription":
-    "应用和系统版本、shell、终端及每日补全次数，不含命令和路径。可在「关于 → 隐私」中关闭。",
+    "帮助改进 Easy Complete：应用和系统版本、Shell、终端及每日补全次数，不含命令和路径。可在「关于 → 隐私」中关闭。",
 };
 
 const dictionaries: Record<Locale, Record<TranslationKey, string>> = {

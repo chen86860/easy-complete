@@ -8,14 +8,9 @@ import {
 import clsx from "clsx";
 import type { SettingSetter, SettingsMap } from "../types";
 import { AppLogo } from "../components/app-logo";
+import { PRIVACY_URL, openExternalUrl } from "../utils/external-links";
 import { NumberInput, Select, TextInput, Toggle } from "../components/controls";
-import {
-  IconCopy,
-  IconDocument,
-  IconExternalLink,
-  IconGitHub,
-  IconUpdate,
-} from "../components/icons";
+import { IconExternalLink, IconGitHub } from "../components/icons";
 import { Card, Row } from "../components/settings-layout";
 import { ThemePicker } from "../components/theme-picker";
 import { useCheckForUpdates } from "../hooks/use-check-for-updates";
@@ -25,17 +20,8 @@ const APP_VERSION = __APP_VERSION__;
 const REPO_URL = "https://github.com/chen86860/easy-complete";
 const RELEASES_URL = `${REPO_URL}/releases`;
 const ISSUES_URL = `${REPO_URL}/issues`;
-const PRIVACY_URL = "https://easy-complete.emmmm.dev/privacy-policy";
 const UPSTREAM_REPO_URL = "https://github.com/aws/amazon-q-developer-cli";
 const OPEN_SOURCE_LICENSES_URL = "ec-internal://open-source-licenses";
-
-async function openExternalUrl(url: string) {
-  try {
-    await Native.open(url);
-  } catch {
-    window.open(url, "_blank", "noopener,noreferrer");
-  }
-}
 
 function AboutActionButton({
   icon,
@@ -44,7 +30,7 @@ function AboutActionButton({
   disabled,
   className,
 }: {
-  icon: ReactNode;
+  icon?: ReactNode;
   label: string;
   onClick: () => void;
   disabled?: boolean;
@@ -490,42 +476,32 @@ function DiagnosticsCard() {
 
   return (
     <Card title={t("about.troubleshooting")}>
-      <div className="px-[18px] py-3.5">
-        <div className="text-[14px] font-medium leading-[1.35] text-[var(--ds-label)]">
-          {t("about.somethingNotWorking")}
-        </div>
-        <div className="mt-1 max-w-[36rem] text-[12px] leading-[1.5] text-[var(--ds-label-secondary)]">
-          {t("about.diagnosticDescription")}
-        </div>
-        <div className="mt-3 flex items-center gap-2">
-          <code className="flex-1 select-text rounded-[9px] border border-[var(--ds-separator)] bg-[var(--ds-code-bg)] px-3 py-2 font-mono text-[12.5px] text-[var(--ds-code-fg)]">
-            <span className="mr-1.5 text-[var(--ds-code-prompt)]">$</span>
-            {DOCTOR_COMMAND}
-          </code>
-          <AboutActionButton
-            className="w-[92px] justify-center"
-            icon={copyState === "done" ? null : <IconCopy size={13} />}
-            label={
-              copyState === "done"
-                ? t("about.copied")
-                : copyState === "error"
-                  ? t("about.failed")
-                  : t("about.copy")
-            }
-            onClick={() => void copyCommand()}
-          />
-        </div>
-        <div className="mt-3.5 flex items-center justify-between gap-3 border-t border-[var(--ds-separator-weak)] pt-3.5">
-          <div className="min-w-0 flex-1 text-[12px] leading-[1.5] text-[var(--ds-label-secondary)]">
-            {t("about.stillStuck")}
-          </div>
-          <AboutLinkButton
-            href={ISSUES_URL}
-            label={t("about.reportIssue")}
-            icon={<IconExternalLink />}
-          />
-        </div>
-      </div>
+      <Row
+        label={t("about.runDiagnostics")}
+        description={t("about.diagnosticDescription")}
+      >
+        <AboutActionButton
+          label={
+            copyState === "done"
+              ? t("about.copied")
+              : copyState === "error"
+                ? t("about.failed")
+                : t("about.copyCommand")
+          }
+          onClick={() => void copyCommand()}
+        />
+      </Row>
+      <Row
+        label={t("about.reportIssue")}
+        description={t("about.stillStuck")}
+        last
+      >
+        <AboutLinkButton
+          href={ISSUES_URL}
+          label={t("about.openGitHub")}
+          icon={<IconExternalLink />}
+        />
+      </Row>
     </Card>
   );
 }
@@ -556,48 +532,40 @@ export function AboutSection({
 
   return (
     <>
-      <Card>
-        <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-5">
-          <div className="flex min-w-0 items-center gap-4">
-            <AppLogo size={52} />
-            <div className="min-w-0">
-              <div className="text-[21px] font-bold tracking-[-0.03em] text-[var(--ds-label-strong)]">
-                Easy Complete
-              </div>
-              <div className="mt-0.5 text-[13px] text-[var(--ds-label-secondary)]">
-                {t("about.tagline")}
-              </div>
-              <div className="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-[var(--ds-label-secondary)]">
-                <button
-                  onClick={() => void copyVersionInfo()}
-                  title={t("about.copyVersionInfo")}
-                  className="cursor-pointer rounded-full border-0 bg-[var(--ds-chip-bg)] px-2 py-0.5 font-sans text-[12px] font-medium text-[var(--ds-button-fg)] transition-colors hover:bg-[var(--ds-chip-bg-hover)]"
-                >
-                  {copyState === "done"
-                    ? t("about.copiedShort")
-                    : copyState === "error"
-                      ? t("about.copyFailed")
-                      : `${t("about.version")} ${APP_VERSION}`}
-                </button>
-              </div>
-            </div>
+      {/* Like About This Mac: icon, name and a gray version line, no card or pill. */}
+      <div className="mb-6 flex items-center gap-3.5 px-1">
+        <AppLogo size={52} />
+        <div className="min-w-0">
+          <div className="text-[17px] font-semibold text-[var(--ds-label)]">
+            Easy Complete
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <AboutActionButton
-              icon={
-                <span className={clsx(isChecking && "animate-spin")}>
-                  <IconUpdate size={13} />
-                </span>
-              }
-              label={t("about.checkForUpdates")}
-              onClick={() => void checkForUpdates()}
-              disabled={isChecking}
-            />
+          <div className="mt-0.5 text-[12px] text-[var(--ds-label-secondary)]">
+            {t("about.tagline")}
           </div>
+          <button
+            onClick={() => void copyVersionInfo()}
+            title={t("about.copyVersionInfo")}
+            className="mt-0.5 border-0 bg-transparent p-0 font-sans text-[12px] text-[var(--ds-label-secondary)]"
+          >
+            {copyState === "done"
+              ? t("about.copiedShort")
+              : copyState === "error"
+                ? t("about.copyFailed")
+                : `${t("about.version")} ${APP_VERSION}`}
+          </button>
         </div>
-      </Card>
+      </div>
 
       <Card title={t("about.updates")}>
+        <Row label={t("about.checkForUpdates")}>
+          <AboutActionButton
+            label={
+              isChecking ? t("about.checkingForUpdates") : t("about.checkNow")
+            }
+            onClick={() => void checkForUpdates()}
+            disabled={isChecking}
+          />
+        </Row>
         <Row
           label={t("about.checkAutomatically")}
           description={t("about.checkAutomaticallyDescription")}
@@ -653,7 +621,6 @@ export function AboutSection({
         />
         <AboutActionButton
           label={t("about.openSourceLicenses")}
-          icon={<IconDocument />}
           onClick={() => void Native.open(OPEN_SOURCE_LICENSES_URL)}
         />
       </div>

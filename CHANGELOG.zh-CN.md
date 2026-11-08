@@ -6,7 +6,7 @@
 
 - 新增：可以在设置窗口中为指定命令关闭补全
 - 新增：已是最新版本时，更新提示框会附上版本历史链接
-- 变更：Easy Complete 不再记录你执行的命令。历史建议改为读取 shell 自己的历史，因此会遵循 shell 的规则，例如以空格开头的命令不进历史。应用启动时会删除旧版本保存在 `data.sqlite3` 和明文 `history` 文件中的历史
+- 变更：Easy Complete 不再记录你执行的命令。历史建议改为读取 Shell 自己的历史，因此会遵循 Shell 的规则，例如以空格开头的命令不进历史。应用启动时会删除旧版本保存在 `data.sqlite3` 和明文 `history` 文件中的历史
 - 变更：输入法只记录错误，不再记录你在哪些应用中输入；升级时会删除旧日志
 - 变更：补全浮层不再从网络加载图片。spec 图标改为随应用打包，不再从 GitHub 和各工具官网加载；源地址已失效的图标显示为通用图标
 - 变更：`ec issue` 不再附带 `PATH` 和当前目录，改为附带正在运行的 App 版本、所用终端及其版本（`TERM_PROGRAM`），以及 `ec doctor` 各项检查是否通过
@@ -209,7 +209,7 @@
 
 - fix: autocomplete 窗口处于 disabled 状态时仍允许向 webview 发送 emit 事件，使 Dashboard 聚焦期间修改的补全主题等设置可以立即生效，不再需要重启才能刷新
 - fix: 切换主题时保持 Dashboard 使用 macOS 原生主色调；主题设置现在只影响命令补全下拉框
-- chore: 删除本 fork 未接入 CI 或 workspace 的上游 `figterm` / `fig-api` 测试脚手架、独立 shell 启动性能分析脚本，以及过时的模型 ZIP Git LFS 规则
+- chore: 删除本 fork 未接入 CI 或 workspace 的上游 `figterm` / `fig-api` 测试脚手架、独立 Shell 启动性能分析脚本，以及过时的模型 ZIP Git LFS 规则
 
 ## v2.0.42
 
@@ -223,7 +223,7 @@
 
 - feat: 扩充匿名统计事件 —— 新增 `daily_heartbeat`（活跃设备统计，24 小时最多一次）、`integration_installed`（带 `integration` 属性）、`app_uninstalled`（由 `uninstall.sh` 上报），`app_opened` 增加 `is_startup` 属性以区分开机自启与手动打开
 - feat: 高频补全事件（`autocomplete_shown` / `autocomplete_accepted`）改为本地 SQLite 聚合计数，随每日心跳以 `count_*` 属性批量上报 —— 每天一个请求，而不是每次按键一个
-- feat: 统计事件新增 `shell`（登录 shell）与 `terminal`（终端模拟器 best-effort 检测）公共属性
+- feat: 统计事件新增 `shell`（登录 Shell）与 `terminal`（终端模拟器 best-effort 检测）公共属性
 - fix: 发送失败的统计事件会持久化到离线队列（`telemetry_queue.jsonl`，上限 200 条，保留原始时间戳），在下次启动或下次发送成功时补发，不再静默丢失
 - fix: 统计上报的 HTTP 客户端现在携带 `easy-complete/<version>` User-Agent —— 无 UA 的请求会被分析代理前面的 Cloudflare Bot 防护直接拦截
 - fix: 注册之前未挂载的 `ec telemetry` 子命令（`enable` / `disable` / `status`，及供安装/卸载脚本使用的隐藏 `track`）；CLI 来源的事件在进程退出前会等待发送完成

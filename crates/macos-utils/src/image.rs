@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use objc2::ClassType;
+use objc2::AnyThread;
 use objc2::rc::Retained;
 use objc2_app_kit::{NSBitmapImageFileType, NSBitmapImageRep, NSGraphicsContext, NSImage, NSWorkspace};
 use objc2_foundation::{NSDictionary, NSFileTypeDirectory, NSPoint, NSRect, NSSize, NSString};
@@ -64,12 +64,12 @@ fn convert_image(image: &NSImage) -> Option<Vec<u8>> {
             },
         )
     }?;
-    let tiff_data = unsafe { image.TIFFRepresentation() }?;
+    let tiff_data = image.TIFFRepresentation()?;
 
-    let image_rep = unsafe { NSBitmapImageRep::imageRepWithData(&tiff_data) }?;
+    let image_rep = NSBitmapImageRep::imageRepWithData(&tiff_data)?;
 
     let properties = NSDictionary::new();
     let png_data = unsafe { image_rep.representationUsingType_properties(NSBitmapImageFileType::PNG, &properties) }?;
 
-    Some(png_data.bytes().into())
+    Some(png_data.to_vec())
 }

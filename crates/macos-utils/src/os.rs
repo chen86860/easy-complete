@@ -2,8 +2,7 @@ use objc2_foundation::{NSLocale, NSOperatingSystemVersion, NSProcessInfo};
 
 /// The user's first preferred language, as a BCP 47 tag such as `en-US` or `zh-Hans-CN`.
 pub fn preferred_language() -> Option<String> {
-    // SAFETY: both are plain Foundation getters with no preconditions.
-    unsafe { NSLocale::preferredLanguages().firstObject() }.map(|l| l.to_string())
+    NSLocale::preferredLanguages().firstObject().map(|l| l.to_string())
 }
 
 #[derive(Clone, Copy, Debug)]

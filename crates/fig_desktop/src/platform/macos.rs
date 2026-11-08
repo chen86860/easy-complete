@@ -331,7 +331,7 @@ impl PlatformStateImpl {
                 let accessibility_proxy = self.proxy.clone();
                 let mut distributed = NotificationCenter::distributed_center();
                 let ax_notification_name = ns_string!("com.apple.accessibility.api");
-                let queue = unsafe { NSOperationQueue::new() };
+                let queue = NSOperationQueue::new();
                 distributed.subscribe(ax_notification_name, Some(&queue), move |_| {
                     accessibility_proxy
                         .clone()

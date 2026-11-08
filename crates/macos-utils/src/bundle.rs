@@ -4,8 +4,8 @@ use objc2_foundation::NSBundle;
 
 pub fn get_bundle_path() -> Option<PathBuf> {
     let main = NSBundle::mainBundle();
-    let url = unsafe { main.bundleURL() };
-    let path = unsafe { url.path() }?;
+    let url = main.bundleURL();
+    let path = url.path()?;
     Some(path.to_string().into())
 }
 

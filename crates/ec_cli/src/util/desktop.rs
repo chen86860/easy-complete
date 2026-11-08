@@ -49,7 +49,7 @@ pub fn desktop_app_running() -> bool {
     // shell start in exactly the case that matters — the app being closed — and is not
     // worth the startup latency.
     let bundle_id = ns_string!(APP_BUNDLE_ID);
-    let running_applications = unsafe { NSRunningApplication::runningApplicationsWithBundleIdentifier(bundle_id) };
+    let running_applications = NSRunningApplication::runningApplicationsWithBundleIdentifier(bundle_id);
 
     !running_applications.is_empty()
 }

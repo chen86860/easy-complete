@@ -81,11 +81,8 @@ async fn main() -> ExitCode {
     #[cfg(target_os = "macos")]
     {
         use objc2_foundation::{NSUserDefaults, ns_string};
-        // SAFETY: standardUserDefaults and setBool_forKey are thread-safe Foundation APIs.
-        unsafe {
-            NSUserDefaults::standardUserDefaults()
-                .setBool_forKey(false, ns_string!("NSAutoFillHeuristicControllerEnabled"));
-        }
+        NSUserDefaults::standardUserDefaults()
+            .setBool_forKey(false, ns_string!("NSAutoFillHeuristicControllerEnabled"));
     }
 
     fig_telemetry::init(

@@ -3,7 +3,7 @@ use core_foundation::base::TCFType;
 use core_foundation::boolean::{CFBoolean, kCFBooleanTrue};
 use core_foundation::dictionary::CFDictionary;
 use core_foundation::string::CFString;
-use objc2::ClassType;
+use objc2::AnyThread;
 use objc2_app_kit::NSWorkspace;
 use objc2_foundation::{NSURL, ns_string};
 
@@ -12,10 +12,10 @@ static ACCESSIBILITY_SETTINGS_URL: &str =
 
 pub fn open_accessibility() -> bool {
     let string = ns_string!(ACCESSIBILITY_SETTINGS_URL);
-    let url = unsafe { NSURL::initWithString(NSURL::alloc(), string) };
+    let url = NSURL::initWithString(NSURL::alloc(), string);
     if let Some(url) = url {
-        let workspace = unsafe { NSWorkspace::sharedWorkspace() };
-        unsafe { workspace.openURL(&url) }
+        let workspace = NSWorkspace::sharedWorkspace();
+        workspace.openURL(&url)
     } else {
         false
     }

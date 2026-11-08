@@ -9,7 +9,6 @@ use crate::Shim;
 pub enum Os {
     Mac,
     Linux,
-    Windows,
 }
 
 impl Os {
@@ -24,12 +23,7 @@ impl Os {
             return Self::Linux;
         }
 
-        #[cfg(target_os = "windows")]
-        {
-            return Self::Windows;
-        }
-
-        #[cfg(not(any(target_os = "macos", target_os = "linux", target_os = "windows")))]
+        #[cfg(not(any(target_os = "macos", target_os = "linux")))]
         {
             compile_error!("unsupported platform");
         }
@@ -43,14 +37,13 @@ impl Os {
     }
 
     pub fn all() -> &'static [Self] {
-        &[Self::Mac, Self::Linux, Self::Windows]
+        &[Self::Mac, Self::Linux]
     }
 
     pub fn as_str(&self) -> &'static str {
         match self {
             Self::Mac => "macos",
             Self::Linux => "linux",
-            Self::Windows => "windows",
         }
     }
 }

@@ -4,9 +4,6 @@ pub const APP_BUNDLE_NAME: &str = "Easy Complete.app";
 #[cfg(target_os = "macos")]
 pub const APP_PROCESS_NAME: &str = "easy-complete";
 
-#[cfg(windows)]
-pub const APP_PROCESS_NAME: &str = "easy-complete.exe";
-
 /// The name configured under `"package.productName"` in the tauri.conf.json file.
 pub const TAURI_PRODUCT_NAME: &str = "Easy Complete";
 
@@ -24,8 +21,6 @@ pub const RUNTIME_DIR_NAME: &str = "ecrun";
 
 /// Data directory name used in paths like ~/.local/share/{DATA_DIR_NAME}
 #[cfg(unix)]
-pub const DATA_DIR_NAME: &str = "easy-complete";
-#[cfg(windows)]
 pub const DATA_DIR_NAME: &str = "easy-complete";
 
 /// Backup directory name

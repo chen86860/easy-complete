@@ -18,9 +18,6 @@ tokio = { workspace = true, features = ["fs"] }
 sysinfo.workspace = true
 nix.workspace = true
 
-[target.'cfg(windows)'.dependencies]
-sysinfo.workspace = true
-
 [lints]
 workspace = true
 

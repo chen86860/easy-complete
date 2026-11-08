@@ -9,9 +9,6 @@ pub use cmdbuilder::CommandBuilder;
 #[cfg(unix)]
 pub mod unix;
 
-#[cfg(windows)]
-pub mod win;
-
 #[async_trait]
 pub trait AsyncMasterPty {
     async fn read(&mut self, buff: &mut [u8]) -> io::Result<usize>;

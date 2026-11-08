@@ -76,8 +76,6 @@ pub async fn run(request: RunProcessRequest, state: &FigtermState) -> RequestRes
 
         // TODO: we can infer shell as above for execute if no executable is provided.
         let mut cmd = Command::new(&request.executable);
-        #[cfg(target_os = "windows")]
-        cmd.creation_flags(windows::Win32::System::Threading::DETACHED_PROCESS.0);
 
         if let Some(working_directory) = request.working_directory {
             cmd.current_dir(working_directory);

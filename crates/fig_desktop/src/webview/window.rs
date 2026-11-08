@@ -390,8 +390,6 @@ impl WindowState {
                             if #[cfg(target_os = "macos")] {
                                 // We handle setting window level on focus changed on MacOS
                                 // TODO: pull this out into platform code.
-                            } else if #[cfg(target_os = "windows")] {
-                                self.window.set_always_on_top(false);
                             } else {
                                 self.window.set_always_on_top(true);
                             }

@@ -12,7 +12,6 @@ use tracing::warn;
 
 use crate::util::choose;
 
-#[cfg_attr(windows, allow(unused_variables))]
 pub async fn install_cli(
     install_components: InstallComponents,
     no_confirm: bool,

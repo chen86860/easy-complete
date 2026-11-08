@@ -20,17 +20,6 @@ fn open_macos(url_str: impl AsRef<str>) -> Result<(), Error> {
     res.then_some(()).ok_or(Error::Failed)
 }
 
-#[cfg(target_os = "windows")]
-fn open_command(url: impl AsRef<str>) -> std::process::Command {
-    use std::os::windows::process::CommandExt;
-
-    let detached = 0x8;
-    let mut command = std::process::Command::new("cmd");
-    command.creation_flags(detached);
-    command.args(["/c", "start", url.as_ref()]);
-    command
-}
-
 #[cfg(any(target_os = "linux", target_os = "freebsd"))]
 fn open_command(url: impl AsRef<str>) -> std::process::Command {
     let executable = if crate::system_info::in_wsl() {

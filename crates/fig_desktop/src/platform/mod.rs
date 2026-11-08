@@ -18,9 +18,6 @@ cfg_if::cfg_if! {
     } else if #[cfg(target_os = "macos")] {
         mod macos;
         pub use self::macos::*;
-    } else if #[cfg(target_os = "windows")] {
-        mod windows;
-        pub use self::windows::*;
     } else {
         compile_error!("Unsupported platform");
     }

@@ -368,13 +368,7 @@ impl WindowState {
 
                 #[cfg(target_os = "macos")]
                 if self.window_id == DASHBOARD_ID {
-                    use tao::platform::macos::{ActivationPolicy, EventLoopWindowTargetExtMacOS};
-
-                    let mut policy_lock = platform::ACTIVATION_POLICY.lock().unwrap();
-                    if *policy_lock != ActivationPolicy::Accessory {
-                        *policy_lock = ActivationPolicy::Accessory;
-                        window_target.set_activation_policy_at_runtime(ActivationPolicy::Accessory);
-                    }
+                    platform::set_activation_policy(window_target, tao::platform::macos::ActivationPolicy::Accessory);
                 }
             },
             WindowEvent::Show => {
@@ -406,13 +400,7 @@ impl WindowState {
                 } else {
                     #[cfg(target_os = "macos")]
                     if self.window_id == DASHBOARD_ID {
-                        use tao::platform::macos::{ActivationPolicy, EventLoopWindowTargetExtMacOS};
-
-                        let mut policy_lock = platform::ACTIVATION_POLICY.lock().unwrap();
-                        if *policy_lock != ActivationPolicy::Regular {
-                            *policy_lock = ActivationPolicy::Regular;
-                            window_target.set_activation_policy_at_runtime(ActivationPolicy::Regular);
-                        }
+                        platform::set_activation_policy(window_target, tao::platform::macos::ActivationPolicy::Regular);
                     }
 
                     self.window.set_visible(true);

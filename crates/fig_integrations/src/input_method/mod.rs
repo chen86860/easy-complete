@@ -1,6 +1,3 @@
-// This is needed for objc
-#![allow(unexpected_cfgs)]
-
 use std::borrow::Cow;
 use std::io::ErrorKind;
 use std::path::{Path, PathBuf};
@@ -22,8 +19,8 @@ use fig_util::consts::CLI_BINARY_NAME;
 use fig_util::directories::home_dir;
 use fig_util::macos::BUNDLE_CONTENTS_HELPERS_PATH;
 use macos_utils::applications;
-use objc::runtime::Object;
-use objc::{class, msg_send, sel, sel_impl};
+use objc2_app_kit::NSRunningApplication;
+use objc2_foundation::NSString;
 use serde::{Deserialize, Serialize};
 use tokio::fs;
 use tracing::{debug, info, trace};
@@ -372,21 +369,6 @@ impl InputMethod {
     }
 }
 
-fn str_to_nsstring(str: &str) -> &Object {
-    const UTF8_ENCODING: usize = 4;
-    unsafe {
-        let ns_string: &mut Object = msg_send![class!(NSString), alloc];
-        let ns_string: &mut Object = msg_send![
-            ns_string,
-            initWithBytes: str.as_ptr()
-            length: str.len()
-            encoding: UTF8_ENCODING
-        ];
-        let _: () = msg_send![ns_string, autorelease];
-        ns_string
-    }
-}
-
 #[async_trait]
 impl Integration for InputMethod {
     async fn is_installed(&self) -> Result<()> {
@@ -580,19 +562,11 @@ impl Integration for InputMethod {
             inner: "Could not get bundle id".into(),
         })?;
 
-        // todo(mschrage): Terminate input method binary using Cocoa APIs
-        unsafe {
-            let bundle_id: &Object = str_to_nsstring(binding.as_str());
-            let running_input_method_array: &mut Object = msg_send![
-                class!(NSRunningApplication),
-                runningApplicationsWithBundleIdentifier: bundle_id
-            ];
-            let running_input_method_array_len: u64 = msg_send![running_input_method_array, count];
-
-            if running_input_method_array_len > 0 {
-                let running_input_method: &mut Object = msg_send![running_input_method_array, objectAtIndex: 0];
-
-                let _: () = msg_send![running_input_method, terminate];
+        {
+            let bundle_id = NSString::from_str(&binding);
+            let running = NSRunningApplication::runningApplicationsWithBundleIdentifier(&bundle_id);
+            if let Some(input_method) = running.firstObject() {
+                input_method.terminate();
             }
         }
 

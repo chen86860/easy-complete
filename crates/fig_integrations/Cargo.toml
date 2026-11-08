@@ -40,7 +40,9 @@ macos-utils = { path = "../macos-utils" }
 accessibility-sys = { path = "../macos-utils/accessibility-master/accessibility-sys", version = "0.1.3" }
 core-foundation = "0.10.0"
 plist = "1.7.1"
-objc.workspace = true
+objc2.workspace = true
+objc2-app-kit = { workspace = true, features = ["NSRunningApplication"] }
+objc2-foundation = { workspace = true, features = ["NSArray", "NSError", "NSString"] }
 
 [dev-dependencies]
 tempfile.workspace = true

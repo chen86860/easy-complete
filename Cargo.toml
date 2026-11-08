@@ -4,7 +4,6 @@ members = [
     "crates/*",
     "crates/macos-utils/accessibility-master/accessibility",
     "crates/macos-utils/accessibility-master/accessibility-sys",
-    "crates/macos-utils/appkit-nsworkspace-bindings",
 ]
 default-members = ["crates/ec_cli"]
 
@@ -19,7 +18,6 @@ license = "MIT"
 [workspace.dependencies]
 anstream = "1.0.0"
 anyhow = "1.0.98"
-appkit-nsworkspace-bindings = { path = "crates/macos-utils/appkit-nsworkspace-bindings" }
 assert_cmd = "2.0.17" # This version is required for musl builds to succeed
 async-trait = "0.1.87"
 base64 = "0.23.0"
@@ -37,7 +35,6 @@ clap = { version = "4.5.32", features = [
     "wrap_help",
 ] }
 chrono = { version = "0.4", features = ["serde"] }
-cocoa = "0.26.0"
 color-print = "0.3.5"
 convert_case = "0.11.0"
 core-foundation = "0.10.0"
@@ -80,7 +77,6 @@ nix = { version = "0.31.3", features = [
     "term",
     "user",
 ] }
-objc = "0.2.7"
 objc2 = "0.6.5"
 objc2-app-kit = { version = "0.3.2", default-features = false, features = ["std"] }
 objc2-foundation = { version = "0.3.2", default-features = false, features = ["std"] }

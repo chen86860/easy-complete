@@ -9,7 +9,6 @@ pub enum Error {
 }
 
 #[cfg(target_os = "macos")]
-#[allow(unexpected_cfgs)]
 fn open_macos(url_str: impl AsRef<str>) -> Result<(), Error> {
     use objc2::AnyThread;
     use objc2_foundation::{NSString, NSURL};

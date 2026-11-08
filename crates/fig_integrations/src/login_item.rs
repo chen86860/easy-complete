@@ -3,8 +3,6 @@
 //! macOS 13 and later use `SMAppService.mainAppService`, which makes the app a
 //! user-manageable Login Item. macOS 12 falls back to a per-user LaunchAgent.
 
-#![allow(unexpected_cfgs)]
-
 use std::borrow::Cow;
 use std::fs;
 use std::path::PathBuf;
@@ -12,8 +10,10 @@ use std::process::Command;
 
 use fig_util::consts::{APP_BUNDLE_ID, APP_PROCESS_NAME};
 use fig_util::launchd_plist::{LaunchdPlist, create_launch_agent};
-use objc::runtime::{BOOL, Class, Object};
-use objc::{msg_send, sel, sel_impl};
+use objc2::msg_send;
+use objc2::rc::Retained;
+use objc2::runtime::{AnyClass, AnyObject};
+use objc2_foundation::NSError;
 use tracing::{debug, warn};
 
 use crate::{Error, Result};
@@ -65,7 +65,7 @@ pub fn set_enabled(enabled: bool) -> Result<()> {
 /// Return whether launch at login is currently enabled by the system.
 pub fn is_enabled() -> Result<bool> {
     if let Some(service) = sm_app_service() {
-        Ok(sm_app_service_status(service) == ServiceStatus::Enabled)
+        Ok(sm_app_service_status(&service) == ServiceStatus::Enabled)
     } else {
         Ok(legacy_launch_agent_path(LEGACY_LABEL)?.exists())
     }
@@ -76,22 +76,21 @@ pub fn supports_modern_login_item() -> bool {
     sm_app_service().is_some()
 }
 
-fn sm_app_service() -> Option<*mut Object> {
+fn sm_app_service() -> Option<Retained<AnyObject>> {
     // SMAppService exists only on macOS 13+. Looking the class up dynamically
     // keeps the same binary launchable on macOS 12.
-    let class = Class::get("SMAppService")?;
-    let service: *mut Object = unsafe { msg_send![class, mainAppService] };
-    if service.is_null() { None } else { Some(service) }
+    let class = AnyClass::get(c"SMAppService")?;
+    unsafe { msg_send![class, mainAppService] }
 }
 
-fn sm_app_service_status(service: *mut Object) -> ServiceStatus {
+fn sm_app_service_status(service: &AnyObject) -> ServiceStatus {
     let raw: isize = unsafe { msg_send![service, status] };
     ServiceStatus::from_raw(raw)
 }
 
 fn set_sm_app_service_enabled(enabled: bool) -> Result<()> {
     let service = sm_app_service().ok_or_else(|| Error::Custom("SMAppService is unavailable".into()))?;
-    let status = sm_app_service_status(service);
+    let status = sm_app_service_status(&service);
 
     if enabled && status == ServiceStatus::Enabled {
         return Ok(());
@@ -100,43 +99,24 @@ fn set_sm_app_service_enabled(enabled: bool) -> Result<()> {
         return Ok(());
     }
 
-    let mut error: *mut Object = std::ptr::null_mut();
-    let succeeded: BOOL = unsafe {
+    let result: Result<(), Retained<NSError>> = unsafe {
         if enabled {
-            msg_send![service, registerAndReturnError: &mut error]
+            msg_send![&*service, registerAndReturnError: _]
         } else {
-            msg_send![service, unregisterAndReturnError: &mut error]
+            msg_send![&*service, unregisterAndReturnError: _]
         }
     };
 
-    if succeeded {
-        return Ok(());
-    }
-
-    Err(Error::Custom(
-        sm_error_message(error, if enabled { "register" } else { "unregister" }).into(),
-    ))
-}
-
-fn sm_error_message(error: *mut Object, action: &str) -> String {
-    if error.is_null() {
-        return format!("Failed to {action} the Easy Complete login item");
-    }
-
-    unsafe {
-        let description: *mut Object = msg_send![error, localizedDescription];
-        if description.is_null() {
-            return format!("Failed to {action} the Easy Complete login item");
-        }
-        let utf8: *const std::ffi::c_char = msg_send![description, UTF8String];
-        if utf8.is_null() {
-            return format!("Failed to {action} the Easy Complete login item");
-        }
-        format!(
-            "Failed to {action} the Easy Complete login item: {}",
-            std::ffi::CStr::from_ptr(utf8).to_string_lossy()
+    result.map_err(|error| {
+        let action = if enabled { "register" } else { "unregister" };
+        Error::Custom(
+            format!(
+                "Failed to {action} the Easy Complete login item: {}",
+                error.localizedDescription()
+            )
+            .into(),
         )
-    }
+    })
 }
 
 fn set_legacy_launch_agent_enabled(enabled: bool) -> Result<()> {

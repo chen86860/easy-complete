@@ -36,7 +36,6 @@ tracing.workspace = true
 whoami.workspace = true
 
 [target.'cfg(target_os = "macos")'.dependencies]
-appkit-nsworkspace-bindings.workspace = true
 core-foundation = "0.10.0"
 macos-utils = { path = "../macos-utils" }
 objc2.workspace = true

@@ -21,7 +21,7 @@ use macos_utils::{NotificationCenter, WindowServer, WindowServerEvent};
 use objc2::encode::{Encode, Encoding};
 use objc2::rc::Retained;
 use objc2::runtime::{AnyClass, AnyObject, Bool, Imp, Sel};
-use objc2::{msg_send, sel};
+use objc2::{ClassType, msg_send, sel};
 use objc2_app_kit::{NSApplication, NSWindow};
 use objc2_foundation::{
     MainThreadMarker, NSAppleEventDescriptor, NSAppleEventManager, NSDictionary, NSOperationQueue, ns_string,
@@ -29,7 +29,7 @@ use objc2_foundation::{
 use serde::Serialize;
 use tao::dpi::{LogicalPosition, LogicalSize, Position};
 use tao::platform::macos::{ActivationPolicy, EventLoopWindowTargetExtMacOS, WindowExtMacOS as _};
-use tracing::{debug, error, info, trace, warn};
+use tracing::{debug, error, info, warn};
 
 use super::{PlatformBoundEvent, PlatformWindow};
 use crate::event::{Event, WindowEvent, WindowPosition};
@@ -269,13 +269,17 @@ impl PlatformStateImpl {
         }
         let types = CString::new(types).unwrap();
 
-        let Some(class) = AnyClass::get(c"WryWebView") else {
-            warn!("WryWebView class is unavailable; not overriding {sel:?}");
-            return;
-        };
+        // wry 0.57 lets objc2 generate the runtime class name (module path plus crate version), so
+        // the class cannot be looked up as "WryWebView"; take it from the type instead.
+        let class = wry::WryWebView::class();
         let res =
             unsafe { objc2::ffi::class_addMethod(class as *const AnyClass as *mut AnyClass, sel, imp, types.as_ptr()) };
-        trace!(sel = ?sel, res = res.as_bool(), "class_addMethod");
+        let class_name = class.name().to_string_lossy();
+        if res.as_bool() {
+            debug!(sel = ?sel, class = %class_name, "Overrode webview method");
+        } else {
+            warn!(sel = ?sel, class = %class_name, "Failed to override webview method");
+        }
     }
 
     pub(super) fn handle(

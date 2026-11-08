@@ -1,4 +1,6 @@
 import type React from "react";
+import { useId } from "react";
+import { RowLabelContext } from "./row-label";
 import clsx from "clsx";
 
 export function Row({
@@ -20,6 +22,9 @@ export function Row({
    */
   nested?: boolean;
 }) {
+  const id = useId();
+  const labelId = `${id}-label`;
+  const descriptionId = description ? `${id}-description` : undefined;
   return (
     <div
       className={clsx(
@@ -40,17 +45,25 @@ export function Row({
       )}
       <div className="min-w-0 flex-1">
         <div
+          id={labelId}
           className={clsx("text-[13px] leading-[1.35] text-[var(--ds-label)]")}
         >
           {label}
         </div>
         {description ? (
-          <div className="mt-0.5 max-w-[36rem] text-[11px] leading-[1.4] text-[var(--ds-label-secondary)]">
+          <div
+            id={descriptionId}
+            className="mt-0.5 max-w-[36rem] text-[11px] leading-[1.4] text-[var(--ds-label-secondary)]"
+          >
             {description}
           </div>
         ) : null}
       </div>
-      <div className="flex-shrink-0">{children}</div>
+      <div className="flex-shrink-0">
+        <RowLabelContext.Provider value={{ labelId, descriptionId }}>
+          {children}
+        </RowLabelContext.Provider>
+      </div>
     </div>
   );
 }

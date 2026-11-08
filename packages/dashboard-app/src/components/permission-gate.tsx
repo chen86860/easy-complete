@@ -7,22 +7,24 @@ import type {
 } from "../hooks/use-permission-check";
 import { useI18n } from "../i18n";
 import { Toggle } from "./controls";
+import { RowLabelContext } from "./row-label";
 import { IconCheck, IconWarning } from "./icons";
 
 function StatusBadge({ state }: { state: PermissionState }) {
   const { t } = useI18n();
 
   return (
+    // Symbol plus colored text, as System Settings marks status; no pill.
     <span
       className={clsx(
-        "inline-flex min-w-[92px] items-center justify-center rounded-full px-2.5 py-1 text-[12px] font-semibold",
+        "inline-flex items-center text-[12px] font-medium",
         state === "ready"
-          ? "bg-[var(--ds-green-bg)] text-[var(--ds-green-text)]"
-          : "bg-[var(--ds-orange-bg)] text-[var(--ds-orange-text)]",
+          ? "text-[var(--ds-green-text)]"
+          : "text-[var(--ds-orange-text)]",
       )}
     >
       {state === "ready" ? <IconCheck /> : <IconWarning />}
-      <span className="ml-1.5">{t(`permission.status.${state}`)}</span>
+      <span className="ml-1">{t(`permission.status.${state}`)}</span>
     </span>
   );
 }
@@ -31,12 +33,17 @@ function PermissionRow({
   permission,
   allPermissions,
   repairing,
+  primary,
   onRepair,
+  onSkip,
 }: {
   permission: PermissionStatus;
   allPermissions: PermissionStatus[];
   repairing: PermissionId | "all" | null;
+  /** The window's one default button: set on the only step left to do. */
+  primary: boolean;
   onRepair: (id: PermissionId) => void;
+  onSkip: (id: PermissionId) => void;
 }) {
   const { t } = useI18n();
   const busy = repairing === permission.id || repairing === "all";
@@ -45,18 +52,22 @@ function PermissionRow({
   const blockedBy = permission.requires?.find(
     (reqId) => allPermissions.find((p) => p.id === reqId)?.state !== "ready",
   );
-  const blocked = blockedBy !== undefined;
+  // A finished step is never blocked, whatever it depended on.
+  const blocked = canRepair && blockedBy !== undefined;
 
   return (
-    <div className="flex min-h-[78px] items-center justify-between gap-5 border-b border-[var(--ds-separator)] px-[18px] py-4 last:border-b-0">
+    <div className="relative flex min-h-[64px] items-center justify-between gap-5 px-3.5 py-3 after:absolute after:inset-x-3.5 after:bottom-0 after:h-px after:bg-[var(--ds-separator)] last:after:hidden">
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2.5">
           <div className="text-[14px] font-semibold leading-5 text-[var(--ds-label)]">
             {permission.title}
           </div>
-          <StatusBadge state={permission.state} />
+          {/* A step still to do is marked by its button; only finished ones get a badge. */}
+          {permission.state === "ready" ? (
+            <StatusBadge state={permission.state} />
+          ) : null}
           {permission.optional ? (
-            <span className="rounded-full bg-[var(--ds-chip-bg)] px-2 py-0.5 text-[12px] font-medium text-[var(--ds-label-secondary)]">
+            <span className="text-[12px] text-[var(--ds-label-tertiary)]">
               {t("permission.optional")}
             </span>
           ) : null}
@@ -75,14 +86,32 @@ function PermissionRow({
         ) : null}
       </div>
 
-      <button
-        type="button"
-        disabled={!canRepair || busy || blocked}
-        onClick={() => onRepair(permission.id)}
-        className="mac-button mac-button-primary min-w-[130px]"
-      >
-        {busy ? t("permission.working") : permission.repairLabel}
-      </button>
+      {/* A finished step has nothing left to press. */}
+      {canRepair ? (
+        <div className="flex flex-shrink-0 items-center gap-2">
+          {permission.skippable ? (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => onSkip(permission.id)}
+              className="mac-button"
+            >
+              {t("permission.skip")}
+            </button>
+          ) : null}
+          <button
+            type="button"
+            disabled={busy || blocked}
+            onClick={() => onRepair(permission.id)}
+            className={clsx(
+              "mac-button min-w-[130px]",
+              primary && "mac-button-primary",
+            )}
+          >
+            {busy ? t("permission.working") : permission.repairLabel}
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -97,6 +126,7 @@ export function PermissionGate({
   onRefresh,
   onRepair,
   onRepairAll,
+  onSkip,
   telemetryEnabled,
   onTelemetryChange,
 }: {
@@ -109,10 +139,18 @@ export function PermissionGate({
   onRefresh: () => void;
   onRepair: (id: PermissionId) => void;
   onRepairAll: () => void;
+  onSkip: (id: PermissionId) => void;
   telemetryEnabled: boolean;
   onTelemetryChange: (value: boolean) => void;
 }) {
   const { t } = useI18n();
+  // Optional steps never block the dashboard and "Fix All" skips them.
+  const pending = permissions.filter(
+    (p) => !p.optional && (p.state === "missing" || p.state === "error"),
+  );
+  // One default button per window: "Fix All" when several steps are left,
+  // otherwise the remaining step's own button.
+  const showFixAll = pending.length > 1;
 
   if (ready || import.meta.env.DEV) return <>{children}</>;
 
@@ -136,14 +174,16 @@ export function PermissionGate({
           </p>
         </div>
 
-        <div className="overflow-hidden rounded-[14px] border border-[var(--ds-card-border)] bg-[var(--ds-card-bg-solid)] shadow-[inset_0_0_0_0.5px_var(--ds-card-inset)]">
+        <div className="overflow-hidden rounded-xl border border-[var(--ds-card-border)] bg-[var(--ds-card-bg)] shadow-[inset_0_0_0_0.5px_var(--ds-card-inset)]">
           {permissions.map((permission) => (
             <PermissionRow
               key={permission.id}
               permission={permission}
               allPermissions={permissions}
               repairing={repairing}
+              primary={!showFixAll && pending[0]?.id === permission.id}
               onRepair={onRepair}
+              onSkip={onSkip}
             />
           ))}
         </div>
@@ -157,27 +197,43 @@ export function PermissionGate({
           >
             {refreshing ? t("permission.checking") : t("permission.checkAgain")}
           </button>
-          <button
-            type="button"
-            onClick={onRepairAll}
-            disabled={repairing !== null}
-            className="mac-button mac-button-primary"
-          >
-            {repairing ? t("permission.working") : t("permission.fixAll")}
-          </button>
+          {showFixAll ? (
+            <button
+              type="button"
+              onClick={onRepairAll}
+              disabled={repairing !== null}
+              className="mac-button mac-button-primary"
+            >
+              {repairing ? t("permission.working") : t("permission.fixAll")}
+            </button>
+          ) : null}
         </div>
 
-        <div className="mt-5 flex items-start justify-between gap-4 rounded-[12px] bg-[var(--ds-chip-bg)] px-4 py-3">
-          <div>
-            <div className="text-[13px] font-medium text-[var(--ds-label)]">
-              {t("permission.shareUsageData")}
+        {/* Same card, padding and type as the permission rows above. */}
+        <div className="mt-5 overflow-hidden rounded-xl border border-[var(--ds-card-border)] bg-[var(--ds-card-bg)] shadow-[inset_0_0_0_0.5px_var(--ds-card-inset)]">
+          <div className="flex items-center justify-between gap-5 px-3.5 py-3">
+            <div className="min-w-0 flex-1">
+              <div
+                id="share-usage-label"
+                className="text-[14px] font-semibold leading-5 text-[var(--ds-label)]"
+              >
+                {t("permission.shareUsageData")}
+              </div>
+              <div
+                id="share-usage-description"
+                className="mt-1 text-[12px] leading-[17px] text-[var(--ds-label-secondary)]"
+              >
+                {t("permission.shareUsageDataDescription")}
+              </div>
             </div>
-            <div className="mt-0.5 text-[12px] leading-[1.5] text-[var(--ds-label-secondary)]">
-              {t("permission.shareUsageDataDescription")}
-            </div>
-          </div>
-          <div className="mt-0.5">
-            <Toggle checked={telemetryEnabled} onChange={onTelemetryChange} />
+            <RowLabelContext.Provider
+              value={{
+                labelId: "share-usage-label",
+                descriptionId: "share-usage-description",
+              }}
+            >
+              <Toggle checked={telemetryEnabled} onChange={onTelemetryChange} />
+            </RowLabelContext.Provider>
           </div>
         </div>
       </div>

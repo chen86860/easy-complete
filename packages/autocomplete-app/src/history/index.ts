@@ -23,7 +23,8 @@ import {
   SETTINGS,
   getSetting,
 } from "@easy-complete/api-bindings-wrappers";
-import { Settings } from "@easy-complete/api-bindings";
+import { Settings, fs } from "@easy-complete/api-bindings";
+import { HistoryShell, readShellHistoryFile } from "./shellHistoryFile";
 import {
   AnnotatedCommand,
   HistoryEntry,
@@ -247,24 +248,27 @@ export const loadHistory = async (
 ) => {
   const loadHistoryCommand = async (
     command: string,
-    shell?: string,
+    shell?: HistoryShell,
   ): Promise<HistorySource> => {
     let items: HistoryEntry[] = [];
     try {
-      let history: string;
+      let lines: string[] | null = null;
       if (shell) {
-        history = await executeLoginShell({ command, shell });
+        lines = await readShellHistoryFile(shell, fs.readBinary);
+        if (lines === null) {
+          // No default history file: ask the shell, which honours a custom
+          // HISTFILE or ZDOTDIR.
+          lines = (await executeLoginShell({ command, shell })).split("\n");
+        }
       } else {
-        history = (
+        lines = (
           await executeCommand({
             command: "zsh",
             args: ["-c", command],
           })
-        ).stdout;
+        ).stdout.split("\n");
       }
-      items = history
-        .split("\n")
-        .map((text) => ({ text, context: {}, commands: [] }));
+      items = lines.map((text) => ({ text, context: {}, commands: [] }));
     } catch (err) {
       historyLogger.error(err as Error);
     }

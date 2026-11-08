@@ -79,10 +79,11 @@ jobs:
               website/*) website=true; continue ;;
               *.md | docs/* | LICENSE | NOTICE | .github/ISSUE_TEMPLATE/* | .claude/*) continue ;;
               # Release-only inputs: CI has no check that reads them.
-              bundle/* | themes/* | assets/* | THIRD_PARTY_NOTICES.txt) continue ;;
+              bundle/* | assets/* | THIRD_PARTY_NOTICES.txt) continue ;;
               .github/workflows/*) rust=true javascript=true website=true ;;
               crates/* | Cargo.toml | Cargo.lock | rust-toolchain.toml | .cargo/* | .rustfmt.toml) rust=true ;;
-              packages/* | package.json | pnpm-lock.yaml | pnpm-workspace.yaml | turbo.json \
+              # The dashboard imports themes/*.json for its theme previews.
+              packages/* | themes/* | package.json | pnpm-lock.yaml | pnpm-workspace.yaml | turbo.json \
                 | vitest.config.ts | .prettierrc | .lintstagedrc.mjs | .husky/*) javascript=true ;;
               # proto/, scripts/ and anything unlisted feed both stacks.
               *) rust=true javascript=true ;;

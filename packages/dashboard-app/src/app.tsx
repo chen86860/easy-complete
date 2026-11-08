@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { State } from "@easy-complete/api-bindings";
 import {
   settingOrDefault,
   SETTINGS,
@@ -23,6 +24,13 @@ export default function App() {
   useDashboardNavigation(setSection);
   useWindowFocus();
 
+  // A fresh install queues telemetry until the user has been past this gate and its
+  // telemetry toggle; passing it releases the queue (see fig_telemetry::hold_until_consent).
+  useEffect(() => {
+    if (permissionCheck.ready)
+      State.remove("telemetry.consent_pending").catch(() => {});
+  }, [permissionCheck.ready]);
+
   return (
     <div className="relative flex h-screen select-none overflow-hidden bg-transparent font-sans text-[var(--ds-label)] [accent-color:var(--dashboard-accent-color)] [overscroll-behavior:none] [-webkit-touch-callout:none]">
       <DashboardWindowChrome />
@@ -35,6 +43,7 @@ export default function App() {
         onRefresh={permissionCheck.refresh}
         onRepair={permissionCheck.repair}
         onRepairAll={permissionCheck.repairAll}
+        onSkip={permissionCheck.skip}
         telemetryEnabled={settingOrDefault<boolean>(
           settings,
           SETTINGS.TELEMETRY_ENABLED,

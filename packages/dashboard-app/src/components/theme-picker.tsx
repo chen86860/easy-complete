@@ -1,6 +1,8 @@
+import type React from "react";
 import clsx from "clsx";
+import commandIcon from "../../../../crates/fig_desktop/icons/autocomplete/command.png";
 import { useI18n } from "../i18n";
-import { THEMES, type ThemeEntry } from "../theme-catalog";
+import { THEMES, type PopupColors, type ThemeEntry } from "../theme-catalog";
 
 const THEME_GROUPS: Array<{
   appearance: ThemeEntry["appearance"];
@@ -10,135 +12,91 @@ const THEME_GROUPS: Array<{
   { appearance: "dark" },
 ];
 
-function ThemePreview({ theme }: { theme: ThemeEntry }) {
-  const lightChrome =
-    theme.appearance === "light" || theme.appearance === "system";
+// What the popup shows after typing `git c`: the real rows, args, matches and
+// description, so each thumbnail reads exactly like the popup in the terminal.
+const PREVIEW_TYPED = "c";
+const PREVIEW_ROWS: Array<{ name: string; args?: string }> = [
+  { name: "checkout", args: "[branch, file, tag or commit]" },
+  { name: "commit", args: "[pathspec...]" },
+  { name: "clone", args: "<repository> [directory]" },
+];
+const PREVIEW_DESCRIPTION = "Switch branches or restore working tree files";
 
+/**
+ * The popup inset on a backdrop shaded from the theme's own background. "Follow
+ * system" keeps a neutral grey backdrop and splits only the popup with a steep
+ * slash: light on the left, dark on the right.
+ */
+function ThemePreview({ theme }: { theme: ThemeEntry }) {
+  const c = theme.colors;
   return (
     <div
-      className={clsx(
-        "overflow-hidden rounded-[9px] border transition-[border-color,box-shadow,transform] duration-150",
-        theme.bgClassName,
-        lightChrome
-          ? "border-[rgba(60,60,67,0.16)] shadow-[0_0.5px_1px_rgba(0,0,0,0.08)]"
-          : "border-[rgba(255,255,255,0.15)] shadow-[0_0.5px_1px_rgba(0,0,0,0.28)]",
-      )}
+      className="rounded-lg p-2.5"
+      style={{
+        backgroundColor: theme.darkColors
+          ? "var(--ds-chip-bg)"
+          : `color-mix(in srgb, ${c.background} 90%, ${c.text})`,
+      }}
     >
-      <div
-        className={clsx(
-          "flex h-5 items-center gap-1.5 border-b px-2",
-          lightChrome
-            ? "border-[rgba(60,60,67,0.11)]"
-            : "border-[rgba(255,255,255,0.10)]",
-        )}
-      >
-        <div
-          className={clsx(
-            "h-1.5 w-1.5 rounded-full opacity-55",
-            theme.accentClassName,
-          )}
-        />
-        <div
-          className={clsx(
-            "h-1.5 w-1.5 rounded-full opacity-38",
-            theme.textClassName,
-          )}
-        />
-        <div
-          className={clsx(
-            "h-1.5 w-1.5 rounded-full opacity-32",
-            theme.textClassName,
-          )}
-        />
-        <div
-          className={clsx(
-            "mx-auto flex h-3.5 w-[46%] items-center gap-1 rounded-[5px] border px-1.5 opacity-75",
-            lightChrome
-              ? "border-[rgba(60,60,67,0.14)]"
-              : "border-[rgba(255,255,255,0.12)]",
-          )}
-        >
+      <div className="relative">
+        <PopupPreview c={c} />
+        {theme.darkColors ? (
           <div
-            className={clsx(
-              "h-1.5 flex-1 rounded-full opacity-45",
-              theme.textClassName,
-            )}
-          />
-          <div
-            className={clsx(
-              "h-1.5 w-1.5 rotate-45 border-b border-r",
-              lightChrome
-                ? "border-[rgba(60,60,67,0.48)]"
-                : "border-[rgba(255,255,255,0.52)]",
-            )}
-          />
-        </div>
-      </div>
-
-      <div className="px-3 py-3">
-        <div className="flex items-center gap-2">
-          <div
-            className={clsx("h-2 w-2 rounded-[3px]", theme.accentClassName)}
-          />
-          <div
-            className={clsx(
-              "h-2.5 w-[42%] rounded-[4px] opacity-55",
-              theme.textClassName,
-            )}
-          />
-          <div
-            className={clsx(
-              "h-4 flex-1 rounded-[5px] border px-1.5",
-              lightChrome
-                ? "border-[rgba(60,60,67,0.15)] bg-[rgba(255,255,255,0.35)]"
-                : "border-[rgba(255,255,255,0.12)] bg-[rgba(255,255,255,0.03)]",
-            )}
+            className="absolute -inset-2 p-2"
+            style={{ clipPath: "polygon(62% 0, 100% 0, 100% 100%, 42% 100%)" }}
           >
-            <div className="flex h-full items-center gap-1.5">
-              <div
-                className={clsx(
-                  "h-1.5 flex-1 rounded-full opacity-38",
-                  theme.textClassName,
-                )}
-              />
-              <div
-                className={clsx(
-                  "h-1.5 w-1.5 rotate-45 border-b border-r",
-                  lightChrome
-                    ? "border-[rgba(60,60,67,0.42)]"
-                    : "border-[rgba(255,255,255,0.44)]",
-                )}
-              />
-            </div>
+            <PopupPreview c={theme.darkColors} />
           </div>
-        </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
 
-        <div className="mt-2 flex items-center gap-2">
+/** The suggestion popup in the theme's real colours. */
+function PopupPreview({ c }: { c: PopupColors }) {
+  return (
+    <div
+      className="overflow-hidden rounded-[5px] border font-mono text-[10.5px] leading-4 shadow-[0_2px_6px_rgba(0,0,0,0.18)]"
+      style={{ backgroundColor: c.background, borderColor: c.border }}
+    >
+      {PREVIEW_ROWS.map(({ name, args }, index) => {
+        const selected = index === 0;
+        return (
           <div
-            className={clsx(
-              "h-1.5 w-[30%] rounded-full opacity-38",
-              theme.textClassName,
-            )}
-          />
-          <div
-            className={clsx(
-              "h-1.5 w-[22%] rounded-full opacity-32",
-              theme.textClassName,
-            )}
-          />
-          <div
-            className={clsx(
-              "h-1.5 w-[18%] rounded-full opacity-26",
-              theme.textClassName,
-            )}
-          />
-        </div>
-        <div
-          className={clsx(
-            "mt-1.5 h-[3px] w-8 rounded-full",
-            theme.accentClassName,
-          )}
-        />
+            key={name}
+            className="flex items-center gap-1 py-0.5 pl-1"
+            style={
+              selected
+                ? {
+                    backgroundColor: c.selectionBackground,
+                    color: c.selectionText,
+                  }
+                : { color: c.text }
+            }
+          >
+            <img src={commandIcon} alt="" className="size-3 shrink-0" />
+            <span className="min-w-0 truncate whitespace-pre">
+              <mark
+                className="text-inherit"
+                style={{
+                  backgroundColor: `color-mix(in srgb, ${selected ? c.selectionMatch : c.match} 80%, transparent)`,
+                }}
+              >
+                {name.slice(0, PREVIEW_TYPED.length)}
+              </mark>
+              {name.slice(PREVIEW_TYPED.length)}
+              {args ? <span className="opacity-50"> {args}</span> : null}
+            </span>
+          </div>
+        );
+      })}
+      <div
+        className="flex items-center gap-1 border-t py-0.5 pl-1.5 pr-1 italic"
+        style={{ borderColor: c.border, color: c.descriptionText }}
+      >
+        <span className="min-w-0 flex-1 truncate">{PREVIEW_DESCRIPTION}</span>
+        <span className="shrink-0 not-italic">^k</span>
       </div>
     </div>
   );
@@ -148,16 +106,23 @@ function ThemeOption({
   theme,
   label,
   active,
+  focusable,
   onSelect,
 }: {
   theme: ThemeEntry;
   label: string;
   active: boolean;
+  focusable: boolean;
   onSelect: (id: string) => void;
 }) {
   return (
     <button
       type="button"
+      role="radio"
+      aria-checked={active}
+      // Roving focus: Tab enters the group on the selected theme, arrows move.
+      tabIndex={focusable ? 0 : -1}
+      data-theme-id={theme.id}
       onClick={() => onSelect(theme.id)}
       title={label}
       className={clsx(
@@ -165,19 +130,23 @@ function ThemeOption({
       )}
     >
       <div
+        aria-hidden
         className={clsx(
-          "rounded-[13px] border-2 p-1 ",
-          active ? "border-[AccentColor]" : "border-transparent",
+          "theme-option-frame rounded-[13px] border-2 p-1",
+          active
+            ? "theme-option-frame-on border-[AccentColor]"
+            : "border-transparent",
         )}
       >
         <ThemePreview theme={theme} />
       </div>
       <div className="mt-1.5 flex min-w-0 items-center gap-1.5 px-0.5">
         <span
+          aria-hidden
           className={clsx(
             "flex h-3.5 w-3.5 flex-shrink-0 items-center justify-center rounded-full border",
             active
-              ? "border-[AccentColor] bg-[AccentColor]"
+              ? "theme-option-radio-on border-[AccentColor] bg-[AccentColor]"
               : "border-[var(--ds-radio-border)] bg-[var(--ds-radio-bg)]",
           )}
         >
@@ -231,8 +200,39 @@ export function ThemePicker({
     system: t("theme.system"),
   };
 
+  // One radio group across all sections: arrows step through every theme in
+  // reading order and select it, as a native radio group does.
+  const order = groups.flatMap((group) =>
+    group.themes.map((theme) => theme.id),
+  );
+  const focusableId = order.includes(value) ? value : order[0];
+  const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const step =
+      event.key === "ArrowRight" || event.key === "ArrowDown"
+        ? 1
+        : event.key === "ArrowLeft" || event.key === "ArrowUp"
+          ? -1
+          : 0;
+    const current = (event.target as HTMLElement).closest<HTMLElement>(
+      "[data-theme-id]",
+    )?.dataset.themeId;
+    if (step === 0 || current === undefined) return;
+    event.preventDefault();
+    const next =
+      order[(order.indexOf(current) + step + order.length) % order.length];
+    onChange(next);
+    event.currentTarget
+      .querySelector<HTMLElement>(`[data-theme-id="${next}"]`)
+      ?.focus();
+  };
+
   return (
-    <div className="space-y-5 px-4 pb-4 pt-3.5">
+    <div
+      role="radiogroup"
+      aria-label={t("theme.title")}
+      onKeyDown={onKeyDown}
+      className="space-y-5 px-4 pb-4 pt-3.5"
+    >
       {groups.map(({ key, label, themes }) => {
         if (themes.length === 0) {
           return null;
@@ -250,6 +250,7 @@ export function ThemePicker({
                   theme={theme}
                   label={themeLabels[theme.id] ?? theme.label}
                   active={value === theme.id}
+                  focusable={focusableId === theme.id}
                   onSelect={onChange}
                 />
               ))}

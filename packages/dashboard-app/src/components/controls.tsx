@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { useRowLabel } from "./row-label";
 
 // WebKit's `switch` attribute renders the system switch, so it tracks the
 // macOS version, the accent color (set on the app root), dark mode and
@@ -16,8 +17,10 @@ export function Toggle({
   /** Tints the "on" state red, for settings whose on state carries risk. */
   danger?: boolean;
 }) {
+  const rowLabel = useRowLabel();
   return (
     <input
+      {...rowLabel}
       type="checkbox"
       {...NATIVE_SWITCH}
       checked={checked}
@@ -46,9 +49,11 @@ export function Select({
   onChange: (value: string) => void;
   disabled?: boolean;
 }) {
+  const rowLabel = useRowLabel();
   return (
     <span className="mac-popup" data-disabled={disabled || undefined}>
       <select
+        {...rowLabel}
         value={value}
         disabled={disabled}
         onChange={(event) => onChange(event.target.value)}
@@ -90,8 +95,10 @@ export function NumberInput({
   unit?: string;
   onChange: (value: number) => void;
 }) {
+  const rowLabel = useRowLabel();
   const input = (
     <input
+      {...rowLabel}
       key={value}
       type="number"
       defaultValue={value}
@@ -128,8 +135,10 @@ export function TextInput({
   placeholder?: string;
   onChange: (value: string) => void;
 }) {
+  const rowLabel = useRowLabel();
   return (
     <input
+      {...rowLabel}
       key={value}
       type="text"
       defaultValue={value}

@@ -7,9 +7,9 @@ use fig_util::directories::fig_data_dir;
 #[cfg(target_os = "macos")]
 use macos_utils::bundle::get_bundle_path_for_executable;
 use semver::Version;
-use tracing::error;
 #[cfg(target_os = "linux")]
 use tracing::info;
+use tracing::{error, warn};
 
 #[allow(unused_imports)]
 use crate::utils::is_cargo_debug_build;
@@ -149,6 +149,9 @@ pub async fn run_install(ctx: Arc<Context>, ignore_immediate_update: bool, is_st
 
     purge_recorded_history();
 
+    #[cfg(target_os = "macos")]
+    record_input_method_terminals();
+
     // Runs on every launch, unlike the once-per-version install script below.
     #[cfg(target_os = "macos")]
     let surface_permissions = reconcile_accessibility_permission();
@@ -163,6 +166,7 @@ pub async fn run_install(ctx: Arc<Context>, ignore_immediate_update: bool, is_st
         // terminal that needs it.
         // First run (no previous_version) = fresh install; otherwise = update.
         if previous_version().is_none() {
+            fig_telemetry::hold_until_consent();
             fig_telemetry::track("app_installed");
         } else {
             fig_telemetry::track_with_props(
@@ -1083,5 +1087,45 @@ echo "{binary_name} {version}"
                     .is_ok()
             );
         }
+    }
+}
+
+/// State key the dashboard reads: names of installed terminals that need the input method.
+pub const INPUT_METHOD_TERMINALS_KEY: &str = "input-method.needed-by";
+
+/// Installed terminals whose caret only the input method can follow (Ghostty, Kitty, ...),
+/// by display name. Terminal.app and iTerm2 users get an empty list.
+#[cfg(target_os = "macos")]
+fn installed_input_method_terminals() -> Vec<String> {
+    use fig_util::Terminal;
+    use fig_util::terminal::{IntelliJVariant, MACOS_TERMINALS};
+
+    let mut names: Vec<String> = MACOS_TERMINALS
+        .iter()
+        .cloned()
+        .chain(std::iter::once(Terminal::Nova))
+        .chain(
+            IntelliJVariant::all()
+                .iter()
+                .map(|v| Terminal::IntelliJ(Some(v.clone()))),
+        )
+        .filter(|terminal| terminal.supports_macos_input_method())
+        .filter(|terminal| {
+            terminal
+                .to_bundle_id()
+                .is_some_and(|id| macos_utils::url::path_for_application(&id).is_some())
+        })
+        .map(|terminal| terminal.to_string())
+        .collect();
+    names.dedup();
+    names
+}
+
+/// Refreshed on every launch, so a terminal installed or removed since is picked up.
+#[cfg(target_os = "macos")]
+fn record_input_method_terminals() {
+    let names = installed_input_method_terminals();
+    if let Err(err) = fig_settings::state::set_value(INPUT_METHOD_TERMINALS_KEY, serde_json::json!(names)) {
+        warn!(%err, "Failed to record terminals that need the input method");
     }
 }

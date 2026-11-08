@@ -191,11 +191,19 @@ mod macos {
 
         let automatically_checks = !fig_settings::settings::get_bool_or("app.disableAutoupdates", false);
 
+        // Automatic downloads stay off so a scheduled check prompts instead of installing
+        // silently. With them on (persisted as the SUAutomaticallyUpdate user default, which an
+        // older build may have left at YES), Sparkle downloads in the background and installs
+        // only when the app quits. A menu-bar agent rarely quits, so users would sit on an old
+        // version without knowing an update exists, and when this was introduced the silent
+        // install also failed outright, leaving neither a prompt nor an update. Writing NO on
+        // every launch also resets that stale default. `UserDriverDelegate` then brings the
+        // prompt to the front for this LSUIElement app.
         if let Some(updater) = updater(&controller) {
             // SAFETY: SPUUpdater exposes both selectors as settable properties.
             unsafe {
                 let _: () = msg_send![&*updater, setAutomaticallyChecksForUpdates: Bool::new(automatically_checks)];
-                let _: () = msg_send![&*updater, setAutomaticallyDownloadsUpdates: Bool::YES];
+                let _: () = msg_send![&*updater, setAutomaticallyDownloadsUpdates: Bool::NO];
             }
             info!("Sparkle updater controller ready");
         } else {

@@ -244,7 +244,7 @@ const getTitle = (
             if (t.type === "match") {
               return (
                 <mark
-                  className="bg-matching-bg/80 group-data-[active-item]:bg-selected-matching-bg/80 text-inherit brightness-95"
+                  className="bg-matching-bg/80 group-data-active-item:bg-selected-matching-bg/80 text-inherit brightness-95"
                   key={t.id}
                 >
                   <span className="brightness-125">{t.highlight}</span>
@@ -314,7 +314,7 @@ const Suggestion = ({
       />
       <div className="overflow-hidden" ref={textContainerRef}>
         <div
-          className="text data-[active-item]:text-selected-text group w-fit whitespace-nowrap"
+          className="text data-active-item:text-selected-text group w-fit whitespace-nowrap"
           // style={{
           //   animation:
           //     isActive &&

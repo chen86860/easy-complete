@@ -114,7 +114,7 @@ const Description = ({
         className={hasSuggestions ? "withSuggestions" : "px-2"}
         style={{ height: stackNameAndDescription ? height * 2 : height }}
       >
-        <span className="scrollbar-none flex-shrink overflow-x-auto overflow-y-hidden">
+        <span className="scrollbar-none shrink overflow-x-auto overflow-y-hidden">
           {name && <strong>{name}</strong>}
           {name && description && ": "}
           {stackNameAndDescription && <br />}
@@ -124,7 +124,7 @@ const Description = ({
         </span>
         {hasSuggestions && shouldShowHint && hint && (
           <div
-            className="descriptionHint rounded"
+            className="descriptionHint rounded-sm"
             style={{ fontSize: height * 0.5 }}
           >
             <span>{hint}</span>
@@ -152,7 +152,7 @@ const Description = ({
           maxHeight: maxHeight - 10,
         }}
       >
-        <div className="flex-shrink overflow-y-auto pl-1.5 pr-1">
+        <div className="shrink overflow-y-auto pl-1.5 pr-1">
           {itemDescription.trim() ? (
             <span
               style={{
@@ -168,7 +168,7 @@ const Description = ({
           )}
         </div>
         {shouldShowHint && hint && (
-          <div className="descriptionHint bg-description-border mx-1 w-fit justify-center self-end rounded text-xs">
+          <div className="descriptionHint bg-description-border mx-1 w-fit justify-center self-end rounded-sm text-xs">
             <span>{hint}</span>
           </div>
         )}

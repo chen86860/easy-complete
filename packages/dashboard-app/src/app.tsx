@@ -32,7 +32,7 @@ export default function App() {
   }, [permissionCheck.ready]);
 
   return (
-    <div className="relative flex h-screen select-none overflow-hidden bg-transparent font-sans text-[var(--ds-label)] [accent-color:var(--dashboard-accent-color)] [overscroll-behavior:none] [-webkit-touch-callout:none]">
+    <div className="relative flex h-screen select-none overflow-hidden bg-transparent font-sans text-(--ds-label) accent-(--dashboard-accent-color) overscroll-none [-webkit-touch-callout:none]">
       <DashboardWindowChrome />
       <PermissionGate
         permissions={permissionCheck.permissions}

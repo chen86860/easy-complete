@@ -29,7 +29,7 @@ export function Row({
     <div
       className={clsx(
         "relative flex min-h-[40px] items-center justify-between gap-4 py-2.5 pr-3.5",
-        nested ? "bg-[var(--ds-card-inset)] pl-[34px]" : "pl-3.5",
+        nested ? "bg-(--ds-card-inset) pl-[34px]" : "pl-3.5",
       )}
     >
       {last ? null : (
@@ -38,22 +38,22 @@ export function Row({
           className={clsx(
             "absolute bottom-0 right-3.5 h-px",
             nested
-              ? "left-[34px] bg-[var(--ds-separator-weak)]"
-              : "left-3.5 bg-[var(--ds-separator)]",
+              ? "left-[34px] bg-(--ds-separator-weak)"
+              : "left-3.5 bg-(--ds-separator)",
           )}
         />
       )}
       <div className="min-w-0 flex-1">
         <div
           id={labelId}
-          className={clsx("text-[13px] leading-[1.35] text-[var(--ds-label)]")}
+          className={clsx("text-[13px] leading-[1.35] text-(--ds-label)")}
         >
           {label}
         </div>
         {description ? (
           <div
             id={descriptionId}
-            className="mt-0.5 max-w-[36rem] text-[11px] leading-[1.4] text-[var(--ds-label-secondary)]"
+            className="mt-0.5 max-w-xl text-[11px] leading-[1.4] text-(--ds-label-secondary)"
           >
             {description}
           </div>
@@ -78,11 +78,11 @@ export function Card({
   return (
     <section className="mb-5">
       {title ? (
-        <div className="mb-1.5 pl-3.5 text-[13px] font-semibold text-[var(--ds-label)]">
+        <div className="mb-1.5 pl-3.5 text-[13px] font-semibold text-(--ds-label)">
           {title}
         </div>
       ) : null}
-      <div className="overflow-hidden rounded-xl border border-[var(--ds-card-border)] bg-[var(--ds-card-bg)] shadow-[inset_0_0_0_0.5px_var(--ds-card-inset)]">
+      <div className="overflow-hidden rounded-xl border border-(--ds-card-border) bg-(--ds-card-bg) shadow-[inset_0_0_0_0.5px_var(--ds-card-inset)]">
         {children}
       </div>
     </section>

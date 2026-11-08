@@ -27,7 +27,7 @@ export function Toggle({
       onChange={(event) => onChange(event.currentTarget.checked)}
       className={clsx(
         "native-switch m-0 flex-shrink-0",
-        danger && "[accent-color:var(--ds-red)]",
+        danger && "accent-(--ds-red)",
       )}
     />
   );
@@ -119,9 +119,7 @@ export function NumberInput({
   return (
     <div className="flex items-center gap-1.5">
       {input}
-      <span className="text-[13px] text-[var(--ds-label-tertiary)]">
-        {unit}
-      </span>
+      <span className="text-[13px] text-(--ds-label-tertiary)">{unit}</span>
     </div>
   );
 }

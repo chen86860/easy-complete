@@ -5,6 +5,7 @@ import {
   type HtmlTagDescriptor,
 } from "vite";
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 
 const csp: Record<string, string> = {
   "default-src": "'self'",
@@ -52,6 +53,7 @@ export default defineConfig(({ mode, command }) => {
   return {
     plugins: [
       react(),
+      tailwindcss(),
       htmlCspPlugin,
     ],
     css: {

@@ -20,8 +20,8 @@ function StatusBadge({ state }: { state: PermissionState }) {
       className={clsx(
         "inline-flex items-center text-[12px] font-medium",
         state === "ready"
-          ? "text-[var(--ds-green-text)]"
-          : "text-[var(--ds-orange-text)]",
+          ? "text-(--ds-green-text)"
+          : "text-(--ds-orange-text)",
       )}
     >
       {state === "ready" ? <IconCheck /> : <IconWarning />}
@@ -57,10 +57,10 @@ function PermissionRow({
   const blocked = canRepair && blockedBy !== undefined;
 
   return (
-    <div className="relative flex min-h-[64px] items-center justify-between gap-5 px-3.5 py-3 after:absolute after:inset-x-3.5 after:bottom-0 after:h-px after:bg-[var(--ds-separator)] last:after:hidden">
+    <div className="relative flex min-h-[64px] items-center justify-between gap-5 px-3.5 py-3 after:absolute after:inset-x-3.5 after:bottom-0 after:h-px after:bg-(--ds-separator) last:after:hidden">
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2.5">
-          <div className="text-[14px] font-semibold leading-5 text-[var(--ds-label)]">
+          <div className="text-[14px] font-semibold leading-5 text-(--ds-label)">
             {permission.title}
           </div>
           {/* A step still to do is marked by its button; only finished ones get a badge. */}
@@ -68,20 +68,20 @@ function PermissionRow({
             <StatusBadge state={permission.state} />
           ) : null}
           {permission.optional ? (
-            <span className="text-[12px] text-[var(--ds-label-tertiary)]">
+            <span className="text-[12px] text-(--ds-label-tertiary)">
               {t("permission.optional")}
             </span>
           ) : null}
         </div>
-        <div className="mt-1 text-[12px] leading-[17px] text-[var(--ds-label-secondary)]">
+        <div className="mt-1 text-[12px] leading-[17px] text-(--ds-label-secondary)">
           {permission.description}
         </div>
         {blocked ? (
-          <div className="mt-1.5 text-[12px] leading-[17px] text-[var(--ds-label-quaternary)]">
+          <div className="mt-1.5 text-[12px] leading-[17px] text-(--ds-label-quaternary)">
             {t("permission.accessibilityFirst")}
           </div>
         ) : permission.detail ? (
-          <div className="mt-1.5 text-[12px] leading-[17px] text-[var(--ds-red-text)]">
+          <div className="mt-1.5 text-[12px] leading-[17px] text-(--ds-red-text)">
             {permission.detail}
           </div>
         ) : null}
@@ -157,8 +157,8 @@ export function PermissionGate({
 
   if (checking) {
     return (
-      <main className="flex flex-1 items-center justify-center bg-[var(--ds-content-bg)]">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--ds-separator)] border-t-[var(--dashboard-accent-color,AccentColor)]" />
+      <main className="flex flex-1 items-center justify-center bg-(--ds-content-bg)">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-(--ds-separator) border-t-(--dashboard-accent-color,AccentColor)" />
       </main>
     );
   }
@@ -166,18 +166,18 @@ export function PermissionGate({
   return (
     // Top-aligned at a fixed inset, like the settings pages: centering made the
     // whole page shift whenever a row, note or button appeared or went away.
-    <main className="flex flex-1 items-start justify-center overflow-y-auto bg-[var(--ds-content-bg)] px-10 pb-10 pt-14">
+    <main className="flex flex-1 items-start justify-center overflow-y-auto bg-(--ds-content-bg) px-10 pb-10 pt-14">
       <div className="w-full max-w-[640px]">
         <div className="mb-4 pl-1">
-          <h1 className="m-0 text-[22px] font-[700] text-[var(--ds-label)]">
+          <h1 className="m-0 text-[22px] font-bold text-(--ds-label)">
             {t("permission.finishSetup")}
           </h1>
-          <p className="mb-0 mt-1.5 text-[13px] leading-5 text-[var(--ds-label-secondary)]">
+          <p className="mb-0 mt-1.5 text-[13px] leading-5 text-(--ds-label-secondary)">
             {t("permission.finishSetupDescription")}
           </p>
         </div>
 
-        <div className="overflow-hidden rounded-xl border border-[var(--ds-card-border)] bg-[var(--ds-card-bg)] shadow-[inset_0_0_0_0.5px_var(--ds-card-inset)]">
+        <div className="overflow-hidden rounded-xl border border-(--ds-card-border) bg-(--ds-card-bg) shadow-[inset_0_0_0_0.5px_var(--ds-card-inset)]">
           {permissions.map((permission) => (
             <PermissionRow
               key={permission.id}
@@ -213,18 +213,18 @@ export function PermissionGate({
         </div>
 
         {/* Same card, padding and type as the permission rows above. */}
-        <div className="mt-8 overflow-hidden rounded-xl border border-[var(--ds-card-border)] bg-[var(--ds-card-bg)] shadow-[inset_0_0_0_0.5px_var(--ds-card-inset)]">
+        <div className="mt-8 overflow-hidden rounded-xl border border-(--ds-card-border) bg-(--ds-card-bg) shadow-[inset_0_0_0_0.5px_var(--ds-card-inset)]">
           <div className="flex items-center justify-between gap-5 px-3.5 py-3">
             <div className="min-w-0 flex-1">
               <div
                 id="share-usage-label"
-                className="text-[14px] font-semibold leading-5 text-[var(--ds-label)]"
+                className="text-[14px] font-semibold leading-5 text-(--ds-label)"
               >
                 {t("permission.shareUsageData")}
               </div>
               <div
                 id="share-usage-description"
-                className="mt-1 text-[12px] leading-[17px] text-[var(--ds-label-secondary)]"
+                className="mt-1 text-[12px] leading-[17px] text-(--ds-label-secondary)"
               >
                 {t("permission.shareUsageDataDescription")}{" "}
                 <a
@@ -233,7 +233,7 @@ export function PermissionGate({
                     event.preventDefault();
                     void openExternalUrl(PRIVACY_URL);
                   }}
-                  className="text-[var(--dashboard-accent-color,AccentColor)] no-underline hover:underline"
+                  className="text-(--dashboard-accent-color,AccentColor) no-underline hover:underline"
                 >
                   {t("permission.privacyPolicy")}
                 </a>

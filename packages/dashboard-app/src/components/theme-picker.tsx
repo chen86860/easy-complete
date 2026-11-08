@@ -126,7 +126,7 @@ function ThemeOption({
       onClick={() => onSelect(theme.id)}
       title={label}
       className={clsx(
-        "group min-w-0 rounded-[13px] text-left outline-none focus-visible:ring-4 focus-visible:ring-[color-mix(in_srgb,AccentColor_22%,transparent)]",
+        "group min-w-0 rounded-[13px] text-left outline-hidden focus-visible:ring-4 focus-visible:ring-[color-mix(in_srgb,AccentColor_22%,transparent)]",
       )}
     >
       <div
@@ -147,12 +147,12 @@ function ThemeOption({
             "flex h-3.5 w-3.5 flex-shrink-0 items-center justify-center rounded-full border",
             active
               ? "theme-option-radio-on border-[AccentColor] bg-[AccentColor]"
-              : "border-[var(--ds-radio-border)] bg-[var(--ds-radio-bg)]",
+              : "border-(--ds-radio-border) bg-(--ds-radio-bg)",
           )}
         >
           {active ? <span className="h-1 w-1 rounded-full bg-white" /> : null}
         </span>
-        <span className="min-w-0 truncate text-[12px] font-medium leading-[17px] text-[var(--ds-label)]">
+        <span className="min-w-0 truncate text-[12px] font-medium leading-[17px] text-(--ds-label)">
           {label}
         </span>
       </div>
@@ -240,7 +240,7 @@ export function ThemePicker({
 
         return (
           <section key={key}>
-            <h3 className="mb-2.5 text-[12px] font-medium text-[var(--ds-label-secondary)]">
+            <h3 className="mb-2.5 text-[12px] font-medium text-(--ds-label-secondary)">
               {label}
             </h3>
             <div className="grid grid-cols-3 gap-x-5 gap-y-4">

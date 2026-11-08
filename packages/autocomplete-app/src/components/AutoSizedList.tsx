@@ -53,7 +53,7 @@ const AutoSizedList: ForwardRefRenderFunction<
       style={{
         flexBasis: itemCount * itemSize,
       }}
-      className="min-h-0 min-w-0 flex-shrink"
+      className="min-h-0 min-w-0 shrink"
     >
       <List
         width={desiredWidth === undefined ? width || 0 : desiredWidth}

@@ -149,7 +149,7 @@ const SuggestionIcon = ({
         style={{
           fontSize: height,
         }}
-        className="relative right-[0.0625rem] pb-2.5"
+        className="relative right-0.25 pb-2.5"
       >
         {icon}
       </span>
@@ -169,7 +169,7 @@ const SuggestionIcon = ({
           style={{
             fontSize: height,
           }}
-          className="relative right-[0.0625rem] pb-2.5"
+          className="relative right-0.25 pb-2.5"
         >
           {icon}
         </span>

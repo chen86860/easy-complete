@@ -9,26 +9,14 @@ pub enum Error {
 }
 
 #[cfg(target_os = "macos")]
-#[allow(unexpected_cfgs)]
 fn open_macos(url_str: impl AsRef<str>) -> Result<(), Error> {
-    use objc2::ClassType;
+    use objc2::AnyThread;
     use objc2_foundation::{NSString, NSURL};
 
     let url_nsstring = NSString::from_str(url_str.as_ref());
-    let nsurl = unsafe { NSURL::initWithString(NSURL::alloc(), &url_nsstring) }.ok_or(Error::Failed)?;
-    let res = unsafe { objc2_app_kit::NSWorkspace::sharedWorkspace().openURL(&nsurl) };
+    let nsurl = NSURL::initWithString(NSURL::alloc(), &url_nsstring).ok_or(Error::Failed)?;
+    let res = objc2_app_kit::NSWorkspace::sharedWorkspace().openURL(&nsurl);
     res.then_some(()).ok_or(Error::Failed)
-}
-
-#[cfg(target_os = "windows")]
-fn open_command(url: impl AsRef<str>) -> std::process::Command {
-    use std::os::windows::process::CommandExt;
-
-    let detached = 0x8;
-    let mut command = std::process::Command::new("cmd");
-    command.creation_flags(detached);
-    command.args(["/c", "start", url.as_ref()]);
-    command
 }
 
 #[cfg(any(target_os = "linux", target_os = "freebsd"))]

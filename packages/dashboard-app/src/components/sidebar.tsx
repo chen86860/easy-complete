@@ -57,10 +57,10 @@ export function Sidebar({
   return (
     // Align the nav icons with the native close button without overriding
     // AppKit's traffic-light placement.
-    <aside className="dashboard-sidebar flex w-[232px] flex-shrink-0 flex-col border-r border-[var(--ds-sidebar-border)] pt-[52px]">
+    <aside className="dashboard-sidebar flex w-[232px] flex-shrink-0 flex-col border-r border-(--ds-sidebar-border) pt-[52px]">
       <nav
         onWheel={preventScrollBounce}
-        className="flex-1 overflow-y-auto px-2.5 pt-1 [overscroll-behavior:none]"
+        className="flex-1 overflow-y-auto px-2.5 pt-1 overscroll-none"
       >
         {nav.map((item) => {
           const active = section === item.id;
@@ -71,7 +71,7 @@ export function Sidebar({
                 "font-sans text-[13px] font-normal",
                 active
                   ? "dashboard-sidebar-item-active"
-                  : "bg-transparent text-[var(--ds-sidebar-item)]",
+                  : "bg-transparent text-(--ds-sidebar-item)",
               )}
               key={item.id}
               onClick={() => onSectionChange(item.id)}
@@ -91,7 +91,7 @@ export function Sidebar({
 
       <div className="flex h-11 items-center px-4 py-3">
         {saving === "Error saving" ? (
-          <span className="flex items-center gap-[5px] rounded-full bg-[var(--ds-red-bg)] px-[9px] py-1 text-[12px] font-semibold text-[var(--ds-red)]">
+          <span className="flex items-center gap-[5px] rounded-full bg-(--ds-red-bg) px-[9px] py-1 text-[12px] font-semibold text-(--ds-red)">
             <IconWarning />
             {t("nav.saveError")}
           </span>

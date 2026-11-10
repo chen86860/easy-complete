@@ -14,9 +14,7 @@ cc = "1.2.44"
 block2.workspace = true
 core-graphics.workspace = true
 core-foundation.workspace = true
-cocoa.workspace = true
 libc.workspace = true
-objc.workspace = true
 objc2.workspace = true
 objc2-app-kit = { workspace = true, features = [
     "NSBitmapImageRep",
@@ -43,7 +41,6 @@ flume = "0.12.0"
 fnv = "1.0.7"
 accessibility-sys = { path = "./accessibility-master/accessibility-sys" }
 accessibility = { path = "./accessibility-master/accessibility" }
-appkit-nsworkspace-bindings.workspace = true
 tracing.workspace = true
 tokio.workspace = true
 nix.workspace = true

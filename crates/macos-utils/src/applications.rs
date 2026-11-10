@@ -19,25 +19,23 @@ impl MacOSApplication {
 }
 
 pub fn running_applications() -> Vec<MacOSApplication> {
-    unsafe {
-        let workspace = NSWorkspace::sharedWorkspace();
-        let apps = workspace.runningApplications();
-        apps.iter()
-            .map(|app| {
-                let name = app.localizedName().map(|s| s.to_string());
-                let bundle_identifier = app.bundleIdentifier().map(|s| s.to_string());
-                let bundle_path = app.bundleURL().and_then(|url| url.path()).map(|s| s.to_string());
-                let process_identifier = app.processIdentifier();
+    let workspace = NSWorkspace::sharedWorkspace();
+    let apps = workspace.runningApplications();
+    apps.iter()
+        .map(|app| {
+            let name = app.localizedName().map(|s| s.to_string());
+            let bundle_identifier = app.bundleIdentifier().map(|s| s.to_string());
+            let bundle_path = app.bundleURL().and_then(|url| url.path()).map(|s| s.to_string());
+            let process_identifier = app.processIdentifier();
 
-                MacOSApplication {
-                    name,
-                    bundle_identifier,
-                    bundle_path,
-                    process_identifier,
-                }
-            })
-            .collect()
-    }
+            MacOSApplication {
+                name,
+                bundle_identifier,
+                bundle_path,
+                process_identifier,
+            }
+        })
+        .collect()
 }
 
 pub fn running_applications_matching(bundle_identifier: &str) -> Vec<MacOSApplication> {
@@ -49,10 +47,10 @@ pub fn running_applications_matching(bundle_identifier: &str) -> Vec<MacOSApplic
 
 pub fn launch_application(bundle_path: &str) {
     let bundle_nsstring = NSString::from_str(bundle_path);
-    let bundle_nsurl = unsafe { NSURL::fileURLWithPath_isDirectory(&bundle_nsstring, true) };
+    let bundle_nsurl = NSURL::fileURLWithPath_isDirectory(&bundle_nsstring, true);
 
-    let workspace = unsafe { NSWorkspace::sharedWorkspace() };
-    unsafe { workspace.openURL(&bundle_nsurl) };
+    let workspace = NSWorkspace::sharedWorkspace();
+    workspace.openURL(&bundle_nsurl);
 }
 
 #[cfg(test)]

@@ -25,8 +25,6 @@ use core_graphics::window::{
 };
 use tracing::warn;
 
-use crate::util::{NSArrayRef, NSStringRef};
-
 pub struct UIElement(AXUIElement);
 
 impl Clone for UIElement {
@@ -179,9 +177,10 @@ impl UIElement {
         let class_list = self.get_attr::<CFArray>(kAXDOMClassListAttribute)?;
         let filtered: Vec<_> = class_list
             .iter()
-            .filter_map(|attr| unsafe {
-                let x = NSStringRef::new(*attr as *mut objc::runtime::Object);
-                x.as_str().map(|x| x.to_owned())
+            .filter_map(|attr| {
+                unsafe { CFType::wrap_under_get_rule(*attr as CFTypeRef) }
+                    .downcast::<CFString>()
+                    .map(|class| class.to_string())
             })
             .collect();
 
@@ -189,14 +188,13 @@ impl UIElement {
     }
 
     fn attribute_list(&self) -> Result<Vec<String>> {
-        let attrs: NSArrayRef<NSStringRef> =
-            unsafe { ax_call(|names: *mut CFArrayRef| AXUIElementCopyAttributeNames(self.get_ref(), names))?.into() };
-        let filtered: Vec<_> = attrs
-            .iter()
-            .filter_map(|attr| unsafe { NSStringRef::new(*attr).as_str().map(|s| s.to_owned()) })
-            .collect();
+        // The names array follows the Create rule, so it is ours to release.
+        let attrs = unsafe {
+            let attrs = ax_call(|names: *mut CFArrayRef| AXUIElementCopyAttributeNames(self.get_ref(), names))?;
+            CFArray::<CFString>::wrap_under_create_rule(attrs)
+        };
 
-        Ok(filtered)
+        Ok(attrs.iter().map(|attr| attr.to_string()).collect())
     }
 
     #[allow(dead_code)]

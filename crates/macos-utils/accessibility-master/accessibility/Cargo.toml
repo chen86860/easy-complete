@@ -10,9 +10,9 @@ description = "Bindings for macOS Accessibility services"
 publish = false
 
 [target.'cfg(target_os = "macos")'.dependencies]
-cocoa.workspace = true
 core-foundation.workspace = true
-objc.workspace = true
+objc2-app-kit = { workspace = true, features = ["NSRunningApplication", "libc"] }
+objc2-foundation = { workspace = true, features = ["NSArray", "NSString"] }
 thiserror.workspace = true
 
 accessibility-sys = { path = "../accessibility-sys", version = "0.1.3" }

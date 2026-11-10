@@ -2,7 +2,7 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum GetShellError {
-    #[error("not yet implemented for windows")]
+    #[error("could not determine the parent process")]
     NoParent,
 }
 

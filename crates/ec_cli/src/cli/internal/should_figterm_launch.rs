@@ -317,18 +317,7 @@ pub fn should_figterm_launch(ctx: &Context) -> ExitCode {
     ExitCode::from(should_figterm_launch_exit_status(ctx, false))
 }
 
-#[cfg(target_os = "windows")]
-pub fn should_qterm_launch() -> ExitCode {
-    use std::os::windows::io::AsRawHandle;
-
-    use winapi::um::consoleapi::GetConsoleMode;
-
-    let mut mode = 0;
-    let stdin_ok = unsafe { GetConsoleMode(std::io::stdin().as_raw_handle() as *mut _, &mut mode) };
-    ExitCode::from(if stdin_ok == 1 { 2 } else { 1 });
-}
-
-#[cfg(not(any(target_os = "macos", target_os = "linux", target_os = "windows")))]
+#[cfg(not(any(target_os = "macos", target_os = "linux")))]
 pub fn should_qterm_launch() -> ExitCode {
     ExitCode::from(2);
 }

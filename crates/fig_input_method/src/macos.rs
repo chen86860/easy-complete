@@ -21,7 +21,7 @@ unsafe extern "C" {
 fn register_self_with_tis() {
     // Get the bundle path and register with TIS so macOS routes IMK connections to us
     let bundle = objc2_foundation::NSBundle::mainBundle();
-    let bundle_path = unsafe { bundle.bundlePath() };
+    let bundle_path = bundle.bundlePath();
     let path_str = bundle_path.to_string();
     if let Some(url) = CFURL::from_path(&path_str, true) {
         let result = unsafe { TISRegisterInputSource(url.as_concrete_TypeRef()) };
@@ -53,7 +53,7 @@ pub async fn main() {
         let nib_name = ns_string!("MainMenu");
 
         let bundle = NSBundle::mainBundle();
-        let identifier = unsafe { bundle.bundleIdentifier() };
+        let identifier = bundle.bundleIdentifier();
 
         register_self_with_tis();
 
@@ -66,9 +66,9 @@ pub async fn main() {
         // as its own requester, and re-asked users who declined it every time the IME started.
 
         let app_id: &NSObject = app.as_ref();
-        let loaded_nib: Bool = unsafe { msg_send![NSBundle::class(), loadNibNamed:nib_name owner:app_id] };
+        let loaded_nib: Bool = unsafe { msg_send![NSBundle::class(), loadNibNamed: nib_name, owner: app_id] };
         info!("RUNNING {loaded_nib:?}!");
 
-        unsafe { app.run() };
+        app.run();
     });
 }

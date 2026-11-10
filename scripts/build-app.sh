@@ -145,6 +145,8 @@ read -r -d '' SPARKLE_PLIST_ENTRIES <<PLIST || true
     <true/>
     <key>SUScheduledCheckInterval</key>
     <integer>86400</integer>
+    <key>SUAllowsAutomaticUpdates</key>
+    <false/>
 ${SPARKLE_PUBLIC_KEY_ENTRY}    <key>SUEnableInstallerLauncherService</key>
     ${SPARKLE_INSTALLER_LAUNCHER}
 PLIST

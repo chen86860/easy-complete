@@ -278,7 +278,6 @@ enum DoctorCheckType {
 enum Platform {
     MacOs,
     Linux,
-    Windows,
     Other,
 }
 
@@ -287,7 +286,6 @@ impl Platform {
         match std::env::consts::OS {
             "macos" => Platform::MacOs,
             "linux" => Platform::Linux,
-            "windows" => Platform::Windows,
             _ => Platform::Other,
         }
     }
@@ -529,27 +527,6 @@ impl DoctorCheck for FigIntegrationsCheck {
                 fix: None,
                 error: None,
             });
-        }
-
-        #[cfg(target_os = "windows")]
-        if let Some(exe) = fig_util::get_parent_process_exe() {
-            if exe.ends_with("cmd.exe") {
-                return Err(DoctorError::Error {
-                    reason: "CMD isn't supported yet, please use Git Bash or WSL instead".into(),
-                    info: vec![],
-                    fix: None,
-                    error: None,
-                });
-            }
-
-            if exe.ends_with("powershell.exe") {
-                return Err(DoctorError::Error {
-                    reason: "Powershell isn't supported yet, please use Git Bash or WSL instead".into(),
-                    info: vec![],
-                    fix: None,
-                    error: None,
-                });
-            }
         }
 
         if std::env::var_os("__PWSH_LOGIN_CHECKED").is_some() {
@@ -1468,53 +1445,6 @@ impl DoctorCheck for DesktopCompatibilityCheck {
     }
 }
 
-struct WindowsConsoleCheck;
-
-#[async_trait]
-impl DoctorCheck for WindowsConsoleCheck {
-    fn name(&self) -> Cow<'static, str> {
-        "Windows Console Check".into()
-    }
-
-    async fn get_type(&self, _: &(), _: Platform) -> DoctorCheckType {
-        DoctorCheckType::NormalCheck
-    }
-
-    async fn check(&self, _: &()) -> Result<(), DoctorError> {
-        #[cfg(target_os = "windows")]
-        {
-            use std::os::windows::io::AsRawHandle;
-
-            use winapi::um::consoleapi::GetConsoleMode;
-
-            let mut mode = 0;
-            let stdin_ok = unsafe { GetConsoleMode(std::io::stdin().as_raw_handle() as *mut _, &mut mode) };
-            let stdout_ok = unsafe { GetConsoleMode(std::io::stdout().as_raw_handle() as *mut _, &mut mode) };
-
-            if stdin_ok != 1 || stdout_ok != 1 {
-                return Err(
-                    DoctorError::Error {
-                        reason: "Windows Console APIs are not supported in this terminal".into(),
-                        info: vec![
-                            "The pseudoterminal layer only supports the new Windows Console API.".into(),
-                            "MinTTY and other TTY implementations may not work properly.".into(),
-                            "".into(),
-                            "You can try the following fixes to get completions working:".into(),
-                            "- If using Git for Windows, reinstall and choose \"Use default console window\" instead of MinTTY".into(),
-                            "- If using Git for Windows and you really want to use MinTTY, reinstall and check \"Enable experimental support for pseudo consoles\"".into(),
-                            "- Use your shell with a supported terminal emulator like Windows Terminal.".into(),
-                            "- Launch your terminal emulator with winpty (e.g. winpty mintty). NOTE: this can lead to some UI bugs.".into()
-                        ],
-                        fix: None,
-                        error: None,
-                    }
-                );
-            }
-        }
-        Ok(())
-    }
-}
-
 struct DashboardHostCheck;
 
 #[async_trait]
@@ -1886,8 +1816,6 @@ async fn run_all_checks(config: CheckConfiguration<'_>, spinner: &mut Option<Spi
             &FigBinCheck,
             #[cfg(unix)]
             &LocalBinPathCheck,
-            #[cfg(target_os = "windows")]
-            &WindowsConsoleCheck,
             &SettingsCorruptionCheck,
             &FigIntegrationsCheck,
         ],

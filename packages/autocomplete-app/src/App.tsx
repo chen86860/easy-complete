@@ -427,7 +427,7 @@ function App() {
   const hasBottomDescription =
     descriptionPosition === "unknown" && description !== null;
   const listClasses = [
-    "rounded",
+    "rounded-sm",
     isShaking && "shake",
     hasBottomDescription && "rounded-b-none",
   ];
@@ -437,7 +437,7 @@ function App() {
       style={{
         width: size.suggestionWidth - 20,
       }}
-      className="m-1 space-y-1.5 rounded bg-amber-500 px-2.5 py-2 text-black"
+      className="m-1 space-y-1.5 rounded-sm bg-amber-500 px-2.5 py-2 text-black"
     >
       <div className="text-base font-bold">Developer mode enabled!</div>
       <div className="text-sm">
@@ -446,7 +446,7 @@ function App() {
       <div className="ml-2 flex flex-col gap-1 text-xs">
         <div>
           •{" "}
-          <code className="rounded-sm bg-zinc-700 p-0.5 text-zinc-200">
+          <code className="rounded-xs bg-zinc-700 p-0.5 text-zinc-200">
             Ctrl + C
           </code>{" "}
           in the dev mode process
@@ -478,7 +478,7 @@ function App() {
         <div className="flex flex-row gap-1.5 p-1">
           {descriptionPosition === "left" && description}
           <div
-            className="bg-main-bg relative flex flex-none flex-col items-stretch overflow-hidden rounded shadow-[0px_0px_3px_0px_rgb(85,_85,_85)]"
+            className="bg-main-bg relative flex flex-none flex-col items-stretch overflow-hidden rounded-sm shadow-[0px_0px_3px_0px_rgb(85,85,85)]"
             style={
               hasSuggestions
                 ? {
@@ -520,8 +520,8 @@ function App() {
                 <LoadingIcon
                   className={
                     hasSuggestions
-                      ? "left-[2px] [&>*]:top-[calc(50%-5px)]"
-                      : "left-[2px] [&>*]:top-[calc(50%-3px)]"
+                      ? "left-[2px] *:top-[calc(50%-5px)]"
+                      : "left-[2px] *:top-[calc(50%-3px)]"
                   }
                 />
               )}

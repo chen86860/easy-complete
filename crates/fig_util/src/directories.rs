@@ -62,7 +62,6 @@ type Result<T, E = DirectoryError> = std::result::Result<T, E>;
 ///
 /// - Linux: /home/Alice
 /// - MacOS: /Users/Alice
-/// - Windows: C:\Users\Alice
 pub fn home_dir() -> Result<PathBuf> {
     dirs::home_dir().ok_or(DirectoryError::NoHomeDirectory)
 }
@@ -107,7 +106,6 @@ pub fn home_local_bin_ctx(ctx: &Context) -> Result<PathBuf> {
 ///
 /// - Linux: `$XDG_CONFIG_HOME` or `$HOME/.config`
 /// - MacOS: `$HOME/Library/Application Support`
-/// - Windows: `{FOLDERID_RoamingAppData}`
 pub fn config_dir() -> Result<PathBuf> {
     dirs::config_dir().ok_or(DirectoryError::NoHomeDirectory)
 }
@@ -116,7 +114,6 @@ pub fn config_dir() -> Result<PathBuf> {
 ///
 /// - Linux: `$XDG_DATA_HOME/{data_dir}` or `$HOME/.local/share/{data_dir}`
 /// - MacOS: `$HOME/Library/Application Support/{data_dir}`
-/// - Windows: `%LOCALAPPDATA%\{data_dir}`
 pub fn fig_data_dir() -> Result<PathBuf> {
     Ok(dirs::data_local_dir()
         .ok_or(DirectoryError::NoHomeDirectory)?
@@ -131,7 +128,6 @@ pub fn fig_data_dir_ctx(fs: &impl FsProvider) -> Result<PathBuf> {
 ///
 /// - Linux: `$XDG_DATA_HOME` or `$HOME/.local/share`
 /// - MacOS: `$HOME/Library/Application Support`
-/// - Windows: `%LOCALAPPDATA%`
 pub fn local_data_dir<Ctx: FsProvider + EnvProvider + PlatformProvider>(ctx: &Ctx) -> Result<PathBuf> {
     let env = ctx.env();
     match ctx.platform().os() {
@@ -142,12 +138,6 @@ pub fn local_data_dir<Ctx: FsProvider + EnvProvider + PlatformProvider>(ctx: &Ct
             Ok(home_dir_ctx(ctx)?.join(".local/share"))
         },
         Os::Mac => Ok(home_dir_ctx(ctx)?.join("Library/Application Support")),
-        Os::Windows => {
-            if let Some(path) = env.get_os("LOCALAPPDATA") {
-                return Ok(path.into());
-            }
-            Ok(home_dir_ctx(ctx)?.join("AppData").join("Local"))
-        },
         os => Err(DirectoryError::UnsupportedOs(os)),
     }
 }
@@ -156,7 +146,6 @@ pub fn local_data_dir<Ctx: FsProvider + EnvProvider + PlatformProvider>(ctx: &Ct
 ///
 /// - Linux: `$XDG_CACHE_HOME/{data_dir}` or `$HOME/.cache/{data_dir}`
 /// - MacOS: `$HOME/Library/Caches/{data_dir}`
-/// - Windows: `%LOCALAPPDATA%\{data_dir}\cache`
 pub fn cache_dir() -> Result<PathBuf> {
     Ok(dirs::cache_dir()
         .ok_or(DirectoryError::NoHomeDirectory)?
@@ -181,7 +170,6 @@ fn macos_tempdir() -> Result<PathBuf> {
 ///
 /// The XDG_RUNTIME_DIR is set by systemd <https://www.freedesktop.org/software/systemd/man/latest/file-hierarchy.html#/run/user/>,
 /// if this is not set such as on macOS it will fallback to TMPDIR which is secure on macOS
-/// On Windows, it uses the TEMP directory
 pub fn runtime_dir() -> Result<PathBuf> {
     cfg_if::cfg_if! {
         if #[cfg(unix)] {
@@ -198,8 +186,6 @@ pub fn runtime_dir() -> Result<PathBuf> {
             }
 
             dir.ok_or(DirectoryError::NoRuntimeDirectory)
-        } else if #[cfg(windows)] {
-            Ok(std::env::temp_dir())
         }
     }
 }
@@ -208,13 +194,10 @@ pub fn runtime_dir() -> Result<PathBuf> {
 ///
 /// - Linux: $XDG_RUNTIME_DIR/ecrun
 /// - MacOS: $TMPDIR/ecrun
-/// - Windows: %TEMP%\{data_dir}\sockets
 pub fn sockets_dir() -> Result<PathBuf> {
     cfg_if::cfg_if! {
         if #[cfg(unix)] {
             Ok(runtime_dir()?.join(RUNTIME_DIR_NAME))
-        } else if #[cfg(windows)] {
-            Ok(runtime_dir()?.join(DATA_DIR_NAME).join("sockets"))
         }
     }
 }
@@ -226,7 +209,6 @@ pub fn sockets_dir() -> Result<PathBuf> {
 ///
 /// - Linux: $XDG_RUNTIME_DIR/ecrun
 /// - MacOS: $TMPDIR/ecrun
-/// - Windows: %TEMP%\sockets
 pub fn host_sockets_dir() -> Result<PathBuf> {
     // TODO: make this work again
     // #[cfg(target_os = "linux")]
@@ -265,14 +247,11 @@ pub fn autocomplete_specs_dir() -> Result<PathBuf> {
 /// The directory to all the fig logs
 /// - Linux: `/tmp/fig/$USER/logs`
 /// - MacOS: `$TMPDIR/logs`
-/// - Windows: `%TEMP%\{data_dir}\logs`
 pub fn logs_dir() -> Result<PathBuf> {
     cfg_if::cfg_if! {
         if #[cfg(unix)] {
             use crate::CLI_BINARY_NAME;
             Ok(runtime_dir()?.join(format!("{CLI_BINARY_NAME}log")))
-        } else if #[cfg(windows)] {
-            Ok(std::env::temp_dir().join(DATA_DIR_NAME).join("logs"))
         }
     }
 }
@@ -280,7 +259,6 @@ pub fn logs_dir() -> Result<PathBuf> {
 /// The directory where fig places all data-sensitive backups
 ///
 /// - Linux/MacOS: `$HOME/{backup_dir}`
-/// - Windows: `%USERPROFILE%\{backup_dir}`
 pub fn backups_dir() -> Result<PathBuf> {
     Ok(home_dir()?.join(BACKUP_DIR_NAME))
 }
@@ -300,7 +278,6 @@ pub fn utc_backup_dir() -> Result<PathBuf> {
 ///
 /// - MacOS: `$TMPDIR/ecrun/desktop.sock`
 /// - Linux: `$XDG_RUNTIME_DIR/ecrun/desktop.sock`
-/// - Windows: `%TEMP%\sockets\desktop.sock`
 pub fn desktop_socket_path() -> Result<PathBuf> {
     Ok(host_sockets_dir()?.join("desktop.sock"))
 }
@@ -310,7 +287,6 @@ pub fn desktop_socket_path() -> Result<PathBuf> {
 // - Linux/MacOS not on ssh:
 /// - MacOS: `$TMPDIR/ecrun/remote.sock`
 /// - Linux: `$XDG_RUNTIME_DIR/ecrun/remote.sock`
-/// - Windows: `%TEMP%\sockets\remote.sock`
 pub fn remote_socket_path() -> Result<PathBuf> {
     // Normal implementation for non-test code
     // TODO(grant): This is only enabled on Linux for now to prevent public dist
@@ -329,7 +305,6 @@ pub fn remote_socket_path() -> Result<PathBuf> {
 ///
 /// - MacOS: `$TMPDIR/ecrun/remote.sock`
 /// - Linux: `$XDG_RUNTIME_DIR/ecrun/remote.sock`
-/// - Windows: `%TEMP%\sockets\remote.sock`
 pub fn local_remote_socket_path() -> Result<PathBuf> {
     Ok(host_sockets_dir()?.join("remote.sock"))
 }
@@ -339,7 +314,6 @@ pub fn local_remote_socket_path() -> Result<PathBuf> {
 /// - Linux/Macos: `/var/tmp/fig/%USERNAME%/figterm/$SESSION_ID.sock`
 /// - MacOS: `$TMPDIR/ecrun/t/$SESSION_ID.sock`
 /// - Linux: `$XDG_RUNTIME_DIR/ecrun/t/$SESSION_ID.sock`
-/// - Windows: `%TEMP%\sockets\t\$SESSION_ID.sock`
 pub fn figterm_socket_path(session_id: impl Display) -> Result<PathBuf> {
     Ok(sockets_dir()?.join("t").join(format!("{session_id}.sock")))
 }
@@ -348,15 +322,12 @@ pub fn figterm_socket_path(session_id: impl Display) -> Result<PathBuf> {
 ///
 /// - MacOS: "/Applications/{app_name}.app/Contents/Resources"
 /// - Linux: "/usr/share/fig"
-/// - Windows: "%LOCALAPPDATA%\{data_dir}\resources"
 pub fn resources_path() -> Result<PathBuf> {
     cfg_if::cfg_if! {
         if #[cfg(all(unix, not(target_os = "macos")))] {
             Ok(std::path::Path::new("/usr/share").join(PACKAGE_NAME))
         } else if #[cfg(target_os = "macos")] {
             Ok(crate::app_bundle_path().join(crate::macos::BUNDLE_CONTENTS_RESOURCE_PATH))
-        } else if #[cfg(windows)] {
-            Ok(fig_data_dir()?.join("resources"))
         }
     }
 }
@@ -375,7 +346,6 @@ pub fn resources_path_ctx<Ctx: EnvProvider + PlatformProvider>(ctx: &Ctx) -> Res
                 Ok(format!("/usr/share/{}", crate::DATA_DIR_NAME).into())
             }
         },
-        fig_os_shim::Os::Windows => Ok(fig_data_dir()?.join("resources")),
         _ => Err(DirectoryError::UnsupportedOs(os)),
     }
 }
@@ -384,13 +354,10 @@ pub fn resources_path_ctx<Ctx: EnvProvider + PlatformProvider>(ctx: &Ctx) -> Res
 ///
 /// - MacOS: "/Applications/{app_name}.app/Contents/Resources/manifest.json"
 /// - Linux: "/usr/share/fig/manifest.json"
-/// - Windows: "%LOCALAPPDATA%\{data_dir}\resources\bin\manifest.json"
 pub fn manifest_path() -> Result<PathBuf> {
     cfg_if::cfg_if! {
         if #[cfg(unix)] {
             Ok(resources_path()?.join("manifest.json"))
-        } else if #[cfg(target_os = "windows")] {
-            Ok(resources_path()?.join("bin").join("manifest.json"))
         }
     }
 }
@@ -411,7 +378,6 @@ pub fn bundle_metadata_path<Ctx: EnvProvider + PlatformProvider>(ctx: &Ctx) -> R
 ///
 /// - Linux: `$HOME/.local/share/{data_dir}/settings.json`
 /// - MacOS: `$HOME/Library/Application Support/{data_dir}/settings.json`
-/// - Windows: `%LOCALAPPDATA%\{data_dir}\settings.json`
 pub fn settings_path() -> Result<PathBuf> {
     Ok(fig_data_dir()?.join("settings.json"))
 }
@@ -532,19 +498,7 @@ mod tests {
             format!("ecrun")
         );
 
-        #[cfg(windows)]
-        assert_eq!(
-            host_sockets_dir().unwrap().file_name().unwrap().to_str().unwrap(),
-            format!("sockets")
-        );
-
         #[cfg(unix)]
-        assert_eq!(
-            figterm_socket_path("").unwrap().parent().unwrap().file_name().unwrap(),
-            "t"
-        );
-
-        #[cfg(windows)]
         assert_eq!(
             figterm_socket_path("").unwrap().parent().unwrap().file_name().unwrap(),
             "t"
@@ -570,13 +524,6 @@ mod tests {
     macro_rules! linux {
         ($value:expr, @$snapshot:literal) => {
             #[cfg(target_os = "linux")]
-            assert_directory!($value, @$snapshot)
-        };
-    }
-
-    macro_rules! windows {
-        ($value:expr, @$snapshot:literal) => {
-            #[cfg(target_os = "windows")]
             assert_directory!($value, @$snapshot)
         };
     }
@@ -633,63 +580,54 @@ mod tests {
     fn snapshot_fig_data_dir() {
         linux!(fig_data_dir(), @"$HOME/.local/share/easy-complete");
         macos!(fig_data_dir(), @"$HOME/Library/Application Support/easy-complete");
-        windows!(fig_data_dir(), @r"C:\Users\$USER\AppData\Local\AmazonQ");
     }
 
     #[test]
     fn snapshot_sockets_dir() {
         linux!(sockets_dir(), @"$XDG_RUNTIME_DIR/ecrun");
         macos!(sockets_dir(), @"$TMPDIR/ecrun");
-        windows!(sockets_dir(), @r"C:\Users\$USER\AppData\Local\Temp\AmazonQ\sockets");
     }
 
     #[test]
     fn snapshot_themes_dir() {
         linux!(themes_dir(&Context::new()), @"/usr/share/fig/themes");
         macos!(themes_dir(&Context::new()), @"/Applications/Easy Complete.app/Contents/Resources/themes");
-        windows!(themes_dir(&Context::new()), @r"C:\Users\$USER\AppData\Local\AmazonQ\resources\themes");
     }
 
     #[test]
     fn snapshot_backups_dir() {
         linux!(backups_dir(), @"$HOME/.easy-complete.dotfiles.bak");
         macos!(backups_dir(), @"$HOME/.easy-complete.dotfiles.bak");
-        windows!(backups_dir(), @r"C:\Users\$USER\.easy-complete.dotfiles.bak");
     }
 
     #[test]
     fn snapshot_fig_socket_path() {
         linux!(desktop_socket_path(), @"$XDG_RUNTIME_DIR/ecrun/desktop.sock");
         macos!(desktop_socket_path(), @"$TMPDIR/ecrun/desktop.sock");
-        windows!(desktop_socket_path(), @r"C:\Users\$USER\AppData\Local\Temp\AmazonQ\sockets\desktop.sock");
     }
 
     #[test]
     fn snapshot_remote_socket_path() {
         linux!(remote_socket_path(), @"$XDG_RUNTIME_DIR/ecrun/remote.sock");
         macos!(remote_socket_path(), @"$TMPDIR/ecrun/remote.sock");
-        windows!(remote_socket_path(), @r"C:\Users\$USER\AppData\Local\Temp\AmazonQ\sockets\remote.sock");
     }
 
     #[test]
     fn snapshot_local_remote_socket_path() {
         linux!(local_remote_socket_path(), @"$XDG_RUNTIME_DIR/ecrun/remote.sock");
         macos!(local_remote_socket_path(), @"$TMPDIR/ecrun/remote.sock");
-        windows!(local_remote_socket_path(), @r"C:\Users\$USER\AppData\Local\Temp\AmazonQ\sockets\remote.sock");
     }
 
     #[test]
     fn snapshot_figterm_socket_path() {
         linux!(figterm_socket_path("$SESSION_ID"), @"$XDG_RUNTIME_DIR/ecrun/t/$SESSION_ID.sock");
         macos!(figterm_socket_path("$SESSION_ID"), @"$TMPDIR/ecrun/t/$SESSION_ID.sock");
-        windows!(figterm_socket_path("$SESSION_ID"), @r"C:\Users\$USER\AppData\Local\Temp\AmazonQ\sockets\t\$SESSION_ID.sock");
     }
 
     #[test]
     fn snapshot_settings_path() {
         linux!(settings_path(), @"$HOME/.local/share/easy-complete/settings.json");
         macos!(settings_path(), @"$HOME/Library/Application Support/easy-complete/settings.json");
-        windows!(settings_path(), @r"C:\Users\$USER\AppData\Local\AmazonQ\settings.json");
     }
 
     #[test]

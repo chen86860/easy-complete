@@ -536,16 +536,16 @@ export function AboutSection({
       <div className="mb-6 flex items-center gap-3.5 px-1">
         <AppLogo size={52} />
         <div className="min-w-0">
-          <div className="text-[17px] font-semibold text-[var(--ds-label)]">
+          <div className="text-[17px] font-semibold text-(--ds-label)">
             Easy Complete
           </div>
-          <div className="mt-0.5 text-[12px] text-[var(--ds-label-secondary)]">
+          <div className="mt-0.5 text-[12px] text-(--ds-label-secondary)">
             {t("about.tagline")}
           </div>
           <button
             onClick={() => void copyVersionInfo()}
             title={t("about.copyVersionInfo")}
-            className="mt-0.5 border-0 bg-transparent p-0 font-sans text-[12px] text-[var(--ds-label-secondary)]"
+            className="mt-0.5 border-0 bg-transparent p-0 font-sans text-[12px] text-(--ds-label-secondary)"
           >
             {copyState === "done"
               ? t("about.copiedShort")
@@ -624,7 +624,7 @@ export function AboutSection({
           onClick={() => void Native.open(OPEN_SOURCE_LICENSES_URL)}
         />
       </div>
-      <p className="mt-3 text-center text-[11px] leading-[1.5] text-[var(--ds-label-tertiary)]">
+      <p className="mt-3 text-center text-[11px] leading-normal text-(--ds-label-tertiary)">
         {t("about.licensePrefix")}{" "}
         <a
           href={UPSTREAM_REPO_URL}
@@ -632,7 +632,7 @@ export function AboutSection({
             event.preventDefault();
             void openExternalUrl(UPSTREAM_REPO_URL);
           }}
-          className="text-[var(--ds-label-tertiary)] underline"
+          className="text-(--ds-label-tertiary) underline"
         >
           {t("about.upstreamName")}
         </a>

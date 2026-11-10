@@ -1,10 +1,5 @@
-// This is needed for objc
-#![allow(unexpected_cfgs)]
-#![allow(deprecated)]
-
 use std::ffi::CString;
 use std::path::Path;
-use std::slice;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, LazyLock, Mutex, RwLock};
 
@@ -12,7 +7,6 @@ use accessibility_sys::{
     AXError, AXIsProcessTrusted, AXUIElement, AXUIElementCreateSystemWide, AXUIElementSetMessagingTimeout, pid_t,
 };
 use anyhow::Context;
-use cocoa::base::{NO, YES, id};
 use core_foundation::base::TCFType;
 use core_graphics::display::CGRect;
 use core_graphics::window::CGWindowID;
@@ -24,14 +18,18 @@ use macos_utils::accessibility::accessibility_is_enabled;
 use macos_utils::caret_position::{CaretPosition, get_caret_position};
 use macos_utils::window_server::{CGWindowLevelForKey, UIElement};
 use macos_utils::{NotificationCenter, WindowServer, WindowServerEvent};
-use objc::declare::MethodImplementation;
-use objc::runtime::{BOOL, Class, Object, Sel, class_addMethod, objc_getClass};
-use objc::{Encode, EncodeArguments, Encoding, msg_send, sel, sel_impl};
-use objc2_foundation::{NSDictionary, NSOperationQueue, ns_string};
+use objc2::encode::{Encode, Encoding};
+use objc2::rc::Retained;
+use objc2::runtime::{AnyClass, AnyObject, Bool, Imp, Sel};
+use objc2::{ClassType, msg_send, sel};
+use objc2_app_kit::{NSApplication, NSWindow};
+use objc2_foundation::{
+    MainThreadMarker, NSAppleEventDescriptor, NSAppleEventManager, NSDictionary, NSOperationQueue, ns_string,
+};
 use serde::Serialize;
 use tao::dpi::{LogicalPosition, LogicalSize, Position};
 use tao::platform::macos::{ActivationPolicy, EventLoopWindowTargetExtMacOS, WindowExtMacOS as _};
-use tracing::{debug, error, info, trace, warn};
+use tracing::{debug, error, info, warn};
 
 use super::{PlatformBoundEvent, PlatformWindow};
 use crate::event::{Event, WindowEvent, WindowPosition};
@@ -94,13 +92,12 @@ pub fn activate_app() {
     // LSUIElement/menu-bar apps can switch back from Accessory to Regular without
     // AppKit automatically bringing the process forward. Explicit activation keeps
     // dashboard opens from being treated like a wallpaper/desktop click on macOS.
-    unsafe {
-        let Some(application) = Class::get("NSApplication") else {
-            return;
-        };
-        let app: id = msg_send![application, sharedApplication];
-        let _: () = msg_send![app, activateIgnoringOtherApps: YES];
-    }
+    let Some(mtm) = MainThreadMarker::new() else {
+        warn!("activate_app called off the main thread");
+        return;
+    };
+    #[allow(deprecated, reason = "activate() does not bring an agent app forward")]
+    NSApplication::sharedApplication(mtm).activateIgnoringOtherApps(true);
 }
 
 #[allow(dead_code)]
@@ -116,18 +113,13 @@ pub fn is_ventura() -> bool {
 pub fn launched_as_login_item() -> bool {
     const KEY_AE_LAUNCHED_AS_LOGIN_ITEM: u32 = u32::from_be_bytes(*b"lgit");
 
-    unsafe {
-        let Some(manager_class) = Class::get("NSAppleEventManager") else {
-            return false;
-        };
-        let manager: id = msg_send![manager_class, sharedAppleEventManager];
-        let event: id = msg_send![manager, currentAppleEvent];
-        if event.is_null() {
-            return false;
-        }
-        let attribute: id = msg_send![event, attributeDescriptorForKeyword: KEY_AE_LAUNCHED_AS_LOGIN_ITEM];
-        !attribute.is_null()
-    }
+    let Some(event) = NSAppleEventManager::sharedAppleEventManager().currentAppleEvent() else {
+        return false;
+    };
+    // The typed binding needs objc2-core-services just for the `AEKeyword` alias of `u32`.
+    let attribute: Option<Retained<NSAppleEventDescriptor>> =
+        unsafe { msg_send![&*event, attributeDescriptorForKeyword: KEY_AE_LAUNCHED_AS_LOGIN_ITEM] };
+    attribute.is_some()
 }
 
 struct Unmanaged {
@@ -233,13 +225,14 @@ fn apply_autocomplete_window_level(window_map: &FigIdMap, terminal_level: Option
         return;
     };
 
-    let ns_window = window.window.ns_window().cast::<Object>();
+    // SAFETY: tao hands out a valid NSWindow pointer for as long as the window lives.
+    let ns_window = unsafe { &*window.window.ns_window().cast::<NSWindow>() };
     let above = match terminal_level {
         None | Some(0) => unsafe { CGWindowLevelForKey(kCGFloatingWindowLevelKey) as i64 },
         Some(level) => level,
     };
     debug!("Setting window level to {terminal_level:?}");
-    let _: () = unsafe { msg_send![ns_window, setLevel: above] };
+    ns_window.setLevel(above as isize);
 }
 
 impl PlatformStateImpl {
@@ -251,53 +244,42 @@ impl PlatformStateImpl {
         }
     }
 
-    //
-    fn count_args(sel: Sel) -> usize {
-        sel.name().chars().filter(|&c| c == ':').count()
-    }
-
-    fn method_type_encoding(ret: &Encoding, args: &[Encoding]) -> CString {
-        let mut types = ret.as_str().to_owned();
-        // First two arguments are always self and the selector
-        types.push_str(<*mut Object>::encode().as_str());
-        types.push_str(Sel::encode().as_str());
-        types.extend(args.iter().map(|e| e.as_str()));
-        CString::new(types).unwrap()
-    }
-
-    // Add an implementation for an ObjC selector, which will override default WKWebView & WryWebView
-    // behavior
-    fn override_webview_method<F>(sel: Sel, func: F)
-    where
-        F: MethodImplementation<Callee = Object>,
-    {
-        // https://github.com/tauri-apps/wry/blob/17d324b70e4d580c43c9d4ab37bd265005356bf4/src/webview/wkwebview/mod.rs#L258
-        Self::override_objc_class_method("WryWebView", sel, func);
-    }
-
-    fn override_objc_class_method<F>(class: &str, sel: Sel, func: F)
-    where
-        F: MethodImplementation<Callee = Object>,
-    {
-        let encs = F::Args::encodings();
-        let encs = encs.as_ref();
-        let sel_args = Self::count_args(sel);
+    /// Adds an implementation for an ObjC selector to `WryWebView`, overriding the default
+    /// WKWebView behavior.
+    ///
+    /// <https://github.com/tauri-apps/wry/blob/17d324b70e4d580c43c9d4ab37bd265005356bf4/src/webview/wkwebview/mod.rs#L258>
+    ///
+    /// # Safety
+    ///
+    /// `imp` must be an `extern "C"` function taking `(&AnyObject, Sel, args...)` whose return
+    /// and argument types match `ret` and `args`.
+    unsafe fn override_webview_method(sel: Sel, imp: Imp, ret: Encoding, args: &[Encoding]) {
+        let sel_args = sel.name().to_bytes().iter().filter(|&&c| c == b':').count();
         assert!(
-            sel_args == encs.len(),
+            sel_args == args.len(),
             "Selector accepts {} arguments, but function accepts {}",
             sel_args,
-            encs.len(),
+            args.len(),
         );
 
-        let types = Self::method_type_encoding(&F::Ret::encode(), encs);
+        // The first two arguments are always self and the selector.
+        let mut types = format!("{ret}{}{}", <*mut AnyObject>::ENCODING, Sel::ENCODING);
+        for arg in args {
+            types.push_str(&arg.to_string());
+        }
+        let types = CString::new(types).unwrap();
 
-        let name = CString::new(class).unwrap();
-
-        let res = unsafe {
-            let cls = objc_getClass(name.as_ptr()) as *mut Class;
-            class_addMethod(cls, sel, func.imp(), types.as_ptr())
-        };
-        trace!(%class, sel =% sel.name(), %res, "class_addMethod");
+        // wry 0.57 lets objc2 generate the runtime class name (module path plus crate version), so
+        // the class cannot be looked up as "WryWebView"; take it from the type instead.
+        let class = wry::WryWebView::class();
+        let res =
+            unsafe { objc2::ffi::class_addMethod(class as *const AnyClass as *mut AnyClass, sel, imp, types.as_ptr()) };
+        let class_name = class.name().to_string_lossy();
+        if res.as_bool() {
+            debug!(sel = ?sel, class = %class_name, "Overrode webview method");
+        } else {
+            warn!(sel = ?sel, class = %class_name, "Failed to override webview method");
+        }
     }
 
     pub(super) fn handle(
@@ -331,7 +313,7 @@ impl PlatformStateImpl {
                 let accessibility_proxy = self.proxy.clone();
                 let mut distributed = NotificationCenter::distributed_center();
                 let ax_notification_name = ns_string!("com.apple.accessibility.api");
-                let queue = unsafe { NSOperationQueue::new() };
+                let queue = NSOperationQueue::new();
                 distributed.subscribe(ax_notification_name, Some(&queue), move |_| {
                     accessibility_proxy
                         .clone()
@@ -398,63 +380,55 @@ impl PlatformStateImpl {
                 Ok(())
             },
             PlatformBoundEvent::InitializePostRun => {
-                fn to_s<'a>(nsstring_obj: *mut Object) -> Option<&'a str> {
-                    const UTF8_ENCODING: libc::c_uint = 4;
-
-                    let bytes = unsafe {
-                        let length = msg_send![nsstring_obj, lengthOfBytesUsingEncoding: UTF8_ENCODING];
-                        let utf8_str: *const u8 = msg_send![nsstring_obj, UTF8String];
-                        slice::from_raw_parts(utf8_str, length)
-                    };
-                    std::str::from_utf8(bytes).ok()
+                /// Whether the webview receiving the event belongs to the autocomplete overlay.
+                // TODO: implement better method for determining if WebView belongs to autocomplete
+                fn is_autocomplete_webview(this: &AnyObject) -> bool {
+                    let window: Option<Retained<NSWindow>> = unsafe { msg_send![this, window] };
+                    window.is_some_and(|window| window.title().to_string() == AUTOCOMPLETE_WINDOW_TITLE)
                 }
 
-                extern "C" fn should_delay_window_ordering(this: &Object, _cmd: Sel, _event: id) -> BOOL {
+                extern "C" fn should_delay_window_ordering(
+                    this: &AnyObject,
+                    _cmd: Sel,
+                    _event: *mut AnyObject,
+                ) -> Bool {
                     debug!("should_delay_window_ordering");
+                    Bool::new(is_autocomplete_webview(this))
+                }
 
-                    unsafe {
-                        let window: id = msg_send![this, window];
-                        let title: id = msg_send![window, title];
-
-                        // TODO: implement better method for determining if WebView belongs to autocomplete
-                        if let Some(title) = to_s(title)
-                            && title == AUTOCOMPLETE_WINDOW_TITLE
-                        {
-                            return YES;
-                        }
+                extern "C" fn mouse_down(this: &AnyObject, _cmd: Sel, event: *mut AnyObject) {
+                    // Prevent clicked window from taking focus
+                    if is_autocomplete_webview(this)
+                        && let Some(mtm) = MainThreadMarker::new()
+                    {
+                        NSApplication::sharedApplication(mtm).preventWindowOrdering();
                     }
 
-                    NO
-                }
-
-                extern "C" fn mouse_down(this: &Object, _cmd: Sel, event: id) {
-                    let application = Class::get("NSApplication").unwrap();
-
+                    // Invoke superclass implementation
                     unsafe {
-                        let window: id = msg_send![this, window];
-                        let title: id = msg_send![window, title];
-
-                        // TODO: implement better method for determining if WebView belongs to autocomplete
-                        if let Some(title) = to_s(title)
-                            && title == AUTOCOMPLETE_WINDOW_TITLE
-                        {
-                            // Prevent clicked window from taking focus
-                            let app: id = msg_send![application, sharedApplication];
-                            let _: () = msg_send![app, preventWindowOrdering];
-                        }
-
-                        // Invoke superclass implementation
-                        let supercls = msg_send![this, superclass];
+                        let supercls: &AnyClass = msg_send![this, superclass];
                         let _: () = msg_send![super(this, supercls), mouseDown: event];
                     }
                 }
 
                 // Use objc runtime to override WryWebview methods
-                Self::override_webview_method(
-                    sel!(shouldDelayWindowOrderingForEvent:),
-                    should_delay_window_ordering as extern "C" fn(&Object, Sel, id) -> BOOL,
-                );
-                Self::override_webview_method(sel!(mouseDown:), mouse_down as extern "C" fn(&Object, Sel, id));
+                // SAFETY: each function's signature matches the encodings passed with it.
+                unsafe {
+                    Self::override_webview_method(
+                        sel!(shouldDelayWindowOrderingForEvent:),
+                        std::mem::transmute::<extern "C" fn(&AnyObject, Sel, *mut AnyObject) -> Bool, Imp>(
+                            should_delay_window_ordering,
+                        ),
+                        Bool::ENCODING,
+                        &[<*mut AnyObject>::ENCODING],
+                    );
+                    Self::override_webview_method(
+                        sel!(mouseDown:),
+                        std::mem::transmute::<extern "C" fn(&AnyObject, Sel, *mut AnyObject), Imp>(mouse_down),
+                        Encoding::Void,
+                        &[<*mut AnyObject>::ENCODING],
+                    );
+                }
 
                 // Reopen is not overridden here: tao's own app delegate already implements
                 // `applicationShouldHandleReopen:hasVisibleWindows:`, so `class_addMethod` would

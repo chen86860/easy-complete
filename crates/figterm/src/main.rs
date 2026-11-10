@@ -20,12 +20,11 @@ use alacritty_terminal::event::EventListener;
 use alacritty_terminal::term::{ShellState, SizeInfo};
 use anyhow::{Context as _, Result, anyhow};
 use bytes::BytesMut;
-use cfg_if::cfg_if;
 use clap::Parser;
 use cli::Cli;
 use fig_log::{LogArgs, initialize_logging};
 use fig_os_shim::{Context, Env};
-use fig_proto::local::{self, EnvironmentVariable, TerminalCursorCoordinates};
+use fig_proto::local::{self, EnvironmentVariable};
 use fig_proto::remote::Hostbound;
 use fig_proto::remote_hooks::{hook_to_message, new_edit_buffer_hook};
 use fig_settings::state;
@@ -48,8 +47,6 @@ use crate::ipc::{spawn_figterm_ipc, spawn_remote_ipc};
 use crate::message::{process_figterm_message, process_remote_message};
 #[cfg(unix)]
 use crate::pty::unix::open_pty;
-#[cfg(windows)]
-use crate::pty::win::open_pty;
 use crate::pty::{AsyncMasterPtyExt, CommandBuilder};
 use crate::term::{SystemTerminal, Terminal};
 
@@ -120,27 +117,6 @@ fn shell_state_to_context(shell_state: &ShellState) -> local::ShellContext {
     }
 }
 
-#[allow(clippy::needless_return)]
-fn get_cursor_coordinates(terminal: &dyn Terminal) -> Option<TerminalCursorCoordinates> {
-    cfg_if! {
-        if #[cfg(target_os = "windows")] {
-            use term::cast;
-
-            let coordinate = terminal.get_cursor_coordinate().ok()?;
-            let screen_size = terminal.get_screen_size().ok()?;
-            return Some(TerminalCursorCoordinates {
-                x: cast(coordinate.cols).ok()?,
-                y: cast(coordinate.rows).ok()?,
-                xpixel: cast(screen_size.xpixel).ok()?,
-                ypixel: cast(screen_size.ypixel).ok()?,
-            });
-        } else {
-            let _terminal = terminal;
-            return None;
-        }
-    }
-}
-
 fn can_send_edit_buffer<T>(term: &Term<T>) -> bool
 where
     T: EventListener,
@@ -197,11 +173,7 @@ fn autocomplete_enabled(env: &Env) -> bool {
 
 static AUTOCOMPLETE_ENABLED: LazyLock<bool> = LazyLock::new(|| autocomplete_enabled(&Env::new()));
 
-async fn send_edit_buffer<T>(
-    term: &Term<T>,
-    sender: &Sender<Hostbound>,
-    cursor_coordinates: Option<TerminalCursorCoordinates>,
-) -> Result<()>
+async fn send_edit_buffer<T>(term: &Term<T>, sender: &Sender<Hostbound>) -> Result<()>
 where
     T: EventListener,
 {
@@ -218,8 +190,7 @@ where
 
                 let context = shell_state_to_context(term.shell_state());
 
-                let edit_buffer_hook =
-                    new_edit_buffer_hook(Some(context), edit_buffer.buffer, cursor_idx, 0, cursor_coordinates);
+                let edit_buffer_hook = new_edit_buffer_hook(Some(context), edit_buffer.buffer, cursor_idx, 0, None);
                 let message = hook_to_message(edit_buffer_hook);
 
                 trace!("Sending: {message:?}");
@@ -417,9 +388,6 @@ fn figterm_main(command: Option<&[String]>) -> Result<()> {
         let event_sender = EventHandler::new(remote_sender.clone(), main_loop_tx.clone());
         let mut term = alacritty_terminal::Term::new(size, event_sender, 1, session_id.clone());
 
-        #[cfg(target_os = "windows")]
-        term.set_windows_delay_end_prompt(true);
-
         let mut write_buffer: Vec<u8> = vec![0; BUFFER_SIZE];
 
         let mut key_interceptor = KeyInterceptor::new();
@@ -434,8 +402,6 @@ fn figterm_main(command: Option<&[String]>) -> Result<()> {
         let key_code_encode_mode = KeyCodeEncodeModes {
             #[cfg(unix)]
             encoding: KeyboardEncoding::Xterm,
-            #[cfg(windows)]
-            encoding: KeyboardEncoding::Win32,
             application_cursor_keys: false,
             newline_mode: false,
         };
@@ -655,11 +621,10 @@ fn figterm_main(command: Option<&[String]>) -> Result<()> {
                                 write_buffer.reserve(write_buffer.len());
                             }
 
-                            if can_send_edit_buffer(&term) {
-                                let cursor_coordinates = get_cursor_coordinates(&terminal);
-                                if let Err(err) = send_edit_buffer(&term, &remote_sender, cursor_coordinates).await {
-                                    warn!("Failed to send edit buffer: {err}");
-                                }
+                            if can_send_edit_buffer(&term)
+                                && let Err(err) = send_edit_buffer(&term, &remote_sender).await
+                            {
+                                warn!("Failed to send edit buffer: {err}");
                             }
 
                             Ok(())
@@ -712,11 +677,11 @@ fn figterm_main(command: Option<&[String]>) -> Result<()> {
                 // Check if to send the edit buffer because of timeout
                 _ = edit_buffer_interval.tick() => {
                     let send_eb = INSERTION_LOCKED_AT.read().unwrap().is_some();
-                    if send_eb && can_send_edit_buffer(&term) {
-                        let cursor_coordinates = get_cursor_coordinates(&terminal);
-                        if let Err(err) = send_edit_buffer(&term, &remote_sender, cursor_coordinates).await {
-                            warn!(%err, "Failed to send edit buffer");
-                        }
+                    if send_eb
+                        && can_send_edit_buffer(&term)
+                        && let Err(err) = send_edit_buffer(&term, &remote_sender).await
+                    {
+                        warn!(%err, "Failed to send edit buffer");
                     }
                     Ok(())
                 }

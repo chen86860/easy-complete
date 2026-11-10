@@ -121,9 +121,9 @@ const en = {
   "about.version": "Version",
   "about.checkForUpdates": "Check for Updates",
   "about.updates": "Updates",
-  "about.checkAutomatically": "Update Automatically",
+  "about.checkAutomatically": "Check for Updates Automatically",
   "about.checkAutomaticallyDescription":
-    "Checks once a day, downloads in the background and installs when you quit Easy Complete",
+    "Checks once a day and asks before installing a new version",
   "about.betaUpdates": "Receive Beta Updates",
   "about.betaUpdatesDescription":
     "Get prerelease builds before the stable release. They may be less stable",
@@ -299,9 +299,8 @@ const zhCN: Record<TranslationKey, string> = {
   "about.version": "版本",
   "about.checkForUpdates": "检查更新",
   "about.updates": "更新",
-  "about.checkAutomatically": "自动更新",
-  "about.checkAutomaticallyDescription":
-    "每天检查一次，在后台下载，退出 Easy Complete 时安装",
+  "about.checkAutomatically": "自动检查更新",
+  "about.checkAutomaticallyDescription": "每天检查一次，有新版本时提示你安装",
   "about.betaUpdates": "接收 Beta 版更新",
   "about.betaUpdatesDescription": "在正式版发布前获取预览版本，稳定性可能较低",
   "about.privacy": "隐私",

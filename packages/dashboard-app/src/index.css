@@ -1,348 +1,416 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-/* Semantic surface/label tokens. Every hardcoded color in the dashboard goes
-   through one of these so light and dark mode stay in sync. Values follow the
-   macOS System Settings palette. */
-:root {
-  color-scheme: light dark;
+@theme {
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, SF Pro Text, Helvetica Neue, sans-serif;
 
-  --ds-content-bg: #fbfbfd;
-  --ds-field-bg: #ffffff;
-  --ds-field-border: rgba(60, 60, 67, 0.22);
-  --ds-fill: rgba(0, 0, 0, 0.06);
-  --ds-fill-hover: rgba(0, 0, 0, 0.09);
-  --ds-fill-pressed: rgba(0, 0, 0, 0.14);
-  /* A selection in an inactive window, as light as a native switch's track then. */
-  --ds-selection-inactive: rgba(0, 0, 0, 0.14);
-  /* Fallback only: the native host sets the real system accent inline on
-     <html> (and again on NSSystemColorsDidChange). WebKit resolves the CSS
-     AccentColor keyword to blue here, so it must never override that value. */
-  --dashboard-accent-color: AccentColor;
-  --ds-top-rgb: 251 251 253;
-  --ds-top-highlight: rgba(255, 255, 255, 0.62);
-  --ds-sidebar-bg: #f5f5f7;
-  --ds-sidebar-border: rgba(60, 60, 67, 0.12);
-  --ds-sidebar-item: rgba(0, 0, 0, 0.85);
-  --ds-sidebar-icon: rgba(32, 33, 36, 0.92);
-  --ds-sidebar-blurred-bg: rgba(0, 0, 0, 0.08);
+  --color-base: #f2f2f7;
+  --color-mantle: #ffffff;
+  --color-crust: #e5e5ea;
+  --color-surface0: #ffffff;
+  --color-surface1: #e5e5ea;
+  --color-surface2: #c7c7cc;
+  --color-overlay0: #aeaeb2;
+  --color-overlay1: #8e8e93;
+  --color-subtext0: #636366;
+  --color-subtext1: #3c3c43;
+  --color-text: #000000;
+  --color-blue: #007aff;
+  --color-mauve: #5856d6;
+  --color-green: #34c759;
+  --color-red: #ff3b30;
+  --color-yellow: #ff9500;
+  --color-peach: #ff6b35;
 
-  --ds-label: #050505;
-  --ds-label-strong: #000000;
-  --ds-label-muted: rgba(0, 0, 0, 0.78);
-  --ds-label-secondary: rgba(60, 60, 67, 0.68);
-  --ds-label-tertiary: rgba(60, 60, 67, 0.55);
-  --ds-label-quaternary: rgba(60, 60, 67, 0.45);
-
-  --ds-separator: rgba(60, 60, 67, 0.1);
-  --ds-separator-weak: rgba(60, 60, 67, 0.08);
-
-  --ds-card-bg: rgba(246, 246, 247, 0.74);
-  --ds-card-bg-solid: rgba(246, 246, 247, 0.96);
-  --ds-card-border: rgba(255, 255, 255, 0.72);
-  --ds-card-inset: rgba(60, 60, 67, 0.05);
-
-  --ds-control-bg: rgba(120, 120, 128, 0.16);
-  --ds-control-fg: #000000;
-  --ds-control-inset: rgba(60, 60, 67, 0.12);
-  --ds-control-disabled-bg: rgba(120, 120, 128, 0.14);
-  --ds-control-disabled-fg: rgba(60, 60, 67, 0.5);
-  --ds-control-knob: #ffffff;
-
-  --ds-button-bg: rgba(255, 255, 255, 0.6);
-  --ds-button-bg-hover: rgba(255, 255, 255, 0.85);
-  --ds-button-border: rgba(60, 60, 67, 0.1);
-  --ds-button-fg: rgba(0, 0, 0, 0.72);
-
-  --ds-chip-bg: rgba(60, 60, 67, 0.08);
-  --ds-chip-bg-hover: rgba(60, 60, 67, 0.14);
-
-  --ds-code-bg: rgba(0, 0, 0, 0.04);
-  --ds-code-fg: rgba(0, 0, 0, 0.82);
-  --ds-code-prompt: rgba(60, 60, 67, 0.5);
-
-  --ds-radio-bg: #ffffff;
-  --ds-radio-border: rgba(60, 60, 67, 0.28);
-
-  --ds-red: #ff3b30;
-  --ds-red-bg: rgba(255, 59, 48, 0.12);
-  --ds-red-text: #c02b20;
-  --ds-green-bg: rgba(52, 199, 89, 0.12);
-  --ds-green-text: #248a3d;
-  --ds-orange-bg: rgba(255, 149, 0, 0.14);
-  --ds-orange-text: #a05a00;
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --ds-content-bg: #1e1e1e;
-    --ds-field-bg: rgba(255, 255, 255, 0.06);
-    --ds-field-border: rgba(235, 235, 245, 0.18);
-    --ds-fill: rgba(255, 255, 255, 0.1);
-    --ds-fill-hover: rgba(255, 255, 255, 0.14);
-    --ds-fill-pressed: rgba(255, 255, 255, 0.2);
-    --ds-selection-inactive: rgba(255, 255, 255, 0.2);
-    --ds-top-rgb: 30 30 30;
-    --ds-top-highlight: rgba(255, 255, 255, 0.06);
-    --ds-sidebar-bg: #1c1c1e;
-    --ds-sidebar-border: rgba(255, 255, 255, 0.1);
-    --ds-sidebar-item: rgba(255, 255, 255, 0.92);
-    --ds-sidebar-icon: rgba(235, 235, 245, 0.82);
-    --ds-sidebar-blurred-bg: rgba(255, 255, 255, 0.12);
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
 
-    --ds-label: #f2f2f7;
-    --ds-label-strong: #ffffff;
-    --ds-label-muted: rgba(255, 255, 255, 0.82);
-    --ds-label-secondary: rgba(235, 235, 245, 0.6);
-    --ds-label-tertiary: rgba(235, 235, 245, 0.48);
-    --ds-label-quaternary: rgba(235, 235, 245, 0.38);
-
-    --ds-separator: rgba(255, 255, 255, 0.1);
-    --ds-separator-weak: rgba(255, 255, 255, 0.07);
-
-    --ds-card-bg: rgba(255, 255, 255, 0.06);
-    --ds-card-bg-solid: #2c2c2e;
-    --ds-card-border: rgba(255, 255, 255, 0.08);
-    --ds-card-inset: rgba(255, 255, 255, 0.04);
-
-    --ds-control-bg: rgba(120, 120, 128, 0.36);
-    --ds-control-fg: #ffffff;
-    --ds-control-inset: rgba(255, 255, 255, 0.12);
-    --ds-control-disabled-bg: rgba(120, 120, 128, 0.24);
-    --ds-control-disabled-fg: rgba(235, 235, 245, 0.32);
-    --ds-control-knob: #ffffff;
-
-    --ds-button-bg: rgba(255, 255, 255, 0.08);
-    --ds-button-bg-hover: rgba(255, 255, 255, 0.14);
-    --ds-button-border: rgba(255, 255, 255, 0.1);
-    --ds-button-fg: rgba(255, 255, 255, 0.85);
-
-    --ds-chip-bg: rgba(255, 255, 255, 0.1);
-    --ds-chip-bg-hover: rgba(255, 255, 255, 0.16);
-
-    --ds-code-bg: rgba(0, 0, 0, 0.28);
-    --ds-code-fg: rgba(255, 255, 255, 0.86);
-    --ds-code-prompt: rgba(235, 235, 245, 0.45);
-
-    --ds-radio-bg: rgba(255, 255, 255, 0.08);
-    --ds-radio-border: rgba(255, 255, 255, 0.32);
-
-    --ds-red: #ff453a;
-    --ds-red-bg: rgba(255, 69, 58, 0.16);
-    --ds-red-text: #ff6961;
-    --ds-green-bg: rgba(48, 209, 88, 0.16);
-    --ds-green-text: #30d158;
-    --ds-orange-bg: rgba(255, 159, 10, 0.18);
-    --ds-orange-text: #ffb340;
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
   }
 }
 
-* {
-  box-sizing: border-box;
-}
-
-html,
-body,
-#root {
-  height: 100%;
-  overflow: hidden;
-  overscroll-behavior: none;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  background: var(--ds-content-bg);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  /* Default smoothing, like AppKit text. `antialiased` drops the stem
-     darkening macOS applies to native labels and makes the UI read thin. */
-}
-
-/* On macOS an NSVisualEffectView (sidebar material) sits behind the webview;
-   leave the page transparent so it shows through under the sidebar. */
-html.dashboard-native-vibrancy,
-html.dashboard-native-vibrancy body {
-  background: transparent;
-}
-
-/* Fallback surface for dev browsers / platforms without the native material. */
-.dashboard-sidebar {
-  background: var(--ds-sidebar-bg);
-}
-
-html.dashboard-native-vibrancy .dashboard-sidebar {
-  background: transparent;
-}
-
-/* No hover or pressed feedback on nav rows — only the selected row is tinted. */
-.dashboard-sidebar-item {
-  outline: none;
-}
-
-.dashboard-sidebar-item-active {
-  background: var(--dashboard-accent-color, #0a60ff);
-  color: #fff;
-  box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.14);
-}
-
-/* Like System Settings: the selection falls back to gray and the material
-   turns solid while the window is unfocused. */
-/* Like native radio buttons, the selected theme turns gray while the window
-   is inactive. */
-html.dashboard-window-blurred .theme-option-frame-on {
-  border-color: var(--ds-selection-inactive);
-}
-/* The radio keeps the unselected ring's gray, a step darker than the frame,
-   so its white dot still reads. */
-html.dashboard-window-blurred .theme-option-radio-on {
-  border-color: var(--ds-radio-border);
-  background: var(--ds-radio-border);
-}
-
-html.dashboard-window-blurred .dashboard-sidebar-item-active {
-  background: var(--ds-sidebar-blurred-bg);
-  color: var(--ds-sidebar-item);
-  box-shadow: none;
-}
-
-button,
-select,
-a {
-  cursor: default;
-}
-
-input,
-textarea {
-  /* Editable controls retain the native ability to select and replace text. */
-  -webkit-user-select: text;
-  user-select: text;
-}
-
-@layer components {
+@utility dashboard-field {
   /* macOS text field: white well, hairline border, accent focus ring. */
-  .dashboard-field {
-    @apply rounded-md px-2 py-1 text-[13px] outline-none;
-    background: var(--ds-field-bg);
-    color: var(--ds-label);
-    box-shadow: inset 0 0 0 0.5px var(--ds-field-border);
+  @apply rounded-md px-2 py-1 text-[13px] outline-hidden;
+  background: var(--ds-field-bg);
+  color: var(--ds-label);
+  box-shadow: inset 0 0 0 0.5px var(--ds-field-border);
+
+  &.dashboard-number-input {
+    padding-right: 6px;
   }
 
-  .dashboard-field::placeholder {
+  &::placeholder {
     color: var(--ds-label-tertiary);
   }
 
-  .dashboard-field:focus {
+  &:focus {
     box-shadow:
       inset 0 0 0 0.5px var(--ds-field-border),
       0 0 0 3.5px
         color-mix(in srgb, var(--dashboard-accent-color) 45%, transparent);
   }
+}
 
-  .mac-popup {
-    @apply relative inline-flex items-center rounded-lg transition-colors duration-100;
-  }
+@utility mac-popup {
+  @apply relative inline-flex items-center rounded-lg transition-colors duration-100;
 
-  .mac-popup select {
-    @apply max-w-[240px] appearance-none border-0 bg-transparent py-1 pl-2.5 pr-8 text-right text-[13px] outline-none;
+  & select {
+    @apply max-w-[240px] appearance-none border-0 bg-transparent py-1 pl-2.5 pr-8 text-right text-[13px] outline-hidden;
     color: var(--ds-label);
     text-align-last: right;
   }
 
-  .mac-popup-chevron {
-    @apply pointer-events-none absolute right-1 flex h-5 w-5 items-center justify-center rounded-full transition-colors duration-100;
-    background: var(--ds-fill);
-    color: var(--ds-label);
-  }
-
-  .mac-popup:not([data-disabled]):hover {
+  &:not([data-disabled]):hover {
     background: var(--ds-fill);
   }
 
-  .mac-popup:not([data-disabled]):hover .mac-popup-chevron {
+  &:not([data-disabled]):hover .mac-popup-chevron {
     background: transparent;
   }
 
-  .mac-popup:not([data-disabled]):active {
+  &:not([data-disabled]):active {
     background: var(--ds-fill-pressed);
   }
 
-  .mac-popup:has(select:focus-visible) {
+  &:has(select:focus-visible) {
     box-shadow: 0 0 0 3px
       color-mix(in srgb, var(--dashboard-accent-color) 45%, transparent);
   }
 
-  .mac-popup[data-disabled] select,
-  .mac-popup[data-disabled] .mac-popup-chevron {
+  &[data-disabled] select {
     color: var(--ds-label-tertiary);
   }
 
+  &[data-disabled] .mac-popup-chevron {
+    color: var(--ds-label-tertiary);
+  }
+}
+
+@utility mac-popup-chevron {
+  @apply pointer-events-none absolute right-1 flex h-5 w-5 items-center justify-center rounded-full transition-colors duration-100;
+  background: var(--ds-fill);
+  color: var(--ds-label);
+
+  .mac-popup:not([data-disabled]):hover & {
+    background: transparent;
+  }
+
+  .mac-popup[data-disabled] & {
+    color: var(--ds-label-tertiary);
+  }
+}
+
+@utility mac-button {
   /* macOS 26 push buttons: capsules, a gray fill for ordinary actions and the
      system accent for the one primary action. Like NSButton, no hover state:
      only pressing changes them. */
-  .mac-button {
-    @apply inline-flex h-7 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border-0 px-3.5 text-[13px] font-medium no-underline outline-none transition-[background-color,filter] duration-100;
-    background: var(--ds-fill);
-    color: var(--ds-label);
-  }
+  @apply inline-flex h-7 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border-0 px-3.5 text-[13px] font-medium no-underline outline-hidden transition-[background-color,filter] duration-100;
+  background: var(--ds-fill);
+  color: var(--ds-label);
 
-  .mac-button:not(:disabled):active {
+  &:not(:disabled):active {
     background: var(--ds-fill-pressed);
   }
 
-  .mac-button-primary {
-    background: var(--dashboard-accent-color);
-    color: #fff;
-  }
-
-  .mac-button-primary:not(:disabled):active {
-    background: var(--dashboard-accent-color);
-    filter: brightness(0.9);
-  }
-
-  .mac-button:disabled {
+  &:disabled {
     background: var(--ds-fill);
     color: var(--ds-label-tertiary);
   }
 
-  .mac-button:focus-visible {
+  &:focus-visible {
     box-shadow: 0 0 0 3px
       color-mix(in srgb, var(--dashboard-accent-color) 45%, transparent);
   }
+}
 
+@utility mac-button-primary {
+  background: var(--dashboard-accent-color);
+  color: #fff;
+
+  &:not(:disabled):active {
+    background: var(--dashboard-accent-color);
+    filter: brightness(0.9);
+  }
+}
+
+@utility sidebar-tile {
   /* System Settings icon tile: a top-lit gradient, a hairline edge and a
      soft drop, so the tile still reads as its own shape on any accent. */
-  .sidebar-tile {
-    @apply flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-[5px] leading-none text-white;
-    background: linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--tile) 72%, #fff) 0%,
-      var(--tile) 100%
-    );
-    box-shadow:
-      inset 0 0 0 0.5px rgba(0, 0, 0, 0.14),
-      0 0.5px 1px rgba(0, 0, 0, 0.18);
-  }
+  @apply flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-[5px] leading-none text-white;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--tile) 72%, #fff) 0%,
+    var(--tile) 100%
+  );
+  box-shadow:
+    inset 0 0 0 0.5px rgba(0, 0, 0, 0.14),
+    0 0.5px 1px rgba(0, 0, 0, 0.18);
 
   /* On the accent-filled selection a slightly deeper drop lifts the tile, so
      a same-colored one (blue on the default accent) still reads as a shape. */
-  .dashboard-sidebar-item-active .sidebar-tile {
+  .dashboard-sidebar-item-active & {
     box-shadow:
       inset 0 0 0 0.5px rgba(0, 0, 0, 0.14),
       0 1px 2px rgba(0, 0, 0, 0.28);
   }
+}
 
-  .dashboard-window-drag-region {
-    @apply absolute inset-x-0 top-0 z-10 h-[52px];
+@utility dashboard-sidebar-item-active {
+  /* On the accent-filled selection a slightly deeper drop lifts the tile, so
+     a same-colored one (blue on the default accent) still reads as a shape. */
+  & .sidebar-tile {
+    box-shadow:
+      inset 0 0 0 0.5px rgba(0, 0, 0, 0.14),
+      0 1px 2px rgba(0, 0, 0, 0.28);
   }
+}
 
-  .dashboard-number-input {
-    padding-right: 6px;
-  }
+@utility dashboard-window-drag-region {
+  @apply absolute inset-x-0 top-0 z-10 h-[52px];
+}
 
-  .dashboard-number-input::-webkit-inner-spin-button {
+@utility dashboard-number-input {
+  /* Its padding-right lives in dashboard-field as `&.dashboard-number-input`:
+     v4 emits this utility before dashboard-field, so a plain rule here lost to
+     the field's padding-inline. */
+  &::-webkit-inner-spin-button {
     margin-left: 6px;
+  }
+}
+
+@layer utilities {
+  /* Semantic surface/label tokens. Every hardcoded color in the dashboard goes
+   through one of these so light and dark mode stay in sync. Values follow the
+   macOS System Settings palette. */
+  :root {
+    color-scheme: light dark;
+
+    --ds-content-bg: #fbfbfd;
+    --ds-field-bg: #ffffff;
+    --ds-field-border: rgba(60, 60, 67, 0.22);
+    --ds-fill: rgba(0, 0, 0, 0.06);
+    --ds-fill-hover: rgba(0, 0, 0, 0.09);
+    --ds-fill-pressed: rgba(0, 0, 0, 0.14);
+    /* A selection in an inactive window, as light as a native switch's track then. */
+    --ds-selection-inactive: rgba(0, 0, 0, 0.14);
+    /* Fallback only: the native host sets the real system accent inline on
+     <html> (and again on NSSystemColorsDidChange). WebKit resolves the CSS
+     AccentColor keyword to blue here, so it must never override that value. */
+    --dashboard-accent-color: AccentColor;
+    --ds-top-rgb: 251 251 253;
+    --ds-top-highlight: rgba(255, 255, 255, 0.62);
+    --ds-sidebar-bg: #f5f5f7;
+    --ds-sidebar-border: rgba(60, 60, 67, 0.12);
+    --ds-sidebar-item: rgba(0, 0, 0, 0.85);
+    --ds-sidebar-icon: rgba(32, 33, 36, 0.92);
+    --ds-sidebar-blurred-bg: rgba(0, 0, 0, 0.08);
+
+    --ds-label: #050505;
+    --ds-label-strong: #000000;
+    --ds-label-muted: rgba(0, 0, 0, 0.78);
+    --ds-label-secondary: rgba(60, 60, 67, 0.68);
+    --ds-label-tertiary: rgba(60, 60, 67, 0.55);
+    --ds-label-quaternary: rgba(60, 60, 67, 0.45);
+
+    --ds-separator: rgba(60, 60, 67, 0.1);
+    --ds-separator-weak: rgba(60, 60, 67, 0.08);
+
+    --ds-card-bg: rgba(246, 246, 247, 0.74);
+    --ds-card-bg-solid: rgba(246, 246, 247, 0.96);
+    --ds-card-border: rgba(255, 255, 255, 0.72);
+    --ds-card-inset: rgba(60, 60, 67, 0.05);
+
+    --ds-control-bg: rgba(120, 120, 128, 0.16);
+    --ds-control-fg: #000000;
+    --ds-control-inset: rgba(60, 60, 67, 0.12);
+    --ds-control-disabled-bg: rgba(120, 120, 128, 0.14);
+    --ds-control-disabled-fg: rgba(60, 60, 67, 0.5);
+    --ds-control-knob: #ffffff;
+
+    --ds-button-bg: rgba(255, 255, 255, 0.6);
+    --ds-button-bg-hover: rgba(255, 255, 255, 0.85);
+    --ds-button-border: rgba(60, 60, 67, 0.1);
+    --ds-button-fg: rgba(0, 0, 0, 0.72);
+
+    --ds-chip-bg: rgba(60, 60, 67, 0.08);
+    --ds-chip-bg-hover: rgba(60, 60, 67, 0.14);
+
+    --ds-code-bg: rgba(0, 0, 0, 0.04);
+    --ds-code-fg: rgba(0, 0, 0, 0.82);
+    --ds-code-prompt: rgba(60, 60, 67, 0.5);
+
+    --ds-radio-bg: #ffffff;
+    --ds-radio-border: rgba(60, 60, 67, 0.28);
+
+    --ds-red: #ff3b30;
+    --ds-red-bg: rgba(255, 59, 48, 0.12);
+    --ds-red-text: #c02b20;
+    --ds-green-bg: rgba(52, 199, 89, 0.12);
+    --ds-green-text: #248a3d;
+    --ds-orange-bg: rgba(255, 149, 0, 0.14);
+    --ds-orange-text: #a05a00;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ds-content-bg: #1e1e1e;
+      --ds-field-bg: rgba(255, 255, 255, 0.06);
+      --ds-field-border: rgba(235, 235, 245, 0.18);
+      --ds-fill: rgba(255, 255, 255, 0.1);
+      --ds-fill-hover: rgba(255, 255, 255, 0.14);
+      --ds-fill-pressed: rgba(255, 255, 255, 0.2);
+      --ds-selection-inactive: rgba(255, 255, 255, 0.2);
+      --ds-top-rgb: 30 30 30;
+      --ds-top-highlight: rgba(255, 255, 255, 0.06);
+      --ds-sidebar-bg: #1c1c1e;
+      --ds-sidebar-border: rgba(255, 255, 255, 0.1);
+      --ds-sidebar-item: rgba(255, 255, 255, 0.92);
+      --ds-sidebar-icon: rgba(235, 235, 245, 0.82);
+      --ds-sidebar-blurred-bg: rgba(255, 255, 255, 0.12);
+
+      --ds-label: #f2f2f7;
+      --ds-label-strong: #ffffff;
+      --ds-label-muted: rgba(255, 255, 255, 0.82);
+      --ds-label-secondary: rgba(235, 235, 245, 0.6);
+      --ds-label-tertiary: rgba(235, 235, 245, 0.48);
+      --ds-label-quaternary: rgba(235, 235, 245, 0.38);
+
+      --ds-separator: rgba(255, 255, 255, 0.1);
+      --ds-separator-weak: rgba(255, 255, 255, 0.07);
+
+      --ds-card-bg: rgba(255, 255, 255, 0.06);
+      --ds-card-bg-solid: #2c2c2e;
+      --ds-card-border: rgba(255, 255, 255, 0.08);
+      --ds-card-inset: rgba(255, 255, 255, 0.04);
+
+      --ds-control-bg: rgba(120, 120, 128, 0.36);
+      --ds-control-fg: #ffffff;
+      --ds-control-inset: rgba(255, 255, 255, 0.12);
+      --ds-control-disabled-bg: rgba(120, 120, 128, 0.24);
+      --ds-control-disabled-fg: rgba(235, 235, 245, 0.32);
+      --ds-control-knob: #ffffff;
+
+      --ds-button-bg: rgba(255, 255, 255, 0.08);
+      --ds-button-bg-hover: rgba(255, 255, 255, 0.14);
+      --ds-button-border: rgba(255, 255, 255, 0.1);
+      --ds-button-fg: rgba(255, 255, 255, 0.85);
+
+      --ds-chip-bg: rgba(255, 255, 255, 0.1);
+      --ds-chip-bg-hover: rgba(255, 255, 255, 0.16);
+
+      --ds-code-bg: rgba(0, 0, 0, 0.28);
+      --ds-code-fg: rgba(255, 255, 255, 0.86);
+      --ds-code-prompt: rgba(235, 235, 245, 0.45);
+
+      --ds-radio-bg: rgba(255, 255, 255, 0.08);
+      --ds-radio-border: rgba(255, 255, 255, 0.32);
+
+      --ds-red: #ff453a;
+      --ds-red-bg: rgba(255, 69, 58, 0.16);
+      --ds-red-text: #ff6961;
+      --ds-green-bg: rgba(48, 209, 88, 0.16);
+      --ds-green-text: #30d158;
+      --ds-orange-bg: rgba(255, 159, 10, 0.18);
+      --ds-orange-text: #ffb340;
+    }
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--ds-content-bg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    /* Default smoothing, like AppKit text. `antialiased` drops the stem
+     darkening macOS applies to native labels and makes the UI read thin. */
+  }
+
+  /* On macOS an NSVisualEffectView (sidebar material) sits behind the webview;
+   leave the page transparent so it shows through under the sidebar. */
+  html.dashboard-native-vibrancy,
+  html.dashboard-native-vibrancy body {
+    background: transparent;
+  }
+
+  /* Fallback surface for dev browsers / platforms without the native material. */
+  .dashboard-sidebar {
+    background: var(--ds-sidebar-bg);
+  }
+
+  html.dashboard-native-vibrancy .dashboard-sidebar {
+    background: transparent;
+  }
+
+  /* No hover or pressed feedback on nav rows — only the selected row is tinted. */
+  .dashboard-sidebar-item {
+    outline: none;
+  }
+
+  .dashboard-sidebar-item-active {
+    background: var(--dashboard-accent-color, #0a60ff);
+    color: #fff;
+    box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.14);
+  }
+
+  /* Like System Settings: the selection falls back to gray and the material
+   turns solid while the window is unfocused. */
+  /* Like native radio buttons, the selected theme turns gray while the window
+   is inactive. */
+  html.dashboard-window-blurred .theme-option-frame-on {
+    border-color: var(--ds-selection-inactive);
+  }
+  /* The radio keeps the unselected ring's gray, a step darker than the frame,
+   so its white dot still reads. */
+  html.dashboard-window-blurred .theme-option-radio-on {
+    border-color: var(--ds-radio-border);
+    background: var(--ds-radio-border);
+  }
+
+  html.dashboard-window-blurred .dashboard-sidebar-item-active {
+    background: var(--ds-sidebar-blurred-bg);
+    color: var(--ds-sidebar-item);
+    box-shadow: none;
+  }
+
+  button,
+  select,
+  a {
+    cursor: default;
+  }
+
+  input,
+  textarea {
+    /* Editable controls retain the native ability to select and replace text. */
+    -webkit-user-select: text;
+    user-select: text;
   }
 }

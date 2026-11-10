@@ -5,15 +5,33 @@ use fig_proto::hooks::new_caret_position_hook;
 use fig_proto::local::caret_position_hook::Origin;
 use fig_util::Terminal;
 use macos_utils::NotificationCenter;
-use objc2::mutability::InteriorMutable;
 use objc2::rc::{Allocated, Retained};
 use objc2::runtime::{AnyObject, Bool, Sel};
-use objc2::{ClassType, DeclaredClass, declare_class, msg_send, msg_send_id, sel};
-use objc2_foundation::{NSPoint, NSRange, NSRect, NSSize, NSString, ns_string};
+use objc2::{AnyThread, ClassType, DefinedClass, define_class, msg_send, sel};
+use objc2_foundation::{NSObject, NSPoint, NSRange, NSRect, NSSize, NSString, ns_string};
 use objc2_input_method_kit::{IMKInputController, IMKServer};
 use tracing::{debug, info, trace, warn};
 
 const INPUT_CONTROLLER_CLASS_NAME: &str = env!("InputMethodServerControllerClass");
+
+// `define_class!` only takes a literal class name, so check it matches the
+// `InputMethodServerControllerClass` that build.rs writes into Info.plist.
+const _: () = {
+    let expected = INPUT_CONTROLLER_CLASS_NAME.as_bytes();
+    let declared = b"RustInputMethodServerController";
+    assert!(
+        expected.len() == declared.len(),
+        "controller class name drifted from Info.plist"
+    );
+    let mut i = 0;
+    while i < expected.len() {
+        assert!(
+            expected[i] == declared[i],
+            "controller class name drifted from Info.plist"
+        );
+        i += 1;
+    }
+};
 
 fn bundle_identifier(client: &AnyObject) -> Option<String> {
     let bundle_id: &NSString = unsafe { msg_send![client, bundleIdentifier] };
@@ -37,28 +55,20 @@ struct Ivars {
     is_active: Cell<bool>,
 }
 
-declare_class!(
+define_class!(
+    // - The superclass IMKInputController does not have any subclassing requirements.
+    // - `MyInputController` does not implement `Drop`.
+    #[unsafe(super(IMKInputController, NSObject))]
+    #[name = "RustInputMethodServerController"]
+    #[ivars = Ivars]
     struct MyInputController;
 
-    // - The superclass IMKInputController does not have any subclassing requirements.
-    // - Interior mutability is a safe default.
-    // - `MyInputController` does not implement `Drop`.
-    unsafe impl ClassType for MyInputController {
-        type Super = IMKInputController;
-        type Mutability = InteriorMutable;
-        const NAME: &'static str = INPUT_CONTROLLER_CLASS_NAME;
-    }
-
-    impl DeclaredClass for MyInputController {
-        type Ivars = Ivars;
-    }
-
-    unsafe impl MyInputController {
-        #[method_id(initWithServer:delegate:client:)]
+    impl MyInputController {
+        #[unsafe(method_id(initWithServer:delegate:client:))]
         fn init_with_server_delegate_client(this: Allocated<Self>, server: Option<&IMKServer>, delegate: Option<&AnyObject>, client: Option<&AnyObject>) -> Retained<Self> {
             info!("INITING");
             let partial = this.set_ivars(Ivars { is_active: Cell::new(true) });
-            let this: Retained<Self> = unsafe { msg_send_id![super(partial, IMKInputController::class()), initWithServer:server delegate: delegate client: client] };
+            let this: Retained<Self> = unsafe { msg_send![super(partial, IMKInputController::class()), initWithServer: server, delegate: delegate, client: client] };
 
             let mut center = NotificationCenter::distributed_center();
             unsafe {
@@ -72,7 +82,7 @@ declare_class!(
             this
         }
 
-        #[method(activateServer:)]
+        #[unsafe(method(activateServer:))]
         fn activate_server(&self, client: Option<&AnyObject>) {
             let client = client.unwrap();
             self.ivars().is_active.set(true);
@@ -91,22 +101,22 @@ declare_class!(
                 unsafe {
                     // First, setMarkedText with a non-empty string in order to enable winit IME
                     // https://github.com/rust-windowing/winit/blob/97d4c7b303bb8110df6c492f0c2327b7d5098347/src/platform_impl/macos/view.rs#L330-L337
-                    let _: () = msg_send![client, setMarkedText: space_string selectionRange: empty_range replacementRange: empty_range];
+                    let _: () = msg_send![client, setMarkedText: space_string, selectionRange: empty_range, replacementRange: empty_range];
 
                     // Then, since we don't *actually* want to be in the preedit state, set marked text to an empty
                     // string to invalidate https://github.com/rust-windowing/winit/blob/97d4c7b303bb8110df6c492f0c2327b7d5098347/src/platform_impl/macos/view.rs#L345-L351
-                    let _: () = msg_send![client, setMarkedText: empty_string selectionRange: empty_range replacementRange: empty_range];
+                    let _: () = msg_send![client, setMarkedText: empty_string, selectionRange: empty_range, replacementRange: empty_range];
                 }
             }
         }
 
-        #[method(deactivateServer:)]
+        #[unsafe(method(deactivateServer:))]
         fn deactivate_server(&self, client: Option<&AnyObject>) {
             self.ivars().is_active.set(false);
             info!("deactivated server: {:?}", bundle_identifier(client.unwrap()));
         }
 
-        #[method(handleCursorPositionRequest:)]
+        #[unsafe(method(handleCursorPositionRequest:))]
         fn handle_cursor_position_request(&self, _notif: Option<&AnyObject>) {
             let client: &AnyObject = unsafe { msg_send![self, client] };
             let bundle_id = bundle_identifier(client);
@@ -124,7 +134,7 @@ declare_class!(
                                 width: 0.0,
                             },
                         };
-                        let _: () = unsafe { msg_send![client, attributesForCharacterIndex: 0 lineHeightRectangle: &mut rect] };
+                        let _: *mut AnyObject = unsafe { msg_send![client, attributesForCharacterIndex: 0usize, lineHeightRectangle: &mut rect] };
 
                         if !is_valid_caret_rect(rect) {
                             warn!("Instance {bundle_id:?} reported an invalid caret rect {rect:?}, ignoring request");
@@ -154,14 +164,14 @@ declare_class!(
             }
         }
 
-        #[method(respondsToSelector:)]
+        #[unsafe(method(respondsToSelector:))]
         fn responds_to_selector(&self, selector: Sel) -> Bool {
             info!("responds_to_selector");
             info!("superclass");
             let superclass = unsafe { msg_send![self, superclass] };
             info!("should_respond");
             let should_respond: Bool = unsafe { msg_send![super(self, superclass), respondsToSelector: selector] };
-            trace!("`{}` should respond? {}", selector.name(), should_respond.as_bool());
+            trace!("`{}` should respond? {}", selector.name().to_string_lossy(), should_respond.as_bool());
             should_respond
         }
     }

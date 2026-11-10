@@ -25,17 +25,17 @@ impl NotificationCenter {
     }
 
     pub fn workspace_center() -> Self {
-        let center = unsafe { NSWorkspace::sharedWorkspace().notificationCenter() };
+        let center = NSWorkspace::sharedWorkspace().notificationCenter();
         Self::new(center)
     }
 
     pub fn default_center() -> Self {
-        let center = unsafe { NSNotificationCenter::defaultCenter() };
+        let center = NSNotificationCenter::defaultCenter();
         Self::new(center)
     }
 
     pub fn distributed_center() -> Self {
-        let center = unsafe { NSDistributedNotificationCenter::defaultCenter() };
+        let center = NSDistributedNotificationCenter::defaultCenter();
         Self {
             inner: Inner::DistributedNotificationCenter(center),
         }

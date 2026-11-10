@@ -34,16 +34,16 @@ export function DashboardContent({
   }, [section]);
 
   return (
-    <div className="flex min-w-0 flex-1 flex-col bg-[var(--ds-content-bg)]">
+    <div className="flex min-w-0 flex-1 flex-col bg-(--ds-content-bg)">
       {/* The page title sits in the title-bar row, like System Settings; a
           hairline appears under it once content scrolls beneath. */}
       <header
         className={clsx(
           "flex h-[52px] flex-shrink-0 items-center border-b px-5",
-          scrolled ? "border-[var(--ds-separator)]" : "border-transparent",
+          scrolled ? "border-(--ds-separator)" : "border-transparent",
         )}
       >
-        <h2 className="m-0 text-[15px] font-semibold tracking-[-0.01em] text-[var(--ds-label)]">
+        <h2 className="m-0 text-[15px] font-semibold tracking-[-0.01em] text-(--ds-label)">
           {titles[section]}
         </h2>
       </header>
@@ -53,7 +53,7 @@ export function DashboardContent({
         ref={scrollRef}
         onWheel={preventScrollBounce}
         onScroll={(event) => setScrolled(event.currentTarget.scrollTop > 0)}
-        className="relative mb-2.5 min-h-0 flex-1 overflow-y-auto [overscroll-behavior:none]"
+        className="relative mb-2.5 min-h-0 flex-1 overflow-y-auto overscroll-none"
       >
         <div className="box-border w-full px-5 pb-6 pt-4">
           {section === "general" ? (

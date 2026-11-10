@@ -6,11 +6,6 @@
 use std::os::unix::io::AsRawFd;
 #[cfg(unix)]
 use std::os::unix::io::BorrowedFd;
-#[cfg(windows)]
-use std::os::windows::io::AsRawHandle;
-
-#[cfg(windows)]
-use winapi::um::consoleapi::GetConsoleMode;
 
 /// Adds the is_tty method to types that might represent a terminal
 pub trait IsTty {
@@ -29,15 +24,6 @@ impl<S: AsRawFd> IsTty for S {
         // SAFETY: `fd` stays valid for the lifetime of `self` and the borrow
         // does not escape this call.
         nix::unistd::isatty(unsafe { BorrowedFd::borrow_raw(fd) }).unwrap_or_default()
-    }
-}
-
-#[cfg(windows)]
-impl<S: AsRawHandle> IsTty for S {
-    fn is_tty(&self) -> bool {
-        let mut mode = 0;
-        let ok = unsafe { GetConsoleMode(self.as_raw_handle() as *mut _, &mut mode) };
-        ok == 1
     }
 }
 

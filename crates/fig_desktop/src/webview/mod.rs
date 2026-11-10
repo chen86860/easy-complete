@@ -783,8 +783,6 @@ impl WebviewManager {
         let menu_bar = menu_bar();
 
         // TODO: fix these
-        // #[cfg(target_os = "windows")]
-        // menu_bar.init_for_hwnd(window_hwnd);
         // #[cfg(target_os = "linux")]
         // menu_bar.init_for_gtk_window(&gtk_window, Some(&vertical_gtk_box));
         #[cfg(target_os = "macos")]
@@ -1288,7 +1286,7 @@ fn system_accent_css_color() -> String {
     use objc2::rc::autoreleasepool;
     use objc2_app_kit::{NSColor, NSColorSpace};
 
-    autoreleasepool(|_| unsafe {
+    autoreleasepool(|_| {
         let accent = NSColor::controlAccentColor();
         let srgb = NSColorSpace::sRGBColorSpace();
         let color = accent.colorUsingColorSpace(&srgb).unwrap_or(accent);
@@ -1319,7 +1317,7 @@ fn install_dashboard_sidebar_vibrancy(window: &Window) {
         NSAutoresizingMaskOptions, NSVisualEffectBlendingMode, NSVisualEffectMaterial, NSVisualEffectState,
         NSVisualEffectView, NSWindow, NSWindowOrderingMode,
     };
-    use objc2_foundation::{CGPoint, CGRect, CGSize, MainThreadMarker};
+    use objc2_foundation::{MainThreadMarker, NSPoint, NSRect, NSSize};
     use tao::platform::macos::WindowExtMacOS;
 
     let Some(mtm) = MainThreadMarker::new() else {
@@ -1335,15 +1333,15 @@ fn install_dashboard_sidebar_vibrancy(window: &Window) {
         };
 
         let height = content_view.bounds().size.height;
-        let frame = CGRect::new(CGPoint::ZERO, CGSize::new(DASHBOARD_SIDEBAR_WIDTH, height));
+        let frame = NSRect::new(NSPoint::ZERO, NSSize::new(DASHBOARD_SIDEBAR_WIDTH, height));
         let effect_view = NSVisualEffectView::initWithFrame(mtm.alloc(), frame);
         effect_view.setMaterial(NSVisualEffectMaterial::Sidebar);
         effect_view.setBlendingMode(NSVisualEffectBlendingMode::BehindWindow);
         effect_view.setState(NSVisualEffectState::FollowsWindowActiveState);
         effect_view.setAutoresizingMask(
-            NSAutoresizingMaskOptions::NSViewHeightSizable | NSAutoresizingMaskOptions::NSViewMaxXMargin,
+            NSAutoresizingMaskOptions::ViewHeightSizable | NSAutoresizingMaskOptions::ViewMaxXMargin,
         );
-        content_view.addSubview_positioned_relativeTo(&effect_view, NSWindowOrderingMode::NSWindowBelow, None);
+        content_view.addSubview_positioned_relativeTo(&effect_view, NSWindowOrderingMode::Below, None);
     }
 }
 
@@ -1494,9 +1492,6 @@ pub fn build_autocomplete(
         } else if #[cfg(target_os = "macos")] {
             use tao::platform::macos::WindowBuilderExtMacOS;
             window_builder = window_builder.with_resizable(false).with_has_shadow(false).with_visible(false);
-        } else if #[cfg(target_os = "windows")] {
-            use tao::platform::windows::WindowBuilderExtWindows;
-            window_builder = window_builder.with_resizable(false).with_skip_taskbar(true).with_visible(false);
         }
     );
 
@@ -1505,16 +1500,14 @@ pub fn build_autocomplete(
     // Without this the overlay stays on the Space it was created on, so it never shows over
     // terminals in full-screen Spaces (it pops up on Desktop 1 instead).
     #[cfg(target_os = "macos")]
-    #[allow(unexpected_cfgs)] // objc's msg_send! expands to a `cargo-clippy` cfg
     {
-        use objc::runtime::Object;
-        use objc::{msg_send, sel, sel_impl};
+        use objc2_app_kit::{NSWindow, NSWindowCollectionBehavior};
         use tao::platform::macos::WindowExtMacOS;
 
-        // NSWindowCollectionBehaviorCanJoinAllSpaces | NSWindowCollectionBehaviorFullScreenAuxiliary
-        const BEHAVIOR: u64 = (1 << 0) | (1 << 8);
-        let ns_window = window.ns_window().cast::<Object>();
-        let _: () = unsafe { msg_send![ns_window, setCollectionBehavior: BEHAVIOR] };
+        let ns_window = unsafe { &*window.ns_window().cast::<NSWindow>() };
+        ns_window.setCollectionBehavior(
+            NSWindowCollectionBehavior::CanJoinAllSpaces | NSWindowCollectionBehavior::FullScreenAuxiliary,
+        );
 
         let built_while_regular =
             *crate::platform::ACTIVATION_POLICY.lock().unwrap() == tao::platform::macos::ActivationPolicy::Regular;
@@ -1772,7 +1765,7 @@ async fn init_webview_notification_listeners(proxy: EventLoopProxy) {
 
         let mut default_center = NotificationCenter::default_center();
         let notification_name = ns_string!("NSSystemColorsDidChangeNotification");
-        let queue = unsafe { NSOperationQueue::new() };
+        let queue = NSOperationQueue::new();
         default_center.subscribe(notification_name, Some(&queue), move |_| {
             let color = system_accent_css_color();
             let script = format!(

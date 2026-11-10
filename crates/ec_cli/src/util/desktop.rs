@@ -49,30 +49,12 @@ pub fn desktop_app_running() -> bool {
     // shell start in exactly the case that matters — the app being closed — and is not
     // worth the startup latency.
     let bundle_id = ns_string!(APP_BUNDLE_ID);
-    let running_applications = unsafe { NSRunningApplication::runningApplicationsWithBundleIdentifier(bundle_id) };
+    let running_applications = NSRunningApplication::runningApplicationsWithBundleIdentifier(bundle_id);
 
     !running_applications.is_empty()
 }
 
-#[cfg(target_os = "windows")]
-pub fn desktop_app_running() -> bool {
-    use crate::consts::APP_PROCESS_NAME;
-
-    let output = match std::process::Command::new("tasklist.exe")
-        .args(["/NH", "/FI", "IMAGENAME eq fig_desktop.exe"])
-        .output()
-    {
-        Ok(output) => output,
-        Err(_) => return false,
-    };
-
-    match std::str::from_utf8(&output.stdout) {
-        Ok(result) => result.contains(CODEWHISPERER_DESKTOP_PROCESS_NAME),
-        Err(_) => false,
-    }
-}
-
-#[cfg(not(any(target_os = "macos", target_os = "windows")))]
+#[cfg(not(target_os = "macos"))]
 pub fn desktop_app_running() -> bool {
     use std::ffi::OsString;
 
@@ -137,13 +119,6 @@ pub fn launch_fig_desktop(args: LaunchArgs) -> Result<()> {
             if !output.status.success() {
                 eyre::bail!("failed to launch: {}", String::from_utf8_lossy(&output.stderr));
             }
-        } else if #[cfg(windows)] {
-            use std::os::windows::process::CommandExt;
-            use windows::Win32::System::Threading::DETACHED_PROCESS;
-
-            Command::new("fig_desktop")
-                .creation_flags(DETACHED_PROCESS.0)
-                .spawn()?;
         } else {
             let state = fig_settings::State::new();
             let ctx = fig_os_shim::Context::new();
@@ -165,32 +140,12 @@ pub fn launch_fig_desktop(args: LaunchArgs) -> Result<()> {
     // Wait for socket to exist
     let path = directories::desktop_socket_path()?;
 
-    cfg_if::cfg_if! {
-        if #[cfg(windows)] {
-            for _ in 0..30 {
-                match path.metadata() {
-                    Ok(_) => return Ok(()),
-                    Err(err) => if let Some(code) = err.raw_os_error() {
-                        // Windows can't query socket file existence
-                        // Check against arbitrary error code
-                        if code == 1920 {
-                            return Ok(())
-                        }
-                    },
-                }
-
-                std::thread::sleep(std::time::Duration::from_millis(500));
-            }
-        } else {
-            for _ in 0..30 {
-                // Wait for socket to exist
-                if path.exists() {
-                    return Ok(());
-                }
-
-                std::thread::sleep(std::time::Duration::from_millis(500));
-            }
+    for _ in 0..30 {
+        if path.exists() {
+            return Ok(());
         }
+
+        std::thread::sleep(std::time::Duration::from_millis(500));
     }
 
     Err(eyre!("failed to connect to socket".to_owned()))

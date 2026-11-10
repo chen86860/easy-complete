@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge";
 const LoadingIcon = ({ className }: { className?: string }) => (
   <div
     className={twMerge(
-      "bg-main-bg text-selected-text mx-1 rounded px-1.5 py-2.5",
+      "bg-main-bg text-selected-text mx-1 rounded-sm px-1.5 py-2.5",
       className,
     )}
   >

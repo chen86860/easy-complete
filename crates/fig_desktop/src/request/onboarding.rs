@@ -82,14 +82,6 @@ where
                     }
 
                     RequestResult::success()
-                } else if #[cfg(target_os = "windows")] {
-                    use std::os::windows::process::CommandExt;
-
-                    let create_new_console = 0x10;
-                    match std::process::Command::new("cmd").creation_flags(create_new_console).arg("/c").raw_arg(r#"""%PROGRAMFILES%/Git/bin/bash.exe"""#).spawn() {
-                        Ok(_) => RequestResult::success(),
-                        Err(e) => RequestResult::error(format!("Failed to start Git Bash: {e}")),
-                    }
                 }
             }
         },

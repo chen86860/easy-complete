@@ -38,10 +38,6 @@ pub enum OSVersion {
         #[serde(flatten)]
         os_release: Option<linux::OsRelease>,
     },
-    Windows {
-        name: String,
-        build: u32,
-    },
     FreeBsd {
         version: String,
     },
@@ -65,21 +61,6 @@ impl OSVersion {
                         .into(),
                 },
                 (_, _) => SupportLevel::Supported,
-            },
-            OSVersion::Windows { build, .. } => match build {
-                // Only Windows 11 is fully supported at the moment
-                build if *build >= 22000 => SupportLevel::Supported,
-                // Windows 10 development has known issues
-                build if *build >= 10240 => SupportLevel::InDevelopment {
-                    info: Some(
-                        "Since support for Windows 10 is still in progress,\
-Autocomplete only works in Git Bash with the default prompt.\
-Please upgrade to Windows 11 or wait for a fix while we work this issue out."
-                            .into(),
-                    ),
-                },
-                // Earlier versions of Windows are not supported
-                _ => SupportLevel::Unsupported,
             },
             OSVersion::FreeBsd { .. } => SupportLevel::InDevelopment { info: None },
         }
@@ -144,7 +125,6 @@ impl std::fmt::Display for OSVersion {
                 Some(distro_name) => write!(f, "Linux {kernel_version} - {distro_name}"),
                 None => write!(f, "Linux {kernel_version}"),
             },
-            OSVersion::Windows { name, build } => write!(f, "{name} (or newer) - build {build}"),
             OSVersion::FreeBsd { version } => write!(f, "FreeBSD {version}"),
         }
     }
@@ -152,83 +132,74 @@ impl std::fmt::Display for OSVersion {
 
 pub fn os_version() -> Option<&'static OSVersion> {
     static OS_VERSION: OnceLock<Option<OSVersion>> = OnceLock::new();
-    OS_VERSION.get_or_init(|| {
-        cfg_if! {
-            if #[cfg(target_os = "macos")] {
-                use std::process::Command;
-                use regex::Regex;
+    OS_VERSION
+        .get_or_init(|| {
+            cfg_if! {
+                if #[cfg(target_os = "macos")] {
+                    use std::process::Command;
+                    use regex::Regex;
 
-                let version_info = Command::new("sw_vers")
-                    .output()
-                    .ok()?;
+                    let version_info = Command::new("sw_vers")
+                        .output()
+                        .ok()?;
 
-                let version_info: String = String::from_utf8_lossy(&version_info.stdout).trim().into();
+                    let version_info: String = String::from_utf8_lossy(&version_info.stdout).trim().into();
 
-                let version_regex = Regex::new(r"ProductVersion:\s*(\S+)").unwrap();
-                let build_regex = Regex::new(r"BuildVersion:\s*(\S+)").unwrap();
+                    let version_regex = Regex::new(r"ProductVersion:\s*(\S+)").unwrap();
+                    let build_regex = Regex::new(r"BuildVersion:\s*(\S+)").unwrap();
 
-                let version: String = version_regex
-                    .captures(&version_info)
-                    .and_then(|c| c.get(1))
-                    .map(|v| v.as_str().into())?;
+                    let version: String = version_regex
+                        .captures(&version_info)
+                        .and_then(|c| c.get(1))
+                        .map(|v| v.as_str().into())?;
 
-                let major = version
-                    .split('.')
-                    .next()?
-                    .parse().ok()?;
+                    let major = version
+                        .split('.')
+                        .next()?
+                        .parse().ok()?;
 
-                let minor = version
-                    .split('.')
-                    .nth(1)?
-                    .parse().ok()?;
+                    let minor = version
+                        .split('.')
+                        .nth(1)?
+                        .parse().ok()?;
 
-                let patch = version.split('.').nth(2).and_then(|p| p.parse().ok());
+                    let patch = version.split('.').nth(2).and_then(|p| p.parse().ok());
 
-                let build = build_regex
-                    .captures(&version_info)
-                    .and_then(|c| c.get(1))?
-                    .as_str()
-                    .into();
+                    let build = build_regex
+                        .captures(&version_info)
+                        .and_then(|c| c.get(1))?
+                        .as_str()
+                        .into();
 
-                Some(OSVersion::MacOS {
-                    major,
-                    minor,
-                    patch,
-                    build,
-                })
-            } else if #[cfg(target_os = "linux")] {
-                use nix::sys::utsname::uname;
+                    Some(OSVersion::MacOS {
+                        major,
+                        minor,
+                        patch,
+                        build,
+                    })
+                } else if #[cfg(target_os = "linux")] {
+                    use nix::sys::utsname::uname;
 
-                let kernel_version = uname().ok()?.release().to_string_lossy().into();
-                let os_release = linux::get_os_release().cloned();
+                    let kernel_version = uname().ok()?.release().to_string_lossy().into();
+                    let os_release = linux::get_os_release().cloned();
 
-                Some(OSVersion::Linux {
-                    kernel_version,
-                    os_release,
-                })
-            } else if #[cfg(target_os = "windows")] {
-                use winreg::enums::HKEY_LOCAL_MACHINE;
-                use winreg::RegKey;
+                    Some(OSVersion::Linux {
+                        kernel_version,
+                        os_release,
+                    })
+                } else if #[cfg(target_os = "freebsd")] {
+                    use nix::sys::utsname::uname;
 
-                let rkey = RegKey::predef(HKEY_LOCAL_MACHINE).open_subkey(r"SOFTWARE\Microsoft\Windows NT\CurrentVersion").ok()?;
-                let build: String = rkey.get_value("CurrentBuild").ok()?;
+                    let version = uname().ok()?.release().to_string_lossy().into();
 
-                Some(OSVersion::Windows {
-                    name: rkey.get_value("ProductName").ok()?,
-                    build: build.parse::<u32>().ok()?,
-                })
-            } else if #[cfg(target_os = "freebsd")] {
-                use nix::sys::utsname::uname;
+                    Some(OSVersion::FreeBsd {
+                        version,
+                    })
 
-                let version = uname().ok()?.release().to_string_lossy().into();
-
-                Some(OSVersion::FreeBsd {
-                    version,
-                })
-
+                }
             }
-        }
-    }).as_ref()
+        })
+        .as_ref()
 }
 
 pub fn in_ssh() -> bool {
@@ -334,17 +305,6 @@ fn raw_system_id() -> Result<String, Error> {
         }
     }
     Err(Error::HwidNotFound)
-}
-
-#[cfg(target_os = "windows")]
-fn raw_system_id() -> Result<String, Error> {
-    use winreg::RegKey;
-    use winreg::enums::HKEY_LOCAL_MACHINE;
-
-    let rkey = RegKey::predef(HKEY_LOCAL_MACHINE).open_subkey(r"SOFTWARE\Microsoft\Cryptography")?;
-    let id: String = rkey.get_value("MachineGuid")?;
-
-    Ok(id)
 }
 
 #[cfg(target_os = "freebsd")]

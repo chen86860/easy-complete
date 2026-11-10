@@ -51,6 +51,10 @@
   color: var(--ds-label);
   box-shadow: inset 0 0 0 0.5px var(--ds-field-border);
 
+  &.dashboard-number-input {
+    padding-right: 6px;
+  }
+
   &::placeholder {
     color: var(--ds-label-tertiary);
   }
@@ -182,8 +186,9 @@
 }
 
 @utility dashboard-number-input {
-  padding-right: 6px;
-
+  /* Its padding-right lives in dashboard-field as `&.dashboard-number-input`:
+     v4 emits this utility before dashboard-field, so a plain rule here lost to
+     the field's padding-inline. */
   &::-webkit-inner-spin-button {
     margin-left: 6px;
   }

@@ -217,7 +217,11 @@ impl AsyncMasterPty for UnixAsyncMasterPty {
 impl MasterPty for UnixMasterPty {
     fn get_async_master_pty(self: Box<Self>) -> Result<Box<dyn AsyncMasterPty + Send + Sync>> {
         Ok(Box::new(UnixAsyncMasterPty {
-            fd: AsyncFd::new(self.fd).context("Failed to create AsyncFd")?,
+            // SAFETY: `PtyMaster` owns the descriptor and returns the same one from
+            // `as_raw_fd` until it is dropped, which happens only together with the `AsyncFd`.
+            fd: unsafe { AsyncFd::register(self.fd) }
+                .map_err(io::Error::from)
+                .context("Failed to create AsyncFd")?,
         }))
     }
 }

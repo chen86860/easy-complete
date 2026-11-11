@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
-    "@types/node": "^26.2.0",
+    "@types/node": "^26.6.6",
     "@withfig/autocomplete-types": "workspace:*",
     "chalk": "^5.4.1",
     "chokidar": "^4.0.3",

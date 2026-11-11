@@ -1,0 +1,50 @@
+# Formats every pull request and commits the result back to it, so nobody has to remember to
+# run the formatters. The commit comes from the autofix.ci GitHub App, which, unlike
+# GITHUB_TOKEN, triggers CI again on the fixed commit. It also works on pull requests from forks.
+#
+# The App reads this workflow's name, so it must stay `autofix.ci`.
+name: autofix.ci
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: autofix-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  autofix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install rustfmt
+        run: rustup toolchain install "$(sed -n 's/^channel = "\(.*\)"/\1/p' rust-toolchain.toml)" --profile minimal -c rustfmt
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6.0.10
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: package.json
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Formatters only (rustfmt, prettier, biome's safe fixes). ESLint needs the built
+      # packages for its type-aware rules and can change behaviour, so CI reports it instead.
+      - name: Format Rust
+        run: cargo +"$(sed -n 's/^channel = "\(.*\)"/\1/p' rust-toolchain.toml)" fmt
+
+      - name: Format TypeScript
+        run: pnpm -r --if-present format
+
+      - uses: autofix-ci/action@c5b2d67aa2274e7b5a18224e8171550871fc7e4a # v1.3.4

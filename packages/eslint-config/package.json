@@ -18,7 +18,8 @@
   "scripts": {
     "build": "tsc",
     "lint": "prettier --check src",
-    "lint:fix": "prettier --write src"
+    "lint:fix": "prettier --write src",
+    "format": "prettier --write src"
   },
   "peerDependencies": {
     "eslint": "^10.3.0",

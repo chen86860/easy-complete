@@ -12,7 +12,7 @@
   "scripts": {
     "build": "turbo build",
     "b": "turbo build",
-    "format": "cargo fmt",
+    "format": "cargo fmt && pnpm -r --if-present format",
     "clippy": "cargo clippy --locked --workspace --color always -- -D warnings",
     "test": "vitest",
     "test:ci": "vitest run --run --coverage",

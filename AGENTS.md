@@ -27,8 +27,8 @@ cargo run --bin easy-complete
 # Lint (CI enforces -D warnings)
 cargo clippy --locked --workspace --color always -- -D warnings
 
-# Format
-cargo fmt
+# Format Rust and TypeScript (the autofix.ci workflow runs this on every PR)
+pnpm format
 
 # Test a specific crate
 cargo test -p <crate_name>

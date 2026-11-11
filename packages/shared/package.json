@@ -22,14 +22,14 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@fig/autocomplete-shared": "^1.1.2"
+    "@fig/autocomplete-shared": "workspace:*"
   },
   "devDependencies": {
     "@easy-complete/eslint-config": "workspace:^",
     "@easy-complete/tsconfig": "workspace:^",
     "@easy-complete/types": "workspace:^",
     "@easy-complete/fuzzysort": "workspace:^",
-    "@withfig/autocomplete-types": "^1.31.0",
+    "@withfig/autocomplete-types": "workspace:*",
     "eslint": "^10.8.1",
     "typescript": "6.0.3",
     "vitest": "^4.1.12"

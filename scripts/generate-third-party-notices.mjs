@@ -216,6 +216,11 @@ function javascriptComponents() {
     }),
   );
   components.push(componentFromPackage(join(repoDir, "packages/fuzzysort")));
+  // Forked from withfig/autocomplete-tools. Workspace packages are missing from
+  // `pnpm licenses list`, so the ones bundled into the app are listed here.
+  for (const name of ["autocomplete-generators", "autocomplete-helpers", "autocomplete-shared"]) {
+    components.push(componentFromPackage(join(repoDir, "packages", name)));
+  }
 
   return components;
 }

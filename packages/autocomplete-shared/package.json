@@ -1,0 +1,24 @@
+{
+  "name": "@fig/autocomplete-shared",
+  "private": true,
+  "version": "1.1.2",
+  "description": "Internal shared utilities for working with Fig specs",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "typings": "./dist/cjs/index.d.ts",
+  "exports": {
+    "require": "./dist/cjs/index.js",
+    "import": "./dist/esm/index.js"
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc --declaration --outDir dist/cjs && tsc --declaration --module esnext --outDir dist/esm"
+  },
+  "author": "Fig Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "typescript": "6.0.3",
+    "@withfig/autocomplete-types": "workspace:*"
+  },
+  "repository": "https://github.com/withfig/autocomplete-tools"
+}

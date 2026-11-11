@@ -122,8 +122,8 @@ importers:
         specifier: workspace:^
         version: link:../types
       '@withfig/autocomplete-types':
-        specifier: ^1.31.0
-        version: 1.31.0
+        specifier: workspace:*
+        version: link:../autocomplete-types
       eslint:
         specifier: ^10.8.1
         version: 10.8.1(jiti@2.7.0)
@@ -155,11 +155,11 @@ importers:
         specifier: workspace:^
         version: link:../shell-parser
       '@fig/autocomplete-helpers':
-        specifier: ^2.0.0
-        version: 2.0.0
+        specifier: workspace:*
+        version: link:../autocomplete-helpers
       '@fig/autocomplete-shared':
-        specifier: ^1.1.2
-        version: 1.1.2
+        specifier: workspace:*
+        version: link:../autocomplete-shared
       deep-object-diff:
         specifier: ^1.1.9
         version: 1.1.9
@@ -216,8 +216,8 @@ importers:
         specifier: ^6.0.5
         version: 6.0.5(vite@8.2.4(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.39.0)(tsx@4.23.11)(yaml@2.8.3))
       '@withfig/autocomplete-types':
-        specifier: ^1.31.0
-        version: 1.31.0
+        specifier: workspace:*
+        version: link:../autocomplete-types
       eslint:
         specifier: ^10.8.1
         version: 10.8.1(jiti@2.7.0)
@@ -237,6 +237,49 @@ importers:
         specifier: ^4.1.12
         version: 4.1.12(@types/node@26.2.0)(@vitest/coverage-v8@4.1.12)(@vitest/ui@4.1.12)(jsdom@24.1.0)(vite@8.2.4(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.39.0)(tsx@4.23.11)(yaml@2.8.3))
 
+  packages/autocomplete-generators:
+    devDependencies:
+      '@types/node':
+        specifier: ^26.2.0
+        version: 26.2.0
+      '@withfig/autocomplete-types':
+        specifier: workspace:*
+        version: link:../autocomplete-types
+      typescript:
+        specifier: 6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.12
+        version: 4.1.12(@types/node@26.2.0)(@vitest/coverage-v8@4.1.12)(@vitest/ui@4.1.12)(jsdom@24.1.0)(vite@8.2.4(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.39.0)(tsx@4.23.11)(yaml@2.8.3))
+
+  packages/autocomplete-helpers:
+    dependencies:
+      semver:
+        specifier: ^7.8.5
+        version: 7.8.5
+    devDependencies:
+      '@types/node':
+        specifier: ^26.2.0
+        version: 26.2.0
+      '@types/semver':
+        specifier: ^7.8.0
+        version: 7.8.0
+      '@withfig/autocomplete-types':
+        specifier: workspace:*
+        version: link:../autocomplete-types
+      prettier:
+        specifier: ^3.9.6
+        version: 3.9.6
+      tsx:
+        specifier: ^4.23.11
+        version: 4.23.11
+      typescript:
+        specifier: 6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.12
+        version: 4.1.12(@types/node@26.2.0)(@vitest/coverage-v8@4.1.12)(@vitest/ui@4.1.12)(jsdom@24.1.0)(vite@8.2.4(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.39.0)(tsx@4.23.11)(yaml@2.8.3))
+
   packages/autocomplete-parser:
     dependencies:
       '@easy-complete/api-bindings':
@@ -249,14 +292,14 @@ importers:
         specifier: workspace:^
         version: link:../shell-parser
       '@fig/autocomplete-generators':
-        specifier: ^2.4.0
-        version: 2.4.0
+        specifier: workspace:*
+        version: link:../autocomplete-generators
       '@fig/autocomplete-helpers':
-        specifier: ^2.0.0
-        version: 2.0.0
+        specifier: workspace:*
+        version: link:../autocomplete-helpers
       '@fig/autocomplete-shared':
-        specifier: ^1.1.2
-        version: 1.1.2
+        specifier: workspace:*
+        version: link:../autocomplete-shared
       loglevel:
         specifier: ^1.9.2
         version: 1.9.2
@@ -283,8 +326,8 @@ importers:
         specifier: ^7.8.0
         version: 7.8.0
       '@withfig/autocomplete-types':
-        specifier: ^1.31.0
-        version: 1.31.0
+        specifier: workspace:*
+        version: link:../autocomplete-types
       eslint:
         specifier: ^10.8.1
         version: 10.8.1(jiti@2.7.0)
@@ -294,6 +337,20 @@ importers:
       vitest:
         specifier: ^4.1.12
         version: 4.1.12(@types/node@26.2.0)(@vitest/coverage-v8@4.1.12)(@vitest/ui@4.1.12)(jsdom@24.1.0)(vite@8.2.4(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.39.0)(tsx@4.23.11)(yaml@2.8.3))
+
+  packages/autocomplete-shared:
+    devDependencies:
+      '@types/node':
+        specifier: ^26.2.0
+        version: 26.2.0
+      '@withfig/autocomplete-types':
+        specifier: workspace:*
+        version: link:../autocomplete-types
+      typescript:
+        specifier: 6.0.3
+        version: 6.0.3
+
+  packages/autocomplete-types: {}
 
   packages/dashboard-app:
     dependencies:
@@ -397,8 +454,8 @@ importers:
   packages/shared:
     dependencies:
       '@fig/autocomplete-shared':
-        specifier: ^1.1.2
-        version: 1.1.2
+        specifier: workspace:*
+        version: link:../autocomplete-shared
     devDependencies:
       '@easy-complete/eslint-config':
         specifier: workspace:^
@@ -413,8 +470,8 @@ importers:
         specifier: workspace:^
         version: link:../types
       '@withfig/autocomplete-types':
-        specifier: ^1.31.0
-        version: 1.31.0
+        specifier: workspace:*
+        version: link:../autocomplete-types
       eslint:
         specifier: ^10.8.1
         version: 10.8.1(jiti@2.7.0)
@@ -860,12 +917,6 @@ packages:
   '@fig/autocomplete-helpers@1.0.7':
     resolution: {integrity: sha512-5jq01q2JtaLAjl8t3hOvE9GOp4a4Agj7YmxlBxRjuSwJY3qskfx/mdAgOX2qjgxZ74bHONAxQ1hzudwSICqZFg==}
 
-  '@fig/autocomplete-helpers@2.0.0':
-    resolution: {integrity: sha512-lzD9LbpvJC3hXwxvLAb91/AwO83lfIhW4dEITAn1wINKHaHOmP39wU82Q25bKp8A6/UMcF6Iobik/R4sUZmgNA==}
-
-  '@fig/autocomplete-shared@1.1.2':
-    resolution: {integrity: sha512-RUdSGkxv6+RkZJPD8B6Yq4i6qKHBym4VL8noLOscn1n8o6DXkZAmJtg5MEdMMUwBAZO04eTo1+xKQ0YkPs9w2Q==}
-
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
     engines: {node: '>=18.18.0'}
@@ -1309,9 +1360,6 @@ packages:
 
   '@vitest/utils@4.1.12':
     resolution: {integrity: sha512-Q3awXrwOfEV+qc3WmO5ONyE0yO7Q1gQ9/oyHxGLZ/pl7N3NO/ZztqQwKLuwMkV+CA1JYSIeO3gkHnRDIo4AVaA==}
-
-  '@withfig/autocomplete-types@1.31.0':
-    resolution: {integrity: sha512-TSZDo5jvEaeIHqmHY6Wkd3gBqVbxcHQVdkF6N1J8CXRBuQZpjUVci15/HPNYe0nKLvsomBWIRsTP3m1zr9pv3A==}
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -2169,11 +2217,6 @@ packages:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
     hasBin: true
 
-  semver@7.6.3:
-    resolution: {integrity: sha512-oVekP1cKtI+CTDvHWYFUcMtsK/00wmAEfyqKfNdARm8u1wNVhSgaX7A8d4UuIlUI5e84iEwOhs7ZPYRmzU9U6A==}
-    engines: {node: '>=10'}
-    hasBin: true
-
   semver@7.8.5:
     resolution: {integrity: sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==}
     engines: {node: '>=10'}
@@ -2907,12 +2950,6 @@ snapshots:
       semver: 7.8.5
       typescript: 4.9.5
 
-  '@fig/autocomplete-helpers@2.0.0':
-    dependencies:
-      semver: 7.6.3
-
-  '@fig/autocomplete-shared@1.1.2': {}
-
   '@humanfs/core@0.19.2':
     dependencies:
       '@humanfs/types': 0.15.0
@@ -3322,8 +3359,6 @@ snapshots:
       '@vitest/pretty-format': 4.1.12
       convert-source-map: 2.0.0
       tinyrainbow: 3.1.0
-
-  '@withfig/autocomplete-types@1.31.0': {}
 
   acorn-jsx@5.3.2(acorn@8.18.0):
     dependencies:
@@ -4184,8 +4219,6 @@ snapshots:
   scheduler@0.27.0: {}
 
   semver@6.3.1: {}
-
-  semver@7.6.3: {}
 
   semver@7.8.5: {}
 

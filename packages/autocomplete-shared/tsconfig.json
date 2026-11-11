@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    // Inlined from @tsconfig/recommended 1.0.x, which upstream extended.
+    "target": "es2016",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "lib": ["ESNext", "DOM"],
+    "moduleResolution": "node",
+    // The CJS and ESM builds share this file; no non-deprecated resolution mode fits both.
+    "ignoreDeprecations": "6.0",
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "types": ["@withfig/autocomplete-types", "node"]
+  },
+  "exclude": ["node_modules/", "dist/", "test/"],
+  "include": ["./"],
+}

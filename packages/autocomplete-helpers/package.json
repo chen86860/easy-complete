@@ -1,0 +1,27 @@
+{
+  "name": "@fig/autocomplete-helpers",
+  "private": true,
+  "version": "2.0.0",
+  "description": "Helper functions for fig completion specs",
+  "type": "module",
+  "exports": "./dist/index.js",
+  "scripts": {
+    "build": "rm -rf dist && tsc",
+    "test": "tsx test/index.ts && vitest --run"
+  },
+  "author": "Fig Team",
+  "dependencies": {
+    "semver": "^7.8.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "typescript": "6.0.3",
+    "@types/semver": "^7.8.0",
+    "@withfig/autocomplete-types": "workspace:*",
+    "prettier": "^3.9.6",
+    "tsx": "^4.23.11",
+    "vitest": "^4.1.12"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/withfig/autocomplete-tools"
+}

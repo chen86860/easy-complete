@@ -20,7 +20,6 @@
     "typescript": "6.0.3",
     "@types/semver": "^7.8.0",
     "@withfig/autocomplete-types": "workspace:*",
-    "prettier": "^3.9.6",
     "tsx": "^4.23.11",
     "vitest": "^4.1.12"
   },

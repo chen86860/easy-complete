@@ -190,7 +190,8 @@ async function syncFromPackageRoot(packageRoot, label) {
 }
 
 process.stdout.write("Building packages/autocomplete-specs\n");
-execFileSync("pnpm", ["--filter", "@easy-complete/autocomplete-specs...", "build"], {
+// Through turbo, so an unchanged specs package is restored from the cache instead of recompiled.
+execFileSync("pnpm", ["turbo", "build", "--filter=@easy-complete/autocomplete-specs"], {
   cwd: repoDir,
   stdio: "inherit",
 });

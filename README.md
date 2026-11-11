@@ -70,6 +70,18 @@ brew install chen86860/tap/easy-complete
 [Download the latest DMG](https://github.com/chen86860/easy-complete/releases/latest/download/Easy-Complete-arm64.dmg),
 drag **Easy Complete.app** into `/Applications`, launch it and follow the same setup panel.
 
+### Beta builds
+
+Prereleases go out before each stable release. To get them, turn on **Receive Beta
+Updates** in the About page of Settings, or run:
+
+```bash
+ec settings app.betaUpdates true
+```
+
+You then move on to the next stable release when it ships. Bug reports from beta builds
+are especially welcome.
+
 ### Build from source
 
 ```bash
@@ -157,6 +169,10 @@ Issues and pull requests are welcome.
 - **Report a bug** — `ec issue` opens a pre-filled report with your diagnostics attached,
   or use the [issue templates](https://github.com/chen86860/easy-complete/issues/new/choose).
   Please include `ec doctor` output.
+- **Add or fix a CLI's completions** — completion specs are TypeScript files in
+  [`packages/autocomplete-specs/src`](./packages/autocomplete-specs/src), one per CLI. Its
+  [README](./packages/autocomplete-specs/README.md) covers creating a spec, live reload
+  while you edit, and shipping the change.
 - **Before opening a PR** — make sure `cargo clippy --locked --workspace -- -D warnings`,
   `cargo fmt`, `pnpm lint` and `pnpm test` all pass. Commits follow
   [Conventional Commits](https://www.conventionalcommits.org/).
@@ -171,3 +187,11 @@ Third-party copyright and license terms are collected in
 
 The license covers the code, not the Easy Complete name, logo, or icon. Forks
 must ship under a new name and icon; see [TRADEMARKS.md](./TRADEMARKS.md).
+
+## 🙏 Acknowledgements
+
+The completion specs started from [withfig/autocomplete](https://github.com/withfig/autocomplete),
+and the spec libraries and build CLI from
+[withfig/autocomplete-tools](https://github.com/withfig/autocomplete-tools), both by Fig
+and their contributors under the MIT License. Thanks to everyone who wrote and maintained
+them.

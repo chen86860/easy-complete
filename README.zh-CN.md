@@ -67,6 +67,17 @@ brew install chen86860/tap/easy-complete
 [下载最新版 DMG](https://github.com/chen86860/easy-complete/releases/latest/download/Easy-Complete-arm64.dmg)，
 把 **Easy Complete.app** 拖到 `/Applications`，启动后按同样的设置面板完成配置。
 
+### Beta 版
+
+每个正式版发布前会先推出预览版。想提前体验，在设置的「关于」页打开**接收 Beta 版更新**，
+或运行：
+
+```bash
+ec settings app.betaUpdates true
+```
+
+下一个正式版发布后会自动更新到正式版。非常欢迎反馈 Beta 版的问题。
+
 ### 从源码构建
 
 ```bash
@@ -150,6 +161,10 @@ pnpm dev:autocomplete   # 监听补全 UI（端口 3124）
 
 - **反馈问题** —— 运行 `ec issue` 会打开已附带诊断信息的 Issue 表单，也可以直接使用
   [Issue 模板](https://github.com/chen86860/easy-complete/issues/new/choose)。请附上 `ec doctor` 的输出。
+- **新增或修正某个 CLI 的补全** —— 补全规则是
+  [`packages/autocomplete-specs/src`](./packages/autocomplete-specs/src) 下的 TypeScript 文件，
+  每个 CLI 一个。新建 spec、边改边在应用里生效，以及如何随应用发布，见该目录的
+  [README](./packages/autocomplete-specs/README.md)。
 - **提 PR 之前** —— 确认 `cargo clippy --locked --workspace -- -D warnings`、`cargo fmt`、
   `pnpm lint` 和 `pnpm test` 全部通过。提交信息遵循
   [Conventional Commits](https://www.conventionalcommits.org/)。
@@ -164,3 +179,9 @@ pnpm dev:autocomplete   # 监听补全 UI（端口 3124）
 
 许可证只覆盖代码，不包括 Easy Complete 的名称、Logo 和图标。发布 fork 时须更换名称和图标，详见
 [TRADEMARKS.zh-CN.md](./TRADEMARKS.zh-CN.md)。
+
+## 🙏 致谢
+
+补全规则最初来自 [withfig/autocomplete](https://github.com/withfig/autocomplete)，spec 依赖库和
+构建工具来自 [withfig/autocomplete-tools](https://github.com/withfig/autocomplete-tools)，两者均由
+Fig 及其贡献者以 MIT 许可证发布。感谢所有编写和维护它们的人。

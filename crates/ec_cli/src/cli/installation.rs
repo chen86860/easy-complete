@@ -86,8 +86,7 @@ pub async fn install_cli(
     }
 
     if install_components.contains(InstallComponents::SHELL_INTEGRATIONS) && global {
-        // TODO: fix this, we do not error out at the moment as the fix is in `install.sh` which works
-        // for the CloudShell team
+        // Shell integrations are per user, so a global install only warns.
         warn!("Global install is not supported for shell integrations");
     }
 

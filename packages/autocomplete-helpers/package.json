@@ -5,6 +5,8 @@
   "description": "Helper functions for fig completion specs",
   "type": "module",
   "exports": "./dist/index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "rm -rf dist && tsc",
     "test": "tsx test/index.ts && vitest --run"

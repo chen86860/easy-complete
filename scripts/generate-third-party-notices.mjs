@@ -207,12 +207,10 @@ function javascriptComponents() {
     }
   }
 
-  const bundledSpecsPath = realpathSync(
-    join(repoDir, "node_modules/@chen86860/autocomplete-specs"),
-  );
+  // Specs forked from withfig/autocomplete, built from packages/autocomplete-specs.
   components.push(
-    componentFromPackage(bundledSpecsPath, {
-      license: "MIT (license file; package metadata declares ISC)",
+    componentFromPackage(join(repoDir, "packages/autocomplete-specs"), {
+      source: "https://github.com/withfig/autocomplete",
     }),
   );
   components.push(componentFromPackage(join(repoDir, "packages/fuzzysort")));

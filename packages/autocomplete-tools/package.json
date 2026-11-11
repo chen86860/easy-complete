@@ -12,17 +12,15 @@
   "scripts": {
     "build": "tsc --noEmit && esbuild src/bin.ts --bundle --platform=node --packages=external --format=esm --outfile=dist/bin.js"
   },
-  "dependencies": {
+  "devDependencies": {
     "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
+    "@types/node": "^26.2.0",
+    "@withfig/autocomplete-types": "workspace:*",
     "chalk": "^5.4.1",
     "chokidar": "^4.0.3",
     "commander": "^13.0.0",
     "esbuild": "0.25.12",
-    "fast-glob": "^3.3.3"
-  },
-  "devDependencies": {
-    "@types/node": "^26.2.0",
-    "@withfig/autocomplete-types": "workspace:*",
+    "fast-glob": "^3.3.3",
     "typescript": "6.0.3"
   }
 }

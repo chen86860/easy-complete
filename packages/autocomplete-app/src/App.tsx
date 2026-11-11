@@ -51,11 +51,11 @@ import Description, { DescriptionPosition } from "./components/Description";
 import { setFontFamily, setFontSize, setTheme } from "./fig/themes";
 import LoadingIcon from "./components/LoadingIcon";
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// biome-ignore lint/suspicious/noTsIgnore: these globals are not declared on Window
 // @ts-ignore
 window.jsxRuntime = jsxRuntime;
 window.React = React;
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// biome-ignore lint/suspicious/noTsIgnore: these globals are not declared on Window
 // @ts-ignore
 window.figApiBindings = figApiBindings;
 
@@ -240,6 +240,7 @@ function App() {
   const isHidden = visibleState !== Visibility.VISIBLE;
   const interceptKeystrokes = Boolean(!isHidden && suggestions.length > 0);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: dependency list narrowed on purpose
   useEffect(() => {
     logger.info("Setting intercept keystrokes", {
       suggestions,
@@ -250,7 +251,6 @@ function App() {
       suggestions.length > 0,
       shellContext?.sessionId,
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [interceptKeystrokes, suggestions.length]);
   useEffect(() => {
     setTheme(systemTheme, theme as string);
@@ -274,9 +274,9 @@ function App() {
   const scrollToItemCallback = useCallback(() => {
     logger.info("Scrolling to", { selectedIndex });
     listRef.current?.scrollToItem(selectedIndex);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedIndex, windowState.descriptionPosition]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: dependency list narrowed on purpose
   useEffect(() => {
     let isMostRecentEffect = true;
 
@@ -312,13 +312,11 @@ function App() {
     return () => {
       isMostRecentEffect = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     size.suggestionWidth,
     size.maxHeight,
     buffer,
     windowState.isDescriptionSeparate,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     suggestions[selectedIndex]?.previewComponent,
   ]);
 
@@ -331,6 +329,7 @@ function App() {
   const measuredSize = useRef<{ height: number; width: number } | null>(null);
 
   const setFrame: (size: { height: number; width: number }) => void =
+    // biome-ignore lint/correctness/useExhaustiveDependencies: dependency list narrowed on purpose
     useCallback(
       ({ height, width }) => {
         const onLeft =
@@ -363,11 +362,9 @@ function App() {
             logger.debug("Unable to set window position", { err });
           });
       },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       [
         windowState.descriptionPosition,
         hasSpecialArgDescription,
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         suggestions[selectedIndex]?.previewComponent,
       ],
     );

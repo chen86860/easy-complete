@@ -84,7 +84,7 @@ jobs:
               crates/* | Cargo.toml | Cargo.lock | rust-toolchain.toml | .cargo/* | .rustfmt.toml) rust=true ;;
               # The dashboard imports themes/*.json for its theme previews.
               packages/* | themes/* | package.json | pnpm-lock.yaml | pnpm-workspace.yaml | turbo.json \
-                | vitest.config.ts | .prettierrc) javascript=true ;;
+                | vitest.config.ts | biome.json) javascript=true ;;
               # proto/, scripts/ and anything unlisted feed both stacks.
               *) rust=true javascript=true ;;
             esac

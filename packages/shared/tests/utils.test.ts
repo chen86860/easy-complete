@@ -18,13 +18,7 @@ describe("fieldsAreEqual", () => {
     expect(fieldsAreEqual(null, "hello", [])).toEqual(false);
     expect(fieldsAreEqual(100, null, [])).toEqual(false);
     expect(fieldsAreEqual({}, {}, [])).toEqual(true);
-    expect(
-      fieldsAreEqual(
-        () => {},
-        () => {},
-        [],
-      ),
-    ).toEqual(false);
+    expect(fieldsAreEqual(() => {}, () => {}, [])).toEqual(false);
   });
 
   it("should return true if fields are equal", () => {

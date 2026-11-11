@@ -22,20 +22,20 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@easy-complete/api-bindings-wrappers": "workspace:^",
     "@easy-complete/api-bindings": "workspace:^",
+    "@easy-complete/api-bindings-wrappers": "workspace:^",
     "@easy-complete/shell-parser": "workspace:^",
     "@fig/autocomplete-generators": "workspace:*",
     "@fig/autocomplete-helpers": "workspace:*",
     "@fig/autocomplete-shared": "workspace:*",
     "loglevel": "^1.9.2",
-    "semver": "^7.8.5",
+    "semver": "^7.8.6",
     "zod": "^4.6.6"
   },
   "devDependencies": {
+    "@easy-complete/shared": "workspace:^",
     "@easy-complete/tsconfig": "workspace:^",
     "@easy-complete/types": "workspace:^",
-    "@easy-complete/shared": "workspace:^",
     "@types/semver": "^7.8.0",
     "@withfig/autocomplete-types": "workspace:*",
     "typescript": "6.0.3",

@@ -33,7 +33,7 @@
     "@vitest/coverage-v8": "^4.1.12",
     "@vitest/ui": "^4.1.12",
     "micromatch": "^4.0.8",
-    "tsx": "^4.23.11",
+    "tsx": "^4.23.15",
     "turbo": "^2.11.10",
     "vitest": "^4.1.12"
   }

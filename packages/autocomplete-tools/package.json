@@ -7,7 +7,7 @@
   "repository": "https://github.com/withfig/autocomplete-tools",
   "type": "module",
   "bin": {
-    "autocomplete-tools": "./dist/bin.js"
+    "autocomplete-tools": "./bin/autocomplete-tools.js"
   },
   "scripts": {
     "build": "tsc --noEmit && esbuild src/bin.ts --bundle --platform=node --packages=external --format=esm --outfile=dist/bin.js"

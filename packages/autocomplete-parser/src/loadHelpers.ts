@@ -12,7 +12,7 @@ import {
 } from "@easy-complete/api-bindings-wrappers";
 import z from "zod";
 import { MOST_USED_SPECS } from "./constants.js";
-import { LoadLocalSpecError, SpecCDNError } from "./errors.js";
+import { LoadLocalSpecError, BundledSpecError } from "./errors.js";
 
 export type SpecFileImport =
   | {
@@ -68,10 +68,8 @@ export async function importSpecFromFile(
   return importString(result);
 }
 
-export const canLoadSpecProtocol = () => true;
-
 // TODO: this is a problem for diff-versioned specs
-export async function importFromPublicCDN<T = SpecFileImport>(
+export async function importBundledSpec<T = SpecFileImport>(
   name: string,
 ): Promise<T> {
   try {
@@ -83,11 +81,11 @@ export async function importFromPublicCDN<T = SpecFileImport>(
       ),
     );
   } catch {
-    throw new SpecCDNError("Unable to load bundled spec");
+    throw new BundledSpecError("Unable to load bundled spec");
   }
 }
 
-async function jsonFromPublicCDN(path: string): Promise<unknown> {
+async function fetchBundledJson(path: string): Promise<unknown> {
   return exponentialBackoff(
     {
       attemptTimeout: 1000,
@@ -156,8 +154,7 @@ export async function getVersionFromFullFile(
   return undefined;
 }
 
-// TODO: cache this request using SWR strategy
-let publicSpecsRequest:
+let bundledSpecIndexRequest:
   | Promise<{
       completions: Set<string>;
       diffVersionedSpecs: Set<string>;
@@ -165,7 +162,7 @@ let publicSpecsRequest:
   | undefined;
 
 export function clearSpecIndex() {
-  publicSpecsRequest = undefined;
+  bundledSpecIndexRequest = undefined;
 }
 
 const INDEX_ZOD = z.object({
@@ -173,29 +170,29 @@ const INDEX_ZOD = z.object({
   diffVersionedCompletions: z.array(z.string()),
 });
 
-const createPublicSpecsRequest = async () => {
-  if (publicSpecsRequest === undefined) {
-    publicSpecsRequest = jsonFromPublicCDN("index")
+const loadBundledSpecIndex = async () => {
+  if (bundledSpecIndexRequest === undefined) {
+    bundledSpecIndexRequest = fetchBundledJson("index")
       .then(INDEX_ZOD.parse)
       .then((index) => ({
         completions: new Set(index.completions),
         diffVersionedSpecs: new Set(index.diffVersionedCompletions),
       }))
       .catch(() => {
-        publicSpecsRequest = undefined;
+        bundledSpecIndexRequest = undefined;
         return { completions: new Set(), diffVersionedSpecs: new Set() };
       });
   }
-  return publicSpecsRequest;
+  return bundledSpecIndexRequest;
 };
 
-export async function publicSpecExists(name: string): Promise<boolean> {
-  const { completions } = await createPublicSpecsRequest();
+export async function bundledSpecExists(name: string): Promise<boolean> {
+  const { completions } = await loadBundledSpecIndex();
   return completions.has(name);
 }
 
 export async function isDiffVersionedSpec(name: string): Promise<boolean> {
-  const { diffVersionedSpecs } = await createPublicSpecsRequest();
+  const { diffVersionedSpecs } = await loadBundledSpecIndex();
   return diffVersionedSpecs.has(name);
 }
 
@@ -205,9 +202,9 @@ export async function preloadSpecs(): Promise<SpecFileImport[]> {
       // TODO: refactor everything to allow the correct diff-versioned specs to be loaded
       // too, now we are only loading the index
       if (await isDiffVersionedSpec(name)) {
-        return importFromPublicCDN(`${name}/index`);
+        return importBundledSpec(`${name}/index`);
       }
-      return importFromPublicCDN(name);
+      return importBundledSpec(name);
     }).map((promise) => promise.catch((e) => e)),
   );
 }

@@ -63,6 +63,21 @@ generation; they are not re-published in the latest release.
 The release workflow uses `SPARKLE_MAXIMUM_DELTAS` for both the archive history
 limit and delta generation, so it downloads at most five previous releases.
 
+## Build Provenance
+
+The publish job attests the DMGs with `actions/attest-build-provenance` before uploading
+them. The attestation records the repository, workflow, commit and the DMG's SHA-256, signed
+through Sigstore with the run's OIDC token, so it needs `id-token: write` and
+`attestations: write` on that job. Anyone can check a download:
+
+```bash
+gh attestation verify Easy-Complete-arm64.dmg --repo chen86860/easy-complete
+```
+
+Attestations are listed under the repository's **Actions → Attestations**. This is separate
+from Developer ID signing and notarization, which prove the app's identity to macOS; the
+attestation proves which source and workflow produced the file.
+
 ## Rust Build Cache
 
 CI on `main` builds the distribution profile and saves its dependency cache under

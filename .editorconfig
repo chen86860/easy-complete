@@ -1,0 +1,24 @@
+# Editor defaults that match the formatters (rustfmt, prettier, biome).
+# prettier and biome also read this file, so it sets no line length: each
+# formatter keeps its own.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+[*.rs]
+indent_size = 4
+
+[*.md]
+# Two trailing spaces are a Markdown line break.
+trim_trailing_whitespace = false
+
+# Test fixtures are compared byte for byte.
+[*.{snap,recording}]
+insert_final_newline = unset
+trim_trailing_whitespace = unset

@@ -1,0 +1,7 @@
+# The specs package formats with biome (pnpm -C packages/autocomplete-specs lint:fix).
+packages/autocomplete-specs/
+# Generated or vendored output.
+bundle/
+target/
+dist/
+build/

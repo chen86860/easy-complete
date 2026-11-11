@@ -26,15 +26,11 @@
     "dev:autocomplete": "pnpm -C packages/autocomplete-app dev",
     "preview:autocomplete": "pnpm -C packages/autocomplete-app preview",
     "clean": "turbo clean",
-    "prepare": "husky",
-    "precommit": "lint-staged --config .lintstagedrc.mjs",
     "setup": "bash scripts/setup.sh"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.12",
     "@vitest/ui": "^4.1.12",
-    "husky": "^9.1.7",
-    "lint-staged": "^17.3.0",
     "micromatch": "^4.0.8",
     "prettier": "^3.9.6",
     "tsx": "^4.23.11",

@@ -61,21 +61,28 @@ body:
       不同终端的光标追踪方式不同（输入法 / 辅助功能 API / 伪终端），这一项往往直接决定问题出在哪。
     options:
       - "Ghostty"
-      - "Otty"
+      - "iTerm2"
+      - "Terminal.app"
       - "kitty"
       - "WezTerm"
       - "Alacritty"
-      - "Zed"
-      - "iTerm2"
-      - "Terminal.app"
+      - "Rio"
+      - "Otty"
+      - "Herdr"
+      - "Tabby"
+      - "Hyper"
       - "VS Code"
+      - "VS Code Insiders"
+      - "VSCodium"
       - "Cursor"
       - "Windsurf"
       - "Trae"
+      - "Kiro"
+      - "Positron"
+      - "Zed"
+      - "Nova"
+      - "JetBrains IDE (IntelliJ, PyCharm, WebStorm, …)"
       - "Codex (ChatGPT.app)"
-      - "Rio"
-      - "Tabby"
-      - "Hyper"
       - "Other (please say which in the description)"
   validations:
     required: true
@@ -85,6 +92,19 @@ body:
   attributes:
     label: "Terminal version"
     placeholder: "1.3.1 (15212)"
+
+- type: dropdown
+  id: "shell"
+  attributes:
+    label: "Shell"
+    description: "Output of `echo $SHELL` / `echo $SHELL` 的输出"
+    options:
+      - "zsh"
+      - "bash"
+      - "fish"
+      - "Other (please say which in the description)"
+  validations:
+    required: true
 
 - type: textarea
   id: "expected"

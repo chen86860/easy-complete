@@ -1,0 +1,28 @@
+{
+  "name": "@withfig/autocomplete-tools",
+  "private": true,
+  "version": "2.11.0",
+  "description": "Builds and develops the completion specs",
+  "license": "MIT",
+  "repository": "https://github.com/withfig/autocomplete-tools",
+  "type": "module",
+  "bin": {
+    "autocomplete-tools": "./dist/bin.js"
+  },
+  "scripts": {
+    "build": "tsc --noEmit && esbuild src/bin.ts --bundle --platform=node --packages=external --format=esm --outfile=dist/bin.js"
+  },
+  "dependencies": {
+    "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
+    "chalk": "^5.4.1",
+    "chokidar": "^4.0.3",
+    "commander": "^13.0.0",
+    "esbuild": "0.25.12",
+    "fast-glob": "^3.3.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "@withfig/autocomplete-types": "workspace:*",
+    "typescript": "6.0.3"
+  }
+}

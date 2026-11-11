@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for coding agents working in this repository.
 
 ## Project Overview
 
@@ -21,7 +21,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 cargo build --release -p fig_desktop -p figterm -p ec_cli -p fig_input_method
 
 # Run a specific crate in dev mode
-cargo run --bin ec_cli -- <subcommand>
+cargo run --bin ec -- <subcommand>
 cargo run --bin easy-complete
 
 # Lint (CI enforces -D warnings)
@@ -43,10 +43,11 @@ cargo test -p <crate_name> <test_name>
 # Build all packages
 pnpm turbo build --filter="./packages/*"
 
-# Dev watch mode for autocomplete UI (port 3124)
+# Dev watch mode for the autocomplete UI (port 3124) and the dashboard (port 3125)
 pnpm dev:autocomplete
+pnpm -C packages/dashboard-app dev
 
-# Lint all packages
+# Lint and format-check all packages (biome; proto uses buf)
 pnpm lint
 pnpm lint:fix
 
@@ -54,6 +55,10 @@ pnpm lint:fix
 pnpm test
 pnpm test:ci   # with coverage
 ```
+
+TypeScript is linted and formatted with biome. The root `biome.json` covers `api-bindings`, `api-bindings-wrappers`, `autocomplete-app`, `autocomplete-parser`, `dashboard-app`, `shared` and `shell-parser`; `packages/autocomplete-specs` has its own `biome.json` (formatter only). The forked Fig libraries are not linted.
+
+`build` and `lint` run through Turborepo and are cached by input hash (`turbo.json`): an unchanged package is restored from `.turbo/cache` instead of rebuilt or relinted. `lint` depends on the upstream packages' `build`, so it works on a fresh checkout. CI restores the cache that pushes to `main` save. Use `pnpm turbo build --force` to bypass it.
 
 ### Full Install (macOS)
 
@@ -69,13 +74,15 @@ pnpm test:ci   # with coverage
 ./scripts/bump-version.sh <version>   # e.g. ./scripts/bump-version.sh 2.0.18
 ```
 
-The script outputs the exact next steps:
+The script also refreshes `Cargo.lock` and regenerates `THIRD_PARTY_NOTICES.txt`, then prints the exact next steps:
 
 1. Add a `## v<version>` entry to both `CHANGELOG.md` (English) and `CHANGELOG.zh-CN.md` (Chinese) — keep them in sync, one entry each. Stable releases only: prereleases get no entry of their own (see below)
 2. `git add -A && git commit -m "chore: bump version to v<version>"`
 3. `git tag v<version> && git push origin main --tags`
 
 Prereleases use `X.Y.Z-alpha|beta|rc[.N]` tags. They publish as GitHub prereleases (no Homebrew tap update), and every tag also refreshes the `appcast.xml` on the rolling `beta-feed` release, which users who enable `app.betaUpdates` read. Sparkle's version comparator stops at the first `-`, so `CFBundleVersion` / `sparkle:version` drop the separators (`2.4.0-beta.1` → `2.4.0beta1`, via `scripts/sparkle-version.sh`); `CFBundleShortVersionString` keeps the tag form.
+
+Signing, notarization, the Sparkle appcast and deltas, the required GitHub secrets and the local commands for each step are documented in [docs/release-updates.md](docs/release-updates.md). Read it before touching `release.yml` or the `scripts/*sparkle*`, `sign-macos-app.sh`, `notarize-dmg.sh` and `make-dmg.sh` scripts.
 
 Prereleases get no CHANGELOG section. Put their notes in the GitHub prerelease body if needed, and when the stable version ships, write one `## vX.Y.Z` entry covering every change since the previous stable release. Do not mention the beta line in it, and keep entries short and user-facing.
 
@@ -89,12 +96,12 @@ Three cooperating native processes communicate via Unix domain sockets (protobuf
 
 2. **`ecterm`** (`figterm`) — Pseudoterminal that sits between the user's shell and their terminal emulator. Intercepts keystrokes and the shell edit buffer to drive autocomplete. Built on a vendored fork of `alacritty_terminal`.
 
-3. **`ec`** (`ec_cli`) — CLI entry point. Subcommands include `integrations`, `hook`, `settings`, `diagnostic`, `doctor`, `issue`, and more.
+3. **`ec`** (`ec_cli`) — CLI entry point. User-facing subcommands: `settings`, `update`, `diagnostic`, `issue`, `doctor`, `launch`, `quit`, `restart`, `integrations`, `telemetry`, `version`. Hidden ones used by the shell integration and tooling: `init`, `hook`, `internal`, `completion`, `debug`, `uninstall`.
 
 ### IPC
 
 - **Local IPC**: `fig_ipc` — Unix sockets, typed via Protobuf (`proto/` → `fig_proto`)
-- **Remote IPC**: `fig_remote_ipc` — WebSocket-based, used for SSH/remote sessions
+- **Session IPC**: `fig_remote_ipc` — the Unix socket (`$TMPDIR/ecrun/remote.sock`) every `ecterm` session connects to. Despite the name it is local; session connects and disconnects here drive the overlay lifecycle
 - Protobuf `.proto` files live in `proto/`; generated Rust types in `fig_proto`; generated TS types in `packages/api-bindings`
 
 ### Shell Integration
@@ -105,7 +112,7 @@ Three cooperating native processes communicate via Unix domain sockets (protobuf
 
 ### macOS Input Method (IME)
 
-`fig_input_method` is an IMKit helper app (`EasyCompleteInputMethod.app`) bundled inside the main `.app` at `Contents/Helpers/`. It enables cursor position tracking in terminals that bypass the standard PTY path (Ghostty, Otty, Herdr, Kitty, WezTerm, Zed, Alacritty).
+`fig_input_method` is an IMKit helper app (`EasyCompleteInputMethod.app`) bundled inside the main `.app` at `Contents/Helpers/`. It enables cursor position tracking in terminals that bypass the standard PTY path (Alacritty, Kitty, Nova, WezTerm, JetBrains IDEs, Zed, Rio, Ghostty, Otty, Herdr; see `Terminal::supports_macos_input_method`).
 
 - The IME self-registers with TIS on startup via `TISRegisterInputSource` (requires NSApplication context)
 - Integration install/uninstall is managed via `ec integrations install input-method`
@@ -157,7 +164,7 @@ To keep the bundle small, the sync script supports excluding whole namespaces vi
 
 - **Default**: `aws` and `az` are excluded (the AWS and Azure CLI specs are large and most users never trigger them). This is intentional — see `specs.config.json`.
 - **Bundle everything**: `BUNDLED_SPECS_EXCLUDE="" node scripts/sync-bundled-specs.mjs`
-- **Trim more**: `BUNDLED_SPECS_EXCLUDE="aws,gcloud,az" node scripts/sync-bundled-specs.mjs` (saves another ~26 MB)
+- **Trim more**: `BUNDLED_SPECS_EXCLUDE="aws,gcloud,az" node scripts/sync-bundled-specs.mjs` (`gcloud` is another ~14 MB)
 
 `build-app.sh` only auto-syncs when `bundle/specs/index.json` is missing, so it reuses whatever filtered set is already on disk. Re-run the sync script after changing the exclusion list.
 
@@ -175,9 +182,15 @@ To keep the bundle small, the sync script supports excluding whole namespaces vi
 | `fig_desktop_api`  | Request/response handlers for WebView↔native bridge             |
 | `fig_ipc`          | Unix socket IPC primitives                                       |
 | `fig_proto`        | Generated Protobuf message types                                 |
-| `fig_settings`     | Settings persistence (JSON)                                      |
-| `fig_util`         | Shared constants, directory paths, system info                   |
+| `fig_settings`     | Settings (`settings.json`) and state (`data.sqlite3`) persistence |
+| `fig_util`         | Shared constants, directory paths, system info, terminal detection |
+| `fig_os_shim`      | Injectable env, filesystem and process info, faked in tests      |
+| `fig_remote_ipc`   | Session socket between `ecterm` and the desktop app              |
+| `fig_install`      | Install and uninstall of the app's components                     |
+| `fig_telemetry`    | Opt-in PostHog events, queued on disk; the only HTTP client      |
+| `fig_diagnostic`, `fig_log` | `ec diagnostic` report and logging setup                |
 | `macos-utils`      | macOS Accessibility API, NSWorkspace, AppKit ObjC2 bindings      |
+| `alacritty_terminal`, `shell-color` | Vendored terminal emulation and shell color parsing |
 
 ## Key TypeScript Packages
 
@@ -191,18 +204,20 @@ To keep the bundle small, the sync script supports excluding whole namespaces vi
 | `api-bindings-wrappers` | Ergonomic wrappers over `api-bindings` |
 | `autocomplete-specs`    | Completion spec sources (`@easy-complete/autocomplete-specs`), bundled into `bundle/specs` |
 | `autocomplete-tools`    | Spec build CLI: `compile`, `dev`, `create-spec` |
+| `shared`, `fuzzysort`, `types`, `tsconfig` | Shared utilities, vendored fuzzy matcher, global types, base tsconfig |
 | `autocomplete-helpers`, `autocomplete-shared`, `autocomplete-generators`, `autocomplete-types` | Fig spec libraries and types, forked from [withfig/autocomplete-tools](https://github.com/withfig/autocomplete-tools); they keep their `@fig/*` / `@withfig/*` names so spec imports are unchanged |
 
 ## Toolchain Versions
 
 - Rust: `1.97.0` (pinned in `rust-toolchain.toml`), edition 2024
-- Node: `^24.0.0`
-- pnpm: `10.0.0`
+- Node: `>=24 <25`
+- pnpm: `11.14.0` (pinned in `packageManager`)
+- biome for TypeScript lint and format; rustfmt and clippy for Rust
 - Turborepo handles the TypeScript build graph
 
 ## macOS-Specific Notes
 
-- The `.app` bundle lives at `/Applications/easy-complete.app`
+- The `.app` bundle lives at `/Applications/Easy Complete.app`; `scripts/build-app.sh` assembles it under `build/`
 - Launch at login: `SMAppService.mainAppService` on macOS 13+; `~/Library/LaunchAgents/dev.emmmm.easy-complete.plist` fallback on macOS 12
 - IME symlink target: `~/Library/Input Methods/EasyCompleteInputMethod.app`
 - HIToolbox prefs (`com.apple.HIToolbox`) must include the IME bundle ID for Ghostty/Kitty cursor following to work

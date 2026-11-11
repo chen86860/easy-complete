@@ -11,7 +11,7 @@ test -f "${LICENSE_DIR}/THIRD_PARTY_NOTICES.txt"
 grep -Fq "Copyright (c) 2024 Amazon.com, Inc. or its affiliates." "${LICENSE_DIR}/LICENSE"
 grep -Fq "Copyright (c) 2026 Easy Complete contributors" "${LICENSE_DIR}/LICENSE"
 grep -Fq "distributed under the MIT License" "${LICENSE_DIR}/NOTICE"
-grep -Fq "@chen86860/autocomplete-specs" "${LICENSE_DIR}/THIRD_PARTY_NOTICES.txt"
+grep -Fq "@easy-complete/autocomplete-specs" "${LICENSE_DIR}/THIRD_PARTY_NOTICES.txt"
 grep -Eq '^Sparkle [0-9]' "${LICENSE_DIR}/THIRD_PARTY_NOTICES.txt"
 grep -Fq "alacritty_terminal" "${LICENSE_DIR}/THIRD_PARTY_NOTICES.txt"
 

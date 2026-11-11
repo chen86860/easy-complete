@@ -105,11 +105,12 @@ or re-trigger the system prompt with `ec debug prompt-accessibility`.
 
 Start typing in any supported terminal — suggestions appear inline.
 
-| Key             | Action                            |
-| --------------- | --------------------------------- |
-| `↑` / `↓`       | Move through suggestions          |
-| `⇥` (Tab) / `→` | Accept the highlighted suggestion |
-| `Esc`           | Dismiss the popup                 |
+| Key         | Action                                                           |
+| ----------- | ---------------------------------------------------------------- |
+| `↑` / `↓`   | Move through suggestions (also `⇧⇥`, `⌃P` / `⌃N`)                |
+| `↩` (Enter) | Accept the highlighted suggestion                                |
+| `⇥` (Tab)   | Insert the prefix all suggestions share, or move to the next one |
+| `Esc`       | Dismiss the popup                                                |
 
 Settings live in the **Easy Complete menu bar icon**. Useful CLI commands:
 

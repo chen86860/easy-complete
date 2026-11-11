@@ -204,28 +204,11 @@ pub fn sockets_dir() -> Result<PathBuf> {
 
 /// The directory on the host machine where socket files are stored
 ///
-/// In WSL, this will correctly return the host machine socket path.
-/// In other remote environments, it returns the same as `sockets_dir`
+/// Currently the same as `sockets_dir` in every environment.
 ///
 /// - Linux: $XDG_RUNTIME_DIR/ecrun
 /// - MacOS: $TMPDIR/ecrun
 pub fn host_sockets_dir() -> Result<PathBuf> {
-    // TODO: make this work again
-    // #[cfg(target_os = "linux")]
-    // if crate::system_info::in_wsl() {
-    //     use std::ffi::OsStr;
-    //     use std::os::unix::prelude::OsStrExt;
-    //     use std::process::Command;
-
-    //     use bstr::ByteSlice;
-
-    //     let socket_dir = Command::new("fig.exe").args(["_", "sockets-dir"]).output()?;
-    //     let wsl_socket = Command::new("wslpath")
-    //         .arg(OsStr::from_bytes(socket_dir.stdout.trim()))
-    //         .output()?;
-    //     return Ok(PathBuf::from(OsStr::from_bytes(wsl_socket.stdout.trim())));
-    // }
-
     sockets_dir()
 }
 

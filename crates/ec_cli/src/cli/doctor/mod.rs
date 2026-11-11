@@ -574,21 +574,6 @@ impl DoctorCheck for FigIntegrationsCheck {
             });
         }
 
-        // Check that ~/.local/bin/qterm exists
-        // TODO(grant): Check figterm exe exists
-        // let figterm_path = fig_directories::fig_dir()
-        //    .context("Could not find ~/.fig")?
-        //    .join("bin")
-        //    .join("figterm");
-
-        // if !figterm_path.exists() {
-        //    return Err(DoctorError::Error {
-        //        reason: "figterm does not exist".into(),
-        //        info: vec![],
-        //        fix: None,
-        //    });
-        //}
-
         match fig_os_shim::Env::new().q_term().as_deref() {
             Ok(env!("CARGO_PKG_VERSION")) => Ok(()),
             Ok(ver) if env!("CARGO_PKG_VERSION").ends_with("-dev") || ver.ends_with("-dev") => Err(doctor_warning!(

@@ -67,7 +67,6 @@ export default defineConfig(({ mode, command }) => {
     },
     build: {
       target: command === "build" ? "safari15" : "esnext",
-      // TODO: re-enable prod source maps to upload them to sentry (see build CIs)
       sourcemap: command !== "build",
       rollupOptions: {
         external: [

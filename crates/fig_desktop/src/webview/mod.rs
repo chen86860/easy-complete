@@ -672,9 +672,6 @@ impl WebviewManager {
             )
             .expect("Failed to initialize platform state");
 
-        // TODO: implement
-        // tokio::spawn(figterm::clean_figterm_cache(self.figterm_state.clone()));
-
         // Start the local ipc task, listens for requests to the desktop socket.
         {
             let platform_state = self.platform_state.clone();
@@ -782,9 +779,6 @@ impl WebviewManager {
         #[allow(unused_variables)]
         let menu_bar = menu_bar();
 
-        // TODO: fix these
-        // #[cfg(target_os = "linux")]
-        // menu_bar.init_for_gtk_window(&gtk_window, Some(&vertical_gtk_box));
         #[cfg(target_os = "macos")]
         menu_bar.init_for_nsapp();
 

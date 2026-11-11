@@ -23,8 +23,6 @@ declare global {
           env?: Record<string, string>;
           newUriFormat?: boolean;
           macosVersion?: string;
-          // TODO: add actual types
-          linux?: unknown;
         }
       | undefined;
     let settings: Record<string, unknown>;

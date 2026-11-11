@@ -2,6 +2,24 @@
 
 **English** · [简体中文](./CHANGELOG.zh-CN.md)
 
+## v2.7.0
+
+- new: if a terminal on your Mac needs the input method (Ghostty, Kitty, WezTerm, Zed and others), setup now asks for it and names the terminals. You can skip it, and it won't ask again
+- new: the setup screen links to the privacy policy next to the usage-data switch
+- change: update prompts always ask before installing. The "Automatically download and install updates" checkbox is gone, because a menu bar app rarely quits and silent install-on-quit left people on old versions
+- change: history suggestions read your shell's history file directly instead of starting a login shell that ran your whole shell config
+- change: a new terminal starts faster: each shell config file runs `ec` once instead of twice
+- change: a fresh install sends no usage data until first setup is finished, and turning usage data off deletes everything kept locally for it
+- change: theme previews in Settings come from the popup's own theme files, so they match what you see in the terminal
+- change: the setup screen and Settings follow macOS conventions more closely: shorter copy, one default button, VoiceOver names for every control, arrow keys in the theme picker, and Escape no longer closes the window
+- fix: suggestions appear over full-screen terminals such as iTerm2 and IntelliJ, and on the monitor you are typing on (#221, thanks @EmreErinc)
+- fix: apps that are still starting up, such as JetBrains IDEs, are now tracked instead of ignored
+- fix: clicking a suggestion no longer takes focus away from the terminal
+- fix: fish history no longer drops your most recent commands from history suggestions
+- fix: update the bundled SQLite for CVE-2026-119375
+- docs: install with `brew install chen86860/tap/easy-complete`, no `--cask` needed
+- docs: add a trademark policy for the Easy Complete name and icon
+
 ## v2.6.0
 
 - new: turn off completions for specific commands in the settings window

@@ -1,0 +1,94 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.6.6/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "packages/api-bindings/src/**",
+      "packages/api-bindings-wrappers/src/**",
+      "packages/autocomplete-app/src/**",
+      "packages/autocomplete-parser/src/**",
+      "packages/autocomplete-parser/tests/**",
+      "packages/dashboard-app/src/**",
+      "packages/shared/src/**",
+      "packages/shared/tests/**",
+      "packages/shell-parser/src/**",
+      "packages/shell-parser/tests/**",
+      "!packages/autocomplete-specs"
+    ]
+  },
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 80
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
+  "assist": {
+    "enabled": false
+  },
+  "linter": {
+    "enabled": true,
+    "domains": {
+      "react": "recommended"
+    },
+    "rules": {
+      "preset": "recommended",
+      "a11y": "off",
+      "performance": "off",
+      "correctness": {
+        "noUnusedVariables": {
+          "level": "error",
+          "options": {
+            "ignoreRestSiblings": true
+          }
+        },
+        "noUnusedFunctionParameters": "error",
+        "noUnusedImports": "error",
+        "useExhaustiveDependencies": {
+          "level": "warn",
+          "options": {
+            "reportUnnecessaryDependencies": false
+          }
+        }
+      },
+      "style": {
+        "noCommonJs": "error",
+        "useNodejsImportProtocol": "error",
+        "useTrimStartEnd": "error",
+        "useComponentExportOnlyModules": "error",
+        "useImportType": "off",
+        "noNonNullAssertion": "off",
+        "useShorthandFunctionType": "off",
+        "noDescendingSpecificity": "off"
+      },
+      "complexity": {
+        "useDateNow": "error",
+        "noUselessSwitchCase": "off",
+        "noUselessFragments": "off",
+        "noExtraBooleanCast": "off",
+        "useOptionalChain": "off",
+        "noStaticOnlyClass": "off",
+        "noImportantStyles": "off",
+        "useIndexOf": "off"
+      },
+      "suspicious": {
+        "noImplicitAnyLet": "off",
+        "noArrayIndexKey": "off",
+        "useIterableCallbackReturn": "off",
+        "noAssignInExpressions": "off",
+        "noConfusingVoidType": "off",
+        "noImportAssign": "off",
+        "noDoubleEquals": "off",
+        "noPrototypeBuiltins": "off"
+      }
+    }
+  }
+}

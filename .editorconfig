@@ -1,5 +1,5 @@
-# Editor defaults that match the formatters (rustfmt, prettier, biome).
-# prettier and biome also read this file, so it sets no line length: each
+# Editor defaults that match the formatters (rustfmt, biome).
+# biome also reads this file, so it sets no line length: each
 # formatter keeps its own.
 root = true
 

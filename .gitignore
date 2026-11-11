@@ -7,7 +7,6 @@ xcuserdata/
 # Misc
 .DS_Store
 node_modules/
-.eslintcache
 yarn-error.log
 yarn.lock
 package-lock.json

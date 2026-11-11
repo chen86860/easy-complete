@@ -29,10 +29,10 @@
     "setup": "bash scripts/setup.sh"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.5.1",
     "@vitest/coverage-v8": "^4.1.12",
     "@vitest/ui": "^4.1.12",
     "micromatch": "^4.0.8",
-    "prettier": "^3.9.6",
     "tsx": "^4.23.11",
     "turbo": "^2.10.9",
     "vitest": "^4.1.12"

@@ -52,7 +52,7 @@ function ZhInstallPage() {
         hrefs={{ en: "/install", "zh-CN": "/zh/install" }}
       >
         <GuideCallout>
-          <strong>系统要求:</strong>macOS 15 或更高版本,以及 Apple Silicon
+          <strong>系统要求:</strong>macOS 13 或更高版本,以及 Apple Silicon
           机型(M1 及以上)。发布的 DMG 仅提供 ARM64 版本。
         </GuideCallout>
 

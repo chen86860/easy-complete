@@ -154,7 +154,7 @@ fn main() {
                 ..Default::default()
             },
             operating_system_version: OperatingSystemVersion {
-                minimum_system_version: Some("15.0".to_string()),
+                minimum_system_version: Some("13.0".to_string()),
                 ..Default::default()
             },
             ..Default::default()

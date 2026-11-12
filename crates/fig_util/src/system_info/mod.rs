@@ -47,8 +47,8 @@ impl OSVersion {
     pub fn support_level(&self) -> SupportLevel {
         match self {
             OSVersion::MacOS { major, .. } => {
-                // Minimum supported macOS version is 15
-                if *major >= 15 {
+                // Minimum supported macOS version is 13
+                if *major >= 13 {
                     SupportLevel::Supported
                 } else {
                     SupportLevel::Unsupported

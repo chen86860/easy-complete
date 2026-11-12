@@ -264,7 +264,7 @@ export const homeCopyZh: HomeCopy = {
 
   ctaHeading: "别再背参数了",
   ctaSubheading: "让终端替你记住",
-  ctaFootnote: "需要 macOS 15+ · Apple Silicon(ARM64) · MIT",
+  ctaFootnote: "需要 macOS 13+ · Apple Silicon(ARM64) · MIT",
   ctaTagline: "一个专注的本地补全引擎,为快速的终端自动补全而生",
   features: featuresZh,
   reasons: reasonsZh,
@@ -282,7 +282,7 @@ export const docsCopyZh: DocsCopy = {
   quickStart: "快速开始",
   installGuideCta: "完整安装指南",
   downloadCta: "下载 DMG",
-  requirements: "macOS 15+ · Apple Silicon(ARM64)",
+  requirements: "macOS 13+ · Apple Silicon(ARM64)",
   terminalColumn: "终端",
   trackingColumn: "光标跟踪",
   notesColumn: "说明",

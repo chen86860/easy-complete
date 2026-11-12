@@ -66,7 +66,7 @@ export function TerminalGuidePage({ guide }: { guide: TerminalGuide }) {
           <code className="font-mono">{guide.processNames.join(" · ")}</code>
         </FactRow>
         <FactRow label="Requirements">
-          macOS 15 or later, Apple Silicon (ARM64)
+          macOS 13 or later, Apple Silicon (ARM64)
         </FactRow>
       </div>
 

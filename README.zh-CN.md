@@ -50,7 +50,7 @@ fish shell 的建议——子命令、选项、参数和文件路径，以跟随
 
 ## 💻 系统要求
 
-- macOS 15（Sequoia）及以上，Apple Silicon（当前发布的 DMG 仅支持 arm64）
+- macOS 13（Ventura）及以上，Apple Silicon（当前发布的 DMG 仅支持 arm64）
 - `zsh`、`bash` 或 `fish`
 - **辅助功能**权限（见[下文](#授予辅助功能权限)）
 

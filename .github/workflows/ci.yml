@@ -301,6 +301,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # The notices include Sparkle's license, read from the release archive.
+      - name: Fetch Sparkle
+        run: ./scripts/fetch-sparkle.sh
+
       - name: Check THIRD_PARTY_NOTICES.txt
         run: pnpm licenses:check
 

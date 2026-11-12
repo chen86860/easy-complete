@@ -1,5 +1,6 @@
 {
   "name": "@easy-complete/fuzzysort",
+  "private": true,
   "version": "0.1.0",
   "license": "MIT",
   "author": "Easy Complete Contributors",

@@ -218,7 +218,8 @@ To keep the bundle small, the sync script supports excluding whole namespaces vi
 ## macOS-Specific Notes
 
 - The `.app` bundle lives at `/Applications/Easy Complete.app`; `scripts/build-app.sh` assembles it under `build/`
-- Launch at login: `SMAppService.mainAppService` on macOS 13+; `~/Library/LaunchAgents/dev.emmmm.easy-complete.plist` fallback on macOS 12
+- Minimum system: macOS 15 (`MACOSX_DEPLOYMENT_TARGET`, set in `build-app.sh` and both workflows, becomes `LSMinimumSystemVersion`)
+- Launch at login: `SMAppService.mainAppService`. A `~/Library/LaunchAgents/dev.emmmm.easy-complete.plist` left by old versions is removed on launch
 - IME symlink target: `~/Library/Input Methods/EasyCompleteInputMethod.app`
 - HIToolbox prefs (`com.apple.HIToolbox`) must include the IME bundle ID for Ghostty/Kitty cursor following to work
 - `TISCreateInputSourceList` returns NULL when called without NSApplication; always call TIS APIs via `run_on_main` or from within the IME process itself

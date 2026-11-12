@@ -53,7 +53,7 @@ and how to disable it.
 
 ## 💻 Requirements
 
-- macOS 12 (Monterey) or later, Apple Silicon (the published DMG is arm64 only)
+- macOS 15 (Sequoia) or later, Apple Silicon (the published DMG is arm64 only)
 - `zsh`, `bash` or `fish`
 - **Accessibility** permission (see [below](#grant-accessibility-permission))
 

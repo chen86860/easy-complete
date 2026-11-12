@@ -53,11 +53,6 @@ static UNMANAGED: Unmanaged = Unmanaged {
 
 static ACCESSIBILITY_ENABLED: LazyLock<AtomicBool> = LazyLock::new(|| AtomicBool::new(accessibility_is_enabled()));
 
-static MACOS_VERSION: LazyLock<semver::Version> = LazyLock::new(|| {
-    let version = macos_utils::os::OperatingSystemVersion::get();
-    semver::Version::new(version.major() as u64, version.minor() as u64, version.patch() as u64)
-});
-
 pub static ACTIVATION_POLICY: Mutex<ActivationPolicy> = Mutex::new(ActivationPolicy::Regular);
 
 /// Whether the autocomplete overlay was built while the app was `Regular` (dashboard open).
@@ -98,11 +93,6 @@ pub fn activate_app() {
     };
     #[allow(deprecated, reason = "activate() does not bring an agent app forward")]
     NSApplication::sharedApplication(mtm).activateIgnoringOtherApps(true);
-}
-
-#[allow(dead_code)]
-pub fn is_ventura() -> bool {
-    MACOS_VERSION.major >= 13
 }
 
 /// Check the Apple Event that launched the app for the Login Item marker.

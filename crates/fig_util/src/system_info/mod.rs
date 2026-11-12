@@ -46,9 +46,9 @@ pub enum OSVersion {
 impl OSVersion {
     pub fn support_level(&self) -> SupportLevel {
         match self {
-            OSVersion::MacOS { major, minor, .. } => {
-                // Minimum supported macOS version is 10.14.0
-                if *major > 10 || (*major == 10 && *minor >= 14) {
+            OSVersion::MacOS { major, .. } => {
+                // Minimum supported macOS version is 15
+                if *major >= 15 {
                     SupportLevel::Supported
                 } else {
                     SupportLevel::Unsupported

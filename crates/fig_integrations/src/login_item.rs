@@ -1,15 +1,12 @@
 //! macOS launch-at-login integration.
 //!
-//! macOS 13 and later use `SMAppService.mainAppService`, which makes the app a
-//! user-manageable Login Item. macOS 12 falls back to a per-user LaunchAgent.
+//! `SMAppService.mainAppService` makes the app a user-manageable Login Item. Versions that
+//! still ran on macOS 12 used a per-user LaunchAgent instead, which is removed on launch.
 
-use std::borrow::Cow;
 use std::fs;
 use std::path::PathBuf;
 use std::process::Command;
 
-use fig_util::consts::{APP_BUNDLE_ID, APP_PROCESS_NAME};
-use fig_util::launchd_plist::{LaunchdPlist, create_launch_agent};
 use objc2::msg_send;
 use objc2::rc::Retained;
 use objc2::runtime::{AnyClass, AnyObject};
@@ -21,7 +18,6 @@ use crate::{Error, Result};
 const LEGACY_LABEL: &str = "dev.emmmm.easy-complete";
 
 // Force-load the framework so the dynamic `SMAppService` class lookup works.
-// ServiceManagement itself exists on macOS 12; only SMAppService is 13+.
 #[link(name = "ServiceManagement", kind = "framework")]
 unsafe extern "C" {}
 
@@ -49,36 +45,22 @@ impl ServiceStatus {
 /// This is intentionally safe to call on every app launch. It also removes the
 /// historical Easy Complete LaunchAgent so an upgrade cannot leave a duplicate job behind.
 pub fn reconcile(enabled: bool) -> Result<()> {
-    if sm_app_service().is_some() {
-        remove_legacy_launch_agent(LEGACY_LABEL)?;
-        set_sm_app_service_enabled(enabled)
-    } else {
-        set_legacy_launch_agent_enabled(enabled)
-    }
+    remove_legacy_launch_agent(LEGACY_LABEL)?;
+    set_sm_app_service_enabled(enabled)
 }
 
-/// Enable or disable launch at login using the API supported by this macOS version.
+/// Enable or disable launch at login.
 pub fn set_enabled(enabled: bool) -> Result<()> {
     reconcile(enabled)
 }
 
 /// Return whether launch at login is currently enabled by the system.
 pub fn is_enabled() -> Result<bool> {
-    if let Some(service) = sm_app_service() {
-        Ok(sm_app_service_status(&service) == ServiceStatus::Enabled)
-    } else {
-        Ok(legacy_launch_agent_path(LEGACY_LABEL)?.exists())
-    }
-}
-
-/// Whether this OS supports the ServiceManagement login-item API introduced in macOS 13.
-pub fn supports_modern_login_item() -> bool {
-    sm_app_service().is_some()
+    let service = sm_app_service().ok_or_else(|| Error::Custom("SMAppService is unavailable".into()))?;
+    Ok(sm_app_service_status(&service) == ServiceStatus::Enabled)
 }
 
 fn sm_app_service() -> Option<Retained<AnyObject>> {
-    // SMAppService exists only on macOS 13+. Looking the class up dynamically
-    // keeps the same binary launchable on macOS 12.
     let class = AnyClass::get(c"SMAppService")?;
     unsafe { msg_send![class, mainAppService] }
 }
@@ -117,50 +99,6 @@ fn set_sm_app_service_enabled(enabled: bool) -> Result<()> {
             .into(),
         )
     })
-}
-
-fn set_legacy_launch_agent_enabled(enabled: bool) -> Result<()> {
-    remove_legacy_launch_agent(LEGACY_LABEL)?;
-    if !enabled {
-        return Ok(());
-    }
-
-    let executable = current_app_executable()?;
-    let launch_agent = legacy_launch_agent(executable);
-    create_launch_agent(&launch_agent).map_err(|error| Error::Custom(error.to_string().into()))?;
-
-    let path = launch_agent
-        .get_file_path()
-        .map_err(|error| Error::Custom(error.to_string().into()))?;
-    let status = Command::new("launchctl").arg("load").arg(path.as_str()).status()?;
-    if !status.success() {
-        return Err(Error::Custom(
-            "launchctl failed to load the Easy Complete LaunchAgent".into(),
-        ));
-    }
-
-    Ok(())
-}
-
-fn legacy_launch_agent(executable: PathBuf) -> LaunchdPlist {
-    LaunchdPlist::new(LEGACY_LABEL)
-        .program_arguments([
-            executable.to_string_lossy().to_string(),
-            "--is-startup".to_owned(),
-            "--no-dashboard".to_owned(),
-        ])
-        .associated_bundle_identifiers([APP_BUNDLE_ID])
-        .run_at_load(true)
-        .keep_alive(false)
-}
-
-fn current_app_executable() -> Result<PathBuf> {
-    let current = std::env::current_exe()?;
-    let bundle = current
-        .ancestors()
-        .find(|path| path.extension().is_some_and(|extension| extension == "app"))
-        .ok_or(Error::ApplicationNotInstalled(Cow::Borrowed("Easy Complete.app")))?;
-    Ok(bundle.join("Contents").join("MacOS").join(APP_PROCESS_NAME))
 }
 
 fn remove_legacy_launch_agent(label: &str) -> Result<()> {
@@ -204,17 +142,5 @@ mod tests {
         assert_eq!(ServiceStatus::from_raw(1), ServiceStatus::Enabled);
         assert_eq!(ServiceStatus::from_raw(2), ServiceStatus::RequiresApproval);
         assert_eq!(ServiceStatus::from_raw(3), ServiceStatus::NotFound);
-    }
-
-    #[test]
-    fn macos_12_launch_agent_starts_silently() {
-        let plist = legacy_launch_agent(PathBuf::from(
-            "/Applications/Easy Complete.app/Contents/MacOS/easy-complete",
-        ))
-        .plist();
-        assert!(plist.contains("<string>--is-startup</string>"));
-        assert!(plist.contains("<string>--no-dashboard</string>"));
-        assert!(plist.contains("<key>RunAtLoad</key>\n        <true/>"));
-        assert!(plist.contains("<key>KeepAlive</key>\n        <false/>"));
     }
 }

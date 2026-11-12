@@ -28,8 +28,6 @@ cfg_if::cfg_if! {
 pub struct PlatformWindow {
     pub rect: Rect,
     pub inner: PlatformWindowImpl,
-    // TODO: add a platform specific impl of things like name, is_terminal(), etc
-    // pub inner: ExternalPlatformWindowImpl
 }
 
 #[derive(Debug, Serialize)]
@@ -115,7 +113,6 @@ pub enum PlatformBoundEvent {
     },
     CaretPositionUpdateRequested,
     WindowDestroyed {
-        // TODO: dont use on other platforms than macos
         #[cfg(target_os = "macos")]
         app: ApplicationSpecifier,
     },

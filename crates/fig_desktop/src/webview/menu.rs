@@ -114,8 +114,6 @@ pub fn menu_bar() -> Menu {
     menu_bar
 }
 
-// TODO(chay): add whatever is ergonomic for Windows
-
 #[cfg(target_os = "linux")]
 pub fn menu_bar() -> Menu {
     Menu::new()

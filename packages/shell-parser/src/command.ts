@@ -176,8 +176,7 @@ export const expandCommand = (
     try {
       expanded = substituteAlias(expanded, name, aliasValue);
     } catch (_err) {
-      // TODO(refactoring): add logger again
-      // console.error("Error substituting alias");
+      // An alias that cannot be substituted is left as typed.
     }
     usedAliases.add(name.text);
     [name] = expanded.tokens;

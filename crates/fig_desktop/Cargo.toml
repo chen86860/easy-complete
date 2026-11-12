@@ -60,7 +60,7 @@ flume.workspace = true
 fnv = "1.0.7"
 futures.workspace = true
 http.workspace = true
-image = "0.25.6"
+image = { version = "0.25.6", default-features = false, features = ["png"] }
 infer = "0.22.0"
 keyboard-types = "0.8.0"
 mime = "0.3.17"
@@ -72,7 +72,6 @@ paste = "1.0.11"
 percent-encoding.workspace = true
 rand.workspace = true
 regex.workspace = true
-reqwest.workspace = true
 rfd = "0.17.2"
 semver.workspace = true
 serde.workspace = true
@@ -132,4 +131,4 @@ objc2-foundation = { workspace = true, features = [
 system-configuration = "0.7.0"
 
 [build-dependencies]
-image = "0.25.6"
+image = { version = "0.25.6", default-features = false, features = ["png"] }

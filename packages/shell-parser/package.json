@@ -17,20 +17,17 @@
     "build": "tsc",
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "lint": "eslint src tests && prettier --check src tests",
-    "lint:fix": "eslint --fix src tests && prettier --write src tests",
-    "format": "prettier --write src tests",
+    "lint": "biome check src tests",
+    "lint:fix": "biome check --write src tests",
+    "format": "biome format --write src tests",
     "clean": "rm -rf dist"
   },
   "dependencies": {
     "@easy-complete/shared": "workspace:^"
   },
   "devDependencies": {
-    "@easy-complete/eslint-config": "workspace:^",
     "@easy-complete/tsconfig": "workspace:^",
     "@vitest/coverage-v8": "^4.1.12",
-    "eslint": "^10.8.1",
-    "prettier": "^3.9.6",
     "typescript": "6.0.3",
     "vitest": "^4.1.12"
   },

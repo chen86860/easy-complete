@@ -11,9 +11,9 @@
   "author": "Federico Ciardi <fed.ciardi@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^26.2.0",
-    "typescript": "6.0.3",
+    "@types/node": "^26.6.6",
     "@withfig/autocomplete-types": "workspace:*",
+    "typescript": "6.0.3",
     "vitest": "^4.1.12"
   },
   "repository": "https://github.com/withfig/autocomplete-tools"

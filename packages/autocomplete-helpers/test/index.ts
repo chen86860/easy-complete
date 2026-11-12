@@ -1,7 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
 import url from "node:url";
-import prettier from "prettier";
 import { getVersionFromVersionedSpec } from "../src/versions";
 
 const dirname = path.dirname(url.fileURLToPath(import.meta.url));
@@ -23,24 +22,20 @@ async function runFixtures() {
 
     // eslint-disable-next-line no-await-in-loop
     const importedModule = await import(specVersionPath); // note this is CJS
-    // eslint-disable-next-line no-await-in-loop
-    const outputSpec = await prettier.format(
-      JSON.stringify(
-        getVersionFromVersionedSpec(
-          importedModule.completion,
-          importedModule.versions,
-          targetVersion
-        )
-      ),
-      { parser: "json" }
+    const output = getVersionFromVersionedSpec(
+      importedModule.completion,
+      importedModule.versions,
+      targetVersion
     );
+    const outputSpec = `${JSON.stringify(output, null, 2)}\n`;
     fs.writeFileSync(outputSpecPath, outputSpec);
 
     if (process.env.OVERWRITE || !fs.existsSync(expectedSpecPath)) {
       fs.copyFileSync(outputSpecPath, expectedSpecPath);
     } else {
-      const expectedSpec = fs.readFileSync(expectedSpecPath, { encoding: "utf8" });
-      if (expectedSpec !== outputSpec) {
+      // Compare parsed content so the fixture's formatting does not matter.
+      const expectedSpec = JSON.parse(fs.readFileSync(expectedSpecPath, { encoding: "utf8" }));
+      if (JSON.stringify(expectedSpec) !== JSON.stringify(output)) {
         hadErrors = true;
         console.error(`- Fixture ${fixtureDirPath} is failing.`);
       }

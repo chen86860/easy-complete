@@ -16,30 +16,28 @@
     "dev": "tsc --watch",
     "build": "tsc",
     "test": "vitest",
-    "lint": "eslint src tests && prettier --check src tests",
-    "lint:fix": "eslint --fix src tests && prettier --write src tests",
-    "format": "prettier --write src tests",
+    "lint": "biome check src tests",
+    "lint:fix": "biome check --write src tests",
+    "format": "biome format --write src tests",
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@easy-complete/api-bindings-wrappers": "workspace:^",
     "@easy-complete/api-bindings": "workspace:^",
+    "@easy-complete/api-bindings-wrappers": "workspace:^",
     "@easy-complete/shell-parser": "workspace:^",
     "@fig/autocomplete-generators": "workspace:*",
     "@fig/autocomplete-helpers": "workspace:*",
     "@fig/autocomplete-shared": "workspace:*",
     "loglevel": "^1.9.2",
-    "semver": "^7.8.5",
+    "semver": "^7.8.6",
     "zod": "^4.6.6"
   },
   "devDependencies": {
-    "@easy-complete/eslint-config": "workspace:^",
+    "@easy-complete/shared": "workspace:^",
     "@easy-complete/tsconfig": "workspace:^",
     "@easy-complete/types": "workspace:^",
-    "@easy-complete/shared": "workspace:^",
     "@types/semver": "^7.8.0",
     "@withfig/autocomplete-types": "workspace:*",
-    "eslint": "^10.8.1",
     "typescript": "6.0.3",
     "vitest": "^4.1.12"
   }

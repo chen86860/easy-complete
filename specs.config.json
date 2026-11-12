@@ -1,4 +1,4 @@
 {
-  "$comment": "Filter config for bundled completion specs. The specs come from packages/autocomplete-specs. Edit exclude here, then run `node scripts/sync-bundled-specs.mjs` and commit the regenerated bundle/specs. The env var BUNDLED_SPECS_EXCLUDE still overrides one-off runs. See CLAUDE.md > Bundled Specs.",
+  "$comment": "Filter config for bundled completion specs. The specs come from packages/autocomplete-specs. Edit exclude here, then run `node scripts/sync-bundled-specs.mjs` and commit the regenerated bundle/specs. The env var BUNDLED_SPECS_EXCLUDE still overrides one-off runs. See AGENTS.md > Bundled Specs.",
   "exclude": ["aws", "az"]
 }

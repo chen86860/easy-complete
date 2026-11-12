@@ -23,12 +23,12 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@bufbuild/protobuf": "2.13.0"
+    "@bufbuild/protobuf": "2.17.0"
   },
   "devDependencies": {
+    "@bufbuild/buf": "^1.75.0",
+    "@bufbuild/protoc-gen-es": "2.17.0",
     "@easy-complete/tsconfig": "workspace:^",
-    "@bufbuild/buf": "^1.72.0",
-    "@bufbuild/protoc-gen-es": "2.13.0",
     "typescript": "6.0.3"
   }
 }

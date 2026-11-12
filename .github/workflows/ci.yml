@@ -84,7 +84,7 @@ jobs:
               crates/* | Cargo.toml | Cargo.lock | rust-toolchain.toml | .cargo/* | .rustfmt.toml) rust=true ;;
               # The dashboard imports themes/*.json for its theme previews.
               packages/* | themes/* | package.json | pnpm-lock.yaml | pnpm-workspace.yaml | turbo.json \
-                | vitest.config.ts | .prettierrc) javascript=true ;;
+                | vitest.config.ts | biome.json) javascript=true ;;
               # proto/, scripts/ and anything unlisted feed both stacks.
               *) rust=true javascript=true ;;
             esac
@@ -229,6 +229,18 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Turborepo's local cache: build outputs and lint results, keyed by a hash of each task's
+      # inputs. Only pushes to main save it, and main starts from an empty cache so the archive
+      # never accumulates stale entries. Pull requests and tag runs restore main's latest, so
+      # only the packages a change touches (and their dependents) are rebuilt and relinted.
+      - name: Restore turbo cache
+        if: github.ref != 'refs/heads/main'
+        uses: actions/cache/restore@v6
+        with:
+          path: .turbo/cache
+          key: turbo-${{ github.sha }}
+          restore-keys: turbo-
+
       - name: Build packages
         run: pnpm build
 
@@ -237,6 +249,13 @@ jobs:
 
       - name: Test packages
         run: pnpm test:ci
+
+      - name: Save turbo cache
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/cache/save@v6
+        with:
+          path: .turbo/cache
+          key: turbo-${{ github.sha }}
 
   website:
     name: Website

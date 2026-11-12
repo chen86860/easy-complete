@@ -88,7 +88,8 @@ export interface ListNode extends BaseNode {
 export interface AssignmentListNode extends BaseNode {
   type: NodeType.AssignmentList;
   children:
-    [...AssignmentNode[], BaseNode<NodeType.Command>] | AssignmentNode[];
+    | [...AssignmentNode[], BaseNode<NodeType.Command>]
+    | AssignmentNode[];
   hasCommand: boolean;
 }
 

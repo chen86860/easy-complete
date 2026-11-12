@@ -174,7 +174,7 @@ Issues and pull requests are welcome. [CONTRIBUTING.md](./CONTRIBUTING.md) has t
   [`packages/autocomplete-specs/src`](./packages/autocomplete-specs/src), one per CLI. Its
   [README](./packages/autocomplete-specs/README.md) covers creating a spec, live reload
   while you edit, and shipping the change.
-- **Before opening a PR** — make sure `cargo clippy --locked --workspace -- -D warnings`,
+- **Before opening a PR** — make sure `cargo clippy --locked --workspace --all-targets -- -D warnings`,
   `pnpm lint` and `pnpm test` pass. You don't need to format by hand: a bot formats every
   pull request and commits the result (`pnpm format` does the same locally). Commits follow
   [Conventional Commits](https://www.conventionalcommits.org/).

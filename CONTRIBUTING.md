@@ -62,7 +62,7 @@ Run the checks for the part you touched:
 
 ```bash
 # Rust
-cargo clippy --locked --workspace -- -D warnings
+cargo clippy --locked --workspace --all-targets -- -D warnings
 cargo test --workspace
 
 # TypeScript

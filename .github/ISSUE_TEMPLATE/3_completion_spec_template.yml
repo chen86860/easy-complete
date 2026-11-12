@@ -1,0 +1,58 @@
+name: "Completions for a command"
+description: "A command has missing, wrong or outdated completions / 某个命令的补全缺失、错误或过时"
+
+title: "spec: "
+labels: ["enhancement"]
+
+body:
+- type: markdown
+  attributes:
+    value: |
+      Use this when Easy Complete itself works but one command's suggestions are missing or wrong.
+      English or 中文 are both fine.
+
+      Completions come from spec files in
+      [`packages/autocomplete-specs/src`](https://github.com/chen86860/easy-complete/tree/main/packages/autocomplete-specs/src),
+      one TypeScript file per CLI. Pull requests are very welcome, see
+      [CONTRIBUTING.md](https://github.com/chen86860/easy-complete/blob/main/CONTRIBUTING.md#completion-specs).
+
+      当 Easy Complete 本身工作正常、只是某个命令的补全缺失或不对时，请用这个模板。中英文皆可。
+
+- type: input
+  id: "command"
+  attributes:
+    label: "Command"
+    description: "The CLI and, if relevant, the subcommand / 命令，以及相关的子命令"
+    placeholder: "docker compose up"
+  validations:
+    required: true
+
+- type: input
+  id: "cli-version"
+  attributes:
+    label: "CLI version"
+    description: "Output of the command's `--version` / 该命令 `--version` 的输出"
+    placeholder: "Docker Compose version v2.39.1"
+
+- type: dropdown
+  id: "kind"
+  attributes:
+    label: "What is wrong?"
+    options:
+      - "The command has no completions at all / 完全没有补全"
+      - "A subcommand, option or argument is missing / 缺少子命令、选项或参数"
+      - "A suggestion is wrong or outdated / 补全内容错误或过时"
+  validations:
+    required: true
+
+- type: textarea
+  id: "details"
+  attributes:
+    label: "Details"
+    description: |
+      What you typed, what was suggested and what you expected. A link to the CLI's documentation
+      or the output of its `--help` helps a lot.
+
+      你输入了什么、出现了什么建议、期望的是什么。附上该命令的文档链接或 `--help` 输出会很有帮助。
+  validations:
+    required: true

@@ -21,7 +21,7 @@
   <a href="https://easy-complete.emmmm.dev">Website</a> ·
   <a href="https://github.com/chen86860/easy-complete/releases/latest">Download</a> ·
   <a href="./CHANGELOG.md">Changelog</a> ·
-  <a href="./AGENTS.md">Contributing</a>
+  <a href="./CONTRIBUTING.md">Contributing</a>
 </p>
 
 <p align="center">
@@ -165,7 +165,7 @@ pnpm dev:autocomplete   # watch the autocomplete UI (port 3124)
 
 ## 🤝 Contributing
 
-Issues and pull requests are welcome.
+Issues and pull requests are welcome. [CONTRIBUTING.md](./CONTRIBUTING.md) has the full guide.
 
 - **Report a bug** — `ec issue` opens a pre-filled report with your diagnostics attached,
   or use the [issue templates](https://github.com/chen86860/easy-complete/issues/new/choose).

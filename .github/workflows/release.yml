@@ -312,12 +312,25 @@ jobs:
     needs: [ci, build-arm-dmg]
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # Job-level permissions replace the workflow default, so contents is repeated here.
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
     steps:
       - name: Download build artifact
         uses: actions/download-artifact@v7
         with:
           name: Easy-Complete-arm64
           path: dist
+
+      # Signed statement that these exact DMG bytes came out of this workflow run, at this
+      # commit. Users check it with `gh attestation verify`. It sits before the upload so a
+      # release is never published without one.
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: dist/Easy-Complete-*.dmg
 
       - name: Classify release channel
         id: release_channel
@@ -354,6 +367,12 @@ jobs:
             3. Reload your shell: `exec $SHELL`
 
             This DMG is Developer ID signed, notarized, and published with a Sparkle appcast for future updates.
+
+            To check that it was built by this repository's release workflow:
+
+            ```
+            gh attestation verify Easy-Complete-arm64.dmg --repo ${{ github.repository }}
+            ```
 
       # Beta testers read a rolling feed instead of releases/latest, which never points at a
       # prerelease. Every tag refreshes it, so testers also move on to the next stable release.

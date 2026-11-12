@@ -10,6 +10,14 @@ body:
     value: |
       English or 中文 are both fine. / 中英文皆可。
 
+- type: checkboxes
+  id: "checks"
+  attributes:
+    label: "Checks"
+    options:
+    - label: "I have searched [existing issues](https://github.com/chen86860/easy-complete/issues?q=) and found no duplicate / 我已搜索过现有 issue，没有重复"
+      required: true
+
 - type: textarea
   id: "problem"
   attributes:

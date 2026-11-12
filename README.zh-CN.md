@@ -21,7 +21,7 @@
   <a href="https://easy-complete.emmmm.dev">官网</a> ·
   <a href="https://github.com/chen86860/easy-complete/releases/latest">下载</a> ·
   <a href="./CHANGELOG.zh-CN.md">更新日志</a> ·
-  <a href="./AGENTS.md">参与贡献</a>
+  <a href="./CONTRIBUTING.md">参与贡献</a>
 </p>
 
 <p align="center">
@@ -158,7 +158,7 @@ pnpm dev:autocomplete   # 监听补全 UI（端口 3124）
 
 ## 🤝 参与贡献
 
-欢迎提交 Issue 和 Pull Request。
+欢迎提交 Issue 和 Pull Request。完整指南见 [CONTRIBUTING.md](./CONTRIBUTING.md)（英文）。
 
 - **反馈问题** —— 运行 `ec issue` 会打开已附带诊断信息的 Issue 表单，也可以直接使用
   [Issue 模板](https://github.com/chen86860/easy-complete/issues/new/choose)。请附上 `ec doctor` 的输出。

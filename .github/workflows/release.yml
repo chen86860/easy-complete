@@ -93,8 +93,6 @@ jobs:
           package-manager-cache: false
 
       - name: Install JS dependencies
-        env:
-          HUSKY: 0
         run: pnpm install --frozen-lockfile
 
       - name: Import Developer ID certificate

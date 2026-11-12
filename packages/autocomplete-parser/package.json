@@ -18,15 +18,16 @@
     "test": "vitest",
     "lint": "eslint src tests && prettier --check src tests",
     "lint:fix": "eslint --fix src tests && prettier --write src tests",
+    "format": "prettier --write src tests",
     "clean": "rm -rf dist"
   },
   "dependencies": {
     "@easy-complete/api-bindings-wrappers": "workspace:^",
     "@easy-complete/api-bindings": "workspace:^",
     "@easy-complete/shell-parser": "workspace:^",
-    "@fig/autocomplete-generators": "^2.4.0",
-    "@fig/autocomplete-helpers": "^2.0.0",
-    "@fig/autocomplete-shared": "^1.1.2",
+    "@fig/autocomplete-generators": "workspace:*",
+    "@fig/autocomplete-helpers": "workspace:*",
+    "@fig/autocomplete-shared": "workspace:*",
     "loglevel": "^1.9.2",
     "semver": "^7.8.5",
     "zod": "^4.6.6"
@@ -37,7 +38,7 @@
     "@easy-complete/types": "workspace:^",
     "@easy-complete/shared": "workspace:^",
     "@types/semver": "^7.8.0",
-    "@withfig/autocomplete-types": "^1.31.0",
+    "@withfig/autocomplete-types": "workspace:*",
     "eslint": "^10.8.1",
     "typescript": "6.0.3",
     "vitest": "^4.1.12"

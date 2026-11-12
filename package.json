@@ -12,7 +12,7 @@
   "scripts": {
     "build": "turbo build",
     "b": "turbo build",
-    "format": "cargo fmt",
+    "format": "cargo fmt && pnpm -r --if-present format",
     "clippy": "cargo clippy --locked --workspace --color always -- -D warnings",
     "test": "vitest",
     "test:ci": "vitest run --run --coverage",
@@ -26,16 +26,11 @@
     "dev:autocomplete": "pnpm -C packages/autocomplete-app dev",
     "preview:autocomplete": "pnpm -C packages/autocomplete-app preview",
     "clean": "turbo clean",
-    "prepare": "husky",
-    "precommit": "lint-staged --config .lintstagedrc.mjs",
     "setup": "bash scripts/setup.sh"
   },
   "devDependencies": {
-    "@chen86860/autocomplete-specs": "3.1.3",
     "@vitest/coverage-v8": "^4.1.12",
     "@vitest/ui": "^4.1.12",
-    "husky": "^9.1.7",
-    "lint-staged": "^17.3.0",
     "micromatch": "^4.0.8",
     "prettier": "^3.9.6",
     "tsx": "^4.23.11",

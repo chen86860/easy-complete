@@ -1,3 +1,0 @@
-#!/bin/sh
-# pre-commit checks disabled during development fork
-exit 0

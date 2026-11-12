@@ -17,7 +17,7 @@
     "build": "pnpm clean && pnpm generate-requests && tsc",
     "lint": "eslint src && prettier --check src",
     "lint:fix": "eslint --fix src && prettier --write src",
-    "precommit": "lint-staged",
+    "format": "prettier --write src",
     "prepublishOnly": "pnpm build",
     "generate-requests": "tsx codegen/generate-requests.ts && prettier -w src/requests.ts"
   },
@@ -32,13 +32,9 @@
     "@types/node": "^26.2.0",
     "@typescript/analyze-trace": "^0.11.1",
     "eslint": "^10.8.1",
-    "lint-staged": "^17.3.0",
     "prettier": "^3.9.6",
     "ts-morph": "^28.0.0",
     "tsx": "^4.23.11",
     "typescript": "6.0.3"
-  },
-  "lint-staged": {
-    "*.{ts,tsx}": "npx eslint --cache --fix"
   }
 }

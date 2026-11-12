@@ -20,7 +20,6 @@
     "build": "rm -rf dist && buf generate && tsc",
     "lint": "buf lint && (buf format --exit-code > /dev/null || (echo 'Run `buf format -w`' && exit 1))",
     "lint:fix": "buf format -w",
-    "precommit": "exit 0",
     "clean": "rm -rf dist"
   },
   "dependencies": {

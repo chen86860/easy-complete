@@ -27,8 +27,8 @@ cargo run --bin easy-complete
 # Lint (CI enforces -D warnings)
 cargo clippy --locked --workspace --color always -- -D warnings
 
-# Format
-cargo fmt
+# Format Rust and TypeScript (the autofix.ci workflow runs this on every PR)
+pnpm format
 
 # Test a specific crate
 cargo test -p <crate_name>
@@ -149,11 +149,11 @@ The product website under `website/src` uses Tailwind CSS v4. When editing it:
 
 Completion specs are **bundled into the `.app` at build time**, not fetched at runtime. `scripts/sync-bundled-specs.mjs` assembles them into `bundle/specs/`, which `build-app.sh` copies to `Contents/Resources/specs/`. At runtime the `spec://localhost/<name>.js` custom protocol (`fig_desktop/src/protocol/spec.rs`) reads these local files only — there is **no network fallback**, so a spec absent from the bundle simply has no completion.
 
-**Source.** The default source is the installed npm dependency [`@chen86860/autocomplete-specs`](https://www.npmjs.com/package/@chen86860/autocomplete-specs), published from our forked spec repo [`chen86860/autocomplete-specs`](https://github.com/chen86860/autocomplete-specs). The version is pinned by root `package.json` plus `pnpm-lock.yaml`. The sync script reads the package from `node_modules`, copies `build/*.js` and `icons/*.png` into `bundle/specs`, then derives `index.json` from the bundled file tree.
+**Source.** The specs live in this repository under `packages/autocomplete-specs` (TypeScript in `src/`, icons in `icons/`). They were forked from [withfig/autocomplete](https://github.com/withfig/autocomplete) and maintained in [chen86860/autocomplete-specs](https://github.com/chen86860/autocomplete-specs) until its 3.1.3 release, which moved here without its git history. `scripts/sync-bundled-specs.mjs` builds that package (`pnpm --filter @easy-complete/autocomplete-specs... build`), copies `build/*.js` and the referenced `icons/*.png` into `bundle/specs`, then derives `index.json` from the bundled file tree.
 
-**Config + pinning.** `specs.config.json` only stores bundle filtering such as `exclude`. Package pinning lives in the normal JS dependency files, **not `latest`**, so the bundle changes only when the dependency changes, never silently. To adopt a newer fork build: run `corepack pnpm add -D @chen86860/autocomplete-specs@<version> -w`, re-run the sync, and commit `package.json`, `pnpm-lock.yaml`, and the regenerated `bundle/specs` together. Env overrides still win for one-off runs: `BUNDLED_SPECS_EXCLUDE=<csv>`, `BUNDLED_SPECS_PACKAGE=<pkg>`, `BUNDLED_SPECS_SOURCE=npm` with `BUNDLED_SPECS_VERSION=<version|latest>` / `BUNDLED_SPECS_PACKAGE_TARBALL=<full-url>` / `BUNDLED_SPECS_NPM_REGISTRY=<registry>`, or `BUNDLED_SPECS_SOURCE=cdn` to fall back to the legacy per-file CDN sync (`https://specs.q.us-east-1.amazonaws.com/`, frozen 2025-05-05).
+**Changing a spec.** Edit `packages/autocomplete-specs/src`, run `node scripts/sync-bundled-specs.mjs`, and commit the spec change together with the regenerated `bundle/specs`. Inside the package, `pnpm dev` rebuilds on save and points the running app at its `build/` through `ec settings`; `pnpm create-spec <name>` scaffolds a new spec. `pnpm build` in the package compiles and smoke-tests every spec, and `pnpm lint` runs biome and `tsc`; CI runs both through the workspace `build` and `lint`. `specs.config.json` only stores bundle filtering such as `exclude`; `BUNDLED_SPECS_EXCLUDE=<csv>` overrides it for one run. The sync also re-downloads the remote icons specs reference (`scripts/localize-spec-icons.mjs`), so unrelated icon PNGs can change when a site updates its image.
 
-To keep the bundle small, the sync script supports excluding whole namespaces via `BUNDLED_SPECS_EXCLUDE` (comma-separated; a namespace `ns` drops the top-level `ns` spec and everything under `ns/`). The filter is applied to **both** the downloaded files and the written `index.json`, so the runtime loader never references excluded specs.
+To keep the bundle small, the sync script supports excluding whole namespaces via `BUNDLED_SPECS_EXCLUDE` (comma-separated; a namespace `ns` drops the top-level `ns` spec and everything under `ns/`). The filter is applied to **both** the copied files and the written `index.json`, so the runtime loader never references excluded specs.
 
 - **Default**: `aws` and `az` are excluded (the AWS and Azure CLI specs are large and most users never trigger them). This is intentional — see `specs.config.json`.
 - **Bundle everything**: `BUNDLED_SPECS_EXCLUDE="" node scripts/sync-bundled-specs.mjs`
@@ -161,7 +161,7 @@ To keep the bundle small, the sync script supports excluding whole namespaces vi
 
 `build-app.sh` only auto-syncs when `bundle/specs/index.json` is missing, so it reuses whatever filtered set is already on disk. Re-run the sync script after changing the exclusion list.
 
-**Our own CLI (`ec`).** The upstream package only ships third-party specs, so `bundle/specs/ec.js` is generated from clap by `scripts/generate-ec-spec.mjs`: it runs `ec completion fig` (clap_complete_fig), strips the TS type annotation, writes `ec.js`, and adds `ec` to `index.json`. Never hand-edit `bundle/specs/ec.js` — regenerate it. `sync-bundled-specs.mjs` calls it at the end of every sync (the sync wipes `bundle/specs` first), and `build-app.sh` re-runs it with `EC_BINARY=${TARGET_DIR}/ec` so the bundled spec always matches the binary being shipped. Standalone: `EC_BINARY=target/dist/ec node scripts/generate-ec-spec.mjs`; with no `EC_BINARY` it picks `target/{dist,release,debug}/ec` or falls back to `cargo run`. `EC_SPEC_SKIP=1` opts out.
+**Our own CLI (`ec`).** The spec sources only cover third-party CLIs, so `bundle/specs/ec.js` is generated from clap by `scripts/generate-ec-spec.mjs`: it runs `ec completion fig` (clap_complete_fig), strips the TS type annotation, writes `ec.js`, and adds `ec` to `index.json`. Never hand-edit `bundle/specs/ec.js` — regenerate it. `sync-bundled-specs.mjs` calls it at the end of every sync (the sync wipes `bundle/specs` first), and `build-app.sh` re-runs it with `EC_BINARY=${TARGET_DIR}/ec` so the bundled spec always matches the binary being shipped. Standalone: `EC_BINARY=target/dist/ec node scripts/generate-ec-spec.mjs`; with no `EC_BINARY` it picks `target/{dist,release,debug}/ec` or falls back to `cargo run`. `EC_SPEC_SKIP=1` opts out.
 
 ## Key Crates
 
@@ -189,6 +189,9 @@ To keep the bundle small, the sync script supports excluding whole namespaces vi
 | `shell-parser`          | Shell command-line tokenizer           |
 | `api-bindings`          | Generated TS Protobuf IPC bindings     |
 | `api-bindings-wrappers` | Ergonomic wrappers over `api-bindings` |
+| `autocomplete-specs`    | Completion spec sources (`@easy-complete/autocomplete-specs`), bundled into `bundle/specs` |
+| `autocomplete-tools`    | Spec build CLI: `compile`, `dev`, `create-spec` |
+| `autocomplete-helpers`, `autocomplete-shared`, `autocomplete-generators`, `autocomplete-types` | Fig spec libraries and types, forked from [withfig/autocomplete-tools](https://github.com/withfig/autocomplete-tools); they keep their `@fig/*` / `@withfig/*` names so spec imports are unchanged |
 
 ## Toolchain Versions
 

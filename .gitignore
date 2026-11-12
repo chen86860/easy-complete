@@ -33,7 +33,9 @@ book/
 .vscode-test/
 
 # ide folders
-.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 .fleet/
 .idea/
 

@@ -1,0 +1,101 @@
+const shellOptions = [
+  "allexport",
+  "braceexpand",
+  "emacs",
+  "errexit",
+  "errtrace",
+  "functrace",
+  "hashall",
+  "histexpand",
+  "history",
+  "ignoreeof",
+  "interactive-comments",
+  "keyword",
+  "monitor",
+  "noclobber",
+  "noexec",
+  "noglob",
+  "nolog",
+  "notify",
+  "nounset",
+  "onecmd",
+  "physical",
+  "pipefail",
+  "posix",
+  "privileged",
+  "verbose",
+  "vi",
+  "xtrace",
+];
+
+const spec: Fig.Spec = {
+  name: "bash",
+  description: "GNU Bourne-Again SHell",
+  args: {
+    name: "script-file",
+    isOptional: true,
+    template: "filepaths",
+  },
+  options: [
+    { name: "--debug", description: "Run in debugging mode" },
+    {
+      name: "--debugger",
+      description: "Arrange for the debugger profile to be executed",
+    },
+    {
+      name: "--dump-po-strings",
+      description: "Dump translated strings in PO format",
+    },
+    { name: "--dump-strings", description: "Dump translated strings" },
+    { name: "--help", description: "Show usage" },
+    {
+      name: "--init-file",
+      description:
+        "Execute commands from file instead of the standard startup file",
+      args: { name: "file", template: "filepaths" },
+    },
+    {
+      name: "--login",
+      description: "Make bash act as if invoked as a login shell",
+    },
+    { name: "--noediting", description: "Disable command line editing" },
+    { name: "--noprofile", description: "Do not read profile startup files" },
+    { name: "--norc", description: "Do not read ~/.bashrc" },
+    { name: "--posix", description: "Enable POSIX mode" },
+    { name: "--protected", description: "Run in protected mode" },
+    {
+      name: "--rcfile",
+      description: "Execute commands from file instead of ~/.bashrc",
+      args: { name: "file", template: "filepaths" },
+    },
+    { name: "--restricted", description: "Run a restricted shell" },
+    {
+      name: "--verbose",
+      description: "Print shell input lines as they are read",
+    },
+    { name: "--version", description: "Show version information" },
+    { name: "--wordexp", description: "Print shell word expansion results" },
+    {
+      name: "-c",
+      description: "Read and execute commands from a string",
+      args: { name: "command" },
+    },
+    {
+      name: "-O",
+      description: "Enable a shell option",
+      args: { name: "shopt_option", suggestions: shellOptions },
+    },
+    {
+      name: "-o",
+      description: "Set a shell option",
+      args: { name: "option", suggestions: shellOptions },
+    },
+    { name: "-i", description: "Force the shell to be interactive" },
+    { name: "-l", description: "Make bash act as if invoked as a login shell" },
+    { name: "-r", description: "Run a restricted shell" },
+    { name: "-s", description: "Read commands from standard input" },
+    { name: "-D", description: "Print translatable strings" },
+  ],
+};
+
+export default spec;

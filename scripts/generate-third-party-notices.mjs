@@ -207,15 +207,18 @@ function javascriptComponents() {
     }
   }
 
-  const bundledSpecsPath = realpathSync(
-    join(repoDir, "node_modules/@chen86860/autocomplete-specs"),
-  );
+  // Specs forked from withfig/autocomplete, built from packages/autocomplete-specs.
   components.push(
-    componentFromPackage(bundledSpecsPath, {
-      license: "MIT (license file; package metadata declares ISC)",
+    componentFromPackage(join(repoDir, "packages/autocomplete-specs"), {
+      source: "https://github.com/withfig/autocomplete",
     }),
   );
   components.push(componentFromPackage(join(repoDir, "packages/fuzzysort")));
+  // Forked from withfig/autocomplete-tools. Workspace packages are missing from
+  // `pnpm licenses list`, so the ones bundled into the app are listed here.
+  for (const name of ["autocomplete-generators", "autocomplete-helpers", "autocomplete-shared"]) {
+    components.push(componentFromPackage(join(repoDir, "packages", name)));
+  }
 
   return components;
 }

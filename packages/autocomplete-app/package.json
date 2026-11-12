@@ -2,7 +2,7 @@
   "name": "@easy-complete/autocomplete-app",
   "private": true,
   "license": "MIT",
-  "version": "2.7.0",
+  "version": "2.8.0-beta.3",
   "repository": "https://github.com/chen86860/easy-complete",
   "type": "module",
   "scripts": {
@@ -15,6 +15,7 @@
     "test": "vitest",
     "lint": "eslint src --report-unused-disable-directives && prettier --check src",
     "lint:fix": "eslint src --fix && prettier --write src",
+    "format": "prettier --write src",
     "clean": "rm -rf dist"
   },
   "browserslist": [
@@ -27,8 +28,8 @@
     "@easy-complete/proto": "workspace:^",
     "@easy-complete/shell-parser": "workspace:^",
     "@bufbuild/protobuf": "2.13.0",
-    "@fig/autocomplete-helpers": "^2.0.0",
-    "@fig/autocomplete-shared": "^1.1.2",
+    "@fig/autocomplete-helpers": "workspace:*",
+    "@fig/autocomplete-shared": "workspace:*",
     "deep-object-diff": "^1.1.9",
     "loglevel": "^1.9.2",
     "react-dom": "^19.2.8",
@@ -49,7 +50,7 @@
     "@types/react-window": "^1.8.8",
     "@types/react": "^19.2.18",
     "@vitejs/plugin-react": "^6.0.5",
-    "@withfig/autocomplete-types": "^1.31.0",
+    "@withfig/autocomplete-types": "workspace:*",
     "eslint": "^10.8.1",
     "prettier": "^3.9.6",
     "tailwindcss": "^4.3.5",

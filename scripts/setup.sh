@@ -87,8 +87,8 @@ setup_mise() {
   mise install
 }
 
-setup_precommit() {
-  echo "Installing pre-commit hooks..."
+install_js_deps() {
+  echo "Installing JavaScript dependencies..."
   pnpm install --ignore-scripts
 }
 
@@ -105,6 +105,6 @@ fi
 
 install_rust
 setup_mise
-setup_precommit
+install_js_deps
 
 echo "✅ Setup complete! Follow the instructions in the README to get started."

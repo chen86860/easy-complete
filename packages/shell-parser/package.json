@@ -19,6 +19,7 @@
     "coverage": "vitest run --coverage",
     "lint": "eslint src tests && prettier --check src tests",
     "lint:fix": "eslint --fix src tests && prettier --write src tests",
+    "format": "prettier --write src tests",
     "clean": "rm -rf dist"
   },
   "dependencies": {

@@ -84,7 +84,7 @@ jobs:
               crates/* | Cargo.toml | Cargo.lock | rust-toolchain.toml | .cargo/* | .rustfmt.toml) rust=true ;;
               # The dashboard imports themes/*.json for its theme previews.
               packages/* | themes/* | package.json | pnpm-lock.yaml | pnpm-workspace.yaml | turbo.json \
-                | vitest.config.ts | .prettierrc | .lintstagedrc.mjs | .husky/*) javascript=true ;;
+                | vitest.config.ts | .prettierrc) javascript=true ;;
               # proto/, scripts/ and anything unlisted feed both stacks.
               *) rust=true javascript=true ;;
             esac
@@ -227,8 +227,6 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
-        env:
-          HUSKY: 0
         run: pnpm install --frozen-lockfile
 
       - name: Build packages
@@ -262,8 +260,6 @@ jobs:
           cache-dependency-path: website/pnpm-lock.yaml
 
       - name: Install website dependencies
-        env:
-          HUSKY: 0
         run: pnpm -C website install --frozen-lockfile
 
       - name: Build website

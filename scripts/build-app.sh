@@ -19,7 +19,7 @@ DEFAULT_SPARKLE_APPCAST_URL="https://github.com/chen86860/easy-complete/releases
 # Rolling feed that the release workflow refreshes on every tag, stable and beta alike.
 # The app reads it instead of SUFeedURL when the user opts into beta updates.
 DEFAULT_SPARKLE_BETA_APPCAST_URL="https://github.com/chen86860/easy-complete/releases/download/beta-feed/appcast.xml"
-export MACOSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET:-12.0}"
+export MACOSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET:-13.0}"
 
 REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 VERSION=$(cargo metadata --no-deps --format-version 1 | python3 -c "import sys,json; print(json.load(sys.stdin)['packages'][0]['version'])" 2>/dev/null || echo "dev")

@@ -50,7 +50,7 @@ function InstallPage() {
         hrefs={{ en: "/install", "zh-CN": "/zh/install" }}
       >
         <GuideCallout>
-          <strong>Requirements:</strong> macOS 15 or later and an Apple Silicon
+          <strong>Requirements:</strong> macOS 13 or later and an Apple Silicon
           Mac (M1 or newer). The published DMG is ARM64 only.
         </GuideCallout>
 

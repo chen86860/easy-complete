@@ -61,7 +61,7 @@ export const homeCopyEn: HomeCopy = {
 
   ctaHeading: "Stop memorizing flags",
   ctaSubheading: "Let your terminal remember them for you",
-  ctaFootnote: "Requires macOS 15+ · Apple Silicon (ARM64) · MIT",
+  ctaFootnote: "Requires macOS 13+ · Apple Silicon (ARM64) · MIT",
   ctaTagline:
     "A focused local completion engine built for fast terminal autocomplete.",
 
@@ -81,7 +81,7 @@ export const docsCopyEn: DocsCopy = {
   quickStart: "Quick start",
   installGuideCta: "Full install guide",
   downloadCta: "Download DMG",
-  requirements: "macOS 15+ · Apple Silicon (ARM64)",
+  requirements: "macOS 13+ · Apple Silicon (ARM64)",
   terminalColumn: "Terminal",
   trackingColumn: "Cursor tracking",
   notesColumn: "Notes",

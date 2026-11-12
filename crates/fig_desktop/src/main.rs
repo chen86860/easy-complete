@@ -99,31 +99,27 @@ async fn main() -> ExitCode {
     {
         const LOGIN_ITEM_MIGRATED_KEY: &str = "desktop.loginItemMigratedToSMAppService";
 
-        if fig_integrations::login_item::supports_modern_login_item() {
-            let migrated = fig_settings::state::get_bool_or(LOGIN_ITEM_MIGRATED_KEY, false);
-            let result = if migrated {
-                // Once migrated, System Settings is authoritative. This prevents
-                // the app from silently re-registering after the user disables it there.
-                fig_integrations::login_item::is_enabled().and_then(|enabled| {
-                    launch_on_startup = enabled;
-                    fig_integrations::login_item::reconcile(enabled)
-                })
-            } else {
-                fig_integrations::login_item::reconcile(launch_on_startup)
-            };
-
-            if let Err(err) = result {
-                warn!(%err, "failed to migrate launch-at-login registration");
-                launch_on_startup = false;
-            } else if let Ok(enabled) = fig_integrations::login_item::is_enabled() {
+        let migrated = fig_settings::state::get_bool_or(LOGIN_ITEM_MIGRATED_KEY, false);
+        let result = if migrated {
+            // Once migrated, System Settings is authoritative. This prevents
+            // the app from silently re-registering after the user disables it there.
+            fig_integrations::login_item::is_enabled().and_then(|enabled| {
                 launch_on_startup = enabled;
-            }
+                fig_integrations::login_item::reconcile(enabled)
+            })
+        } else {
+            fig_integrations::login_item::reconcile(launch_on_startup)
+        };
 
-            fig_settings::settings::set_value("app.launchOnStartup", launch_on_startup).ok();
-            fig_settings::state::set_value(LOGIN_ITEM_MIGRATED_KEY, true).ok();
-        } else if let Err(err) = fig_integrations::login_item::reconcile(launch_on_startup) {
-            warn!(%err, "failed to reconcile legacy launch-at-login registration");
+        if let Err(err) = result {
+            warn!(%err, "failed to migrate launch-at-login registration");
+            launch_on_startup = false;
+        } else if let Ok(enabled) = fig_integrations::login_item::is_enabled() {
+            launch_on_startup = enabled;
         }
+
+        fig_settings::settings::set_value("app.launchOnStartup", launch_on_startup).ok();
+        fig_settings::state::set_value(LOGIN_ITEM_MIGRATED_KEY, true).ok();
     }
 
     if cli.is_startup && !launch_on_startup {
@@ -193,11 +189,8 @@ async fn main() -> ExitCode {
     let silent_launch = page.is_none() && fig_settings::settings::get_bool_or("app.silentLaunch", false);
 
     #[cfg(target_os = "macos")]
-    let defer_dashboard_for_modern_login_item = !cli.no_dashboard
-        && !silent_launch
-        && !surface_permissions
-        && launch_on_startup
-        && fig_integrations::login_item::supports_modern_login_item();
+    let defer_dashboard_for_modern_login_item =
+        !cli.no_dashboard && !silent_launch && !surface_permissions && launch_on_startup;
     #[cfg(not(target_os = "macos"))]
     let defer_dashboard_for_modern_login_item = false;
     // A lost permission outranks a silent launch: the dashboard's permission gate is how the user

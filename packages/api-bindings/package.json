@@ -1,5 +1,6 @@
 {
   "name": "@easy-complete/api-bindings",
+  "private": true,
   "version": "0.2.0",
   "license": "MIT",
   "author": "Easy Complete Contributors",

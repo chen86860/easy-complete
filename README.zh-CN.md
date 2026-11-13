@@ -162,7 +162,7 @@ pnpm dev:autocomplete   # 可选：监听补全 UI（端口 3124）
   [`packages/autocomplete-specs/src`](./packages/autocomplete-specs/src) 下的 TypeScript 文件，
   每个 CLI 一个。新建 spec、边改边在应用里生效，以及如何随应用发布，见该目录的
   [README](./packages/autocomplete-specs/README.md)。
-- **提 PR 之前** —— 确认 `cargo clippy --locked --workspace -- -D warnings`、`pnpm lint` 和
+- **提 PR 之前** —— 确认 `cargo clippy --locked --workspace --all-targets -- -D warnings`、`pnpm lint` 和
   `pnpm test` 全部通过。不用手动格式化：机器人会格式化每个 PR 并把结果提交回去（本地可运行
   `pnpm format`，效果相同）。提交信息遵循
   [Conventional Commits](https://www.conventionalcommits.org/)。

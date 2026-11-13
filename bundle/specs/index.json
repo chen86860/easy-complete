@@ -593,6 +593,10 @@
     "pm2",
     "pmset",
     "pnpm",
+    "pnpm/10.0.0",
+    "pnpm/11.0.0",
+    "pnpm/12.0.0",
+    "pnpm/shared",
     "pnpx",
     "pocketbase",
     "pod",
@@ -881,6 +885,7 @@
     "fig",
     "heroku",
     "infracost",
+    "pnpm",
     "shopify"
   ]
 }

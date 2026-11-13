@@ -8,11 +8,11 @@ This is an internal workspace package. It is not published anywhere; the app
 gets the specs from a bundle generated out of this package (see
 [Shipping a spec change](#shipping-a-spec-change)).
 
-| Path | What it holds |
-| --- | --- |
-| `src/` | The specs. `src/<cli>.ts`, or `src/<cli>/` for a CLI with per-version specs |
-| `icons/` | Icons the specs refer to by name |
-| `build/` | Compiled output, not committed |
+| Path     | What it holds                                                               |
+| -------- | --------------------------------------------------------------------------- |
+| `src/`   | The specs. `src/<cli>.ts`, or `src/<cli>/` for a CLI with per-version specs |
+| `icons/` | Icons the specs refer to by name                                            |
+| `build/` | Compiled output, not committed                                              |
 
 `pnpm build` clears `build/`, compiles the specs into it with
 [`autocomplete-tools`](../autocomplete-tools) and then smoke-tests the output.

@@ -1,4 +1,4 @@
-const AWS_SPECS = ["aws", "q"];
+const AWS_SPECS = ["q"];
 const UNIX_SPECS = [
   "cd",
   "git",

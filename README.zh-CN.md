@@ -52,7 +52,7 @@ fish shell 的建议——子命令、选项、参数和文件路径，以跟随
 
 - macOS 13（Ventura）及以上，Apple Silicon（当前发布的 DMG 仅支持 arm64）
 - `zsh`、`bash` 或 `fish`
-- **辅助功能**权限（见[下文](#授予辅助功能权限)）
+- **辅助功能**权限，首次启动时按提示授予即可
 
 ## ⚡ 安装
 
@@ -65,37 +65,12 @@ brew install chen86860/tap/easy-complete
 ### DMG
 
 [下载最新版 DMG](https://github.com/chen86860/easy-complete/releases/latest/download/Easy-Complete-arm64.dmg)，
-把 **Easy Complete.app** 拖到 `/Applications`，启动后按同样的设置面板完成配置。
+把 **Easy Complete.app** 拖到 `/Applications`。
 
-### Beta 版
+### 首次启动
 
-每个正式版发布前会先推出预览版。想提前体验，在设置的「关于」页打开**接收 Beta 版更新**，
-或运行：
-
-```bash
-ec settings app.betaUpdates true
-```
-
-下一个正式版发布后会自动更新到正式版。非常欢迎反馈 Beta 版的问题。
-
-### 从源码构建
-
-```bash
-git clone https://github.com/chen86860/easy-complete.git
-cd easy-complete
-./scripts/install.sh   # 构建、安装到 /Applications，并配置 shell 集成
-exec $SHELL
-```
-
-### 授予「辅助功能」权限
-
-把补全浮层定位到终端光标旁需要 macOS 的**辅助功能（Accessibility）**权限。请在以下位置
-勾选 **Easy Complete**：
-
-> 系统设置 → 隐私与安全性 → 辅助功能
-
-**如果补全始终不出现，几乎都是这个权限没授予。** 可用 `ec doctor` 检查，或用
-`ec debug prompt-accessibility` 重新触发授权弹窗。
+打开 **Easy Complete**，按引导完成设置并授予**辅助功能**权限，然后新开一个终端窗口，输入
+`git ` 试试。
 
 ## 🚀 使用
 
@@ -120,13 +95,29 @@ ec settings <key> <value>              # 修改某项设置
 
 ### 受支持的终端
 
-| 接入方式               | 终端                                                                                                                                                                                                                                                                                               |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| PTY 集成，开箱即用     | [iTerm2](https://iterm2.com/)、[Apple Terminal](https://support.apple.com/zh-cn/guide/terminal/welcome/mac)、[VS Code](https://code.visualstudio.com/) 及基于它的编辑器（[Cursor](https://cursor.com/)、Windsurf、Trae、[Kiro](https://kiro.dev/)）、[ChatGPT（Codex）](https://openai.com/codex/) |
-| 另需随附输入法追踪光标 | [Ghostty](https://ghostty.org/)、[Kitty](https://sw.kovidgoyal.net/kitty/)、[WezTerm](https://wezterm.org/)、[Zed](https://zed.dev/)、[Alacritty](https://alacritty.org/)、[Otty](https://otty.sh/)、[Herdr](https://herdr.dev/)、[JetBrains 系列 IDE](https://www.jetbrains.com/)                 |
-| 终端复用器             | [tmux](https://github.com/tmux/tmux)、[Zellij](https://zellij.dev/)（含恢复的会话）                                                                                                                                                                                                                |
+| 接入方式 | 终端 |
+| --- | --- |
+| 开箱即用 | [iTerm2](https://iterm2.com/)、[Apple Terminal](https://support.apple.com/zh-cn/guide/terminal/welcome/mac)、[VS Code](https://code.visualstudio.com/) 及基于它的编辑器（[Cursor](https://cursor.com/)、Windsurf、Trae、[Kiro](https://kiro.dev/)）、[ChatGPT（Codex）](https://openai.com/codex/) |
+| 需要启用内置输入法 | [Ghostty](https://ghostty.org/)、[Kitty](https://sw.kovidgoyal.net/kitty/)、[WezTerm](https://wezterm.org/)、[Zed](https://zed.dev/)、[Alacritty](https://alacritty.org/)、[Otty](https://otty.sh/)、[Herdr](https://herdr.dev/)、[JetBrains 系列 IDE](https://www.jetbrains.com/) |
+| 终端复用器 | [tmux](https://github.com/tmux/tmux)、[Zellij](https://zellij.dev/)（含恢复的会话） |
 
-输入法会在设置过程中自动注册。
+**为什么有些终端需要输入法？** Ghostty、Kitty、WezTerm 这类终端不会把光标的位置告诉其他
+程序，补全浮层就不知道该出现在哪里。Easy Complete 自带一个 macOS 输入法，它只做一件事：
+报告光标位置。首次设置时，如果检测到你装有这类终端，会提示你启用它。
+
+## ❓ 常见问题
+
+### 补全没有出现
+
+几乎都是**辅助功能**权限没有授予。Easy Complete 需要它才能把浮层定位到终端光标旁。请在以下
+位置勾选 **Easy Complete**：
+
+> 系统设置 → 隐私与安全性 → 辅助功能
+
+可以用 `ec doctor` 检查，或用 `ec debug prompt-accessibility` 重新弹出授权窗口。另外，在
+启动 Easy Complete 之前就已打开的终端窗口不会生效，新开一个即可。
+
+更多排查方法见[文档](https://easy-complete.emmmm.dev/docs)。
 
 ## 🗑 卸载
 
@@ -149,11 +140,16 @@ Easy Complete 由三个协作进程组成：桌面应用（`easy-complete`，承
 shell 编辑缓冲区的伪终端（`ecterm`），以及 `ec` CLI，三者通过 Unix 套接字以 Protobuf 通信。
 
 [AGENTS.md](./AGENTS.md) 是完整的架构与贡献指南：工具链、crate 索引、IPC、构建与测试命令、
-内置 spec 和发布流程都在其中。跑通本地构建：
+内置 spec 和发布流程都在其中。
+
+从源码构建并安装：
 
 ```bash
-./scripts/install.sh    # 构建并安装应用
-pnpm dev:autocomplete   # 监听补全 UI（端口 3124）
+git clone https://github.com/chen86860/easy-complete.git
+cd easy-complete
+./scripts/install.sh    # 构建、安装到 /Applications，并配置 shell 集成
+exec $SHELL
+pnpm dev:autocomplete   # 可选：监听补全 UI（端口 3124）
 ```
 
 ## 🤝 参与贡献

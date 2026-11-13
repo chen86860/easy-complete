@@ -55,7 +55,7 @@ and how to disable it.
 
 - macOS 13 (Ventura) or later, Apple Silicon (the published DMG is arm64 only)
 - `zsh`, `bash` or `fish`
-- **Accessibility** permission (see [below](#grant-accessibility-permission))
+- **Accessibility** permission, granted when the app first asks for it
 
 ## ⚡ Install
 
@@ -67,39 +67,13 @@ brew install chen86860/tap/easy-complete
 
 ### DMG
 
-[Download the latest DMG](https://github.com/chen86860/easy-complete/releases/latest/download/Easy-Complete-arm64.dmg),
-drag **Easy Complete.app** into `/Applications`, launch it and follow the same setup panel.
+[Download the latest DMG](https://github.com/chen86860/easy-complete/releases/latest/download/Easy-Complete-arm64.dmg)
+and drag **Easy Complete.app** into `/Applications`.
 
-### Beta builds
+### First launch
 
-Prereleases go out before each stable release. To get them, turn on **Receive Beta
-Updates** in the About page of Settings, or run:
-
-```bash
-ec settings app.betaUpdates true
-```
-
-You then move on to the next stable release when it ships. Bug reports from beta builds
-are especially welcome.
-
-### Build from source
-
-```bash
-git clone https://github.com/chen86860/easy-complete.git
-cd easy-complete
-./scripts/install.sh   # builds, installs to /Applications, sets up shell integration
-exec $SHELL
-```
-
-### Grant Accessibility permission
-
-Positioning the popup next to your terminal cursor requires the macOS **Accessibility**
-permission. Approve **Easy Complete** in:
-
-> System Settings → Privacy & Security → Accessibility
-
-If completions never appear, this is almost always the cause. Run `ec doctor` to check,
-or re-trigger the system prompt with `ec debug prompt-accessibility`.
+Open **Easy Complete**, follow the setup steps and grant the **Accessibility** permission
+when asked. Then open a new terminal window and type `git ` to try it.
 
 ## 🚀 Usage
 
@@ -124,13 +98,32 @@ ec settings <key> <value>              # change a setting
 
 ### Supported terminals
 
-| How it works                                      | Terminals                                                                                                                                                                                                                                                                                         |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| PTY integration, out of the box                   | [iTerm2](https://iterm2.com/), [Apple Terminal](https://support.apple.com/guide/terminal/welcome/mac), [VS Code](https://code.visualstudio.com/) and editors built on it ([Cursor](https://cursor.com/), Windsurf, Trae, [Kiro](https://kiro.dev/)), [ChatGPT (Codex)](https://openai.com/codex/) |
-| Plus the bundled input method for cursor tracking | [Ghostty](https://ghostty.org/), [Kitty](https://sw.kovidgoyal.net/kitty/), [WezTerm](https://wezterm.org/), [Zed](https://zed.dev/), [Alacritty](https://alacritty.org/), [Otty](https://otty.sh/), [Herdr](https://herdr.dev/), [JetBrains IDEs](https://www.jetbrains.com/)                    |
-| Multiplexers                                      | [tmux](https://github.com/tmux/tmux), [Zellij](https://zellij.dev/) (including resurrected sessions)                                                                                                                                                                                              |
+| How it connects | Terminals |
+| --- | --- |
+| Works out of the box | [iTerm2](https://iterm2.com/), [Apple Terminal](https://support.apple.com/guide/terminal/welcome/mac), [VS Code](https://code.visualstudio.com/) and editors built on it ([Cursor](https://cursor.com/), Windsurf, Trae, [Kiro](https://kiro.dev/)), [ChatGPT (Codex)](https://openai.com/codex/) |
+| Needs the bundled input method | [Ghostty](https://ghostty.org/), [Kitty](https://sw.kovidgoyal.net/kitty/), [WezTerm](https://wezterm.org/), [Zed](https://zed.dev/), [Alacritty](https://alacritty.org/), [Otty](https://otty.sh/), [Herdr](https://herdr.dev/), [JetBrains IDEs](https://www.jetbrains.com/) |
+| Multiplexers | [tmux](https://github.com/tmux/tmux), [Zellij](https://zellij.dev/) (including resurrected sessions) |
 
-The input method is registered automatically during setup.
+**Why do some terminals need an input method?** Terminals such as Ghostty, Kitty and
+WezTerm do not tell other apps where the cursor is, so the popup would not know where to
+appear. Easy Complete ships a small macOS input method that does one thing: report the
+cursor position. If setup finds one of these terminals on your Mac, it offers to turn the
+input method on.
+
+## ❓ FAQ
+
+### Completions do not appear
+
+This is almost always a missing **Accessibility** permission, which Easy Complete needs to
+place the popup next to your terminal cursor. Approve **Easy Complete** in:
+
+> System Settings → Privacy & Security → Accessibility
+
+Run `ec doctor` to check, or bring the system prompt back with
+`ec debug prompt-accessibility`. Terminal windows that were already open before Easy
+Complete started are not covered either: open a new one.
+
+See the [docs](https://easy-complete.emmmm.dev/docs) for more troubleshooting.
 
 ## 🗑 Uninstall
 
@@ -155,12 +148,16 @@ settings UI), a pseudoterminal (`ecterm`) that reads the shell edit buffer, and 
 CLI. They talk over Unix sockets using Protobuf.
 
 [AGENTS.md](./AGENTS.md) is the full architecture and contributor guide: toolchain, crate
-map, IPC, build and test commands, bundled specs and the release process. To get a local
-build running:
+map, IPC, build and test commands, bundled specs and the release process.
+
+To build and install from source:
 
 ```bash
-./scripts/install.sh    # build and install the app
-pnpm dev:autocomplete   # watch the autocomplete UI (port 3124)
+git clone https://github.com/chen86860/easy-complete.git
+cd easy-complete
+./scripts/install.sh    # builds, installs to /Applications, sets up shell integration
+exec $SHELL
+pnpm dev:autocomplete   # optional: watch the autocomplete UI (port 3124)
 ```
 
 ## 🤝 Contributing
@@ -174,7 +171,7 @@ Issues and pull requests are welcome. [CONTRIBUTING.md](./CONTRIBUTING.md) has t
   [`packages/autocomplete-specs/src`](./packages/autocomplete-specs/src), one per CLI. Its
   [README](./packages/autocomplete-specs/README.md) covers creating a spec, live reload
   while you edit, and shipping the change.
-- **Before opening a PR** — make sure `cargo clippy --locked --workspace -- -D warnings`,
+- **Before opening a PR** — make sure `cargo clippy --locked --workspace --all-targets -- -D warnings`,
   `pnpm lint` and `pnpm test` pass. You don't need to format by hand: a bot formats every
   pull request and commits the result (`pnpm format` does the same locally). Commits follow
   [Conventional Commits](https://www.conventionalcommits.org/).

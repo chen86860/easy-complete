@@ -35,8 +35,8 @@ import {
   vi,
 } from "vitest";
 
-vi.mock("../src/loadSpec", () => ({
-  ...vi.importActual("../src/loadSpec.ts"),
+vi.mock(import("../src/loadSpec"), async (importOriginal) => ({
+  ...(await importOriginal()),
   loadSubcommandCached: vi.fn(),
 }));
 
@@ -247,7 +247,7 @@ const emptyContext: Fig.ShellContext = {
 // updateStateForSubcommand throws) because they are implementation details and
 // we are concerned only with behavior.
 // See https://teamgaslight.com/blog/testing-behavior-vs-testing-implementation
-describe.todo("parseArguments", () => {
+describe("parseArguments", () => {
   // Function that runs a basic test for a command that doesn't load/generate new spec.
   const basicTestWithSpec =
     (completionObj: Internal.Subcommand) =>
@@ -294,24 +294,24 @@ describe.todo("parseArguments", () => {
   it.each([
     ["cmd man ", SuggestionFlag.Any, man.args[0], ""],
     ["cmd man arg1 arg2 ", notSubcommands, null, ""],
-  ])("works with basic subcommand: %p", testMan);
+  ])("works with basic subcommand: %s", testMan);
 
   it.each([
     ["cmd -o ", SuggestionFlag.Any, optionArgs(cmd, "-o")[0], ""],
     ["cmd --opt ", SuggestionFlag.Any, optionArgs(cmd, "--opt")[0], ""],
-  ])("works with basic options: %p", testCmd);
+  ])("works with basic options: %s", testCmd);
 
   it.each([
     // Test pnf options.
     ["cmd pnf -pnfo ", SuggestionFlag.Any, optionArgs(pnf, "-pnfo")[0], ""],
-  ])("works with basic options: %p", testPnf);
+  ])("works with basic options: %s", testPnf);
 
   // End of options
   it.each([
     ["cmd man --", SuggestionFlag.Any, man.args[0], "--"],
     ["cmd man -- ", SuggestionFlag.Args, man.args[0], ""],
     ["cmd man -- -o ", SuggestionFlag.Args, man.args[1], ""],
-  ])("works with end of options: %p", testMan);
+  ])("works with end of options: %s", testMan);
 
   // Note that the arg object and suggestion flags are the same here.
   it.each([
@@ -319,7 +319,7 @@ describe.todo("parseArguments", () => {
     ["cmd man normal", SuggestionFlag.Any, man.args[0], "normal"],
     ["cmd man a", SuggestionFlag.Any, man.args[0], "a"],
     ["cmd man -o", SuggestionFlag.Any, optionArgs(man, "-o")[0], "-o"],
-  ])("invariant under most final tokens: %p", testMan);
+  ])("invariant under most final tokens: %s", testMan);
 
   it.each([
     // User has typed in = arg successfully for optional or mandatory option arg.
@@ -342,7 +342,7 @@ describe.todo("parseArguments", () => {
     ],
     // User is still typing in arg for option that doesn't take arg.
     ["cmd man --none=arg", SuggestionFlag.Any, man.args[0], "--none=arg"],
-  ])("option with equals sign: %p", testMan);
+  ])("option with equals sign: %s", testMan);
 
   it.each([
     // Test pnf options.
@@ -360,7 +360,7 @@ describe.todo("parseArguments", () => {
       optionArgs(pnf, "-pnfm")[0],
       "arg",
     ],
-  ])("pnf options with equals sign: %p", testPnf);
+  ])("pnf options with equals sign: %s", testPnf);
 
   it.each([
     // Test req-eq options.
@@ -379,7 +379,7 @@ describe.todo("parseArguments", () => {
       "",
     ],
     ["cmd man --req-eq ", SuggestionFlag.Any, man.args[0], ""],
-  ])("options that require an equal: %p", testMan);
+  ])("options that require an equal: %s", testMan);
 
   it.each([
     // Test req-sep options.
@@ -398,7 +398,7 @@ describe.todo("parseArguments", () => {
       "",
     ],
     ["cmd oas --req-sep ", SuggestionFlag.Any, oas.args[0], ""],
-  ])("options that require a separator different from equals: %p", testOas);
+  ])("options that require a separator different from equals: %s", testOas);
 
   // Other exceptions to invariance under final token (chained options)
   it.each([
@@ -418,7 +418,7 @@ describe.todo("parseArguments", () => {
     ["cmd man -on", SuggestionFlag.Any, null, "-on"],
     ["cmd man --opt", SuggestionFlag.Any, man.args[0], "--opt"],
     ["cmd man --opt=", SuggestionFlag.Args, optionArgs(man, "-o")[0], ""],
-  ])("chained options: %p", testMan);
+  ])("chained options: %s", testMan);
 
   it.each([
     ["cmd -m arg ", SuggestionFlag.Any, null, ""],
@@ -432,14 +432,14 @@ describe.todo("parseArguments", () => {
       "",
     ],
     ["cmd -n ", SuggestionFlag.Any, null, ""],
-  ])("passing args to options: %p", testCmd);
+  ])("passing args to options: %s", testCmd);
 
   it.each([
     ["cmd ompa argument ", SuggestionFlag.Args, null, ""],
     ["cmd ompa -o ", SuggestionFlag.Any, ompa.args[0], ""],
     ["cmd ompa -m ", SuggestionFlag.Args, optionArgs(ompa, "-m")[0], ""],
     ["cmd ompa -m argument ", SuggestionFlag.Any, ompa.args[0], ""],
-  ])("passing options after args: %p", testOmpa);
+  ])("passing options after args: %s", testOmpa);
 
   // Test matrix in different scenarios (before arg subcommands, within arg
   // subcommands, finished arg subcommands) x (endOfOptions/not endOfOptions)
@@ -451,7 +451,7 @@ describe.todo("parseArguments", () => {
       ["cmd man -n ", SuggestionFlag.Any, man.args[0], ""],
       ["cmd man -marg", SuggestionFlag.Args, optionArgs(man, "-m")[0], "arg"],
       ["cmd man -oarg", SuggestionFlag.Args, optionArgs(man, "-o")[0], "arg"],
-    ])("mandatory subcommand: %p", testMan);
+    ])("mandatory subcommand: %s", testMan);
 
     it.each([
       ["cmd var -m ", SuggestionFlag.Args, optionArgs(vrd, "-m")[0], ""],
@@ -460,7 +460,7 @@ describe.todo("parseArguments", () => {
       ["cmd var -n ", SuggestionFlag.Any, vrd.args[0], ""],
       ["cmd var -marg", SuggestionFlag.Args, optionArgs(vrd, "-m")[0], "arg"],
       ["cmd var -oarg", SuggestionFlag.Args, optionArgs(vrd, "-o")[0], "arg"],
-    ])("variadic subcommand: %p", testVar);
+    ])("variadic subcommand: %s", testVar);
 
     it.each([
       ["cmd opt -m ", SuggestionFlag.Args, optionArgs(opt, "-m")[0], ""],
@@ -469,7 +469,7 @@ describe.todo("parseArguments", () => {
       ["cmd opt -n ", SuggestionFlag.Any, opt.args[0], ""],
       ["cmd opt -marg", SuggestionFlag.Args, optionArgs(opt, "-m")[0], "arg"],
       ["cmd opt -oarg", SuggestionFlag.Args, optionArgs(opt, "-o")[0], "arg"],
-    ])("optional subcommand: %p", testOpt);
+    ])("optional subcommand: %s", testOpt);
 
     it.each([
       ["cmd -m ", SuggestionFlag.Args, optionArgs(cmd, "-m")[0], ""],
@@ -478,7 +478,7 @@ describe.todo("parseArguments", () => {
       ["cmd -n ", SuggestionFlag.Any, null, ""],
       ["cmd -marg", SuggestionFlag.Args, optionArgs(cmd, "-m")[0], "arg"],
       ["cmd -oarg", SuggestionFlag.Args, optionArgs(cmd, "-o")[0], "arg"],
-    ])("no arg subcommand: %p", testCmd);
+    ])("no arg subcommand: %s", testCmd);
   });
 
   describe("exceptions", () => {

@@ -440,19 +440,6 @@ async fn status(integration: Integration, format: OutputFormat) -> Result<ExitCo
     })
 }
 
-#[cfg(test)]
-mod command_tests {
-    use super::*;
-
-    #[test]
-    fn explicit_shell_limits_the_status_query() {
-        for shell in [Shell::Bash, Shell::Zsh, Shell::Fish, Shell::Nu] {
-            assert_eq!(selected_shells(Some(shell)), vec![shell]);
-        }
-        assert_eq!(selected_shells(None), vec![Shell::Bash, Shell::Zsh, Shell::Fish]);
-    }
-}
-
 /// Installs the input method through the running desktop app when possible, so macOS's
 /// "Allow … to enable …?" prompt names Easy Complete instead of `ec`. Falls back to installing
 /// from this process when the app is not running or predates the command.
@@ -484,4 +471,17 @@ async fn install_input_method() -> Result<()> {
 
     fig_integrations::input_method::InputMethod::default().install().await?;
     Ok(())
+}
+
+#[cfg(test)]
+mod command_tests {
+    use super::*;
+
+    #[test]
+    fn explicit_shell_limits_the_status_query() {
+        for shell in [Shell::Bash, Shell::Zsh, Shell::Fish, Shell::Nu] {
+            assert_eq!(selected_shells(Some(shell)), vec![shell]);
+        }
+        assert_eq!(selected_shells(None), vec![Shell::Bash, Shell::Zsh, Shell::Fish]);
+    }
 }

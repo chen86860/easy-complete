@@ -442,12 +442,18 @@ jobs:
           CASK="$TAP_DIR/Casks/easy-complete.rb"
 
           git clone --depth 1 "https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/${HOMEBREW_TAP_REPO}.git" "$TAP_DIR"
+          # MIN_MACOS is Homebrew's name for MACOSX_DEPLOYMENT_TARGET (13.0). It is written
+          # with the version it applies to, so the cask never demands a newer macOS than the
+          # release it currently points at.
+          MIN_MACOS=":ventura"
           sed -i -E \
             -e "s/^  version \".*\"$/  version \"${APP_VERSION}\"/" \
             -e "s/^  sha256 \".*\"$/  sha256 \"${SHA256}\"/" \
+            -e "s/^  depends_on macos: .*$/  depends_on macos: ${MIN_MACOS}/" \
             "$CASK"
           grep -Fq "version \"${APP_VERSION}\"" "$CASK"
           grep -Fq "sha256 \"${SHA256}\"" "$CASK"
+          grep -Fq "depends_on macos: ${MIN_MACOS}" "$CASK"
 
           if git -C "$TAP_DIR" diff --quiet; then
             echo "Homebrew tap already at ${APP_VERSION}."

@@ -112,7 +112,8 @@ async function updateIndex() {
 
   completions.add(SPEC_NAME);
   index.completions = [...completions].sort();
-  await writeFile(indexPath, JSON.stringify(index));
+  // One entry per line, the format sync-bundled-specs.mjs writes.
+  await writeFile(indexPath, `${JSON.stringify(index, null, 2)}\n`);
   return true;
 }
 

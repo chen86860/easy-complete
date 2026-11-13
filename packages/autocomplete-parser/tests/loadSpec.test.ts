@@ -7,6 +7,7 @@ import {
   loadSubcommandCached,
 } from "../src/loadSpec";
 import * as loadHelpers from "../src/loadHelpers";
+import { resetCaches } from "../src/caches";
 import {
   expect,
   it,
@@ -186,11 +187,12 @@ describe("loadFigSubcommand", () => {
 });
 
 describe("loadSubcommandCached", () => {
-  // This is broken right now...
-  it.todo("works", async () => {
-    const oldLoadSpec = loadFigSubcommand;
-    (loadFigSubcommand as Mock) = vi.fn();
-    (loadFigSubcommand as Mock).mockResolvedValue({ name: "exampleSpec" });
+  beforeEach(() => {
+    resetCaches();
+    (importSpecFromFile as Mock).mockClear();
+  });
+
+  it("loads a spec once and serves later requests from the cache", async () => {
     const context: Fig.ShellContext = {
       currentWorkingDirectory: "",
       currentProcess: "",
@@ -198,21 +200,21 @@ describe("loadSubcommandCached", () => {
       environmentVariables: {},
     };
 
-    await loadSubcommandCached(
+    const first = await loadSubcommandCached(
       { name: "git", type: SpecLocationSource.LOCAL },
       context,
     );
-    await loadSubcommandCached(
+    const second = await loadSubcommandCached(
       { name: "git", type: SpecLocationSource.LOCAL },
       context,
     );
-    expect(loadFigSubcommand).toHaveBeenCalledTimes(1);
+    expect(second).toBe(first);
+    expect(importSpecFromFile).toHaveBeenCalledTimes(1);
 
     await loadSubcommandCached(
       { name: "hg", type: SpecLocationSource.LOCAL },
       context,
     );
-    expect(loadFigSubcommand).toHaveBeenCalledTimes(2);
-    (loadFigSubcommand as unknown) = oldLoadSpec;
+    expect(importSpecFromFile).toHaveBeenCalledTimes(2);
   });
 });

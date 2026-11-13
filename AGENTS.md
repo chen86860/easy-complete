@@ -25,7 +25,7 @@ cargo run --bin ec -- <subcommand>
 cargo run --bin easy-complete
 
 # Lint (CI enforces -D warnings)
-cargo clippy --locked --workspace --color always -- -D warnings
+cargo clippy --locked --workspace --all-targets --color always -- -D warnings
 
 # Format Rust and TypeScript (the autofix.ci workflow runs this on every PR)
 pnpm format
@@ -74,7 +74,7 @@ TypeScript is linted and formatted with biome. The root `biome.json` covers `api
 ./scripts/bump-version.sh <version>   # e.g. ./scripts/bump-version.sh 2.0.18
 ```
 
-The script also refreshes `Cargo.lock` and regenerates `THIRD_PARTY_NOTICES.txt`, then prints the exact next steps:
+The script also refreshes `Cargo.lock` and regenerates `THIRD_PARTY_NOTICES.txt`. CI checks that file with `pnpm licenses:check` whenever a lockfile or manifest changes, so run `pnpm licenses:generate` after changing dependencies. The script then prints the exact next steps:
 
 1. Add a `## v<version>` entry to both `CHANGELOG.md` (English) and `CHANGELOG.zh-CN.md` (Chinese) — keep them in sync, one entry each. Stable releases only: prereleases get no entry of their own (see below)
 2. `git add -A && git commit -m "chore: bump version to v<version>"`
@@ -158,7 +158,7 @@ Completion specs are **bundled into the `.app` at build time**, not fetched at r
 
 **Source.** The specs live in this repository under `packages/autocomplete-specs` (TypeScript in `src/`, icons in `icons/`). They were forked from [withfig/autocomplete](https://github.com/withfig/autocomplete) and maintained in [chen86860/autocomplete-specs](https://github.com/chen86860/autocomplete-specs) until its 3.1.3 release, which moved here without its git history. `scripts/sync-bundled-specs.mjs` builds that package (`pnpm --filter @easy-complete/autocomplete-specs... build`), copies `build/*.js` and the referenced `icons/*.png` into `bundle/specs`, then derives `index.json` from the bundled file tree.
 
-**Changing a spec.** Edit `packages/autocomplete-specs/src`, run `node scripts/sync-bundled-specs.mjs`, and commit the spec change together with the regenerated `bundle/specs`. Inside the package, `pnpm dev` rebuilds on save and points the running app at its `build/` through `ec settings`; `pnpm create-spec <name>` scaffolds a new spec. `pnpm build` in the package compiles and smoke-tests every spec, and `pnpm lint` runs biome and `tsc`; CI runs both through the workspace `build` and `lint`. `specs.config.json` only stores bundle filtering such as `exclude`; `BUNDLED_SPECS_EXCLUDE=<csv>` overrides it for one run. The sync also re-downloads the remote icons specs reference (`scripts/localize-spec-icons.mjs`), so unrelated icon PNGs can change when a site updates its image.
+**Changing a spec.** Edit `packages/autocomplete-specs/src`, run `node scripts/sync-bundled-specs.mjs`, and commit the spec change together with the regenerated `bundle/specs`. CI runs `node scripts/sync-bundled-specs.mjs --check`, an offline comparison of `bundle/specs` with a fresh build, so a forgotten re-sync fails the JavaScript job. Libraries bundled into specs count too: bumping `semver` changes the diff-versioned `*/index.js` files. Inside the package, `pnpm dev` rebuilds on save and points the running app at its `build/` through `ec settings`; `pnpm create-spec <name>` scaffolds a new spec. `pnpm build` in the package compiles and smoke-tests every spec, and `pnpm lint` runs biome and `tsc`; CI runs both through the workspace `build` and `lint`. `specs.config.json` only stores bundle filtering such as `exclude`; `BUNDLED_SPECS_EXCLUDE=<csv>` overrides it for one run. The sync also re-downloads the remote icons specs reference (`scripts/localize-spec-icons.mjs`), so unrelated icon PNGs can change when a site updates its image.
 
 To keep the bundle small, the sync script supports excluding whole namespaces via `BUNDLED_SPECS_EXCLUDE` (comma-separated; a namespace `ns` drops the top-level `ns` spec and everything under `ns/`). The filter is applied to **both** the copied files and the written `index.json`, so the runtime loader never references excluded specs.
 
@@ -218,7 +218,7 @@ To keep the bundle small, the sync script supports excluding whole namespaces vi
 ## macOS-Specific Notes
 
 - The `.app` bundle lives at `/Applications/Easy Complete.app`; `scripts/build-app.sh` assembles it under `build/`
-- Minimum system: macOS 13 (`MACOSX_DEPLOYMENT_TARGET`, set in `build-app.sh` and both workflows, becomes `LSMinimumSystemVersion`)
+- Minimum system: macOS 13 (`MACOSX_DEPLOYMENT_TARGET`, set in `build-app.sh` and both workflows, becomes `LSMinimumSystemVersion`). `MIN_MACOS` in `release.yml` writes the matching `depends_on macos:` into the Homebrew cask on each stable release; change the two together
 - Launch at login: `SMAppService.mainAppService`. A `~/Library/LaunchAgents/dev.emmmm.easy-complete.plist` left by old versions is removed on launch
 - IME symlink target: `~/Library/Input Methods/EasyCompleteInputMethod.app`
 - HIToolbox prefs (`com.apple.HIToolbox`) must include the IME bundle ID for Ghostty/Kitty cursor following to work

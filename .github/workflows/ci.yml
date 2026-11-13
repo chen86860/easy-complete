@@ -46,6 +46,7 @@ jobs:
       rust: ${{ steps.areas.outputs.rust }}
       javascript: ${{ steps.areas.outputs.javascript }}
       website: ${{ steps.areas.outputs.website }}
+      licenses: ${{ steps.areas.outputs.licenses }}
     steps:
       - id: areas
         env:
@@ -56,7 +57,7 @@ jobs:
           AFTER: ${{ github.sha }}
         run: |
           set -euo pipefail
-          all() { printf 'rust=true\njavascript=true\nwebsite=true\n' >> "$GITHUB_OUTPUT"; exit 0; }
+          all() { printf 'rust=true\njavascript=true\nwebsite=true\nlicenses=true\n' >> "$GITHUB_OUTPUT"; exit 0; }
 
           case "$EVENT" in
             pull_request)
@@ -71,16 +72,23 @@ jobs:
             *) all ;;
           esac
 
-          rust=false javascript=false website=false
+          rust=false javascript=false website=false licenses=false
           while IFS= read -r f; do
             [ -n "$f" ] || continue
+            # THIRD_PARTY_NOTICES.txt is generated from the lockfiles and carries the app version.
+            case "$f" in
+              Cargo.lock | Cargo.toml | crates/*/Cargo.toml | pnpm-lock.yaml | package.json | packages/*/package.json \
+                | THIRD_PARTY_NOTICES.txt | scripts/generate-third-party-notices.mjs) licenses=true ;;
+            esac
             case "$f" in
               # Docs: no job reads them. website/ is excluded: its pages are built from source.
               website/*) website=true; continue ;;
               *.md | docs/* | LICENSE | NOTICE | .github/ISSUE_TEMPLATE/* | .claude/*) continue ;;
-              # Release-only inputs: CI has no check that reads them.
+              # The JavaScript job checks bundle/specs against the spec sources.
+              bundle/specs/*) javascript=true ;;
+              # Release-only inputs: no build or test job reads them.
               bundle/* | assets/* | THIRD_PARTY_NOTICES.txt) continue ;;
-              .github/workflows/*) rust=true javascript=true website=true ;;
+              .github/workflows/*) rust=true javascript=true website=true licenses=true ;;
               crates/* | Cargo.toml | Cargo.lock | rust-toolchain.toml | .cargo/* | .rustfmt.toml) rust=true ;;
               # The dashboard imports themes/*.json for its theme previews.
               packages/* | themes/* | package.json | pnpm-lock.yaml | pnpm-workspace.yaml | turbo.json \
@@ -90,8 +98,9 @@ jobs:
             esac
           done <<<"$files"
 
-          if [ "$EVENT" = push ] && { $rust || $javascript || $website; }; then all; fi
-          printf 'rust=%s\njavascript=%s\nwebsite=%s\n' "$rust" "$javascript" "$website" | tee -a "$GITHUB_OUTPUT"
+          if [ "$EVENT" = push ] && { $rust || $javascript || $website || $licenses; }; then all; fi
+          printf 'rust=%s\njavascript=%s\nwebsite=%s\nlicenses=%s\n' "$rust" "$javascript" "$website" "$licenses" \
+            | tee -a "$GITHUB_OUTPUT"
 
   rust-fmt:
     name: Rust / Format
@@ -153,8 +162,9 @@ jobs:
           env-vars: MACOSX_DEPLOYMENT_TARGET
           save-if: ${{ github.ref == 'refs/heads/main' }}
 
+      # --all-targets lints the test code as well.
       - name: Clippy
-        run: cargo clippy --locked --workspace --color always -- -D warnings
+        run: cargo clippy --locked --workspace --all-targets --color always -- -D warnings
 
       - name: Test
         run: cargo test --workspace --locked
@@ -244,6 +254,12 @@ jobs:
       - name: Build packages
         run: pnpm build
 
+      # bundle/specs is generated from packages/autocomplete-specs and committed. This fails
+      # when a spec or one of the libraries bundled into it changed without a re-sync. It is
+      # offline and reuses the build above through turbo.
+      - name: Check bundled specs
+        run: node scripts/sync-bundled-specs.mjs --check
+
       - name: Lint packages
         run: pnpm lint
 
@@ -256,6 +272,41 @@ jobs:
         with:
           path: .turbo/cache
           key: turbo-${{ github.sha }}
+
+  # THIRD_PARTY_NOTICES.txt is generated from both lockfiles and ships inside the app.
+  # macOS, like the machines that generate it: pnpm resolves platform-specific packages.
+  licenses:
+    name: Third-party notices
+    needs: changes
+    if: needs.changes.outputs.licenses == 'true'
+    runs-on: macos-26
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Rust
+        run: |
+          channel="$(sed -n 's/^channel = "\(.*\)"/\1/p' rust-toolchain.toml)"
+          rustup toolchain install "$channel" --profile minimal
+          echo "RUSTUP_TOOLCHAIN=$channel" >> "$GITHUB_ENV"
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6.0.10
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: package.json
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # The notices include Sparkle's license, read from the release archive.
+      - name: Fetch Sparkle
+        run: ./scripts/fetch-sparkle.sh
+
+      - name: Check THIRD_PARTY_NOTICES.txt
+        run: pnpm licenses:check
 
   website:
     name: Website

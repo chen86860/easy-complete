@@ -14,7 +14,7 @@ const defaultContext: GeneratorContext = {
   environmentVariables: {},
 };
 
-describe.todo("getTemplateSuggestions", () => {
+describe("getTemplateSuggestions", () => {
   describe("help template", () => {
     const spec: Subcommand = {
       name: ["foo"],

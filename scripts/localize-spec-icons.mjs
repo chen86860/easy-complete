@@ -86,6 +86,37 @@ async function download(url) {
   }
 }
 
+// Whether `bundled` is what localizeSpecIcons would write for `built`, without touching the
+// network: every icon URL literal must have become either the local path derived from that
+// URL or the fallback icon, and nothing else may differ. Used by the sync's --check mode.
+export function matchesLocalized(built, bundled) {
+  const extension = /\.[a-z]+"/y;
+  let last = 0;
+  let pos = 0;
+  for (const match of built.matchAll(LITERAL)) {
+    const [literal, iconKey = "", url] = match;
+    if (!isIconCandidate(url, Boolean(iconKey))) continue;
+
+    const before = `${built.slice(last, match.index)}${iconKey}"`;
+    if (!bundled.startsWith(before, pos)) return false;
+    pos += before.length;
+    last = match.index + literal.length;
+
+    const fallback = `${FALLBACK_ICON}"`;
+    if (bundled.startsWith(fallback, pos)) {
+      pos += fallback.length;
+      continue;
+    }
+    const name = createHash("sha256").update(url).digest("hex").slice(0, 16);
+    const local = `${LOCAL_PREFIX}${name}`;
+    if (!bundled.startsWith(local, pos)) return false;
+    extension.lastIndex = pos + local.length;
+    if (!extension.test(bundled)) return false;
+    pos = extension.lastIndex;
+  }
+  return bundled.slice(pos) === built.slice(last);
+}
+
 export async function localizeSpecIcons(specsDir) {
   const files = await walkJs(specsDir);
   const sources = new Map();

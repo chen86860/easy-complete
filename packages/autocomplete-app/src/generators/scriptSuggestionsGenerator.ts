@@ -59,7 +59,12 @@ export async function getScriptSuggestions(
     const { stdout } = await runCachedGenerator(
       generator,
       context,
-      () => executeCommandTimeout(executeCommandInput, timeout),
+      // A zero or negative timeout would reject at once; fall back to the default instead.
+      () =>
+        executeCommandTimeout(
+          executeCommandInput,
+          timeout > 0 ? timeout : undefined,
+        ),
       generator.cache?.cacheKey ?? JSON.stringify(executeCommandInput),
     );
 

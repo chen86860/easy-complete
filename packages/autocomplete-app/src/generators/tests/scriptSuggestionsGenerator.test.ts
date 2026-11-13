@@ -28,7 +28,7 @@ const context: GeneratorContext = {
   environmentVariables: {},
 };
 
-describe.todo("getScriptSuggestions", () => {
+describe("getScriptSuggestions", () => {
   let executeCommand: MockInstance;
 
   beforeAll(() => {

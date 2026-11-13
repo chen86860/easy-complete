@@ -100,6 +100,19 @@ async function walkJs(dir, base = dir) {
   return out;
 }
 
+// Files the compiler emits for consumers of the specs package, not specs: the root barrel
+// (index.js) and the map of dynamic imports (dynamic/index.js). The app loads specs one at a
+// time through the spec:// protocol and uses neither.
+function isSpecFile(rel) {
+  return rel !== "index.js" && !rel.startsWith("dynamic/");
+}
+
+// One entry per line, so two branches that each add a spec merge without a conflict.
+// generate-ec-spec.mjs writes the same format.
+function formatIndex(index) {
+  return `${JSON.stringify(index, null, 2)}\n`;
+}
+
 function deriveIndexFromJs(allJs) {
   const diffVersioned = new Set();
   for (const rel of allJs) {
@@ -118,18 +131,15 @@ async function syncFromPackageRoot(packageRoot, label) {
 
   // Package layout is build/<...>.js plus icons/<name>.png.
   const specsRoot = join(packageRoot, "build");
-  const allJs = await walkJs(specsRoot); // relative paths, e.g. "aws/ec2.js", "az/index.js"
+  // Relative paths, e.g. "aws/ec2.js", "az/index.js".
+  const allJs = (await walkJs(specsRoot)).filter(isSpecFile);
 
-  // Derive index.json from the files we bundle. This intentionally does not trust
-  // the package's build/index.json because entrypoints such as dynamic/index.js
-  // may exist in build/ without being listed there.
+  // Derive index.json from the files we bundle rather than from the package's
+  // build/index.json, so the index always matches what is on disk.
   const { completions, diffVersioned } = deriveIndexFromJs(allJs);
 
-  // Apply the namespace exclusion to names and to the files we copy. Also drop the
-  // package's root-level `index.js` (the compiler's aggregate barrel, not a real spec).
-  const keepJs = allJs.filter(
-    (rel) => rel !== "index.js" && !isExcluded(rel.slice(0, -3)),
-  );
+  // Apply the namespace exclusion to names and to the files we copy.
+  const keepJs = allJs.filter((rel) => !isExcluded(rel.slice(0, -3)));
   const keptCompletions = completions.filter((n) => !isExcluded(n)).sort();
   const keptDiff = diffVersioned.filter((n) => !isExcluded(n)).sort();
   const excludedCount = completions.length - keptCompletions.length;
@@ -141,7 +151,7 @@ async function syncFromPackageRoot(packageRoot, label) {
   await writeAsset(
     "index.json",
     Buffer.from(
-      JSON.stringify({
+      formatIndex({
         completions: keptCompletions,
         diffVersionedCompletions: keptDiff,
       }),
@@ -195,9 +205,9 @@ async function syncFromPackageRoot(packageRoot, label) {
 // downloaded remote icons.
 async function checkAgainstPackageRoot(packageRoot) {
   const specsRoot = join(packageRoot, "build");
-  const allJs = await walkJs(specsRoot);
+  const allJs = (await walkJs(specsRoot)).filter(isSpecFile);
   const { completions, diffVersioned } = deriveIndexFromJs(allJs);
-  const keepJs = allJs.filter((rel) => rel !== "index.js" && !isExcluded(rel.slice(0, -3)));
+  const keepJs = allJs.filter((rel) => !isExcluded(rel.slice(0, -3)));
   const problems = [];
 
   const bundledJs = new Set((await walkJs(outDir)).filter((rel) => rel !== "ec.js"));

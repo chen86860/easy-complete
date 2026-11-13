@@ -20,25 +20,63 @@ first so the approach can be agreed before you write the code.
 ## Completion specs
 
 This is the easiest way in: a spec is one TypeScript file describing a CLI's subcommands,
-options and arguments. No Rust is involved.
+options and arguments. Writing and trying out a spec needs Node.js and pnpm, plus Easy
+Complete installed so you can see the result.
 
 Specs live in [`packages/autocomplete-specs/src`](./packages/autocomplete-specs/src), one file
-per CLI. The package [README](./packages/autocomplete-specs/README.md) covers the details. In short:
+per CLI. The package [README](./packages/autocomplete-specs/README.md) has the details.
+
+**1. Write it and try it**
 
 ```bash
+pnpm install
 cd packages/autocomplete-specs
-pnpm create-spec <cli-name>   # scaffold a new spec
+pnpm create-spec <cli-name>   # scaffold src/<cli-name>.ts
 pnpm dev                      # rebuild on save and point the running app at your build
+pnpm lint                     # biome and tsc
 ```
 
-When the spec works, regenerate the bundle from the repository root and commit both together:
+`pnpm dev` needs the `ec` CLI on your `PATH`, which comes with the installed app. Open a new
+terminal, type the command and check the suggestions. Ctrl+C turns dev mode off again.
+
+A spec may run commands to build its suggestions, for example `git branch` to list branches.
+Keep those read-only, pass what the user typed as separate arguments, never inside a shell
+string, and do not call the network.
+
+**2. Regenerate the bundle**
+
+The app does not load `src/` directly. It ships `bundle/specs/`, which is generated and
+committed, so a spec change is only complete with the regenerated bundle. From the repository
+root:
 
 ```bash
 node scripts/sync-bundled-specs.mjs
 ```
 
-The sync also re-downloads the icons specs reference, so unrelated PNGs under `bundle/specs`
-can change. That is expected.
+This step is heavier than writing the spec:
+
+- It needs network access, because it re-downloads the icons that specs reference.
+- It regenerates the spec for Easy Complete's own CLI from the `ec` binary under `target/`.
+  With no binary there it builds one with cargo, which needs the Rust toolchain from
+  [Development setup](#development-setup) and takes a few minutes the first time.
+
+If you cannot run it, open the pull request with only your change under `src/` and say so. A
+maintainer will regenerate the bundle on your branch.
+
+**3. Commit only what belongs to your spec**
+
+That is your file under `src/`, its `bundle/specs/<cli-name>.js`, and one added line in
+`bundle/specs/index.json`. The sync can also rewrite icons of unrelated specs when a site
+changed its image; drop those with `git restore bundle/specs/icons`.
+
+Check the result before pushing. This is offline and changes nothing:
+
+```bash
+node scripts/sync-bundled-specs.mjs --check
+```
+
+CI runs the same check. On a first contribution from a fork, CI waits for a maintainer to
+approve the run, so the checks stay pending until then.
 
 ## Development setup
 

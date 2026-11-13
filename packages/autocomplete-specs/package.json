@@ -7,7 +7,7 @@
   "repository": "https://github.com/chen86860/easy-complete",
   "type": "module",
   "scripts": {
-    "build": "autocomplete-tools compile && node scripts/smoke-built-specs.mjs",
+    "build": "rm -rf build && autocomplete-tools compile && node scripts/smoke-built-specs.mjs",
     "dev": "autocomplete-tools dev",
     "create-spec": "autocomplete-tools create-spec",
     "typecheck": "tsc --noEmit",

@@ -40,13 +40,11 @@ static LAST_TERMINAL: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(N
 /// If a tokio runtime is running, also flushes any events queued from
 /// previous sessions that failed to send.
 pub fn init(endpoint: impl Into<String>, api_key: impl Into<String>) {
-    let url = endpoint.into();
-    let key = api_key.into();
-    if url.trim().is_empty() || key.trim().is_empty() {
+    let Some((url, key)) = normalize_config(&endpoint.into(), &api_key.into()) else {
         return;
-    }
-    POSTHOG_ENDPOINT.set(url.trim_end_matches('/').to_owned()).ok();
-    POSTHOG_API_KEY.set(key.trim().to_owned()).ok();
+    };
+    POSTHOG_ENDPOINT.set(url).ok();
+    POSTHOG_API_KEY.set(key).ok();
 
     if let Ok(handle) = tokio::runtime::Handle::try_current() {
         handle.spawn(async {
@@ -55,6 +53,15 @@ pub fn init(endpoint: impl Into<String>, api_key: impl Into<String>) {
             flush_queue().await;
         });
     }
+}
+
+/// The endpoint without trailing slashes and the trimmed key, or `None` when either is
+/// blank, which leaves telemetry off.
+fn normalize_config(endpoint: &str, api_key: &str) -> Option<(String, String)> {
+    if endpoint.trim().is_empty() || api_key.trim().is_empty() {
+        return None;
+    }
+    Some((endpoint.trim_end_matches('/').to_owned(), api_key.trim().to_owned()))
 }
 
 fn is_enabled() -> bool {
@@ -117,10 +124,13 @@ fn os_version_string() -> String {
 
 /// Basename of the user's login shell ($SHELL), e.g. "zsh".
 fn shell_name() -> String {
-    std::env::var("SHELL")
-        .ok()
+    shell_basename(std::env::var("SHELL").ok().as_deref())
+}
+
+fn shell_basename(shell: Option<&str>) -> String {
+    shell
         .and_then(|s| {
-            std::path::Path::new(&s)
+            std::path::Path::new(s)
                 .file_name()
                 .map(|n| n.to_string_lossy().into_owned())
         })
@@ -176,17 +186,17 @@ fn http_client() -> Option<reqwest::Client> {
 /// Body sent to PostHog, minus the api_key (added at send time so the
 /// key is never persisted to disk in the offline queue).
 fn build_event(event: &str, extra_props: Value) -> Value {
-    let mut props = json!({
-        "app_name":    fig_util::consts::PRODUCT_NAME,
-        "app_version": app_version(),
-        "os_version":  os_version_string(),
-        "shell":       shell_name(),
-        "terminal":    terminal_name(),
-        "locale":      locale(),
-    });
-    if let (Some(obj), Some(extra)) = (props.as_object_mut(), extra_props.as_object()) {
-        obj.extend(extra.iter().map(|(k, v)| (k.clone(), v.clone())));
-    }
+    let props = merge_properties(
+        json!({
+            "app_name":    fig_util::consts::PRODUCT_NAME,
+            "app_version": app_version(),
+            "os_version":  os_version_string(),
+            "shell":       shell_name(),
+            "terminal":    terminal_name(),
+            "locale":      locale(),
+        }),
+        &extra_props,
+    );
     json!({
         "event":       event,
         "distinct_id": device_id(),
@@ -195,15 +205,31 @@ fn build_event(event: &str, extra_props: Value) -> Value {
     })
 }
 
+/// `base` with the entries of `extra` added. An entry in `extra` replaces a common
+/// property of the same name; anything but an object in `extra` is ignored.
+fn merge_properties(mut base: Value, extra: &Value) -> Value {
+    if let (Some(obj), Some(extra)) = (base.as_object_mut(), extra.as_object()) {
+        obj.extend(extra.iter().map(|(k, v)| (k.clone(), v.clone())));
+    }
+    base
+}
+
+/// The request body for an event. The key is added here, at send time, so it is never
+/// part of what the offline queue writes to disk.
+fn with_api_key(body: &Value, api_key: &str) -> Value {
+    let mut body = body.clone();
+    if let Some(obj) = body.as_object_mut() {
+        obj.insert("api_key".into(), json!(api_key));
+    }
+    body
+}
+
 async fn send_event(body: &Value) -> Result<(), String> {
     let (Some(endpoint), Some(api_key)) = (POSTHOG_ENDPOINT.get(), POSTHOG_API_KEY.get()) else {
         return Err("telemetry not configured".into());
     };
     let client = http_client().ok_or("failed to build http client")?;
-    let mut body = body.clone();
-    if let Some(obj) = body.as_object_mut() {
-        obj.insert("api_key".into(), json!(api_key));
-    }
+    let body = with_api_key(body, api_key);
     let resp = client
         .post(endpoint)
         .json(&body)
@@ -284,20 +310,33 @@ pub async fn track_blocking(event: &str, extra_props: Value) {
 // guards intra-process access — concurrent writes from another process are
 // tolerable for telemetry-grade data (worst case: a dropped line).
 
+/// The queue file's new contents after adding `line`: blank lines dropped, and the oldest
+/// events dropped once there are more than `max_events`.
+fn append_to_queue(existing: &str, line: &str, max_events: usize) -> String {
+    let mut lines: Vec<&str> = existing.lines().filter(|l| !l.trim().is_empty()).collect();
+    lines.push(line);
+    if lines.len() > max_events {
+        let excess = lines.len() - max_events;
+        lines.drain(..excess);
+    }
+    let mut content = lines.join("\n");
+    content.push('\n');
+    content
+}
+
+/// The events in a queue file. A line that is not valid JSON is skipped, so one damaged
+/// line does not block the rest.
+fn parse_queue(contents: &str) -> Vec<Value> {
+    contents.lines().filter_map(|l| serde_json::from_str(l).ok()).collect()
+}
+
 async fn enqueue(body: &Value) {
     let Some(path) = queue_path() else { return };
     let Ok(line) = serde_json::to_string(body) else { return };
 
     let _guard = QUEUE_LOCK.lock().await;
     let existing = tokio::fs::read_to_string(&path).await.unwrap_or_default();
-    let mut lines: Vec<&str> = existing.lines().filter(|l| !l.trim().is_empty()).collect();
-    lines.push(&line);
-    if lines.len() > QUEUE_MAX_EVENTS {
-        let excess = lines.len() - QUEUE_MAX_EVENTS;
-        lines.drain(..excess);
-    }
-    let mut content = lines.join("\n");
-    content.push('\n');
+    let content = append_to_queue(&existing, &line, QUEUE_MAX_EVENTS);
     if let Err(err) = tokio::fs::write(&path, content).await {
         warn!(%err, "Failed to persist telemetry queue");
     }
@@ -314,7 +353,7 @@ pub async fn flush_queue() {
     let Ok(existing) = tokio::fs::read_to_string(&path).await else {
         return;
     };
-    let events: Vec<Value> = existing.lines().filter_map(|l| serde_json::from_str(l).ok()).collect();
+    let events = parse_queue(&existing);
     if events.is_empty() {
         let _ = tokio::fs::remove_file(&path).await;
         return;
@@ -355,6 +394,23 @@ pub fn count(event: &str) {
     fig_settings::state::set_value(&key, current + 1).ok();
 }
 
+/// Whether a heartbeat is due: none was sent yet, or the last one is a day old.
+fn heartbeat_due(last: i64, now: i64) -> bool {
+    now - last >= HEARTBEAT_INTERVAL_SECS
+}
+
+/// The `count()` totals held in the state db, as `(event, total)`. Other telemetry keys
+/// and non-integer values are left out.
+fn counter_totals(state: &serde_json::Map<String, Value>) -> Vec<(String, i64)> {
+    state
+        .iter()
+        .filter_map(|(k, v)| {
+            let name = k.strip_prefix(COUNTER_KEY_PREFIX)?;
+            Some((name.to_owned(), v.as_i64()?))
+        })
+        .collect()
+}
+
 fn now_unix() -> i64 {
     chrono::Utc::now().timestamp()
 }
@@ -369,20 +425,13 @@ pub async fn maybe_send_daily_heartbeat() {
     }
     let last = fig_settings::state::get_int_or(LAST_HEARTBEAT_KEY, 0);
     let now = now_unix();
-    if now - last < HEARTBEAT_INTERVAL_SECS {
+    if !heartbeat_due(last, now) {
         return;
     }
 
     let mut props = serde_json::Map::new();
-    let counters: Vec<(String, i64)> = fig_settings::state::all()
-        .map(|map| {
-            map.iter()
-                .filter_map(|(k, v)| {
-                    let name = k.strip_prefix(COUNTER_KEY_PREFIX)?;
-                    Some((name.to_owned(), v.as_i64()?))
-                })
-                .collect()
-        })
+    let counters = fig_settings::state::all()
+        .map(|map| counter_totals(&map))
         .unwrap_or_default();
     for (name, value) in &counters {
         props.insert(format!("count_{name}"), json!(value));
@@ -397,4 +446,145 @@ pub async fn maybe_send_daily_heartbeat() {
     }
 
     track_blocking("daily_heartbeat", Value::Object(props)).await;
+}
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use super::*;
+
+    #[test]
+    fn config_needs_both_values_and_is_normalized() {
+        assert_eq!(normalize_config("", "phc_key"), None);
+        assert_eq!(normalize_config("https://a.example/capture", "  "), None);
+        assert_eq!(
+            normalize_config("https://a.example/capture//", " phc_key\n"),
+            Some(("https://a.example/capture".to_owned(), "phc_key".to_owned()))
+        );
+    }
+
+    #[test]
+    fn shell_is_reported_by_basename_only() {
+        assert_eq!(shell_basename(Some("/bin/zsh")), "zsh");
+        assert_eq!(shell_basename(Some("/opt/homebrew/bin/fish")), "fish");
+        assert_eq!(shell_basename(Some("bash")), "bash");
+        assert_eq!(shell_basename(None), "unknown");
+        // A path with no file name must not leak the directory.
+        assert_eq!(shell_basename(Some("/")), "unknown");
+    }
+
+    #[test]
+    fn extra_properties_are_added_to_the_common_ones() {
+        let merged = merge_properties(
+            json!({ "shell": "zsh", "terminal": "unknown" }),
+            &json!({ "previous_version": "2.7.0", "terminal": "ghostty" }),
+        );
+        assert_eq!(
+            merged,
+            json!({ "shell": "zsh", "terminal": "ghostty", "previous_version": "2.7.0" })
+        );
+    }
+
+    #[test]
+    fn extra_properties_that_are_not_an_object_are_ignored() {
+        let base = json!({ "shell": "zsh" });
+        assert_eq!(merge_properties(base.clone(), &json!(null)), base);
+        assert_eq!(merge_properties(base.clone(), &json!(["a"])), base);
+    }
+
+    #[test]
+    fn api_key_is_added_for_sending_without_touching_the_queued_event() {
+        let queued = json!({ "event": "app_opened", "properties": {} });
+        let sent = with_api_key(&queued, "phc_key");
+
+        assert_eq!(sent["api_key"], "phc_key");
+        assert_eq!(sent["event"], "app_opened");
+        assert!(queued.get("api_key").is_none());
+    }
+
+    #[test]
+    fn queue_appends_one_event_per_line() {
+        assert_eq!(append_to_queue("", "{\"event\":\"a\"}", 200), "{\"event\":\"a\"}\n");
+        assert_eq!(append_to_queue("a\nb\n", "c", 200), "a\nb\nc\n");
+        // Blank lines left by an interrupted write are dropped.
+        assert_eq!(append_to_queue("a\n\n  \nb", "c", 200), "a\nb\nc\n");
+    }
+
+    #[test]
+    fn queue_drops_the_oldest_events_beyond_the_limit() {
+        assert_eq!(append_to_queue("a\nb\nc\n", "d", 3), "b\nc\nd\n");
+        assert_eq!(append_to_queue("a\nb\nc\nd\ne\n", "f", 2), "e\nf\n");
+
+        let full: String = (0..QUEUE_MAX_EVENTS).map(|i| format!("{i}\n")).collect();
+        let next = append_to_queue(&full, "new", QUEUE_MAX_EVENTS);
+        assert_eq!(next.lines().count(), QUEUE_MAX_EVENTS);
+        assert_eq!(next.lines().next(), Some("1"));
+        assert_eq!(next.lines().last(), Some("new"));
+    }
+
+    #[test]
+    fn queue_skips_lines_that_are_not_json() {
+        let events = parse_queue("{\"event\":\"a\"}\nnot json\n\n{\"event\":\"b\"}\n");
+        assert_eq!(events, vec![json!({ "event": "a" }), json!({ "event": "b" })]);
+        assert!(parse_queue("").is_empty());
+    }
+
+    #[test]
+    fn queued_events_survive_a_round_trip() {
+        let event = json!({ "event": "daily_heartbeat", "properties": { "count_shown": 3 } });
+        let contents = append_to_queue("", &serde_json::to_string(&event).unwrap(), 200);
+        assert_eq!(parse_queue(&contents), vec![event]);
+    }
+
+    #[test]
+    fn heartbeat_is_due_once_a_day() {
+        let day = HEARTBEAT_INTERVAL_SECS;
+        // Never sent: the stored timestamp defaults to 0.
+        assert!(heartbeat_due(0, 1_800_000_000));
+        assert!(!heartbeat_due(1_800_000_000, 1_800_000_000));
+        assert!(!heartbeat_due(1_800_000_000, 1_800_000_000 + day - 1));
+        assert!(heartbeat_due(1_800_000_000, 1_800_000_000 + day));
+        // A clock set back must not trigger a heartbeat.
+        assert!(!heartbeat_due(1_800_000_000, 1_700_000_000));
+    }
+
+    #[test]
+    fn counters_are_read_from_their_own_keys_only() {
+        let state = json!({
+            "telemetry.count.autocomplete_shown": 142,
+            "telemetry.count.autocomplete_accepted": 37,
+            "telemetry.count.broken": "12",
+            "telemetry.device_id": "fa7ebf5b",
+            "telemetry.last_heartbeat_ts": 1_800_000_000,
+            "telemetry.once.first_terminal_session": true,
+            "input-method.enabled": true,
+        });
+        let mut totals = counter_totals(state.as_object().unwrap());
+        totals.sort();
+
+        assert_eq!(
+            totals,
+            vec![
+                ("autocomplete_accepted".to_owned(), 37),
+                ("autocomplete_shown".to_owned(), 142),
+            ]
+        );
+    }
+
+    #[test]
+    fn every_local_key_is_covered_by_the_purge_prefix() {
+        // purge_if_disabled removes keys by STATE_KEY_PREFIX. A key outside it would
+        // survive the user turning telemetry off.
+        for key in [
+            DEVICE_ID_KEY,
+            LAST_HEARTBEAT_KEY,
+            COUNTER_KEY_PREFIX,
+            ONCE_KEY_PREFIX,
+            LAST_TERMINAL_KEY,
+            CONSENT_PENDING_KEY,
+        ] {
+            assert!(key.starts_with(STATE_KEY_PREFIX), "{key} is not purged");
+        }
+    }
 }

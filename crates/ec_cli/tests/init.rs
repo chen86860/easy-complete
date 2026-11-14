@@ -6,7 +6,7 @@ use assert_cmd::prelude::*;
 use eyre::Context;
 use fig_util::consts::build::{SKIP_FISH_TESTS, SKIP_SHELLCHECK_TESTS};
 use fig_util::consts::{CLI_BINARY_NAME, CLI_CRATE_NAME};
-use paste::paste;
+use pastey::paste;
 
 macro_rules! init_test {
     ($shell:expr, $stage:expr, $file:expr, [$exe:expr, $($arg:expr),*]) => {

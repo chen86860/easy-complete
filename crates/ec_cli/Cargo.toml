@@ -89,5 +89,5 @@ objc2-foundation.workspace = true
 assert_cmd.workspace = true
 criterion = "0.8.2"
 insta.workspace = true
-paste = "1.0.11"
+pastey = "0.2.3"
 predicates = "3.0"

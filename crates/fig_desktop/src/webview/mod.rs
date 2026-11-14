@@ -1602,7 +1602,7 @@ async fn init_webview_notification_listeners(proxy: EventLoopProxy) {
     #[allow(unused_macros)]
     macro_rules! watcher {
         ($type:ident, $name:expr, $on_update:expr) => {{
-            paste::paste! {
+            pastey::paste! {
                 let proxy = proxy.clone();
                 tokio::spawn(async move {
                     let mut rx = NOTIFICATION_BUS.[<subscribe_ $type>]($name.into());

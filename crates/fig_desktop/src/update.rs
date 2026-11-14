@@ -5,6 +5,7 @@ mod macos {
     use std::path::PathBuf;
     use std::sync::{Mutex, OnceLock};
 
+    use dispatch2::DispatchQueue;
     use objc2::rc::{Allocated, Retained};
     use objc2::runtime::{AnyClass, AnyObject, Bool};
     use objc2::{AnyThread, ClassType, define_class, msg_send};
@@ -247,7 +248,7 @@ mod macos {
         if is_main_thread() {
             let _ = ensure_controller();
         } else {
-            dispatch::Queue::main().exec_async(|| {
+            DispatchQueue::main().exec_async(|| {
                 let _ = ensure_controller();
             });
         }
@@ -276,7 +277,7 @@ mod macos {
         if is_main_thread() {
             apply();
         } else {
-            dispatch::Queue::main().exec_async(apply);
+            DispatchQueue::main().exec_async(apply);
         }
     }
 
@@ -289,7 +290,10 @@ mod macos {
         if is_main_thread() {
             check_for_update_on_main(show_webview)
         } else {
-            dispatch::Queue::main().exec_sync(move || check_for_update_on_main(show_webview))
+            // dispatch2's exec_sync returns nothing, so the result comes back through a capture.
+            let mut found = false;
+            DispatchQueue::main().exec_sync(|| found = check_for_update_on_main(show_webview));
+            found
         }
     }
 }

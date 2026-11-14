@@ -790,7 +790,10 @@ where
             if is_main_thread() {
                 work()
             } else {
-                dispatch::Queue::main().exec_sync(work)
+                // dispatch2's exec_sync returns nothing, so the result comes back through a capture.
+                let mut result = None;
+                dispatch2::DispatchQueue::main().exec_sync(|| result = Some(work()));
+                result.expect("exec_sync runs the closure before returning")
             }
         } else {
             work()

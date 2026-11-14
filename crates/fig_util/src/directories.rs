@@ -17,7 +17,7 @@ use crate::{BACKUP_DIR_NAME, DATA_DIR_NAME, TAURI_PRODUCT_NAME};
 
 macro_rules! utf8_dir {
     ($name:ident, $($arg:ident: $type:ty),*) => {
-        paste::paste! {
+        pastey::paste! {
             pub fn [<$name _utf8>]($($arg: $type),*) -> Result<Utf8PathBuf> {
                 Ok($name($($arg),*)?.try_into()?)
             }

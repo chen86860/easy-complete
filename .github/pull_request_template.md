@@ -10,5 +10,5 @@
 
 - [ ] `cargo clippy --locked --workspace --all-targets -- -D warnings` and `cargo test --workspace` pass (Rust changes)
 - [ ] `pnpm lint` and `pnpm test` pass (TypeScript changes)
-- [ ] Spec changes include the regenerated `bundle/specs` (`node scripts/sync-bundled-specs.mjs`)
+- [ ] Spec changes include the regenerated `bundle/specs`, and `node scripts/sync-bundled-specs.mjs --check` passes
 - [ ] The PR title follows [Conventional Commits](https://www.conventionalcommits.org/), e.g. `fix(figterm): ...`

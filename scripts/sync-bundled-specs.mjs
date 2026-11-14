@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { existsSync } from "node:fs";
 import { cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -107,6 +108,19 @@ function isSpecFile(rel) {
   return rel !== "index.js" && !rel.startsWith("dynamic/");
 }
 
+// The built spec files of the package, as paths relative to build/ ("aws/ec2.js",
+// "az/index.js"). A file only counts if its source still exists: the build clears its
+// output first, but a turbo cache hit restores files without removing others, so build/
+// can still hold the output of a spec that was since deleted or renamed.
+async function listBuiltSpecs(packageRoot) {
+  const built = await walkJs(join(packageRoot, "build"));
+  return built.filter(
+    (rel) =>
+      isSpecFile(rel) &&
+      existsSync(join(packageRoot, "src", `${rel.slice(0, -3)}.ts`)),
+  );
+}
+
 // One entry per line, so two branches that each add a spec merge without a conflict.
 // generate-ec-spec.mjs writes the same format.
 function formatIndex(index) {
@@ -131,8 +145,7 @@ async function syncFromPackageRoot(packageRoot, label) {
 
   // Package layout is build/<...>.js plus icons/<name>.png.
   const specsRoot = join(packageRoot, "build");
-  // Relative paths, e.g. "aws/ec2.js", "az/index.js".
-  const allJs = (await walkJs(specsRoot)).filter(isSpecFile);
+  const allJs = await listBuiltSpecs(packageRoot);
 
   // Derive index.json from the files we bundle rather than from the package's
   // build/index.json, so the index always matches what is on disk.
@@ -205,7 +218,7 @@ async function syncFromPackageRoot(packageRoot, label) {
 // downloaded remote icons.
 async function checkAgainstPackageRoot(packageRoot) {
   const specsRoot = join(packageRoot, "build");
-  const allJs = (await walkJs(specsRoot)).filter(isSpecFile);
+  const allJs = await listBuiltSpecs(packageRoot);
   const { completions, diffVersioned } = deriveIndexFromJs(allJs);
   const keepJs = allJs.filter((rel) => !isExcluded(rel.slice(0, -3)));
   const problems = [];

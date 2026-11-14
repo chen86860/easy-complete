@@ -177,6 +177,7 @@ const en = {
 } as const;
 
 export type TranslationKey = keyof typeof en;
+export const TRANSLATION_KEYS = Object.keys(en) as TranslationKey[];
 export type Locale = "en" | "zh-CN";
 export type LocalePreference = "system" | Locale;
 

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Install, State } from "@easy-complete/api-bindings";
 import { useI18n } from "../i18n";
+import { terminalList } from "../utils/terminal-list";
 
 export type PermissionId = "accessibility" | "shellIntegration" | "inputMethod";
 export type PermissionState = "checking" | "ready" | "missing" | "error";
@@ -36,19 +37,6 @@ const REQUIREMENTS: Array<
 const INPUT_METHOD_TERMINALS_KEY = "input-method.needed-by";
 /** Set once the user skips the input method in the gate, so it never blocks again (#206). */
 const INPUT_METHOD_SKIPPED_KEY = "input-method.gate-skipped";
-
-/** The first three names, then "and others", so a long list stays one line. */
-function terminalList(
-  names: string[],
-  t: (
-    key: "permission.terminalListSeparator" | "permission.terminalListMore",
-  ) => string,
-) {
-  const list = names.slice(0, 3).join(t("permission.terminalListSeparator"));
-  return names.length > 3
-    ? t("permission.terminalListMore").replace("{list}", list)
-    : list;
-}
 
 const asMessage = (error: unknown, fallback: string) =>
   error instanceof Error ? error.message : fallback;

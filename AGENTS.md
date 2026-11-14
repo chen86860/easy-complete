@@ -187,6 +187,7 @@ There is no spec for the AWS CLI or the Azure CLI. Their specs (`aws`, 419 files
 | `fig_diagnostic`, `fig_log` | `ec diagnostic` report and logging setup                |
 | `macos-utils`      | macOS Accessibility API, NSWorkspace, AppKit ObjC2 bindings      |
 | `alacritty_terminal`, `shell-color` | Vendored terminal emulation and shell color parsing |
+| `clap_complete_fig` | Fig spec generator for clap, behind `ec completion fig`. Forked: clap removed it upstream in January 2025 |
 
 ## Key TypeScript Packages
 

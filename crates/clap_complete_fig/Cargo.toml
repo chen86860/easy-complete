@@ -1,0 +1,17 @@
+[package]
+name = "clap_complete_fig"
+# Forked from clap_complete_fig 4.5.2, which clap removed from its repository in
+# January 2025. Kept under its original name and licence so ec's code is unchanged.
+version = "4.5.2"
+description = "Generates Fig completion specs for clap CLIs; generates bundle/specs/ec.js"
+edition.workspace = true
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/clap-rs/clap"
+publish = false
+
+[dependencies]
+clap.workspace = true
+clap_complete = "4.5.46"
+
+[lints]
+workspace = true

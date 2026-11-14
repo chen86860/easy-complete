@@ -1,4 +1,19 @@
-import { awsProfileGenerator } from "./aws";
+const awsProfileGenerator: Fig.Generator = {
+  cache: {
+    strategy: "stale-while-revalidate",
+    cacheByDirectory: true,
+  },
+  script: ["aws", "configure", "list-profiles"],
+  postProcess: function (out) {
+    if (out.trim() == "") {
+      return [];
+    }
+    return out.split("\n").map((line) => ({
+      name: line,
+      icon: "👤",
+    }));
+  },
+};
 
 const configEnvOption: Fig.Option = {
   name: "--config-env",

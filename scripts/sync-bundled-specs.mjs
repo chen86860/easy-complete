@@ -9,13 +9,6 @@ import { localizeSpecIcons, matchesLocalized } from "./localize-spec-icons.mjs";
 
 const repoDir = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-// Spec filtering settings live in specs.config.json so they can be edited and reviewed
-// without touching this script.
-//   { "exclude": ["aws"] }
-const config = JSON.parse(
-  await readFile(join(repoDir, "specs.config.json"), "utf8"),
-);
-
 // Source: the workspace package packages/autocomplete-specs. This script builds it
 // (build/<name>.js, nested specs, <name>/index.js for diff-versioned ones) and copies
 // the result plus icons/<name>.png into bundle/specs, so the bundle always matches
@@ -34,27 +27,6 @@ const iconListPath = join(
 );
 
 const concurrency = Number(process.env.BUNDLED_SPECS_CONCURRENCY || 16);
-
-// Spec namespaces to exclude from the bundle (config.exclude, e.g. ["aws","gcloud","az"]).
-// A namespace `ns` drops the top-level `ns` spec and everything under `ns/`. Excluded
-// specs are absent from both the files on disk AND the written index.json, so the runtime
-// loader never references them (there is no network fallback — see protocol/spec.rs).
-//
-// Current repo default ["aws", "az"]: the AWS and Azure CLI specs are large and
-// most users never trigger them. Edit specs.config.json to change.
-// Env override BUNDLED_SPECS_EXCLUDE is comma-separated ("" = exclude nothing) and wins.
-// Re-run this script after changing the list; build-app.sh reuses bundle/specs as-is.
-const exclude = (
-  process.env.BUNDLED_SPECS_EXCLUDE !== undefined
-    ? process.env.BUNDLED_SPECS_EXCLUDE.split(",")
-    : (config.exclude ?? [])
-)
-  .map((s) => s.trim())
-  .filter(Boolean);
-
-function isExcluded(name) {
-  return exclude.some((ns) => name === ns || name.startsWith(`${ns}/`));
-}
 
 async function writeAsset(path, bytes) {
   const destination = join(outDir, path);
@@ -151,11 +123,8 @@ async function syncFromPackageRoot(packageRoot, label) {
   // build/index.json, so the index always matches what is on disk.
   const { completions, diffVersioned } = deriveIndexFromJs(allJs);
 
-  // Apply the namespace exclusion to names and to the files we copy.
-  const keepJs = allJs.filter((rel) => !isExcluded(rel.slice(0, -3)));
-  const keptCompletions = completions.filter((n) => !isExcluded(n)).sort();
-  const keptDiff = diffVersioned.filter((n) => !isExcluded(n)).sort();
-  const excludedCount = completions.length - keptCompletions.length;
+  const keptCompletions = [...completions].sort();
+  const keptDiff = [...diffVersioned].sort();
 
   await rm(outDir, { force: true, recursive: true });
   await mkdir(outDir, { recursive: true });
@@ -173,13 +142,13 @@ async function syncFromPackageRoot(packageRoot, label) {
 
   // spec files
   let copied = 0;
-  await runPool(keepJs, async (rel) => {
+  await runPool(allJs, async (rel) => {
     const dest = join(outDir, rel);
     await mkdir(dirname(dest), { recursive: true });
     await cp(join(specsRoot, rel), dest);
     copied += 1;
-    if (copied % 200 === 0 || copied === keepJs.length) {
-      process.stdout.write(`Copied ${copied}/${keepJs.length} spec files\n`);
+    if (copied % 200 === 0 || copied === allJs.length) {
+      process.stdout.write(`Copied ${copied}/${allJs.length} spec files\n`);
     }
   });
 
@@ -202,11 +171,6 @@ async function syncFromPackageRoot(packageRoot, label) {
     process.stdout.write("warning: no icons/ in package\n");
   }
 
-  if (exclude.length) {
-    process.stdout.write(
-      `Excluding [${exclude.join(", ")}] — dropped ${excludedCount} spec entries\n`,
-    );
-  }
   process.stdout.write(
     `Bundled ${keptCompletions.length} specs, ${keptDiff.length} diff indexes, and ${icons} icons into ${outDir}\n`,
   );
@@ -220,11 +184,10 @@ async function checkAgainstPackageRoot(packageRoot) {
   const specsRoot = join(packageRoot, "build");
   const allJs = await listBuiltSpecs(packageRoot);
   const { completions, diffVersioned } = deriveIndexFromJs(allJs);
-  const keepJs = allJs.filter((rel) => !isExcluded(rel.slice(0, -3)));
   const problems = [];
 
   const bundledJs = new Set((await walkJs(outDir)).filter((rel) => rel !== "ec.js"));
-  for (const rel of keepJs) {
+  for (const rel of allJs) {
     if (!bundledJs.delete(rel)) {
       problems.push(`missing from bundle: ${rel}`);
       continue;
@@ -243,11 +206,11 @@ async function checkAgainstPackageRoot(packageRoot) {
   if (
     !sameList(
       index.completions.filter((name) => name !== "ec"),
-      completions.filter((name) => !isExcluded(name)),
+      completions,
     ) ||
     !sameList(
       index.diffVersionedCompletions,
-      diffVersioned.filter((name) => !isExcluded(name)),
+      diffVersioned,
     )
   ) {
     problems.push("out of date: index.json");
@@ -271,7 +234,7 @@ async function checkAgainstPackageRoot(packageRoot) {
     );
     process.exit(1);
   }
-  process.stdout.write(`bundle/specs is in sync (${keepJs.length} spec files checked)\n`);
+  process.stdout.write(`bundle/specs is in sync (${allJs.length} spec files checked)\n`);
 }
 
 const checkOnly = process.argv.includes("--check");

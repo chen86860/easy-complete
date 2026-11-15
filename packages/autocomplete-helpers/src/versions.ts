@@ -229,7 +229,7 @@ const getBestVersionIndex = (versions: string[], target?: string): number => {
       return i;
     }
   }
-  return versions.length - 1;
+  return 0;
 };
 
 export const applySpecDiff = (spec: Fig.Subcommand, diff: Fig.SpecDiff): Fig.Subcommand =>

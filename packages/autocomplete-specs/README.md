@@ -8,11 +8,11 @@ This is an internal workspace package. It is not published anywhere; the app
 gets the specs from a bundle generated out of this package (see
 [Shipping a spec change](#shipping-a-spec-change)).
 
-| Path     | What it holds                                                               |
-| -------- | --------------------------------------------------------------------------- |
-| `src/`   | The specs. `src/<cli>.ts`, or `src/<cli>/` for a CLI with per-version specs |
-| `icons/` | Icons the specs refer to by name                                            |
-| `build/` | Compiled output, not committed                                              |
+| Path     | What it holds                                                                        |
+| -------- | ------------------------------------------------------------------------------------ |
+| `src/`   | The specs. `src/<cli>.ts`, or `src/<cli>/` for a CLI with per-version specs          |
+| `icons/` | Icons the specs refer to by name; `icons/remote/` caches the remote images specs use |
+| `build/` | Compiled output, not committed                                                       |
 
 `pnpm build` clears `build/`, compiles the specs into it with
 [`autocomplete-tools`](../autocomplete-tools) and then smoke-tests the output.
@@ -34,26 +34,25 @@ so it needs the `ec` CLI on your `PATH`. Ctrl+C turns dev mode off again.
 
 ## Shipping a spec change
 
-The app does not read `build/`. It bundles the specs from `bundle/specs/` at the
-repository root, which is generated and committed. After changing a spec,
-regenerate it **from the repository root** and commit the result together with
-your change:
+Commit your change under `src/`; nothing else is needed. The app ships
+`bundle/specs/` at the repository root, which is build output, not committed:
+`scripts/build-app.sh` regenerates it from this package on every build, and CI
+does the same on every pull request.
+
+To build it yourself, from the repository root:
 
 ```bash
 node scripts/sync-bundled-specs.mjs
 ```
 
-The script builds this package itself, so there is no separate build step. It
-also:
+The script builds this package and then:
 
-- downloads the remote icons the specs reference, so it needs network access,
-  and icons of unrelated specs can change when a site updated its image;
-- regenerates `ec.js`, the spec for Easy Complete's own CLI, from the `ec`
-  binary under `target/`, building it with cargo when there is none.
-
-CI runs `node scripts/sync-bundled-specs.mjs --check`, which compares
-`bundle/specs/` with a fresh build and fails when the two differ. Run it locally
-to see whether the bundle is up to date; it is offline and changes nothing.
+- copies the remote icons the specs reference from `icons/remote/`, where they
+  are committed under a hash of their URL. An icon not there yet is downloaded
+  once and saved there; commit it with the spec;
+- generates `ec.js`, the spec for Easy Complete's own CLI, from the `ec`
+  binary under `target/`, building it with cargo when there is none. Set
+  `EC_SPEC_SKIP=1` to leave it out.
 
 ## History
 

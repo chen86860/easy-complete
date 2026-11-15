@@ -1,1 +1,0 @@
-var i={name:"figterm",description:"Fig's terminal layer",options:[{name:["--help","-h"],description:"Print help information"},{name:["--version","-V"],description:"Print version information"}]},e=i;export{e as default};

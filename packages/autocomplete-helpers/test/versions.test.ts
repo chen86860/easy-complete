@@ -34,4 +34,15 @@ describe("test createVersionedSpec", () => {
       version: "2.0.0",
     });
   });
+
+  it("test it returns the oldest version when the installed version is older than every file", async () => {
+    const versionedSpec = createVersionedSpec(
+      "pnpm",
+      ["10.0.0", "11.0.0", "12.0.0"]
+    ) as VersionedSpec;
+    expect(await versionedSpec("9.15.0")).toStrictEqual({
+      versionedSpecPath: "pnpm/10.0.0",
+      version: "9.15.0",
+    });
+  });
 });

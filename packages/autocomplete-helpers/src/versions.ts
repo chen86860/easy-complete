@@ -229,7 +229,10 @@ const getBestVersionIndex = (versions: string[], target?: string): number => {
       return i;
     }
   }
-  return versions.length - 1;
+  // The target is older than every file, so the oldest file is the closest
+  // match. Falling back to the newest one would give an old CLI a spec written
+  // for a version it does not have yet.
+  return 0;
 };
 
 export const applySpecDiff = (spec: Fig.Subcommand, diff: Fig.SpecDiff): Fig.Subcommand =>

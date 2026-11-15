@@ -20,7 +20,10 @@ const runname: Fig.Generator = {
       return [];
     }
     return output.split("\n").map((runname) => {
-      return { name: runname.replace(/^\*\s*/, "").trim(), description: "Run name" };
+      return {
+        name: runname.replace(/^\*\s*/, "").trim(),
+        description: "Run name",
+      };
     });
   },
 };

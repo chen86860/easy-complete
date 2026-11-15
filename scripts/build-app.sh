@@ -79,10 +79,11 @@ mkdir -p "${RESOURCES_DIR}/autocomplete"
 mkdir -p "${RESOURCES_DIR}/dashboard"
 mkdir -p "${RESOURCES_DIR}/themes"
 
-if [ ! -f "${REPO_DIR}/bundle/specs/index.json" ]; then
-  info "Bundled specs are missing; syncing them now..."
-  EC_SPEC_SKIP=1 node "${REPO_DIR}/scripts/sync-bundled-specs.mjs"
-fi
+# bundle/specs is build output, not committed: regenerate it from
+# packages/autocomplete-specs on every build. Offline unless a spec references a
+# remote icon that is not cached in the package yet.
+info "Bundling completion specs..."
+EC_SPEC_SKIP=1 node "${REPO_DIR}/scripts/sync-bundled-specs.mjs"
 
 # The `ec` spec is generated from the clap definitions of the binary we just
 # built, so it always matches the CLI being shipped.

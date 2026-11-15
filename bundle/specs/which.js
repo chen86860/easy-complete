@@ -1,3 +1,0 @@
-var r={script:["bash","-c",`for i in $(echo $PATH | tr ":" "
-"); do find $i -maxdepth 1 -perm -111 -type f; done`],postProcess:t=>t.split(`
-`).map(e=>e.split("/")[e.split("/").length-1]).map(e=>({name:e,description:"Executable file",type:"arg"}))},i={name:"which",description:"Locate a program in the user's PATH",args:{name:"names",isVariadic:!0,generators:r,filterStrategy:"fuzzy",suggestCurrentToken:!0},options:[{name:"-s",description:"No output, return 0 if all the executables are found, 1 if not"},{name:"-a",description:"List all instances of executables found, instead of just the first"}]},n=i;export{n as default};

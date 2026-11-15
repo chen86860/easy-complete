@@ -77,14 +77,14 @@ const postProcessBranches =
             }
             // Current branch
             return {
-              name: branch.replace("*", "").trim(),
+              name: branch.replace(/^\*\s*/, "").trim(),
               description: "Current branch",
               priority: 100,
               icon: "⭐️",
             };
           } else if (parts[0] === "+") {
             // Branch checked out in another worktree.
-            name = branch.replace("+", "").trim();
+            name = branch.replace(/^\+\s*/, "").trim();
           }
         }
 

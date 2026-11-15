@@ -26,14 +26,14 @@ const postProcessRemoteBranches: Fig.Generator["postProcess"] = (out) => {
         }
         // Current branch
         return {
-          name: elm.replace("*", "").trim(),
+          name: elm.replace(/^\*\s*/, "").trim(),
           description: "Current branch",
           priority: 100,
           icon: "⭐️",
         };
       } else if (parts[0] === "+") {
         // Branch checked out in another worktree.
-        name = elm.replace("+", "").trim();
+        name = elm.replace(/^\+\s*/, "").trim();
       }
     }
 

@@ -1,20 +1,24 @@
 #!/usr/bin/env node
-// Downloads the remote icons referenced by bundled specs into
-// bundle/specs/icons/remote/ and rewrites the spec files to load them over the
-// local `spec://localhost/` protocol, so rendering a suggestion never fetches an
-// image from GitHub, fig.io or a tool's website.
+// Bundles the remote icons that specs reference into <specsDir>/icons/remote/ and
+// rewrites the spec files to load them over the local `spec://localhost/`
+// protocol, so rendering a suggestion never fetches an image from GitHub, fig.io
+// or a tool's website.
 //
-// Only plain string literals are rewritten. URLs built at runtime (template
-// literals with `${}`) stay remote. An icon that cannot be downloaded after
-// retries (404, 5xx, timeout, or a response that is not an image) is swapped for
-// the generic box icon, so the bundle never references a remote image. If many
-// downloads fail for reasons other than a dead link, the network is probably
-// down and the sync aborts instead of shipping a bundle full of box icons.
+// The icons are committed in packages/autocomplete-specs/icons/remote/, named by a
+// hash of their URL, so a build normally runs offline. Only a URL with no file
+// there yet is downloaded, and the download is saved to that directory so it can
+// be committed. Only plain string literals are rewritten; URLs built at runtime
+// (template literals with `${}`) stay remote. An icon that cannot be downloaded
+// after retries (404, 5xx, timeout, or a response that is not an image) is
+// swapped for the generic box icon, so the bundle never references a remote
+// image. If many downloads fail for reasons other than a dead link, the network
+// is probably down and the sync aborts instead of shipping a bundle full of box
+// icons.
 //
 // Standalone: `node scripts/localize-spec-icons.mjs [specsDir]`.
 import { createHash } from "node:crypto";
-import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { copyFile, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const LOCAL_PREFIX = "spec://localhost/icons/remote/";
@@ -86,38 +90,12 @@ async function download(url) {
   }
 }
 
-// Whether `bundled` is what localizeSpecIcons would write for `built`, without touching the
-// network: every icon URL literal must have become either the local path derived from that
-// URL or the fallback icon, and nothing else may differ. Used by the sync's --check mode.
-export function matchesLocalized(built, bundled) {
-  const extension = /\.[a-z]+"/y;
-  let last = 0;
-  let pos = 0;
-  for (const match of built.matchAll(LITERAL)) {
-    const [literal, iconKey = "", url] = match;
-    if (!isIconCandidate(url, Boolean(iconKey))) continue;
+const repoDir = join(dirname(fileURLToPath(import.meta.url)), "..");
+export const iconCacheDir = join(repoDir, "packages", "autocomplete-specs", "icons", "remote");
 
-    const before = `${built.slice(last, match.index)}${iconKey}"`;
-    if (!bundled.startsWith(before, pos)) return false;
-    pos += before.length;
-    last = match.index + literal.length;
+const iconName = (url) => createHash("sha256").update(url).digest("hex").slice(0, 16);
 
-    const fallback = `${FALLBACK_ICON}"`;
-    if (bundled.startsWith(fallback, pos)) {
-      pos += fallback.length;
-      continue;
-    }
-    const name = createHash("sha256").update(url).digest("hex").slice(0, 16);
-    const local = `${LOCAL_PREFIX}${name}`;
-    if (!bundled.startsWith(local, pos)) return false;
-    extension.lastIndex = pos + local.length;
-    if (!extension.test(bundled)) return false;
-    pos = extension.lastIndex;
-  }
-  return bundled.slice(pos) === built.slice(last);
-}
-
-export async function localizeSpecIcons(specsDir) {
+export async function localizeSpecIcons(specsDir, cacheDir = iconCacheDir) {
   const files = await walkJs(specsDir);
   const sources = new Map();
   const candidates = new Set();
@@ -132,20 +110,39 @@ export async function localizeSpecIcons(specsDir) {
   const outDir = join(specsDir, "icons", "remote");
   await rm(outDir, { force: true, recursive: true });
   await mkdir(outDir, { recursive: true });
+  await mkdir(cacheDir, { recursive: true });
+
+  const cached = new Map();
+  for (const file of await readdir(cacheDir)) {
+    cached.set(file.split(".")[0], file);
+  }
 
   const localByUrl = new Map();
   const failures = [];
+  const downloaded = [];
   let transient = 0;
-  const queue = [...candidates];
+  const queue = [];
+  for (const url of candidates) {
+    const file = cached.get(iconName(url));
+    if (file) {
+      await copyFile(join(cacheDir, file), join(outDir, file));
+      localByUrl.set(url, `${LOCAL_PREFIX}${file}`);
+    } else {
+      queue.push(url);
+    }
+  }
+  const toDownload = queue.length;
   await Promise.all(
     Array.from({ length: Math.min(8, queue.length) }, async () => {
       while (queue.length) {
         const url = queue.shift();
         try {
           const { bytes, ext } = await download(url);
-          const name = `${createHash("sha256").update(url).digest("hex").slice(0, 16)}.${ext}`;
+          const name = `${iconName(url)}.${ext}`;
+          await writeFile(join(cacheDir, name), bytes);
           await writeFile(join(outDir, name), bytes);
           localByUrl.set(url, `${LOCAL_PREFIX}${name}`);
+          downloaded.push(name);
         } catch (err) {
           localByUrl.set(url, FALLBACK_ICON);
           failures.push(`${url}: ${err.message ?? err}`);
@@ -155,9 +152,9 @@ export async function localizeSpecIcons(specsDir) {
     }),
   );
 
-  if (transient > candidates.size * MAX_TRANSIENT_FAILURE_RATIO) {
+  if (transient > 0 && transient > toDownload * MAX_TRANSIENT_FAILURE_RATIO) {
     throw new Error(
-      `${transient}/${candidates.size} spec icons failed with network errors; ` +
+      `${transient}/${toDownload} new spec icons failed with network errors; ` +
         "check connectivity and re-run the sync",
     );
   }
@@ -175,8 +172,13 @@ export async function localizeSpecIcons(specsDir) {
   }
 
   process.stdout.write(
-    `Localized ${localByUrl.size - failures.length}/${candidates.size} remote spec icons, replaced ${failures.length} unreachable ones (${rewritten} spec files rewritten)\n`,
+    `Localized ${localByUrl.size - failures.length}/${candidates.size} remote spec icons (${toDownload - failures.length} downloaded), replaced ${failures.length} unreachable ones (${rewritten} spec files rewritten)\n`,
   );
+  for (const name of downloaded.sort()) {
+    process.stdout.write(
+      `new icon saved to ${relative(repoDir, join(cacheDir, name))}: commit it with the spec\n`,
+    );
+  }
   for (const line of failures.sort()) {
     process.stdout.write(
       `unreachable icon replaced with ${FALLBACK_ICON}: ${line}\n`,
@@ -185,6 +187,5 @@ export async function localizeSpecIcons(specsDir) {
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const repoDir = join(dirname(fileURLToPath(import.meta.url)), "..");
   await localizeSpecIcons(process.argv[2] ?? join(repoDir, "bundle", "specs"));
 }

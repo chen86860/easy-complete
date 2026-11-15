@@ -84,8 +84,6 @@ jobs:
               # Docs: no job reads them. website/ is excluded: its pages are built from source.
               website/*) website=true; continue ;;
               *.md | docs/* | LICENSE | NOTICE | .github/ISSUE_TEMPLATE/* | .claude/*) continue ;;
-              # The JavaScript job checks bundle/specs against the spec sources.
-              bundle/specs/*) javascript=true ;;
               # Release-only inputs: no build or test job reads them.
               bundle/* | assets/* | THIRD_PARTY_NOTICES.txt) continue ;;
               .github/workflows/*) rust=true javascript=true website=true licenses=true ;;
@@ -254,11 +252,11 @@ jobs:
       - name: Build packages
         run: pnpm build
 
-      # bundle/specs is generated from packages/autocomplete-specs and committed. This fails
-      # when a spec or one of the libraries bundled into it changed without a re-sync. It is
-      # offline and reuses the build above through turbo.
-      - name: Check bundled specs
-        run: node scripts/sync-bundled-specs.mjs --check
+      # The bundle build-app.sh generates on every build. Run it here so a spec that breaks
+      # the bundle, or references an icon that cannot be fetched, fails the pull request
+      # instead of the release. Reuses the build above through turbo.
+      - name: Bundle specs
+        run: EC_SPEC_SKIP=1 node scripts/sync-bundled-specs.mjs
 
       - name: Lint packages
         run: pnpm lint

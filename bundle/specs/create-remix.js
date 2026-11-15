@@ -1,1 +1,0 @@
-var e={name:"create-remix",icon:"spec://localhost/icons/remote/4e202ee3c40fc0e7.png",options:[{name:["-h","--help"],description:"Display help for command"},{name:["-v","--version"],description:"Display version for command"}]},o=e;export{o as default};

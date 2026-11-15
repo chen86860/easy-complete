@@ -43,40 +43,21 @@ A spec may run commands to build its suggestions, for example `git branch` to li
 Keep those read-only, pass what the user typed as separate arguments, never inside a shell
 string, and do not call the network.
 
-**2. Regenerate the bundle**
+**2. Open a pull request with your file under `src/`**
 
-The app does not load `src/` directly. It ships `bundle/specs/`, which is generated and
-committed, so a spec change is only complete with the regenerated bundle. From the repository
-root:
+That is all a spec change needs. The app ships specs from `bundle/specs/`, which every build
+generates from `src/`, so there is nothing to regenerate or commit besides your spec. CI builds
+the bundle on your pull request; on a first contribution from a fork, it waits for a
+maintainer to approve the run, so the checks stay pending until then.
+
+If your spec uses a remote image as an icon, for example `icon: "https://example.com/logo.png"`,
+building the bundle downloads it once into `packages/autocomplete-specs/icons/remote/` and
+says so. Commit that file with your spec, so later builds need no network. To build the bundle
+locally:
 
 ```bash
 node scripts/sync-bundled-specs.mjs
 ```
-
-This step is heavier than writing the spec:
-
-- It needs network access, because it re-downloads the icons that specs reference.
-- It regenerates the spec for Easy Complete's own CLI from the `ec` binary under `target/`.
-  With no binary there it builds one with cargo, which needs the Rust toolchain from
-  [Development setup](#development-setup) and takes a few minutes the first time.
-
-If you cannot run it, open the pull request with only your change under `src/` and say so. A
-maintainer will regenerate the bundle on your branch.
-
-**3. Commit only what belongs to your spec**
-
-That is your file under `src/`, its `bundle/specs/<cli-name>.js`, and one added line in
-`bundle/specs/index.json`. The sync can also rewrite icons of unrelated specs when a site
-changed its image; drop those with `git restore bundle/specs/icons`.
-
-Check the result before pushing. This is offline and changes nothing:
-
-```bash
-node scripts/sync-bundled-specs.mjs --check
-```
-
-CI runs the same check. On a first contribution from a fork, CI waits for a maintainer to
-approve the run, so the checks stay pending until then.
 
 ## Development setup
 

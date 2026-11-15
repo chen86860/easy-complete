@@ -10,7 +10,7 @@ const contexts: Fig.Generator = {
       .map((context, ind) => {
         context = context.split(" ")[0];
         return {
-          name: context.replace("*", "").trim(),
+          name: context.replace(/^\*\s*/, "").trim(),
           description: "Context",
           icon: "fig://icon?type=okteto",
         };
@@ -30,7 +30,7 @@ const namespaces: Fig.Generator = {
       .map((namespace, ind) => {
         namespace = namespace.split(" ")[0];
         return {
-          name: namespace.replace("*", "").trim(),
+          name: namespace.replace(/^\*\s*/, "").trim(),
           description: "Namespace",
           icon: "fig://icon?type=okteto",
         };

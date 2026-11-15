@@ -25,13 +25,13 @@ export const searchBranches: Fig.Generator = {
         if (parts[0] == "*") {
           // Current branch.
           return {
-            name: elm.replace("*", "").trim(),
+            name: elm.replace(/^\*\s*/, "").trim(),
             description: "Current branch",
             icon: "⭐️",
           };
         } else if (parts[0] == "+") {
           // Branch checked out in another worktree.
-          name = elm.replace("+", "").trim();
+          name = elm.replace(/^\+\s*/, "").trim();
         }
       }
 

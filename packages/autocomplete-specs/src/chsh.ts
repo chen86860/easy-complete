@@ -6,7 +6,7 @@ const shells: Fig.Generator = {
       return [];
     }
     return output.split("\n").map((shell) => {
-      return { name: shell.replace("*", "").trim() };
+      return { name: shell.replace(/^\*\s*/, "").trim() };
     });
   },
 };

@@ -2,6 +2,16 @@
 
 [English](./CHANGELOG.md) · **简体中文**
 
+## v2.8.0 - 2026-11-15
+
+- 新增：`magick`（ImageMagick 7）、`llm`、`exiftool`、`osxphotos` 和 `gittower` 的补全。颜色空间、模型、标签名这类选项值，直接取自你本机安装的工具（#238–#242，感谢 @kitschpatrol）
+- 新增：每个 DMG 都附带构建来源证明。运行 `gh attestation verify Easy-Complete-arm64.dmg --repo chen86860/easy-complete` 可以确认它出自本仓库的发布流程
+- 变更：最低系统要求改为 macOS 13 Ventura。不再支持 macOS 12，仍在使用的 Mac 会停留在 2.7.0
+- 变更：`pnpm` 的补全会匹配你安装的版本：pnpm 10、11、12 各有对应的命令和选项（#237，感谢 @kitschpatrol）
+- 修复：设置「外观」中选中的主题，边框改为跟随系统强调色，不再固定为蓝色
+- 修复：`autocomplete.scriptTimeout` 设为 0 或负数时，依赖脚本的补全不再消失
+- 文档：CONTRIBUTING.md 逐步说明如何为某个命令新增或修正补全
+
 ## v2.7.0
 
 - 新增：如果本机装了需要输入法的终端（Ghostty、Kitty、WezTerm、Zed 等），首次设置会要求安装输入法，并列出检测到的终端。可以跳过，跳过后不再询问

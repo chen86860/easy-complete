@@ -53,7 +53,7 @@ if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+-(alpha|beta|rc)(\.[0-9A-Za-z-]+)*$ ]
   echo "  1. git add -A && git commit -m \"chore: bump version to v${VERSION}\"  # includes Cargo.lock"
   echo "  2. git tag v${VERSION} && git push origin main --tags"
 else
-  echo "  1. Add a ## v${VERSION} entry to both CHANGELOG.md (English) and CHANGELOG.zh-CN.md (Chinese),"
+  echo "  1. Add a ## v${VERSION} - $(date +%Y-%m-%d) entry to both CHANGELOG.md (English) and CHANGELOG.zh-CN.md (Chinese),"
   echo "     covering every change since the previous stable release"
   echo "  2. git add -A && git commit -m \"chore: bump version to v${VERSION}\"  # includes Cargo.lock"
   echo "  3. git tag v${VERSION} && git push origin main --tags"

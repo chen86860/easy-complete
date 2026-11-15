@@ -2,6 +2,16 @@
 
 **English** · [简体中文](./CHANGELOG.zh-CN.md)
 
+## v2.8.0 - 2026-11-15
+
+- new: completions for `magick` (ImageMagick 7), `llm`, `exiftool`, `osxphotos` and `gittower`. Option values such as color spaces, models and tag names come from the tool installed on your Mac (#238–#242, thanks @kitschpatrol)
+- new: each DMG carries a build provenance attestation. `gh attestation verify Easy-Complete-arm64.dmg --repo chen86860/easy-complete` confirms it was built by this repository's release workflow
+- change: Easy Complete now requires macOS 13 Ventura or later. macOS 12 is no longer supported, and Macs on it stay on 2.7.0
+- change: `pnpm` completions match the version you have installed: pnpm 10, 11 and 12 each get their own commands and options (#237, thanks @kitschpatrol)
+- fix: the selected theme in Settings › Appearance is outlined in your system accent color instead of always blue
+- fix: script-based suggestions no longer disappear when `autocomplete.scriptTimeout` is set to 0 or a negative number
+- docs: CONTRIBUTING.md explains how to add or fix completions for a CLI, step by step
+
 ## v2.7.0
 
 - new: if a terminal on your Mac needs the input method (Ghostty, Kitty, WezTerm, Zed and others), setup now asks for it and names the terminals. You can skip it, and it won't ask again

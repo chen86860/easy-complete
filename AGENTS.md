@@ -76,7 +76,7 @@ TypeScript is linted and formatted with biome. The root `biome.json` covers `api
 
 The script also refreshes `Cargo.lock` and regenerates `THIRD_PARTY_NOTICES.txt`. CI checks that file with `pnpm licenses:check` whenever a lockfile or manifest changes, so run `pnpm licenses:generate` after changing dependencies. The script then prints the exact next steps:
 
-1. Add a `## v<version>` entry to both `CHANGELOG.md` (English) and `CHANGELOG.zh-CN.md` (Chinese) — keep them in sync, one entry each. Stable releases only: prereleases get no entry of their own (see below)
+1. Add a `## v<version> - YYYY-MM-DD` entry, dated the day the tag is pushed, to both `CHANGELOG.md` (English) and `CHANGELOG.zh-CN.md` (Chinese) — keep them in sync, one entry each. Stable releases only: prereleases get no entry of their own (see below)
 2. `git add -A && git commit -m "chore: bump version to v<version>"`
 3. `git tag v<version> && git push origin main --tags`
 

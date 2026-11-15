@@ -235,7 +235,8 @@ jobs:
         id: changelog
         run: |
           VERSION="${{ github.ref_name }}"
-          NOTES=$(awk "/^## ${VERSION}$/{flag=1; next} /^## /{flag=0} flag" CHANGELOG.md | sed '/^[[:space:]]*$/d')
+          # Headings are "## vX.Y.Z", optionally followed by " - YYYY-MM-DD".
+          NOTES=$(awk "/^## ${VERSION}( |$)/{flag=1; next} /^## /{flag=0} flag" CHANGELOG.md | sed '/^[[:space:]]*$/d')
           if [ -z "$NOTES" ]; then
             NOTES="See the [GitHub release](https://github.com/${{ github.repository }}/releases/tag/${VERSION}) for details."
           fi

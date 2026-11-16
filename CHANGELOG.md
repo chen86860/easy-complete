@@ -2,7 +2,7 @@
 
 **English** · [简体中文](./CHANGELOG.zh-CN.md)
 
-## v2.8.0 - 2026-11-15
+## v2.8.0 - 2026-11-16
 
 - new: completions for `magick` (ImageMagick 7), `llm`, `exiftool`, `osxphotos` and `gittower`. Option values such as color spaces, models and tag names come from the tool installed on your Mac (#238–#242, thanks @kitschpatrol)
 - new: each DMG carries a build provenance attestation. `gh attestation verify Easy-Complete-arm64.dmg --repo chen86860/easy-complete` confirms it was built by this repository's release workflow

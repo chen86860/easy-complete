@@ -2,7 +2,7 @@
 
 [English](./CHANGELOG.md) · **简体中文**
 
-## v2.8.0 - 2026-11-15
+## v2.8.0 - 2026-11-16
 
 - 新增：`magick`（ImageMagick 7）、`llm`、`exiftool`、`osxphotos` 和 `gittower` 的补全。颜色空间、模型、标签名这类选项值，直接取自你本机安装的工具（#238–#242，感谢 @kitschpatrol）
 - 新增：每个 DMG 都附带构建来源证明。运行 `gh attestation verify Easy-Complete-arm64.dmg --repo chen86860/easy-complete` 可以确认它出自本仓库的发布流程

@@ -41,7 +41,7 @@ const featureData: Omit<Feature, "glyph">[] = [
   },
   {
     title: "In-IDE terminals",
-    desc: "Completions follow you into VS Code, Cursor, Kiro, ChatGPT (Codex), and JetBrains IDE terminals.",
+    desc: "Completions follow you into VS Code, Cursor, Kiro, Orca, Antigravity IDE, ChatGPT (Codex), and JetBrains IDE terminals.",
   },
   {
     title: "Set up in one command",
@@ -71,6 +71,8 @@ export const featureTerminalLinks: FeatureTerminalLink[] = [
   { names: ["VS Code"], url: "https://code.visualstudio.com/" },
   { names: ["Cursor"], url: "https://cursor.com/" },
   { names: ["Kiro"], url: "https://kiro.dev/" },
+  { names: ["Orca"], url: "https://orca.dev/" },
+  { names: ["Antigravity IDE"], url: "https://antigravity.google/" },
   {
     names: ["ChatGPT (Codex)", "ChatGPT(Codex)"],
     url: "https://openai.com/codex/",
@@ -185,6 +187,16 @@ export const terminalSupport: TerminalSupport[] = [
     isNew: true,
   },
   {
+    name: "Orca",
+    integration: "xterm",
+    note: "Terminal panes of the agent development environment, located through the xterm.js caret.",
+  },
+  {
+    name: "Antigravity IDE",
+    integration: "xterm",
+    note: "Integrated terminal of the VS Code-based IDE, located through the xterm.js caret.",
+  },
+  {
     name: "VS Code",
     integration: "xterm",
     note: "Integrated terminal, including Cursor, Windsurf, and Trae.",
@@ -238,7 +250,7 @@ export const faqs: Faq[] = [
   {
     question: "Which terminals does Easy Complete support?",
     answer:
-      "Easy Complete supports Ghostty, Otty, Kitty, WezTerm, Alacritty, Zed, iTerm2, Apple Terminal, VS Code (including Cursor, Windsurf, and Trae), Kiro, ChatGPT (Codex), and JetBrains IDE terminals. Kiro was added in v2.4.0.",
+      "Easy Complete supports Ghostty, Otty, Kitty, WezTerm, Alacritty, Zed, iTerm2, Apple Terminal, VS Code (including Cursor, Windsurf, and Trae), Kiro, Orca, Antigravity IDE, ChatGPT (Codex), and JetBrains IDE terminals. Kiro was added in v2.4.0.",
   },
   {
     question: "How do I install Easy Complete?",

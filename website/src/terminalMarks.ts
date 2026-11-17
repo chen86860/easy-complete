@@ -3,8 +3,8 @@
  *
  * Glyph paths come from Simple Icons (CC0), normalised to a 24x24 viewBox.
  * Each logo is the trademark of its respective project and appears here only to
- * indicate compatibility. Kitty and Kiro have no mark in that set, so they render
- * as wordmarks rather than invented logos.
+ * indicate compatibility. Kitty, Kiro, Orca and Antigravity IDE have no mark in
+ * that set, so they render as wordmarks rather than invented logos.
  *
  * The Otty mark is not in Simple Icons either. It is derived from the vector
  * the app itself ships (Otty.app/Contents/Resources/settings-ui.html): the same
@@ -52,6 +52,12 @@ export const terminalMarks: TerminalMark[] = [
   },
   {
     name: "Kiro",
+  },
+  {
+    name: "Orca",
+  },
+  {
+    name: "Antigravity IDE",
   },
 
   {

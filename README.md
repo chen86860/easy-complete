@@ -100,7 +100,7 @@ ec settings <key> <value>              # change a setting
 
 | How it connects | Terminals |
 | --- | --- |
-| Works out of the box | [iTerm2](https://iterm2.com/), [Apple Terminal](https://support.apple.com/guide/terminal/welcome/mac), [VS Code](https://code.visualstudio.com/) and editors built on it ([Cursor](https://cursor.com/), Windsurf, Trae, [Kiro](https://kiro.dev/)), [ChatGPT (Codex)](https://openai.com/codex/), [Orca](https://orca.dev/), Antigravity IDE |
+| Works out of the box | [iTerm2](https://iterm2.com/), [Apple Terminal](https://support.apple.com/guide/terminal/welcome/mac), [VS Code](https://code.visualstudio.com/) and editors built on it ([Cursor](https://cursor.com/), Windsurf, Trae, [Kiro](https://kiro.dev/)), [ChatGPT (Codex)](https://openai.com/codex/), [Orca](https://orca.dev/), [Antigravity IDE](https://antigravity.google/) |
 | Needs the bundled input method | [Ghostty](https://ghostty.org/), [Kitty](https://sw.kovidgoyal.net/kitty/), [WezTerm](https://wezterm.org/), [Zed](https://zed.dev/), [Alacritty](https://alacritty.org/), [Otty](https://otty.sh/), [Herdr](https://herdr.dev/), [JetBrains IDEs](https://www.jetbrains.com/) |
 | Multiplexers | [tmux](https://github.com/tmux/tmux), [Zellij](https://zellij.dev/) (including resurrected sessions) |
 

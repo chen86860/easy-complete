@@ -1,28 +1,26 @@
 use std::sync::Arc;
 
-use bincode::Options;
 use dashmap::DashMap;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum KVError {
     #[error("{}", .0)]
-    Bincode(#[from] bincode::Error),
+    Json(#[from] serde_json::Error),
 }
 
 type Result<T, E = KVError> = std::result::Result<T, E>;
 
-// bincode provides a `serialize` and `deserialize` function, but they don't have good defaults that
-// the `bincode::options()` provides
+// The store lives in memory only and is never persisted, so the encoding can change freely.
 
 #[inline(always)]
 fn serialize(value: impl serde::Serialize) -> Result<Vec<u8>> {
-    Ok(bincode::options().serialize(&value)?)
+    Ok(serde_json::to_vec(&value)?)
 }
 
 #[inline(always)]
 fn deserialize<T: serde::de::DeserializeOwned>(value: &[u8]) -> Result<T> {
-    Ok(bincode::options().deserialize(value)?)
+    Ok(serde_json::from_slice(value)?)
 }
 
 pub trait KVStore {
@@ -103,5 +101,22 @@ mod tests {
         assert_eq!(store.get("bool").unwrap(), Some(true));
 
         println!("{store:?}");
+    }
+
+    #[test]
+    fn test_owned_and_borrowed_keys_match() {
+        let store = DashKVStore::new();
+        store.set("key", "value").unwrap();
+        assert_eq!(
+            store.get::<_, String>(&"key".to_string()).unwrap(),
+            Some("value".to_string())
+        );
+    }
+
+    #[test]
+    fn test_type_mismatch_is_an_error() {
+        let store = DashKVStore::new();
+        store.set("number", &42).unwrap();
+        assert!(store.get::<_, bool>("number").is_err());
     }
 }

@@ -97,7 +97,7 @@ ec settings <key> <value>              # 修改某项设置
 
 | 接入方式 | 终端 |
 | --- | --- |
-| 开箱即用 | [iTerm2](https://iterm2.com/)、[Apple Terminal](https://support.apple.com/zh-cn/guide/terminal/welcome/mac)、[VS Code](https://code.visualstudio.com/) 及基于它的编辑器（[Cursor](https://cursor.com/)、Windsurf、Trae、[Kiro](https://kiro.dev/)）、[ChatGPT（Codex）](https://openai.com/codex/) |
+| 开箱即用 | [iTerm2](https://iterm2.com/)、[Apple Terminal](https://support.apple.com/zh-cn/guide/terminal/welcome/mac)、[VS Code](https://code.visualstudio.com/) 及基于它的编辑器（[Cursor](https://cursor.com/)、Windsurf、Trae、[Kiro](https://kiro.dev/)）、[ChatGPT（Codex）](https://openai.com/codex/)、[Orca](https://orca.dev/)、[Antigravity IDE](https://antigravity.google/) |
 | 需要启用内置输入法 | [Ghostty](https://ghostty.org/)、[Kitty](https://sw.kovidgoyal.net/kitty/)、[WezTerm](https://wezterm.org/)、[Zed](https://zed.dev/)、[Alacritty](https://alacritty.org/)、[Otty](https://otty.sh/)、[Herdr](https://herdr.dev/)、[JetBrains 系列 IDE](https://www.jetbrains.com/) |
 | 终端复用器 | [tmux](https://github.com/tmux/tmux)、[Zellij](https://zellij.dev/)（含恢复的会话） |
 

@@ -28,6 +28,8 @@ pub const MACOS_TERMINALS: &[Terminal] = &[
     Terminal::Otty,
     Terminal::Codex,
     Terminal::Kiro,
+    Terminal::Orca,
+    Terminal::AntigravityIde,
     Terminal::Herdr,
 ];
 
@@ -179,6 +181,10 @@ pub enum Terminal {
     Codex,
     /// Kiro <https://kiro.dev/>
     Kiro,
+    /// Orca agent development environment <https://orca.dev/>
+    Orca,
+    /// Antigravity IDE, a VS Code-based editor.
+    AntigravityIde,
     /// Herdr desktop app <https://herdr.dev/>, a GPUI client for the herdr agent multiplexer
     Herdr,
 
@@ -227,6 +233,8 @@ impl fmt::Display for Terminal {
             Terminal::Otty => write!(f, "Otty"),
             Terminal::Codex => write!(f, "ChatGPT"),
             Terminal::Kiro => write!(f, "Kiro"),
+            Terminal::Orca => write!(f, "Orca"),
+            Terminal::AntigravityIde => write!(f, "Antigravity IDE"),
             Terminal::Herdr => write!(f, "Herdr"),
             Terminal::Custom(custom_terminal) => write!(f, "{}", custom_terminal.name),
         }
@@ -263,6 +271,7 @@ impl Terminal {
             Some("guake") => return Some(Terminal::Guake),
             Some("ghostty") => return Some(Terminal::Ghostty),
             Some("otty") => return Some(Terminal::Otty),
+            Some("Orca" | "orca") => return Some(Terminal::Orca),
             Some("herdr") => return Some(Terminal::Herdr),
             _ => (),
         };
@@ -399,6 +408,8 @@ impl Terminal {
             Terminal::Otty => "otty".into(),
             Terminal::Codex => "codex".into(),
             Terminal::Kiro => "kiro".into(),
+            Terminal::Orca => "orca".into(),
+            Terminal::AntigravityIde => "antigravity-ide".into(),
             Terminal::Herdr => "herdr".into(),
             Terminal::Custom(custom_terminal) => custom_terminal.id.clone().into(),
         }
@@ -433,6 +444,8 @@ impl Terminal {
             Terminal::Otty => Some("io.appmakes.otty".into()),
             Terminal::Codex => Some("com.openai.codex".into()),
             Terminal::Kiro => Some("dev.kiro.desktop".into()),
+            Terminal::Orca => Some("com.stablyai.orca".into()),
+            Terminal::AntigravityIde => Some("com.google.antigravity-ide".into()),
             Terminal::Herdr => Some("dev.herdr.app".into()),
             Terminal::Custom(custom_terminal) => custom_terminal.macos.bundle_id.clone().map(Cow::Owned),
             _ => None,
@@ -465,6 +478,8 @@ impl Terminal {
             "io.appmakes.otty" => Terminal::Otty,
             "com.openai.codex" => Terminal::Codex,
             "dev.kiro.desktop" => Terminal::Kiro,
+            "com.stablyai.orca" => Terminal::Orca,
+            "com.google.antigravity-ide" => Terminal::AntigravityIde,
             "dev.herdr.app" => Terminal::Herdr,
             // TODO: the following line does not account for Android Studio
             _ if bundle.starts_with("com.jetbrains.") | bundle.starts_with("com.google.") => {
@@ -520,6 +535,8 @@ impl Terminal {
                 | Terminal::Trae
                 | Terminal::Codex
                 | Terminal::Kiro
+                | Terminal::Orca
+                | Terminal::AntigravityIde
         ) || self.as_custom().is_some_and(|c| c.macos.xterm)
     }
 
@@ -553,6 +570,10 @@ impl Terminal {
             // Main binary is ChatGPT; the PTY host is Contents/Resources/codex (lowercase).
             Terminal::Codex => &["ChatGPT", "Codex", "codex"],
             Terminal::Kiro => &["Kiro", "kiro"],
+            // Recent Orca releases spawn terminal panes from a separate agent host.
+            Terminal::Orca => &["Orca", "Orca Agents"],
+            // The app binary is generically named Electron; never match every Electron host.
+            Terminal::AntigravityIde => &["antigravity-ide"],
             // Panes are spawned by the `herdr-core` daemon, not by the app itself.
             Terminal::Herdr => &["Herdr", "herdr-core"],
 
@@ -625,6 +646,8 @@ impl Terminal {
                 | Terminal::Trae
                 | Terminal::Codex
                 | Terminal::Kiro
+                | Terminal::Orca
+                | Terminal::AntigravityIde
         )
     }
 
@@ -940,6 +963,48 @@ mod tests {
         assert!(!Terminal::Kiro.supports_macos_input_method());
         assert!(!Terminal::Kiro.supports_fancy_boxes());
         assert!(Terminal::Kiro.executable_names().contains(&"Kiro"));
+    }
+
+    #[test]
+    fn test_orca_detection() {
+        assert_eq!(Terminal::from_bundle_id("com.stablyai.orca"), Some(Terminal::Orca));
+        assert_eq!(Terminal::Orca.to_bundle_id().as_deref(), Some("com.stablyai.orca"));
+        assert_eq!(Terminal::Orca.internal_id(), "orca");
+        assert_eq!(Terminal::Orca.to_string(), "Orca");
+        assert!(MACOS_TERMINALS.contains(&Terminal::Orca));
+        assert!(Terminal::Orca.is_xterm());
+        assert!(!Terminal::Orca.supports_macos_input_method());
+        assert!(!Terminal::Orca.supports_fancy_boxes());
+        assert!(Terminal::Orca.executable_names().contains(&"Orca"));
+        assert!(Terminal::Orca.executable_names().contains(&"Orca Agents"));
+        let ctx = make_context(Os::Mac, vec!["ec", "zsh", "Orca Agents"]);
+        assert_eq!(
+            Terminal::from_process_info(&ctx, &MACOS_TERMINALS.to_vec()),
+            Some(Terminal::Orca)
+        );
+        // Enabling Electron accessibility must stay in sync with terminal recognition.
+        #[cfg(target_os = "macos")]
+        assert!(macos_utils::window_server::XTERM_BUNDLE_IDS.contains(&"com.stablyai.orca"));
+    }
+
+    #[test]
+    fn test_antigravity_ide_detection() {
+        let terminal = Terminal::AntigravityIde;
+        // This must precede the generic com.google.* -> IntelliJ fallback.
+        assert_eq!(
+            Terminal::from_bundle_id("com.google.antigravity-ide"),
+            Some(terminal.clone())
+        );
+        assert_eq!(terminal.to_bundle_id().as_deref(), Some("com.google.antigravity-ide"));
+        assert_eq!(terminal.internal_id(), "antigravity-ide");
+        assert_eq!(terminal.to_string(), "Antigravity IDE");
+        assert!(MACOS_TERMINALS.contains(&terminal));
+        assert!(terminal.is_xterm());
+        assert!(!terminal.supports_macos_input_method());
+        assert!(!terminal.supports_fancy_boxes());
+        assert!(!terminal.executable_names().contains(&"Electron"));
+        #[cfg(target_os = "macos")]
+        assert!(macos_utils::window_server::XTERM_BUNDLE_IDS.contains(&"com.google.antigravity-ide"));
     }
 
     #[test]

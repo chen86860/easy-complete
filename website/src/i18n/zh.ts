@@ -42,7 +42,7 @@ const featureDataZh: Array<Omit<Feature, "glyph">> = [
   },
   {
     title: "IDE 内置终端",
-    desc: "补全会跟着你进入 VS Code、Cursor、Kiro、ChatGPT(Codex)以及 JetBrains 系 IDE 的终端",
+    desc: "补全会跟着你进入 VS Code、Cursor、Kiro、Orca、Antigravity IDE、ChatGPT(Codex)以及 JetBrains 系 IDE 的终端",
   },
   {
     title: "一条命令完成安装",
@@ -97,7 +97,7 @@ const faqsZh: Faq[] = [
   {
     question: "Easy Complete 支持哪些终端?",
     answer:
-      "Easy Complete 支持 Ghostty、Otty、Kitty、WezTerm、Alacritty、Zed、iTerm2、Apple Terminal、VS Code(含 Cursor、Windsurf 与 Trae)、Kiro、ChatGPT(Codex)以及 JetBrains 系 IDE 终端。其中 Kiro 在 v2.4.0 加入",
+      "Easy Complete 支持 Ghostty、Otty、Kitty、WezTerm、Alacritty、Zed、iTerm2、Apple Terminal、VS Code(含 Cursor、Windsurf 与 Trae)、Kiro、Orca、Antigravity IDE、ChatGPT(Codex)以及 JetBrains 系 IDE 终端。其中 Kiro 在 v2.4.0 加入",
   },
   {
     question: "如何安装 Easy Complete?",
@@ -134,6 +134,8 @@ const NOTE_ZH: Record<string, string> = {
   "JetBrains IDEs": "覆盖 JetBrains 全系 IDE 的内置终端",
   "ChatGPT (Codex)": "ChatGPT.app 里的 Codex 终端会话,通过 xterm.js 光标定位",
   Kiro: "基于 VS Code 的 IDE 的内置终端,通过 xterm.js 光标定位",
+  Orca: "智能体开发环境里的终端面板,通过 xterm.js 光标定位",
+  "Antigravity IDE": "基于 VS Code 的 IDE 的内置终端,通过 xterm.js 光标定位",
   "VS Code": "内置终端,含 Cursor、Windsurf 与 Trae",
   iTerm2: "重载 Shell 后开箱即用",
   "Apple Terminal": "重载 Shell 后开箱即用",

@@ -85,6 +85,8 @@ pub const XTERM_BUNDLE_IDS: &[&str] = &[
     // OpenAI Codex, shipped as ChatGPT.app since the rename.
     "com.openai.codex",
     "dev.kiro.desktop",
+    "com.stablyai.orca",
+    "com.google.antigravity-ide",
 ];
 
 /// An app that is still starting up (IntelliJ and other JVM apps take seconds) rejects every

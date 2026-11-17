@@ -40,8 +40,8 @@ grep -qxF "export const APP_VERSION = \"$VERSION\";" "$REPO_DIR/website/src/seo.
 echo "Refreshing Cargo.lock..."
 (cd "$REPO_DIR" && cargo update --workspace --offline)
 
-# The vendored crates carry the workspace version, so every bump makes the generated
-# notices stale — and `build-app.sh` refuses to assemble the bundle until they match.
+# The notices list vendored crates as `vendored`, so a bump alone leaves them unchanged.
+# Regenerate anyway: `build-app.sh` refuses to assemble the bundle until they match.
 echo "Regenerating THIRD_PARTY_NOTICES.txt..."
 (cd "$REPO_DIR" && node scripts/generate-third-party-notices.mjs)
 

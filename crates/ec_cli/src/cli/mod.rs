@@ -79,10 +79,13 @@ pub enum CliRootCommands {
     /// Customize appearance & behavior
     #[command(alias("setting"))]
     Settings(settings::SettingsArgs),
-    /// Uninstall
-    #[command(hide = true)]
+    /// Remove the integrations and app data
+    ///
+    /// Removes the shell integrations, the command-line tools in ~/.local/bin, Easy Complete's
+    /// own input source and the application data, then quits the app. The app itself stays
+    /// in place: uninstall it with Homebrew or move it to the Trash afterwards.
     Uninstall {
-        /// Force uninstall
+        /// Skip the confirmation prompt
         #[arg(long, short = 'y')]
         no_confirm: bool,
     },

@@ -79,9 +79,9 @@ pub enum CliRootCommands {
     /// Uninstall Easy Complete completely
     ///
     /// Removes the shell integrations, the command-line tools in ~/.local/bin, Easy Complete's
-    /// own input source, the login item, the preferences, the Accessibility permission and the
-    /// application data, then quits and deletes the app. When the app was installed with
-    /// Homebrew, it is left for `brew uninstall --zap chen86860/tap/easy-complete` to remove.
+    /// own input source, the login item, the preferences, the Accessibility permission, the caches
+    /// and the application data, then quits and deletes the app. A Homebrew install is removed with
+    /// `brew uninstall --zap`, so the cask goes too.
     Uninstall {
         /// Skip the confirmation prompt
         #[arg(long, short = 'y')]

@@ -11,8 +11,6 @@ use thiserror::Error;
 
 mod common;
 pub use common::{InstallComponents, install, uninstall};
-#[cfg(target_os = "macos")]
-pub use macos::{HOMEBREW_CASK, installed_with_homebrew};
 
 #[derive(Debug, Error)]
 pub enum Error {

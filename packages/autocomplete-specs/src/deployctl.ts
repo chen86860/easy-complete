@@ -67,6 +67,7 @@ const completionSpec: Fig.Spec = {
         name: "version",
         isOptional: true,
         generators: {
+          // spec-check-allow network: package lookup against the deno.land registry; network generators are kept on purpose
           script: [
             "curl",
             "-sL",

@@ -353,6 +353,7 @@ export const createCLIsGenerator: Fig.Generator = {
   script: function (context) {
     if (context[context.length - 1] === "") return undefined;
     const searchTerm = "create-" + context[context.length - 1];
+    // spec-check-allow network: package lookup against api.npms.io; network generators are kept on purpose
     return [
       "curl",
       "-s",

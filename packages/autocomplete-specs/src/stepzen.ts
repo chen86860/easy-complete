@@ -19,6 +19,7 @@ const endpointsGenerator: Fig.Generator = {
 };
 
 const importSchemasGenerator: Fig.Generator = {
+  // spec-check-allow network: package lookup against the GitHub API; network generators are kept on purpose
   script: [
     "curl",
     "https://api.github.com/repos/steprz/stepzen-schemas/contents",

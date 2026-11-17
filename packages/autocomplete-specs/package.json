@@ -11,7 +11,8 @@
     "dev": "autocomplete-tools dev",
     "create-spec": "autocomplete-tools create-spec",
     "typecheck": "tsc --noEmit",
-    "lint": "biome check . && tsc --noEmit",
+    "lint": "biome check . && tsc --noEmit && tsc -p scripts && node scripts/check-spec-commands.ts",
+    "check-commands": "node scripts/check-spec-commands.ts",
     "lint:fix": "biome check --write .",
     "format": "biome check --write ."
   },

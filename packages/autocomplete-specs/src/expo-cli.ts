@@ -7,6 +7,7 @@ const _gen: Record<string, Fig.Generator> = {
     script(context) {
       if (context[context.length - 1] === "") return undefined;
       const searchTerm = context[context.length - 1];
+      // spec-check-allow network: package lookup against api.npms.io; network generators are kept on purpose
       return [
         "curl",
         "-s",

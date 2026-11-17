@@ -472,6 +472,7 @@ const scriptOptions = (script: ScriptFields) => {
           generators = param?.selector?.generators
             .filter((generator) => generator.type === "ShellScript")
             .map((generator) => ({
+              // spec-check-allow shell-interpolation: the script comes from the Fig script definition, not from typed tokens
               script: ["bash", "-c", generator?.shellScript?.script],
               splitOn: "\n",
             }));

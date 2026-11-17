@@ -2,9 +2,9 @@ use std::fmt::{self, Display, Formatter};
 use std::ops::{Add, Index, IndexMut, Mul};
 use std::str::FromStr;
 
-use serde::de::{Error as _, Visitor};
+use serde::de::value::MapAccessDeserializer;
+use serde::de::{Error as _, MapAccess, Visitor};
 use serde::{Deserialize, Deserializer, Serialize};
-use serde_yaml::Value;
 use tracing::trace;
 
 use crate::ansi::NamedColor;
@@ -104,13 +104,14 @@ impl<'de> Deserialize<'de> for Rgb {
             b: u8,
         }
 
-        impl Visitor<'_> for RgbVisitor {
+        impl<'de> Visitor<'de> for RgbVisitor {
             type Value = Rgb;
 
             fn expecting(&self, f: &mut Formatter<'_>) -> fmt::Result {
                 f.write_str("hex color like #ff00ff")
             }
 
+            // Deserialize from hex notation (either 0xff00ff or #ff00ff).
             fn visit_str<E>(self, value: &str) -> Result<Rgb, E>
             where
                 E: serde::de::Error,
@@ -121,18 +122,18 @@ impl<'de> Deserialize<'de> for Rgb {
                     ))
                 })
             }
+
+            // Deserialize from struct form.
+            fn visit_map<A>(self, map: A) -> Result<Rgb, A::Error>
+            where
+                A: MapAccess<'de>,
+            {
+                let RgbDerivedDeser { r, g, b } = RgbDerivedDeser::deserialize(MapAccessDeserializer::new(map))?;
+                Ok(Rgb { r, g, b })
+            }
         }
 
-        // Return an error if the syntax is incorrect.
-        let value = Value::deserialize(deserializer)?;
-
-        // Attempt to deserialize from struct form.
-        if let Ok(RgbDerivedDeser { r, g, b }) = RgbDerivedDeser::deserialize(value.clone()) {
-            return Ok(Rgb { r, g, b });
-        }
-
-        // Deserialize from hex notation (either 0xff00ff or #ff00ff).
-        value.deserialize_str(RgbVisitor).map_err(D::Error::custom)
+        deserializer.deserialize_any(RgbVisitor)
     }
 }
 
@@ -285,6 +286,23 @@ impl IndexMut<NamedColor> for Colors {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn deserialize_rgb() {
+        let expected = Rgb {
+            r: 0xff,
+            g: 0x00,
+            b: 0x80,
+        };
+        assert_eq!(serde_json::from_str::<Rgb>(r##""#ff0080""##).unwrap(), expected);
+        assert_eq!(serde_json::from_str::<Rgb>(r#""0xff0080""#).unwrap(), expected);
+        assert_eq!(
+            serde_json::from_str::<Rgb>(r#"{"r":255,"g":0,"b":128}"#).unwrap(),
+            expected
+        );
+        assert!(serde_json::from_str::<Rgb>(r#""not a color""#).is_err());
+        assert!(serde_json::from_str::<Rgb>("42").is_err());
+    }
 
     #[test]
     fn contrast() {

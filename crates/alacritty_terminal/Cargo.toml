@@ -20,7 +20,6 @@ bitflags.workspace = true
 camino.workspace = true
 fig_os_shim.workspace = true
 serde.workspace = true
-serde_yaml = "0.9"
 shell-color.workspace = true
 tracing.workspace = true
 unicode-width.workspace = true

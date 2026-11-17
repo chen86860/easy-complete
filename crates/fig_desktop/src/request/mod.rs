@@ -126,7 +126,7 @@ impl<'a> fig_desktop_api::handler::EventHandler for EventHandler<'a> {
     }
 
     async fn onboarding(&self, request: Wrapped<Self::Ctx, OnboardingRequest>) -> RequestResult {
-        onboarding::onboarding(request.request, request.context.proxy, &request.context).await
+        onboarding::onboarding(request.request, &request.context).await
     }
 
     async fn run_process(&self, request: Wrapped<Self::Ctx, RunProcessRequest>) -> RequestResult {

@@ -77,8 +77,12 @@ TypeScript is linted and formatted with biome. The root `biome.json` covers `api
 The script also refreshes `Cargo.lock` and regenerates `THIRD_PARTY_NOTICES.txt`. CI checks that file with `pnpm licenses:check` whenever a lockfile or manifest changes, so run `pnpm licenses:generate` after changing dependencies. The script then prints the exact next steps:
 
 1. Add a `## v<version> - YYYY-MM-DD` entry, dated the day the tag is pushed, to both `CHANGELOG.md` (English) and `CHANGELOG.zh-CN.md` (Chinese) — keep them in sync, one entry each. Stable releases only: prereleases get no entry of their own (see below)
-2. `git add -A && git commit -m "chore: bump version to v<version>"`
-3. `git tag v<version> && git push origin main --tags`
+2. On a `chore/release-<version>` branch: `git add -A && git commit -m "chore: bump version to v<version>"`
+3. Push the branch and open a pull request. `main` is protected, so the bump cannot be pushed to it directly
+4. Merge the pull request once CI passes
+5. Tag the merge commit on `main`: `git switch main && git pull --ff-only && git tag v<version> && git push origin v<version>`
+
+Never tag the bump branch before it merges: the tag would point at a commit that is not on `main`, and CI may still reject it (`v2.8.0-beta.6` was tagged on a commit whose lockfile CI later rejected). Prereleases follow the same steps without the CHANGELOG entry.
 
 Prereleases use `X.Y.Z-alpha|beta|rc[.N]` tags. They publish as GitHub prereleases (no Homebrew tap update), and every tag also refreshes the `appcast.xml` on the rolling `beta-feed` release, which users who enable `app.betaUpdates` read. Sparkle's version comparator stops at the first `-`, so `CFBundleVersion` / `sparkle:version` drop the separators (`2.4.0-beta.1` → `2.4.0beta1`, via `scripts/sparkle-version.sh`); `CFBundleShortVersionString` keeps the tag form.
 

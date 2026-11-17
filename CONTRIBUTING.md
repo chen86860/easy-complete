@@ -106,7 +106,7 @@ pnpm test
   for example `fix(figterm): keep the cursor position after a resize`.
 - Keep a pull request to one change. Unrelated cleanups are easier to review on their own.
 - Changes to what users see need a screenshot or a short recording.
-- Do not edit `CHANGELOG.md`. Release notes are written when a version ships.
+- Do not edit `CHANGELOG.md`. The maintainer adds the line for your change when merging it.
 
 ## Licensing
 

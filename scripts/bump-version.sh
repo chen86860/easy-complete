@@ -53,10 +53,9 @@ STEP=1
 # Prereleases get no CHANGELOG section (see AGENTS.md); the stable release covers them.
 # Same pattern release.yml uses to publish a tag as a prerelease.
 if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+-(alpha|beta|rc)(\.[0-9A-Za-z-]+)*$ ]]; then
-  echo "  (prerelease: no CHANGELOG entry; put any notes in the GitHub prerelease body)"
+  echo "  (prerelease: leave ## Unreleased in CHANGELOG as it is; copy any notes into the GitHub prerelease body)"
 else
-  echo "  ${STEP}. Add a ## v${VERSION} - $(date +%Y-%m-%d) entry to both CHANGELOG.md (English) and CHANGELOG.zh-CN.md (Chinese),"
-  echo "     covering every change since the previous stable release"
+  echo "  ${STEP}. Rename ## Unreleased to ## v${VERSION} - $(date +%Y-%m-%d) in both CHANGELOG.md (English) and CHANGELOG.zh-CN.md (Chinese)"
   STEP=$((STEP + 1))
 fi
 echo "  ${STEP}. git switch -c ${BRANCH} && git add -A && git commit -m \"chore: bump version to v${VERSION}\"  # includes Cargo.lock"

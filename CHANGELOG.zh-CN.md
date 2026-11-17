@@ -2,6 +2,13 @@
 
 [English](./CHANGELOG.md) · **简体中文**
 
+## Unreleased
+
+- 新增：支持 Orca 和 Antigravity IDE（#268，感谢 @MichaelChene）
+- 修复：已安装的命令比所有分版本补全都旧时，改用最旧那份补全，不再用最新的。例如 pnpm 9 会得到 pnpm 10 的补全，而不是 pnpm 12（#272，感谢 @joshuaallgaier2-cmd）
+- 变更：`ec uninstall` 会移除 Easy Complete 安装的全部内容，包括登录项、偏好设置和辅助功能权限；Homebrew 安装的应用留给 `brew uninstall --zap` 删除（#283）
+- 变更：`ec --help` 现在会列出 `ec uninstall` 和 `ec debug`（#283）
+
 ## v2.8.0 - 2026-11-16
 
 - 新增：`magick`（ImageMagick 7）、`llm`、`exiftool`、`osxphotos` 和 `gittower` 的补全。颜色空间、模型、标签名这类选项值，直接取自你本机安装的工具（#238–#242，感谢 @kitschpatrol）

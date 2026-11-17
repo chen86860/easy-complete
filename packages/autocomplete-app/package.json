@@ -12,10 +12,11 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "serve": "vite preview --port 3124",
+    "complete": "tsx scripts/complete.ts",
     "test": "vitest",
-    "lint": "biome check src",
-    "lint:fix": "biome check --write src",
-    "format": "biome format --write src",
+    "lint": "biome check src scripts",
+    "lint:fix": "biome check --write src scripts",
+    "format": "biome format --write src scripts",
     "clean": "rm -rf dist"
   },
   "browserslist": [

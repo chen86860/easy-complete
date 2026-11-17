@@ -1,0 +1,15 @@
+usage: tool [-h] [--config CONFIG] [--format {json,text}] {start,stop,status} ...
+
+Manage the service.
+
+positional arguments:
+  {start,stop,status}
+    start               Start the service
+    stop                Stop the service
+    status              Show the service status
+
+options:
+  -h, --help            show this help message and exit
+  --config CONFIG, -c CONFIG
+                        Path to the configuration file
+  --format {json,text}  Output format

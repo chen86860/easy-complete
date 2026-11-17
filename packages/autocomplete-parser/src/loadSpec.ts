@@ -25,6 +25,7 @@ import {
 import { DisabledSpecError, MissingSpecError } from "./errors.js";
 import { specCache } from "./caches.js";
 import { tryResolveSpecToSubcommand } from "./tryResolveSpecToSubcommand.js";
+import { helpFallbackEnabled, loadHelpSpec } from "./helpSpec.js";
 
 /**
  * This searches for the first directory containing a .fig/ folder in the parent directories
@@ -207,10 +208,16 @@ export const loadFigSubcommand = async (
   return subcommand;
 };
 
+/**
+ * With `helpFallback`, a command that has no spec is completed from its
+ * `--help` (see `loadHelpSpec`), unless the `autocomplete.helpFallback`
+ * setting is off.
+ */
 export const loadSubcommandCached = async (
   specLocation: SpecLocation,
   context?: Fig.ShellContext,
   localLogger: Logger = logger,
+  helpFallback = false,
 ): Promise<Subcommand> => {
   const { name, type: source } = specLocation;
   const path =
@@ -234,7 +241,21 @@ export const loadSubcommandCached = async (
 
   const subcommand = await withTimeout(
     5000,
-    loadFigSubcommand(specLocation, context, localLogger),
+    loadFigSubcommand(specLocation, context, localLogger).catch(async (err) => {
+      if (
+        helpFallback &&
+        err instanceof MissingSpecError &&
+        source === SpecLocationSource.GLOBAL &&
+        helpFallbackEnabled()
+      ) {
+        const spec = await loadHelpSpec([name]);
+        if (spec) {
+          localLogger.info(`Completing ${name} from its --help`);
+          return spec;
+        }
+      }
+      throw err;
+    }),
   );
   const converted = convertSubcommand(subcommand, initializeDefault);
   specCache.set(key, converted);

@@ -1,0 +1,6 @@
+Usage of gotool:
+  -addr string
+    	listen address (default ":8080")
+  -v	verbose output
+  -workers int
+    	number of workers (default 4)

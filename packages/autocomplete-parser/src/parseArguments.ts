@@ -821,7 +821,8 @@ const parseArgumentsCached = async (
 
     spec = await withTimeout(
       5000,
-      loadSubcommandCached(specPath, context, localLogger),
+      // History entries never run a command's --help.
+      loadSubcommandCached(specPath, context, localLogger, !isParsingHistory),
     );
 
     if (!spec) {

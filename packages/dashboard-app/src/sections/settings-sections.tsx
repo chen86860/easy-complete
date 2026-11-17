@@ -199,6 +199,17 @@ export function AutocompleteSection({
           />
         </Row>
         <Row
+          label={t("behavior.helpFallback")}
+          description={t("behavior.helpFallbackDescription")}
+        >
+          <Toggle
+            checked={Boolean(
+              settingOrDefault(settings, SETTINGS.HELP_FALLBACK),
+            )}
+            onChange={(value) => set(SETTINGS.HELP_FALLBACK, value)}
+          />
+        </Row>
+        <Row
           label={t("autocomplete.disableForCommands")}
           description={t("autocomplete.disableForCommandsDescription")}
           last

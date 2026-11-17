@@ -3,21 +3,18 @@ use fig_os_shim::{ContextArcProvider, ContextProvider, EnvProvider};
 use fig_proto::fig::{OnboardingAction, OnboardingRequest};
 use fig_settings::{SettingsProvider, StateProvider};
 use fig_util::Shell;
-use tao::event_loop::ControlFlow;
 #[cfg(target_os = "macos")]
 use tokio::process::Command;
 #[allow(unused_imports)]
 use tracing::error;
 
 use super::{RequestResult, RequestResultImpl};
-use crate::EventLoopProxy;
-use crate::event::Event;
 
 pub async fn post_login() {
     fig_settings::state::set_value("desktop.completedOnboarding", true).ok();
 }
 
-pub async fn onboarding<Ctx>(request: OnboardingRequest, proxy: &EventLoopProxy, ctx: &Ctx) -> RequestResult
+pub async fn onboarding<Ctx>(request: OnboardingRequest, ctx: &Ctx) -> RequestResult
 where
     Ctx: SettingsProvider + StateProvider + ContextProvider + ContextArcProvider + Send + Sync,
 {
@@ -43,17 +40,6 @@ where
                 [] => RequestResult::success(),
                 errs => RequestResult::error(errs.join("\n")),
             }
-        },
-        OnboardingAction::Uninstall => {
-            use fig_install::{InstallComponents, uninstall};
-
-            let result = match uninstall(InstallComponents::all(), ctx.context_arc()).await {
-                Ok(_) => RequestResult::success(),
-                Err(err) => RequestResult::error(err.to_string()),
-            };
-
-            proxy.send_event(Event::ControlFlow(ControlFlow::Exit)).ok();
-            result
         },
         OnboardingAction::FinishOnboarding => {
             post_login().await;
@@ -102,7 +88,9 @@ where
             post_login().await;
             RequestResult::success()
         },
-        OnboardingAction::CloseAccessibilityPromptWindow
+        // No frontend sends Uninstall: `ec uninstall` is the only way to uninstall.
+        OnboardingAction::Uninstall
+        | OnboardingAction::CloseAccessibilityPromptWindow
         | OnboardingAction::RequestRestart
         | OnboardingAction::CloseInputMethodPromptWindow => RequestResult::error("Unimplemented"),
     }

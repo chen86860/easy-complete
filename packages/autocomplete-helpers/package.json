@@ -9,7 +9,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "rm -rf dist && tsc",
-    "test": "tsx test/index.ts && vitest --run"
+    "test": "vitest --run"
   },
   "author": "Fig Team",
   "dependencies": {

@@ -2,7 +2,7 @@
 
 GitHub tag releases build a Developer ID signed, notarized ARM64 DMG, attach a
 Sparkle appcast, and upload Sparkle delta updates when previous release assets
-are available.
+are available. Prerelease tags go to a separate beta feed (see [Beta Channel](#beta-channel)).
 
 ## Required GitHub Secrets
 
@@ -63,6 +63,31 @@ generation; they are not re-published in the latest release.
 The release workflow uses `SPARKLE_MAXIMUM_DELTAS` for both the archive history
 limit and delta generation, so it downloads at most five previous releases.
 
+## Beta Channel
+
+A tag whose version has an `-alpha`, `-beta` or `-rc` suffix (for example
+`v2.9.0-beta.1`) is published as a GitHub prerelease and skips the Homebrew tap update.
+GitHub never resolves `releases/latest` to a prerelease, so the stable feed above never
+offers it.
+
+Beta testers read a rolling feed instead:
+
+```text
+https://github.com/<owner>/<repo>/releases/download/beta-feed/appcast.xml
+```
+
+`scripts/build-app.sh` writes that URL to the `ECBetaFeedURL` Info.plist key
+(override it with `SPARKLE_BETA_APPCAST_URL`). When the `app.betaUpdates` setting
+(**Receive Beta Updates** in the dashboard) is on, the app's Sparkle delegate returns
+`ECBetaFeedURL` for each check, so the switch applies on the next check without a restart.
+With the setting off, or the key missing, Sparkle uses `SUFeedURL`.
+
+The `beta-feed` release only holds `appcast.xml`. The publish job creates it on first use
+(a prerelease pointing at the default branch) and, on every tag, stable or beta, uploads
+the new appcast over the old one, so testers also move on to the next stable release. If
+the feed already serves a newer version, for example a beta while an older line gets a
+hotfix, it is left alone. Do not delete the `beta-feed` release or its tag.
+
 ## Build Provenance
 
 The publish job attests the DMGs with `actions/attest-build-provenance` before uploading
@@ -78,15 +103,23 @@ Attestations are listed under the repository's **Actions → Attestations**. Thi
 from Developer ID signing and notarization, which prove the app's identity to macOS; the
 attestation proves which source and workflow produced the file.
 
-## Rust Build Cache
+## Build Caches
 
-CI on `main` builds the distribution profile and saves its dependency cache under
-the shared `macos-26-arm64` key. Release jobs restore that cache without saving a
-tag-specific copy. PR jobs also restore it, but only `main` writes shared caches.
+CI keeps two Rust caches, both written only by pushes to `main`:
 
-Keep the runner, `CARGO_TERM_COLOR`, `MACOSX_DEPLOYMENT_TARGET`, and the Rust cache
-inputs aligned between the two workflows. The deployment target is set before
-cache restoration and included in the cache key.
+- `macos-26-arm64-test`: dev and test artifacts for the clippy and test job.
+- `macos-26-arm64-dist`: dependencies of the distribution profile, built by the `rust-dist`
+  job. The release build restores it with `save-if: "false"`.
+
+Pull requests restore both caches but never save them. Caches saved from a tag are scoped
+to that tag and no later run could read them, so the release workflow saves none: it uses
+no `actions/cache` and no pnpm cache, and the CI run it calls as a release gate turns the
+pnpm cache off on tag refs. Turborepo's `.turbo/cache` follows the same rule and is saved
+only from `main`.
+
+Keep the runner, `CARGO_TERM_COLOR`, `MACOSX_DEPLOYMENT_TARGET`, and the `rust-cache`
+inputs (`shared-key`, `env-vars`) aligned between `ci.yml` and `release.yml`. The
+deployment target is set before cache restoration and included in the cache key.
 
 After changing the cache configuration, let CI on `main` finish successfully
 before pushing the next release tag so the new cache is available. A cold cache

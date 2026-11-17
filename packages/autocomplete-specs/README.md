@@ -35,7 +35,7 @@ so it needs the `ec` CLI on your `PATH`. Ctrl+C turns dev mode off again.
 ## Shipping a spec change
 
 Commit your change under `src/`; nothing else is needed. The app ships
-`bundle/specs/` at the repository root, which is build output, not committed:
+`build/specs/` at the repository root, which is build output, not committed:
 `scripts/build-app.sh` regenerates it from this package on every build, and CI
 does the same on every pull request.
 

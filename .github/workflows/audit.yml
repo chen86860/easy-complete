@@ -1,8 +1,9 @@
 name: Security audit
 
 # Fails when a lockfile contains a published advisory. Known, accepted advisories are listed
-# with a reason in .cargo/audit.toml (Rust) and under `auditConfig` in the pnpm-workspace.yaml
-# files (npm). The weekly run catches advisories published after the lockfiles last changed.
+# with a reason in .cargo/audit.toml (Rust; create it when the first one is needed, cargo-audit
+# reads only that path) and under `auditConfig` in the pnpm-workspace.yaml files (npm). The
+# weekly run catches advisories published after the lockfiles last changed.
 on:
   pull_request:
     paths:

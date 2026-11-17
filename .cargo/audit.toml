@@ -1,5 +1,0 @@
-# cargo-audit configuration, used by .github/workflows/audit.yml.
-# Every ignored advisory needs a reason, and should be dropped once the dependency moves past it.
-
-[advisories]
-ignore = []

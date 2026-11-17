@@ -85,7 +85,7 @@ jobs:
               website/*) website=true; continue ;;
               *.md | docs/* | LICENSE | NOTICE | .github/ISSUE_TEMPLATE/* | .claude/*) continue ;;
               # Release-only inputs: no build or test job reads them.
-              bundle/* | assets/* | THIRD_PARTY_NOTICES.txt) continue ;;
+              assets/* | THIRD_PARTY_NOTICES.txt) continue ;;
               .github/workflows/*) rust=true javascript=true website=true licenses=true ;;
               crates/* | Cargo.toml | Cargo.lock | rust-toolchain.toml | .cargo/* | .rustfmt.toml) rust=true ;;
               # The dashboard imports themes/*.json for its theme previews.

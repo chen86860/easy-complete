@@ -545,6 +545,7 @@ const createCommand: Fig.Subcommand = {
       args: {
         name: "template",
         generators: {
+          // spec-check-allow network: package lookup against the GitHub API; network generators are kept on purpose
           script: [
             "curl",
             "-sfL",

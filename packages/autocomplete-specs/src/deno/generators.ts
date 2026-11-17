@@ -191,6 +191,7 @@ type VersionsJSON = {
 };
 
 export const generateVersions: Fig.Generator = {
+  // spec-check-allow network: package lookup against the deno.land registry; network generators are kept on purpose
   script: ["curl", "-sL", "https://cdn.deno.land/deno/meta/versions.json"],
   cache: { ttl: 1000 * 60 * 60 * 24 }, // 24 hours, in milliseconds
   postProcess: (out) => {

@@ -29,6 +29,7 @@ export const generateBundleIds = (unquotedPath: string): Fig.Generator => ({
   script: [
     "bash",
     "-c",
+    // spec-check-allow shell-interpolation: every caller passes a constant path ("/" or "/Applications")
     `mdfind kMDItemContentTypeTree=com.apple.application-bundle -onlyin ${unquotedPath} | while read line; do echo $(mdls -name kMDItemCFBundleIdentifier -r "$line") $line; done`,
   ],
   postProcess: (out) => {

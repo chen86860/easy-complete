@@ -120,6 +120,7 @@ const completionSpec: Fig.Spec = {
           const lastToken = tokens[tokens.length - 1];
           if (lastToken.includes(":")) return [];
           const username = lastToken.slice(0, lastToken.indexOf("/"));
+          // spec-check-allow network: package lookup against the GitHub API; network generators are kept on purpose
           const { stdout } = await executeShellCommand({
             command: "curl",
             args: ["-sL", `https://api.github.com/users/${username}/repos`],

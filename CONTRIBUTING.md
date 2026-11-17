@@ -41,7 +41,14 @@ terminal, type the command and check the suggestions. Ctrl+C turns dev mode off 
 
 A spec may run commands to build its suggestions, for example `git branch` to list branches.
 Keep those read-only, pass what the user typed as separate arguments, never inside a shell
-string, and do not call the network.
+string, and do not call the network. `pnpm lint` checks this (CI runs it on every pull request);
+to run only that check, use `pnpm --filter @easy-complete/autocomplete-specs check-commands`.
+When a flagged command has been reviewed and is needed, mark it with a comment that gives the
+reason:
+
+```ts
+// spec-check-allow network: package lookup against crates.io; network generators are kept on purpose
+```
 
 **2. Open a pull request with your file under `src/`**
 

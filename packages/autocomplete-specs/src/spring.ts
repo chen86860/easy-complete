@@ -36,6 +36,7 @@ const memoizedFetchData = () => {
     }
 
     try {
+      // spec-check-allow network: package lookup against start.spring.io; network generators are kept on purpose
       const { stdout } = await executeShellCommand({
         command: "curl",
         args: [

@@ -1601,7 +1601,6 @@ dependencies = [
  "fig_os_shim",
  "fig_settings",
  "fig_util",
- "serde_json",
  "thiserror 2.0.21",
  "tokio",
  "tracing",

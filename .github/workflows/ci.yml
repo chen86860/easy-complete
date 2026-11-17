@@ -75,7 +75,7 @@ jobs:
           rust=false javascript=false website=false licenses=false
           while IFS= read -r f; do
             [ -n "$f" ] || continue
-            # THIRD_PARTY_NOTICES.txt is generated from the lockfiles and carries the app version.
+            # THIRD_PARTY_NOTICES.txt is generated from the lockfiles and manifests.
             case "$f" in
               Cargo.lock | Cargo.toml | crates/*/Cargo.toml | pnpm-lock.yaml | package.json | packages/*/package.json \
                 | THIRD_PARTY_NOTICES.txt | scripts/generate-third-party-notices.mjs) licenses=true ;;
@@ -85,7 +85,7 @@ jobs:
               website/*) website=true; continue ;;
               *.md | docs/* | LICENSE | NOTICE | .github/ISSUE_TEMPLATE/* | .claude/*) continue ;;
               # Release-only inputs: no build or test job reads them.
-              bundle/* | assets/* | THIRD_PARTY_NOTICES.txt) continue ;;
+              assets/* | THIRD_PARTY_NOTICES.txt) continue ;;
               .github/workflows/*) rust=true javascript=true website=true licenses=true ;;
               crates/* | Cargo.toml | Cargo.lock | rust-toolchain.toml | .cargo/* | .rustfmt.toml) rust=true ;;
               # The dashboard imports themes/*.json for its theme previews.

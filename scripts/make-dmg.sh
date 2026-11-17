@@ -7,8 +7,8 @@ set -euo pipefail
 # first). Produces a drag-to-install DMG with a custom background image.
 #
 # Background images (committed to the repo):
-#   bundle/dmg/background.png    — 660×400, 1×
-#   bundle/dmg/background@2x.png — 1320×800, 2× (Retina)
+#   assets/dmg/background.png    — 660×400, 1×
+#   assets/dmg/background@2x.png — 1320×800, 2× (Retina)
 # To regenerate them: swift scripts/make-dmg-background.swift
 #
 # Usage: scripts/make-dmg.sh [output.dmg]
@@ -20,7 +20,7 @@ VOL_NAME="Easy Complete"
 REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 APP="${REPO_DIR}/build/${APP_DISPLAY}.app"
 OUT="${1:-${REPO_DIR}/dist/Easy-Complete.dmg}"
-BG="${REPO_DIR}/bundle/dmg/background.png"
+BG="${REPO_DIR}/assets/dmg/background.png"
 
 GREEN='\033[0;32m'; NC='\033[0m'
 info() { echo -e "${GREEN}==>${NC} $*"; }

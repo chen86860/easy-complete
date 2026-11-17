@@ -56,7 +56,7 @@ commands built by helper functions, executables chosen at run time, or git subco
 
 **2. Open a pull request with your file under `src/`**
 
-That is all a spec change needs. The app ships specs from `bundle/specs/`, which every build
+That is all a spec change needs. The app ships specs from `build/specs/`, which every build
 generates from `src/`, so there is nothing to regenerate or commit besides your spec. CI builds
 the bundle on your pull request; on a first contribution from a fork, it waits for a
 maintainer to approve the run, so the checks stay pending until then.

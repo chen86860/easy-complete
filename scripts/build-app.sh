@@ -79,7 +79,7 @@ mkdir -p "${RESOURCES_DIR}/autocomplete"
 mkdir -p "${RESOURCES_DIR}/dashboard"
 mkdir -p "${RESOURCES_DIR}/themes"
 
-# bundle/specs is build output, not committed: regenerate it from
+# build/specs is build output, not committed: regenerate it from
 # packages/autocomplete-specs on every build. Offline unless a spec references a
 # remote icon that is not cached in the package yet.
 info "Bundling completion specs..."
@@ -159,7 +159,7 @@ cp "${TARGET_DIR}/ecterm"      "$MACOS_DIR/"
 cp -r packages/autocomplete-app/dist/* "${RESOURCES_DIR}/autocomplete/"
 cp -r packages/dashboard-app/dist/*    "${RESOURCES_DIR}/dashboard/"
 cp themes/*.json                       "${RESOURCES_DIR}/themes/"
-cp -R bundle/specs                     "${RESOURCES_DIR}/specs"
+cp -R build/specs                     "${RESOURCES_DIR}/specs"
 
 LICENSES_DIR="${RESOURCES_DIR}/Licenses"
 mkdir -p "$LICENSES_DIR"

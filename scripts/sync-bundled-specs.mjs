@@ -9,19 +9,19 @@ import { localizeSpecIcons } from "./localize-spec-icons.mjs";
 
 const repoDir = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-// Generates bundle/specs, the completion specs build-app.sh copies into the app. The
+// Generates build/specs, the completion specs build-app.sh copies into the app. The
 // directory is build output and not committed: build-app.sh runs this script on every
 // build.
 //
 // Source: the workspace package packages/autocomplete-specs. This script builds it
 // (build/<name>.js, nested specs, <name>/index.js for diff-versioned ones) and copies
-// the result plus icons/<name>.png into bundle/specs. Remote icons come from the
+// the result plus icons/<name>.png into build/specs. Remote icons come from the
 // package's icons/remote cache (see localize-spec-icons.mjs), so a build is offline
 // unless a spec references an icon that is not cached yet.
 const specsPackageDir = join(repoDir, "packages", "autocomplete-specs");
 
 const outDir =
-  process.env.BUNDLED_SPECS_DIR || join(repoDir, "bundle", "specs");
+  process.env.BUNDLED_SPECS_DIR || join(repoDir, "build", "specs");
 const iconListPath = join(
   repoDir,
   "packages",

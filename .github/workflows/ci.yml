@@ -272,12 +272,14 @@ jobs:
           key: turbo-${{ github.sha }}
 
   # THIRD_PARTY_NOTICES.txt is generated from both lockfiles and ships inside the app.
-  # macOS, like the machines that generate it: pnpm resolves platform-specific packages.
+  # Linux gives the same file as macOS: the npm side lists only --prod dependencies,
+  # and the Rust side resolves for aarch64-apple-darwin whatever the host is.
+  # Checked in a linux/amd64 container on 2026-11-17 (#258).
   licenses:
     name: Third-party notices
     needs: changes
     if: needs.changes.outputs.licenses == 'true'
-    runs-on: macos-26
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7

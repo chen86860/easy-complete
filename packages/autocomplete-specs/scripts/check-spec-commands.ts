@@ -34,7 +34,7 @@ const SHELLS = new Set(["sh", "bash", "zsh", "dash", "fish"]);
 // Commands that run the command named in their arguments, with the options that take a
 // separate operand.
 const WRAPPERS: Record<string, Set<string>> = {
-  env: new Set(["-u", "--unset", "-C", "--chdir", "-S", "--split-string"]),
+  env: new Set(["-u", "--unset", "-C", "--chdir"]),
   xargs: new Set(["-I", "-n", "-P", "-d", "-L", "-s", "-E", "-a"]),
   nohup: new Set(),
   time: new Set(["-f", "-o"]),
@@ -91,11 +91,13 @@ const GIT_WRITE_SUBCOMMANDS = new Set([
   "am",
   "apply",
   "checkout",
+  "cherry-pick",
   "clean",
   "clone",
   "commit",
   "fetch",
   "init",
+  "ls-remote",
   "merge",
   "mv",
   "pull",
@@ -103,6 +105,7 @@ const GIT_WRITE_SUBCOMMANDS = new Set([
   "rebase",
   "reset",
   "restore",
+  "revert",
   "rm",
   "switch",
 ]);
@@ -135,6 +138,8 @@ const SHELL_PREFIXES = new Set([
 // Shell headers whose words are not commands: `for x in a b`, `case $x in`.
 const SHELL_HEADERS = new Set(["for", "select", "case"]);
 const ASSIGNMENT = /^[A-Za-z_][A-Za-z0-9_]*=/;
+// Redirection targets that do not write a file.
+const HARMLESS_TARGETS = new Set(["/dev/null", "/dev/stdout", "/dev/stderr"]);
 
 const ALLOW_PATTERN = /spec-check-allow\s+([a-z-]+)\s*:\s*\S/g;
 
@@ -144,31 +149,39 @@ function basename(program: string): string {
 
 /**
  * Splits a shell script into the words of each command it runs, including commands inside
- * `$(...)` and backticks. Quotes and escapes are removed; a substitution inside a word
- * leaves a `$()` placeholder; redirection targets and comments are dropped.
+ * `$(...)` and backticks, and the files it redirects output to. Quotes and escapes are
+ * removed; a substitution inside a word leaves a `$()` placeholder; comments are dropped.
  */
-function shellCommands(script: string): string[][] {
+function parseShell(script: string): { commands: string[][]; writes: string[] } {
   const commands: string[][] = [];
+  const writes: string[] = [];
   let i = 0;
 
   const parse = (until?: ")" | "`"): void => {
     let words: string[] = [];
     let word = "";
     let inWord = false;
-    let redirectTarget = false;
+    // The operator before the word being read, when that word is a redirection target.
+    let redirect: string | undefined;
     let depth = 0;
 
     const endWord = () => {
       if (inWord) {
-        if (!redirectTarget) words.push(word);
-        redirectTarget = false;
+        if (redirect === undefined) {
+          words.push(word);
+        } else {
+          // `>&2` and `2>&-` duplicate or close a descriptor; any other `>` target is a file.
+          const duplicates = redirect.endsWith("&") && /^(\d+|-)$/.test(word);
+          if (redirect.includes(">") && !duplicates && !HARMLESS_TARGETS.has(word)) writes.push(word);
+          redirect = undefined;
+        }
       }
       word = "";
       inWord = false;
     };
     const endCommand = () => {
       endWord();
-      redirectTarget = false;
+      redirect = undefined;
       if (words.length > 0) commands.push(words);
       words = [];
     };
@@ -235,9 +248,10 @@ function shellCommands(script: string): string[][] {
         } else {
           endWord();
         }
+        const start = i;
         i += 1;
         while (i < script.length && /[<>&|]/.test(script[i])) i += 1;
-        redirectTarget = true;
+        redirect = script.slice(start, i);
       } else if (c === "(") {
         depth += 1;
         endCommand();
@@ -260,7 +274,7 @@ function shellCommands(script: string): string[][] {
   };
   parse();
 
-  return commands
+  const programs = commands
     .map((words) => {
       let start = 0;
       while (start < words.length && (ASSIGNMENT.test(words[start]) || SHELL_PREFIXES.has(words[start]))) start += 1;
@@ -268,6 +282,12 @@ function shellCommands(script: string): string[][] {
       return rest.length > 0 && SHELL_HEADERS.has(rest[0]) ? [] : rest;
     })
     .filter((words) => words.length > 0);
+  return { commands: programs, writes };
+}
+
+/** A property name written as an identifier or a string: `script` and `"script"`. */
+function propertyName(name: ts.PropertyName): string | undefined {
+  return ts.isIdentifier(name) || ts.isStringLiteral(name) ? name.text : undefined;
 }
 
 function checkFile(source: ts.SourceFile, checker: ts.TypeChecker): Finding[] {
@@ -382,7 +402,9 @@ function checkFile(source: ts.SourceFile, checker: ts.TypeChecker): Finding[] {
       report(node, "shell-interpolation", "builds a shell string from values that are not constant; pass them as separate arguments");
       return;
     }
-    for (const words of shellCommands(script)) checkCommand(node, { words, complete: true });
+    const { commands, writes } = parseShell(script);
+    for (const target of writes) report(node, "denied-command", `writes to \`${target}\` through a redirection`);
+    for (const words of commands) checkCommand(node, { words, complete: true });
   };
 
   const checkCommand = (node: ts.Node, { words, complete }: Argv): void => {
@@ -409,6 +431,18 @@ function checkFile(source: ts.SourceFile, checker: ts.TypeChecker): Finding[] {
       while (i < args.length) {
         const arg = args[i];
         if (arg === undefined) break;
+        // `env -S "cmd args"` splits its operand into the command line it runs.
+        const split = name === "env" ? /^(?:-S|--split-string)(?:=(.*))?$/.exec(arg) : null;
+        if (split) {
+          const payload = split[1] ?? args[i + 1];
+          const after = args.slice(split[1] === undefined ? i + 2 : i + 1);
+          if (payload === undefined) {
+            report(node, "denied-command", "runs `env -S` with a command that is not constant");
+          } else {
+            checkCommand(node, { words: ["env", ...payload.split(/\s+/).filter(Boolean), ...after], complete });
+          }
+          return;
+        }
         if (operandOptions.has(arg)) i += 2;
         else if (arg.startsWith("-") || (name === "env" && ASSIGNMENT.test(arg))) i += 1;
         else if (durations > 0) {
@@ -431,7 +465,7 @@ function checkFile(source: ts.SourceFile, checker: ts.TypeChecker): Finding[] {
       if (i < args.length ? subcommand === undefined : !complete) {
         report(node, "denied-command", "runs `git` with a subcommand that is not constant");
       } else if (subcommand && GIT_WRITE_SUBCOMMANDS.has(subcommand)) {
-        report(node, "denied-command", `runs \`git ${subcommand}\`, which is not read-only`);
+        report(node, "denied-command", `runs \`git ${subcommand}\`, which writes to the repository or reaches a remote`);
       }
       return;
     }
@@ -447,7 +481,7 @@ function checkFile(source: ts.SourceFile, checker: ts.TypeChecker): Finding[] {
   const checkCommandInput = (node: ts.Node, input: ts.ObjectLiteralExpression, path: ReadonlySet<ts.Node>) => {
     const property = (key: string): ts.Expression | undefined => {
       for (const p of input.properties) {
-        if (!p.name || !ts.isIdentifier(p.name) || p.name.text !== key) continue;
+        if (!p.name || propertyName(p.name) !== key) continue;
         if (ts.isPropertyAssignment(p)) return p.initializer;
         if (ts.isShorthandPropertyAssignment(p)) return p.name;
       }
@@ -492,7 +526,23 @@ function checkFile(source: ts.SourceFile, checker: ts.TypeChecker): Finding[] {
     }
   };
 
-  const isScriptName = (name: ts.PropertyName) => ts.isIdentifier(name) && name.text === "script";
+  const isScriptName = (name: ts.PropertyName) => propertyName(name) === "script";
+
+  // The function the runtime passes as the second argument of `custom`, under any name.
+  const isCustomExecutor = (callee: ts.Expression): boolean => {
+    const [node] = unwrap(callee, new Set());
+    if (!ts.isIdentifier(node)) return false;
+    const decl = checker.getSymbolAtLocation(node)?.valueDeclaration;
+    if (!decl || !ts.isParameter(decl)) return false;
+    const fn = decl.parent;
+    if (fn.parameters.indexOf(decl) !== 1) return false;
+    if (ts.isMethodDeclaration(fn)) return propertyName(fn.name) === "custom";
+    return (
+      (ts.isArrowFunction(fn) || ts.isFunctionExpression(fn)) &&
+      ts.isPropertyAssignment(fn.parent) &&
+      propertyName(fn.parent.name) === "custom"
+    );
+  };
 
   const visit = (node: ts.Node): void => {
     if (ts.isPropertyAssignment(node) && isScriptName(node.name)) checkScript(node.initializer);
@@ -508,7 +558,7 @@ function checkFile(source: ts.SourceFile, checker: ts.TypeChecker): Finding[] {
       }
       // executeCommand({ command, args }) and the same function under another name.
       const [input] = node.arguments;
-      if (/exec/i.test(calleeName) && input) {
+      if ((/exec/i.test(calleeName) || isCustomExecutor(callee)) && input) {
         const [value, path] = unwrap(input, new Set());
         if (ts.isObjectLiteralExpression(value)) checkCommandInput(node, value, path);
       }

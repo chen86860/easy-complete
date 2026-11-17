@@ -50,6 +50,10 @@ reason:
 // spec-check-allow network: package lookup against crates.io; network generators are kept on purpose
 ```
 
+The check reads the spec's source and is an aid to review, not a sandbox. It does not follow
+commands built by helper functions, executables chosen at run time, or git subcommands such as
+`branch` and `config` that read or write depending on their arguments; reviewers check those.
+
 **2. Open a pull request with your file under `src/`**
 
 That is all a spec change needs. The app ships specs from `bundle/specs/`, which every build

@@ -76,7 +76,7 @@ TypeScript is linted and formatted with biome. The root `biome.json` covers `api
 
 The script also refreshes `Cargo.lock` and regenerates `THIRD_PARTY_NOTICES.txt`. CI checks that file with `pnpm licenses:check` whenever a lockfile or manifest changes, so run `pnpm licenses:generate` after changing dependencies. The script then prints the exact next steps:
 
-1. Add a `## v<version> - YYYY-MM-DD` entry, dated the day the tag is pushed, to both `CHANGELOG.md` (English) and `CHANGELOG.zh-CN.md` (Chinese) — keep them in sync, one entry each. Stable releases only: prereleases get no entry of their own (see below)
+1. In both `CHANGELOG.md` (English) and `CHANGELOG.zh-CN.md` (Chinese), rename `## Unreleased` to `## v<version> - YYYY-MM-DD`, dated the day the tag is pushed, and tidy its lines. Stable releases only: prereleases leave `## Unreleased` as it is (see below)
 2. On a `chore/release-<version>` branch: `git add -A && git commit -m "chore: bump version to v<version>"`
 3. Push the branch and open a pull request. `main` is protected, so the bump cannot be pushed to it directly
 4. Merge the pull request once CI passes
@@ -88,7 +88,11 @@ Prereleases use `X.Y.Z-alpha|beta|rc[.N]` tags. They publish as GitHub prereleas
 
 Signing, notarization, the Sparkle appcast and deltas, the required GitHub secrets and the local commands for each step are documented in [docs/release-updates.md](docs/release-updates.md). Read it before touching `release.yml` or the `scripts/*sparkle*`, `sign-macos-app.sh`, `notarize-dmg.sh` and `make-dmg.sh` scripts.
 
-Prereleases get no CHANGELOG section. Put their notes in the GitHub prerelease body if needed, and when the stable version ships, write one `## vX.Y.Z` entry covering every change since the previous stable release. Do not mention the beta line in it, and keep entries short and user-facing.
+Prereleases get no CHANGELOG section. Put their notes in the GitHub prerelease body if needed (copy them from `## Unreleased`), and when the stable version ships, `## Unreleased` becomes its `## vX.Y.Z` entry. Do not mention the beta line in it.
+
+### Changelog
+
+Every user-facing change gets a line under `## Unreleased` at the top of both `CHANGELOG.md` and `CHANGELOG.zh-CN.md`, added in the pull request that makes the change, or by the maintainer when merging an outside contribution (contributors are asked not to edit the changelog). Create the heading above the latest version if it is missing. Use the existing prefixes (`new:`, `change:`, `fix:`, `docs:` and `新增：`, `变更：`, `修复：`, `文档：`), keep lines short and user-facing, and credit outside contributors with the PR number and `thanks @user`. Internal changes such as CI, refactors and tests get no line.
 
 ## Architecture
 

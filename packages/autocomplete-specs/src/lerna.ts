@@ -15,7 +15,7 @@ const getBranches: Fig.Generator = {
     }
     return out.split("\n").map((output) => {
       return {
-        name: output.replace("*", "").trim(),
+        name: output.replace(/^\*\s*/, "").trim(),
         description: "Branch",
         icon: "fig://icon?type=git",
       };

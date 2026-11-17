@@ -5,7 +5,10 @@ const branches: Fig.Generator = {
       return [];
     }
     return output.split("\n").map((branch) => {
-      return { name: branch.replace("*", "").trim(), description: "Branch" };
+      return {
+        name: branch.replace(/^\*\s*/, "").trim(),
+        description: "Branch",
+      };
     });
   },
 };

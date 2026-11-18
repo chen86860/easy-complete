@@ -28,3 +28,7 @@ auditConfig:
     # it doesn't ship to the site. Revisit when wrangler moves to a newer miniflare.
     - GHSA-rfgv-xxqx-mfg5
     - GHSA-w293-vg96-wgc3
+    # picomatch <= 4.0.7 (ReDoS on repeated extglobs) via the TanStack Start and Vite build
+    # plugins: it runs at build time on patterns in this repository and doesn't ship to the
+    # site. No fixed release is published.
+    - GHSA-fc5q-39xc-vjpf

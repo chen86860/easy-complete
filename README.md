@@ -142,7 +142,8 @@ A Homebrew install is removed with `brew uninstall --zap`, so the cask goes too.
 
 Easy Complete is three cooperating processes: the desktop app (`easy-complete`, overlay and
 settings UI), a pseudoterminal (`ecterm`) that reads the shell edit buffer, and the `ec`
-CLI. They talk over Unix sockets using Protobuf.
+CLI. They talk over Unix sockets using Protobuf. [How it works](./docs/how-it-works.md)
+follows one keystroke through all of them.
 
 [AGENTS.md](./AGENTS.md) is the full architecture and contributor guide: toolchain, crate
 map, IPC, build and test commands, bundled specs and the release process.

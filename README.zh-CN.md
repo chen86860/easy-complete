@@ -135,6 +135,7 @@ Complete 自己的输入源）、登录项、偏好设置、辅助功能权限�
 
 Easy Complete 由三个协作进程组成：桌面应用（`easy-complete`，承载补全浮层和设置界面）、读取
 shell 编辑缓冲区的伪终端（`ecterm`），以及 `ec` CLI，三者通过 Unix 套接字以 Protobuf 通信。
+[工作原理](./docs/how-it-works.md)（英文）跟随一次按键走完整条链路。
 
 [AGENTS.md](./AGENTS.md) 是完整的架构与贡献指南：工具链、crate 索引、IPC、构建与测试命令、
 内置 spec 和发布流程都在其中。

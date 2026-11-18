@@ -76,6 +76,7 @@ Easy Complete is macOS only and builds on Apple silicon. You need:
 
 - Rust, at the version pinned in `rust-toolchain.toml` (rustup installs it for you)
 - Node.js 24 and pnpm 11 (`corepack enable` picks up the pinned pnpm)
+- Xcode Command Line Tools, and `brew install fish shellcheck` for the shell-integration tests in `ec_cli`
 
 ```bash
 pnpm install

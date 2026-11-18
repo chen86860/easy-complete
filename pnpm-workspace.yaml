@@ -26,7 +26,7 @@ allowBuilds:
 # reason; drop the entry once the dependency moves past it.
 auditConfig:
   ignoreGhsas:
-    # braces 3.0.3 via the root micromatch dev dependency. No fixed release is published.
+    # braces 3.0.3 via fast-glob in @withfig/autocomplete-tools. No fixed release is published.
     - GHSA-vfj7-8cjw-p6xm
     # picomatch <= 4.0.7 (ReDoS on repeated extglobs) via vitest, vite and tinyglobby: dev
     # tooling only, matching patterns written in this repository. No fixed release is published.

@@ -9,7 +9,7 @@
  *
  * The webview's native host is replaced by a small one in this process:
  * commands run here (with this shell's environment), files are read from
- * disk, `spec://localhost/` maps to `bundle/specs/`. Your settings file is
+ * disk, `spec://localhost/` maps to `build/specs/`. Your settings file is
  * read, so `autocomplete.*` settings apply. `ec` is the one built in this
  * repository (`EC_BINARY`, else `target/{release,debug}/ec`), so the --help
  * fallback runs the code you are working on.
@@ -34,7 +34,7 @@ import type {
 } from "@easy-complete/proto/fig";
 
 const REPO = resolve(fileURLToPath(import.meta.url), "../../../..");
-const SPECS = join(REPO, "bundle/specs");
+const SPECS = join(REPO, "build/specs");
 const SPEC_URL = "spec://localhost/";
 
 const { values, positionals } = parseArgs({
@@ -81,7 +81,7 @@ const { ClientOriginatedMessageSchema, ServerOriginatedMessageSchema } =
 
 if (!existsSync(join(SPECS, "index.json"))) {
   console.error(
-    "bundle/specs is missing: build it with `node scripts/sync-bundled-specs.mjs`",
+    "build/specs is missing: build it with `node scripts/sync-bundled-specs.mjs`",
   );
   process.exit(1);
 }
@@ -95,7 +95,7 @@ const ecBinary = (() => {
   return built[0] ?? "ec";
 })();
 
-// --- `spec://localhost/` -> bundle/specs ----------------------------------
+// --- `spec://localhost/` -> build/specs ----------------------------------
 
 registerHooks({
   resolve(specifier, context, nextResolve) {

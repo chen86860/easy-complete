@@ -13,7 +13,7 @@
     "build": "turbo build",
     "format": "cargo fmt && pnpm -r --if-present format",
     "test": "vitest",
-    "test:ci": "vitest run --run --coverage",
+    "test:ci": "vitest run --coverage",
     "test:ui": "vitest --ui",
     "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",

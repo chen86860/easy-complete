@@ -18,6 +18,10 @@ APP_SUPPORT="${HOME}/Library/Application Support/${APP_NAME}"
 # Logs live in the per-user temp dir (fig_util::directories::logs_dir). getconf, not $TMPDIR,
 # so an unset TMPDIR can never turn this into a relative path.
 LOGS_DIR="$(getconf DARWIN_USER_TEMP_DIR)eclog"
+# Identifiers the app and its WebViews store data under: the bundle id and the executable name
+# (used by WebKit and tao), for this release and for those before the rename.
+APP_IDS=("$BUNDLE_ID" "$APP_NAME" "dev.emmmm.autocomplete-v5" "autocomplete-v5")
+HOMEBREW_CASK="chen86860/tap/easy-complete"
 
 GREEN='\033[0;32m'; YELLOW='\033[0;33m'; RED='\033[0;31m'; NC='\033[0m'
 info()  { echo -e "${GREEN}==>${NC} $*"; }
@@ -34,6 +38,8 @@ if [[ "${1:-}" != "--yes" ]]; then
   echo "  • ${LOCAL_BIN}/ec  and  ecterm"
   echo "  • ${APP_SUPPORT}/"
   echo "  • ${LOGS_DIR}/"
+  echo "  • Caches, WebKit and HTTP storage under ~/Library and the per-user cache and temp dirs"
+  echo "  • The Homebrew cask, when installed with Homebrew"
   echo "  • Shell integration lines in ~/.zshrc / ~/.bashrc / ~/.config/fish/config.fish"
   echo ""
   read -r -p "Continue? [y/N] " confirm
@@ -107,6 +113,15 @@ if changed:
 PY
 
 # ── 5. Remove app bundle ───────────────────────────────────────────────────────
+# A Homebrew install goes through brew, so the cask record goes with the app and
+# `brew upgrade` cannot bring it back.
+for prefix in "${HOMEBREW_PREFIX:-}" /opt/homebrew /usr/local; do
+  if [[ -n "$prefix" && -d "${prefix}/Caskroom/${APP_NAME}" && -x "${prefix}/bin/brew" ]]; then
+    info "Uninstalling the Homebrew cask..."
+    "${prefix}/bin/brew" uninstall --zap --cask "$HOMEBREW_CASK" || warn "brew uninstall failed; removing the app directly"
+    break
+  fi
+done
 info "Removing /Applications/${APP_DISPLAY}.app..."
 rm -rf "$APP_BUNDLE"
 
@@ -155,9 +170,37 @@ rm -rf "$APP_SUPPORT"
 rm -rf "${TMPDIR}ecrun"  2>/dev/null || true
 rm -rf "/tmp/ecrun"      2>/dev/null || true
 
-# Preferences
-defaults delete "$BUNDLE_ID"     2>/dev/null || true
-defaults delete "$IME_BUNDLE_ID" 2>/dev/null || true
+rm -rf "${HOME}/.local/share/${APP_NAME}"
+rm -rf "${HOME}/Library/Saved Application State/${BUNDLE_ID}.savedState"
+
+# Caches, WebKit data and HTTP storage of the app's WebViews
+for id in "${APP_IDS[@]}"; do
+  rm -rf "${HOME}/Library/Caches/${id}" \
+    "${HOME}/Library/WebKit/${id}" \
+    "${HOME}/Library/HTTPStorages/${id}" \
+    "${HOME}/Library/HTTPStorages/${id}.binarycookies"
+done
+
+# The app's own dir and those of the WebKit processes it ran (com.apple.WebKit.<process>+<id>)
+# in the per-user cache and temp dirs. Development builds run unbundled, so WebKit names them
+# after the executable plus a hash (easy_complete-<hash>).
+for key in DARWIN_USER_CACHE_DIR DARWIN_USER_TEMP_DIR; do
+  dir="$(getconf "$key" 2>/dev/null || true)"
+  [[ "$dir" == /* && -d "$dir" ]] || continue
+  for path in "$dir"*; do
+    name="${path##*/}"
+    owner="$name"
+    [[ "$name" == com.apple.WebKit.*+* ]] && owner="${name#*+}"
+    case "$owner" in
+      "$BUNDLE_ID" | "$APP_NAME" | dev.emmmm.autocomplete-v5 | autocomplete-v5 | easy_complete-*) rm -rf "$path" ;;
+    esac
+  done
+done
+
+# Preferences, under the current and earlier identifiers
+for domain in "$BUNDLE_ID" "$IME_BUNDLE_ID" "$APP_NAME" dev.emmmm.autocomplete-v5 dev.emmmm.autocomplete-v5.inputmethod autocomplete-v5; do
+  defaults delete "$domain" 2>/dev/null || true
+done
 
 # Accessibility grant — drop the now-dead TCC entry so it doesn't linger in
 # System Settings pointing at a removed binary.

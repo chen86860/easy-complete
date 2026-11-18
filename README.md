@@ -133,15 +133,10 @@ ec uninstall
 
 This removes everything Easy Complete installed: the shell and terminal integrations, the
 command-line tools, the input method (only Easy Complete's own input source), the login item,
-the preferences, the Accessibility permission and application data, and then the app itself.
+the preferences, the Accessibility permission, caches and application data, and then the app itself.
 Run `exec $SHELL` afterwards.
 
-If you installed with Homebrew, the app is left for Homebrew to remove, so its cask record
-goes too. `ec uninstall` prints the command:
-
-```bash
-brew uninstall --zap chen86860/tap/easy-complete
-```
+A Homebrew install is removed with `brew uninstall --zap`, so the cask goes too.
 
 ## 🛠 Development
 

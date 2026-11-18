@@ -49,14 +49,6 @@ pub async fn uninstall_command(no_confirm: bool) -> Result<ExitCode> {
 #[cfg(target_os = "macos")]
 async fn uninstall(ctx: std::sync::Arc<fig_os_shim::Context>) -> Result<()> {
     fig_install::uninstall(fig_install::InstallComponents::all(), ctx).await?;
-    if fig_install::installed_with_homebrew() {
-        println!(
-            "\n{PRODUCT_NAME} was installed with Homebrew. Remove the app with {}",
-            format!("brew uninstall --zap chen86860/tap/{}", fig_install::HOMEBREW_CASK)
-                .bold()
-                .magenta()
-        );
-    }
     println!("\nRestart your shell to finish: {}", "exec $SHELL".bold().magenta());
     Ok(())
 }

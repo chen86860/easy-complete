@@ -126,15 +126,10 @@ ec uninstall
 ```
 
 它会移除 Easy Complete 安装的全部内容：Shell 与终端集成、命令行工具、输入法（只移除 Easy
-Complete 自己的输入源）、登录项、偏好设置、辅助功能权限和应用数据，最后删除应用本身。完成后运行
+Complete 自己的输入源）、登录项、偏好设置、辅助功能权限、缓存和应用数据，最后删除应用本身。完成后运行
 `exec $SHELL`。
 
-如果是用 Homebrew 安装的，应用会留给 Homebrew 删除，这样 cask 记录也会一并清掉。`ec uninstall`
-会打印这条命令：
-
-```bash
-brew uninstall --zap chen86860/tap/easy-complete
-```
+如果是用 Homebrew 安装的，会通过 `brew uninstall --zap` 移除，cask 记录也一并清掉。
 
 ## 🛠 开发
 

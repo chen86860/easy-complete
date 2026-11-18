@@ -35,12 +35,6 @@ importers:
       '@vitest/ui':
         specifier: ^4.1.12
         version: 4.1.12(vitest@4.1.12)
-      micromatch:
-        specifier: ^4.0.8
-        version: 4.0.8
-      tsx:
-        specifier: ^4.23.15
-        version: 4.23.15
       turbo:
         specifier: ^2.11.10
         version: 2.11.10

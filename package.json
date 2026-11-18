@@ -11,13 +11,10 @@
   },
   "scripts": {
     "build": "turbo build",
-    "b": "turbo build",
     "format": "cargo fmt && pnpm -r --if-present format",
-    "clippy": "cargo clippy --locked --workspace --color always -- -D warnings",
     "test": "vitest",
     "test:ci": "vitest run --run --coverage",
     "test:ui": "vitest --ui",
-    "coverage": "vitest run --coverage",
     "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",
     "licenses:generate": "node scripts/generate-third-party-notices.mjs",
@@ -25,15 +22,12 @@
     "dev": "turbo dev",
     "dev:autocomplete": "pnpm -C packages/autocomplete-app dev",
     "preview:autocomplete": "pnpm -C packages/autocomplete-app preview",
-    "clean": "turbo clean",
-    "setup": "bash scripts/setup.sh"
+    "clean": "turbo clean"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.1",
     "@vitest/coverage-v8": "^4.1.12",
     "@vitest/ui": "^4.1.12",
-    "micromatch": "^4.0.8",
-    "tsx": "^4.23.15",
     "turbo": "^2.11.10",
     "vitest": "^4.1.12"
   }

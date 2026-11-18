@@ -114,7 +114,7 @@ Three cooperating native processes communicate via Unix domain sockets (protobuf
 
 ### Shell Integration
 
-`fig_integrations` and `fig_install` inject hooks into shell rc files (`.zshrc`, `.bashrc`, fish config). These hooks report shell state (CWD, command text, cursor position) back to `figterm` via IPC on every prompt and keystroke.
+`fig_integrations` and `fig_install` inject hooks into shell rc files (`.zshrc`, `.bashrc`, fish config). The `pre` block `exec`s `ecterm`, which starts the real shell on a new PTY. The `post` block wraps the prompt in `OSC 697` escape sequences (`StartPrompt`, `EndPrompt`, `NewCmd`) and, on each prompt, reports shell state the same way (`Dir=`, `PID=`, `ExitCode=`, …), plus `PreExec` before a command runs. The hooks never report keystrokes or the edit buffer: `figterm` parses these sequences in the PTY output with its `alacritty_terminal` fork and reads the edit buffer off its own copy of the screen, from the `NewCmd` cursor onward (`Term::get_current_buffer`). See [docs/how-it-works.md](docs/how-it-works.md).
 
 `ec init` stands down entirely when the desktop app is not running (`suppress_without_desktop_app`), so VS Code Terminal Suggest, Otty and friends keep their own completions. This is a point-in-time decision made when the shell starts: a terminal opened while the app is down remains uninstrumented for that session. After launching Easy Complete, open a new terminal to enable its completions.
 

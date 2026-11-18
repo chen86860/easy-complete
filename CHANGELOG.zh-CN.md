@@ -9,6 +9,7 @@
 - 变更：`ec uninstall` 会移除 Easy Complete 安装的全部内容，包括登录项、偏好设置、辅助功能权限和缓存，并删除应用本身；Homebrew 安装会通过 `brew uninstall --zap` 移除（#283）
 - 变更：`ec --help` 现在会列出 `ec uninstall` 和 `ec debug`（#283）
 - 文档：新增 [docs/how-it-works.md](./docs/how-it-works.md)，说明 Easy Complete 如何读取输入内容、定位补全浮层并插入补全
+- 文档：新增 CONTRIBUTING.md 的中文版 CONTRIBUTING.zh-CN.md（#266）
 
 ## v2.8.0 - 2026-11-16
 

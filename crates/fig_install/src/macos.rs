@@ -81,11 +81,16 @@ fn homebrew_cask_brew() -> Option<PathBuf> {
     if let Some(prefix) = std::env::var_os("HOMEBREW_PREFIX") {
         prefixes.insert(0, prefix.into());
     }
+    find_cask_brew(prefixes)
+}
+
+/// Both checks belong to the same candidate, so a stale prefix cannot hide a later valid one.
+fn find_cask_brew(prefixes: Vec<PathBuf>) -> Option<PathBuf> {
     prefixes
         .into_iter()
-        .find(|prefix| prefix.join("Caskroom/easy-complete").is_dir())
+        .filter(|prefix| prefix.join("Caskroom/easy-complete").is_dir())
         .map(|prefix| prefix.join("bin/brew"))
-        .filter(|brew| brew.exists())
+        .find(|brew| brew.exists())
 }
 
 async fn uninstall_cask(brew: &Path) {
@@ -236,6 +241,27 @@ mod tests {
                 "dev.emmmm.easy-complete",
             ]
         );
+    }
+
+    #[test]
+    fn find_cask_brew_skips_a_prefix_without_brew() {
+        let dir = tempfile::tempdir().unwrap();
+        let stale = dir.path().join("stale");
+        let valid = dir.path().join("valid");
+        let other = dir.path().join("other");
+        std::fs::create_dir_all(stale.join("Caskroom/easy-complete")).unwrap();
+        std::fs::create_dir_all(valid.join("Caskroom/easy-complete")).unwrap();
+        std::fs::create_dir_all(valid.join("bin")).unwrap();
+        std::fs::write(valid.join("bin/brew"), "").unwrap();
+        // brew without the cask
+        std::fs::create_dir_all(other.join("bin")).unwrap();
+        std::fs::write(other.join("bin/brew"), "").unwrap();
+
+        assert_eq!(
+            find_cask_brew(vec![other.clone(), stale.clone(), valid.clone()]),
+            Some(valid.join("bin/brew"))
+        );
+        assert_eq!(find_cask_brew(vec![other, stale]), None);
     }
 
     #[tokio::test]

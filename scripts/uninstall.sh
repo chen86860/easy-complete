@@ -200,6 +200,8 @@ done
 # Preferences, under the current and earlier identifiers
 for domain in "$BUNDLE_ID" "$IME_BUNDLE_ID" "$APP_NAME" dev.emmmm.autocomplete-v5 dev.emmmm.autocomplete-v5.inputmethod autocomplete-v5; do
   defaults delete "$domain" 2>/dev/null || true
+  # `defaults delete` fails on a domain with no keys and leaves its empty plist behind
+  rm -f "$HOME/Library/Preferences/$domain.plist"
 done
 
 # Accessibility grant — drop the now-dead TCC entry so it doesn't linger in

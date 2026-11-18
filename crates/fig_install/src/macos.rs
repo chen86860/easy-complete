@@ -147,6 +147,10 @@ fn home_paths(home: &Path) -> Vec<PathBuf> {
         library.join(format!("Saved Application State/{APP_BUNDLE_ID}.savedState")),
         home.join(".local/share/easy-complete"),
     ];
+    // `defaults delete` fails on a domain with no keys and leaves its empty plist behind
+    for domain in PREFERENCE_DOMAINS {
+        paths.push(library.join(format!("Preferences/{domain}.plist")));
+    }
     for binary in ["ec", "ecterm", "ec-chat"] {
         paths.push(home.join(".local/bin").join(binary));
     }

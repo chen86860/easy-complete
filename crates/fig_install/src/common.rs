@@ -30,15 +30,23 @@ impl InstallComponents {
     }
 }
 
+/// Every step runs even when an earlier one fails, so a broken shell integration cannot leave the
+/// app and its data behind. The first error is returned at the end; the others are logged.
 pub async fn uninstall(components: InstallComponents, ctx: Arc<Context>) -> Result<(), Error> {
-    let shell_integration_result = {
-        for shell in [Shell::Bash, Shell::Zsh, Shell::Fish] {
-            for integration in shell.get_shell_integrations(ctx.env())? {
-                integration.uninstall().await?;
-            }
+    let mut errors: Vec<Error> = vec![];
+
+    for shell in [Shell::Bash, Shell::Zsh, Shell::Fish] {
+        match shell.get_shell_integrations(ctx.env()) {
+            Ok(integrations) => {
+                for integration in integrations {
+                    if let Err(err) = integration.uninstall().await {
+                        errors.push(err.into());
+                    }
+                }
+            },
+            Err(err) => errors.push(err.into()),
         }
-        Ok(())
-    };
+    }
 
     if components.contains(InstallComponents::BINARY) {
         let remove_binary = |path: PathBuf| async move {
@@ -50,7 +58,13 @@ pub async fn uninstall(components: InstallComponents, ctx: Arc<Context>) -> Resu
         };
 
         // let folders = [directories::home_local_bin()?, Path::new("/usr/local/bin").into()];
-        let folders = [directories::home_local_bin()?];
+        let folders = match directories::home_local_bin() {
+            Ok(folder) => vec![folder],
+            Err(err) => {
+                errors.push(err.into());
+                vec![]
+            },
+        };
 
         for folder in folders {
             for binary_name in [CLI_BINARY_NAME, PTY_BINARY_NAME] {
@@ -76,8 +90,6 @@ pub async fn uninstall(components: InstallComponents, ctx: Arc<Context>) -> Resu
         super::os::uninstall_desktop_entries(&ctx).await?;
     }
 
-    let daemon_result = Ok(());
-
     #[cfg(target_os = "macos")]
     if components.contains(InstallComponents::INPUT_METHOD) {
         use fig_integrations::Error;
@@ -85,12 +97,14 @@ pub async fn uninstall(components: InstallComponents, ctx: Arc<Context>) -> Resu
 
         match InputMethod::default().uninstall().await {
             Ok(_) | Err(Error::InputMethod(InputMethodError::CouldNotListInputSources)) => {},
-            Err(err) => return Err(err.into()),
+            Err(err) => errors.push(err.into()),
         }
     }
 
     if components.contains(InstallComponents::DESKTOP_APP) {
-        super::os::uninstall_desktop(&ctx).await?;
+        if let Err(err) = super::os::uninstall_desktop(&ctx).await {
+            errors.push(err);
+        }
         // Must be last -- this will kill the running desktop process if this is
         // called from the desktop app.
         let quit_res = tokio::process::Command::new("killall")
@@ -102,7 +116,16 @@ pub async fn uninstall(components: InstallComponents, ctx: Arc<Context>) -> Resu
         }
     }
 
-    daemon_result.and(shell_integration_result)
+    let mut errors = errors.into_iter();
+    match errors.next() {
+        Some(first) => {
+            for err in errors {
+                tracing::warn!(%err, "Uninstall step failed");
+            }
+            Err(first)
+        },
+        None => Ok(()),
+    }
 }
 
 pub async fn install(components: InstallComponents, env: &Env) -> Result<(), Error> {

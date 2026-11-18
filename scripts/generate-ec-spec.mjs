@@ -5,13 +5,13 @@
 // completion. Rather than hand-maintaining a spec that drifts from the clap
 // definitions, we ask the binary for one: `ec completion fig` emits a Fig spec
 // straight out of clap (clap_complete_fig), which we normalise to plain ESM and
-// drop into bundle/specs/ec.js (plus an `ec` entry in index.json).
+// drop into build/specs/ec.js (plus an `ec` entry in index.json).
 //
 // Run standalone:            node scripts/generate-ec-spec.mjs
 // Point at a built binary:   EC_BINARY=target/dist/ec node scripts/generate-ec-spec.mjs
 // Skip (e.g. no toolchain):  EC_SPEC_SKIP=1
 //
-// sync-bundled-specs.mjs calls this at the end of a sync (bundle/specs is wiped
+// sync-bundled-specs.mjs calls this at the end of a sync (build/specs is wiped
 // first), and build-app.sh re-runs it with the freshly built binary so the
 // bundled spec always matches the shipped CLI.
 
@@ -26,7 +26,7 @@ const execFileAsync = promisify(execFile);
 
 const repoDir = join(dirname(fileURLToPath(import.meta.url)), "..");
 const outDir =
-  process.env.BUNDLED_SPECS_DIR || join(repoDir, "bundle", "specs");
+  process.env.BUNDLED_SPECS_DIR || join(repoDir, "build", "specs");
 
 const SPEC_NAME = "ec";
 

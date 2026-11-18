@@ -9,6 +9,7 @@ type PackageSearchResultData = {
 const packageSearchGenerator: Fig.Generator = {
   script(context) {
     const searchTerm = context[context.length - 1];
+    // spec-check-allow network: package lookup against NuGet; network generators are kept on purpose
     return [
       "curl",
       "-s",
@@ -36,6 +37,7 @@ const versionSearchGenerator: Fig.Generator = {
     const idx = command.findIndex((ctx) => ctx === "package");
     const searchTerm = command[idx + 1].toLowerCase();
 
+    // spec-check-allow network: package lookup against NuGet; network generators are kept on purpose
     return [
       "curl",
       "-s",

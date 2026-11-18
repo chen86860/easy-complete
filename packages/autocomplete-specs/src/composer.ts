@@ -42,6 +42,7 @@ const searchGenerator: Fig.Generator = {
   script: function (context) {
     if (context[context.length - 1] === "") return undefined;
     const searchTerm = context[context.length - 1];
+    // spec-check-allow network: package lookup against Packagist; network generators are kept on purpose
     return [
       "curl",
       "-s",

@@ -30,6 +30,7 @@ const runtimeVersionsGenerator: Fig.Generator = {
     ];
 
     const out = () =>
+      // spec-check-allow network: package lookup against Docker Hub tags; network generators are kept on purpose
       executeShellCommand({
         command: "curl",
         args: queryVersions,

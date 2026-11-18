@@ -273,6 +273,7 @@ export const searchGenerator: Fig.Generator = {
     if (lastToken.includes("@") && !lastToken.startsWith("@")) {
       const [crate, _version] = lastToken.split("@");
       const query = encodeURIComponent(crate);
+      // spec-check-allow network: package lookup against crates.io; network generators are kept on purpose
       const { stdout } = await executeShellCommand({
         command: "curl",
         args: ["-sfL", `https://crates.io/api/v1/crates/${query}/versions`],
@@ -291,6 +292,7 @@ export const searchGenerator: Fig.Generator = {
       const query = encodeURIComponent(lastToken);
       const [{ stdout: remoteStdout }, { stdout: localStdout }] =
         await Promise.all([
+          // spec-check-allow network: package lookup against crates.io; network generators are kept on purpose
           executeShellCommand({
             command: "curl",
             args: [

@@ -50,6 +50,7 @@ export const createNpmSearchHandler =
     // If the end of our token is '@', then we want to generate version suggestions
     // Otherwise, we want packages
     const out = (query: string) =>
+      // spec-check-allow network: package lookup against the npm registry; network generators are kept on purpose
       executeShellCommand({
         command: "curl",
         args: query[query.length - 1] === "@" ? queryVersions : queryPackages,

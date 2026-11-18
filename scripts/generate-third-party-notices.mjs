@@ -187,7 +187,9 @@ function rustComponents() {
       }
       return {
         name: pkg.name,
-        version: pkg.version,
+        // A crate vendored into crates/ has no upstream release to point at, and the ones that
+        // inherit the workspace version would otherwise list the app version as theirs.
+        version: pkg.source === null ? "vendored" : pkg.version,
         license: pkg.license ?? "Not declared",
         authors: pkg.authors,
         source: pkg.repository ?? pkg.homepage ?? pkg.source,

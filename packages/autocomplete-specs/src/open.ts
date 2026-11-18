@@ -26,6 +26,7 @@ export const generateApps = (unquotedPath: string): Fig.Generator => ({
 export const generateBundleIds = (unquotedPath: string): Fig.Generator => ({
   scriptTimeout: 15000,
   cache: { strategy: "stale-while-revalidate" },
+  // spec-check-allow shell-interpolation: every caller passes a constant path ("/" or "/Applications")
   script: [
     "bash",
     "-c",

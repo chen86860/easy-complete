@@ -73,16 +73,17 @@ pub enum CliRootCommands {
     /// Hook commands
     #[command(subcommand, hide = true)]
     Hook(hook::HookSubcommand),
-    /// Debug the app
-    #[command(subcommand, hide = true)]
-    Debug(debug::DebugSubcommand),
     /// Customize appearance & behavior
     #[command(alias("setting"))]
     Settings(settings::SettingsArgs),
-    /// Uninstall
-    #[command(hide = true)]
+    /// Uninstall Easy Complete completely
+    ///
+    /// Removes the shell integrations, the command-line tools in ~/.local/bin, Easy Complete's
+    /// own input source, the login item, the preferences, the Accessibility permission, the caches
+    /// and the application data, then quits and deletes the app. A Homebrew install is removed with
+    /// `brew uninstall --zap`, so the cask goes too.
     Uninstall {
-        /// Force uninstall
+        /// Skip the confirmation prompt
         #[arg(long, short = 'y')]
         no_confirm: bool,
     },
@@ -99,6 +100,9 @@ pub enum CliRootCommands {
     Issue(issue::IssueArgs),
     /// Fix and diagnose common issues
     Doctor(doctor::DoctorArgs),
+    /// Debug the app
+    #[command(subcommand)]
+    Debug(debug::DebugSubcommand),
     /// Generate CLI completion spec
     #[command(hide = true)]
     Completion(completion::CompletionArgs),
@@ -400,13 +404,18 @@ mod test {
         assert!(Cli::try_parse_from([CLI_BINARY_NAME, "theme"]).is_err());
 
         let command = Cli::command();
-        for command_name in ["debug", "init"] {
-            let subcommand = command
+        let is_hidden = |command_name: &str| {
+            command
                 .get_subcommands()
                 .find(|subcommand| subcommand.get_name() == command_name)
-                .unwrap();
-            assert!(subcommand.is_hide_set());
+                .unwrap()
+                .is_hide_set()
+        };
+        // The docs tell users to run these, so `ec --help` lists them.
+        for command_name in ["debug", "uninstall"] {
+            assert!(!is_hidden(command_name), "{command_name} should be listed");
         }
+        assert!(is_hidden("init"));
     }
 
     #[test]

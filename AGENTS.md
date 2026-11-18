@@ -76,15 +76,23 @@ TypeScript is linted and formatted with biome. The root `biome.json` covers `api
 
 The script also refreshes `Cargo.lock` and regenerates `THIRD_PARTY_NOTICES.txt`. CI checks that file with `pnpm licenses:check` whenever a lockfile or manifest changes, so run `pnpm licenses:generate` after changing dependencies. The script then prints the exact next steps:
 
-1. Add a `## v<version> - YYYY-MM-DD` entry, dated the day the tag is pushed, to both `CHANGELOG.md` (English) and `CHANGELOG.zh-CN.md` (Chinese) — keep them in sync, one entry each. Stable releases only: prereleases get no entry of their own (see below)
-2. `git add -A && git commit -m "chore: bump version to v<version>"`
-3. `git tag v<version> && git push origin main --tags`
+1. In both `CHANGELOG.md` (English) and `CHANGELOG.zh-CN.md` (Chinese), rename `## Unreleased` to `## v<version> - YYYY-MM-DD`, dated the day the tag is pushed, and tidy its lines. Stable releases only: prereleases leave `## Unreleased` as it is (see below)
+2. On a `chore/release-<version>` branch: `git add -A && git commit -m "chore: bump version to v<version>"`
+3. Push the branch and open a pull request. `main` is protected, so the bump cannot be pushed to it directly
+4. Merge the pull request once CI passes
+5. Tag the merge commit on `main`: `git switch main && git pull --ff-only && git tag v<version> && git push origin v<version>`
+
+Never tag the bump branch before it merges: the tag would point at a commit that is not on `main`, and CI may still reject it (`v2.8.0-beta.6` was tagged on a commit whose lockfile CI later rejected). Prereleases follow the same steps without the CHANGELOG entry.
 
 Prereleases use `X.Y.Z-alpha|beta|rc[.N]` tags. They publish as GitHub prereleases (no Homebrew tap update), and every tag also refreshes the `appcast.xml` on the rolling `beta-feed` release, which users who enable `app.betaUpdates` read. Sparkle's version comparator stops at the first `-`, so `CFBundleVersion` / `sparkle:version` drop the separators (`2.4.0-beta.1` → `2.4.0beta1`, via `scripts/sparkle-version.sh`); `CFBundleShortVersionString` keeps the tag form.
 
 Signing, notarization, the Sparkle appcast and deltas, the required GitHub secrets and the local commands for each step are documented in [docs/release-updates.md](docs/release-updates.md). Read it before touching `release.yml` or the `scripts/*sparkle*`, `sign-macos-app.sh`, `notarize-dmg.sh` and `make-dmg.sh` scripts.
 
-Prereleases get no CHANGELOG section. Put their notes in the GitHub prerelease body if needed, and when the stable version ships, write one `## vX.Y.Z` entry covering every change since the previous stable release. Do not mention the beta line in it, and keep entries short and user-facing.
+Prereleases get no CHANGELOG section. Put their notes in the GitHub prerelease body if needed (copy them from `## Unreleased`), and when the stable version ships, `## Unreleased` becomes its `## vX.Y.Z` entry. Do not mention the beta line in it.
+
+### Changelog
+
+Every user-facing change gets a line under `## Unreleased` at the top of both `CHANGELOG.md` and `CHANGELOG.zh-CN.md`, added in the pull request that makes the change, or by the maintainer when merging an outside contribution (contributors are asked not to edit the changelog). Create the heading above the latest version if it is missing. Use the existing prefixes (`new:`, `change:`, `fix:`, `docs:` and `新增：`, `变更：`, `修复：`, `文档：`), keep lines short and user-facing, and credit outside contributors with the PR number and `thanks @user`. Internal changes such as CI, refactors and tests get no line.
 
 ## Architecture
 
@@ -154,9 +162,9 @@ The product website under `website/src` uses Tailwind CSS v4. When editing it:
 
 ### Bundled Specs
 
-Completion specs are **bundled into the `.app` at build time**, not fetched at runtime. `scripts/sync-bundled-specs.mjs` assembles them into `bundle/specs/`, which `build-app.sh` copies to `Contents/Resources/specs/`. `bundle/specs/` is build output and git-ignored: `build-app.sh` regenerates it on every build and CI on every pull request. At runtime the `spec://localhost/<name>.js` custom protocol (`fig_desktop/src/protocol/spec.rs`) reads these local files only — there is **no network fallback**, so a spec absent from the bundle simply has no completion.
+Completion specs are **bundled into the `.app` at build time**, not fetched at runtime. `scripts/sync-bundled-specs.mjs` assembles them into `build/specs/`, which `build-app.sh` copies to `Contents/Resources/specs/`. `build/specs/` is build output and git-ignored: `build-app.sh` regenerates it on every build and CI on every pull request. At runtime the `spec://localhost/<name>.js` custom protocol (`fig_desktop/src/protocol/spec.rs`) reads these local files only — there is **no network fallback**, so a spec absent from the bundle simply has no completion.
 
-**Source.** The specs live in this repository under `packages/autocomplete-specs` (TypeScript in `src/`, icons in `icons/`, remote images specs reference cached in `icons/remote/`). They were forked from [withfig/autocomplete](https://github.com/withfig/autocomplete) and maintained in [chen86860/autocomplete-specs](https://github.com/chen86860/autocomplete-specs) until its 3.1.3 release, which moved here without its git history. `scripts/sync-bundled-specs.mjs` builds that package (`pnpm --filter @easy-complete/autocomplete-specs... build`), copies `build/*.js` and the referenced `icons/*.png` into `bundle/specs`, then derives `index.json` from the bundled file tree.
+**Source.** The specs live in this repository under `packages/autocomplete-specs` (TypeScript in `src/`, icons in `icons/`, remote images specs reference cached in `icons/remote/`). They were forked from [withfig/autocomplete](https://github.com/withfig/autocomplete) and maintained in [chen86860/autocomplete-specs](https://github.com/chen86860/autocomplete-specs) until its 3.1.3 release, which moved here without its git history. `scripts/sync-bundled-specs.mjs` builds that package (`pnpm --filter @easy-complete/autocomplete-specs... build`), copies `build/*.js` and the referenced `icons/*.png` into `build/specs`, then derives `index.json` from the bundled file tree.
 
 **Changing a spec.** Edit `packages/autocomplete-specs/src` and commit only that: the bundle is not committed. Inside the package, `pnpm dev` rebuilds on save and points the running app at its `build/` through `ec settings`; `pnpm create-spec <name>` scaffolds a new spec. `pnpm build` in the package clears `build/`, compiles and smoke-tests every spec, and `pnpm lint` runs biome and `tsc`; CI runs both through the workspace `build` and `lint`, then builds the bundle.
 
@@ -168,7 +176,7 @@ Completion specs are **bundled into the `.app` at build time**, not fetched at r
 
 There is no spec for the AWS CLI or the Azure CLI. Their specs (`aws`, 419 files, and `az`, 230 files) made up 62% of the spec sources and were never bundled, because they are large and most users never trigger them. They were removed from the repository in November 2026; `git log -- packages/autocomplete-specs/src/aws.ts` finds the last commit that had them. `gcloud` is bundled and accounts for about 14 MB of the bundle.
 
-**Our own CLI (`ec`).** The spec sources only cover third-party CLIs, so `bundle/specs/ec.js` is generated from clap by `scripts/generate-ec-spec.mjs`: it runs `ec completion fig` (clap_complete_fig), strips the TS type annotation, writes `ec.js`, and adds `ec` to `index.json`. Never hand-edit `bundle/specs/ec.js` — regenerate it. `sync-bundled-specs.mjs` calls it at the end of every sync (the sync wipes `bundle/specs` first) unless `EC_SPEC_SKIP=1`; `build-app.sh` syncs with that set and then runs it with `EC_BINARY=${TARGET_DIR}/ec` so the bundled spec always matches the binary being shipped. Standalone: `EC_BINARY=target/dist/ec node scripts/generate-ec-spec.mjs`; with no `EC_BINARY` it picks `target/{dist,release,debug}/ec` or falls back to `cargo run`. `EC_SPEC_SKIP=1` opts out.
+**Our own CLI (`ec`).** The spec sources only cover third-party CLIs, so `build/specs/ec.js` is generated from clap by `scripts/generate-ec-spec.mjs`: it runs `ec completion fig` (clap_complete_fig), strips the TS type annotation, writes `ec.js`, and adds `ec` to `index.json`. Never hand-edit `build/specs/ec.js` — regenerate it. `sync-bundled-specs.mjs` calls it at the end of every sync (the sync wipes `build/specs` first) unless `EC_SPEC_SKIP=1`; `build-app.sh` syncs with that set and then runs it with `EC_BINARY=${TARGET_DIR}/ec` so the bundled spec always matches the binary being shipped. Standalone: `EC_BINARY=target/dist/ec node scripts/generate-ec-spec.mjs`; with no `EC_BINARY` it picks `target/{dist,release,debug}/ec` or falls back to `cargo run`. `EC_SPEC_SKIP=1` opts out.
 
 ## Key Crates
 
@@ -203,7 +211,7 @@ There is no spec for the AWS CLI or the Azure CLI. Their specs (`aws`, 419 files
 | `shell-parser`          | Shell command-line tokenizer           |
 | `api-bindings`          | Generated TS Protobuf IPC bindings     |
 | `api-bindings-wrappers` | Ergonomic wrappers over `api-bindings` |
-| `autocomplete-specs`    | Completion spec sources (`@easy-complete/autocomplete-specs`), bundled into `bundle/specs` |
+| `autocomplete-specs`    | Completion spec sources (`@easy-complete/autocomplete-specs`), bundled into `build/specs` |
 | `autocomplete-tools`    | Spec build CLI: `compile`, `dev`, `create-spec` |
 | `shared`, `fuzzysort`, `types`, `tsconfig` | Shared utilities, vendored fuzzy matcher, global types, base tsconfig |
 | `autocomplete-helpers`, `autocomplete-shared`, `autocomplete-generators`, `autocomplete-types` | Fig spec libraries and types, forked from [withfig/autocomplete-tools](https://github.com/withfig/autocomplete-tools); they keep their `@fig/*` / `@withfig/*` names so spec imports are unchanged |

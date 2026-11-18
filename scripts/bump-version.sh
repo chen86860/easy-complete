@@ -40,21 +40,25 @@ grep -qxF "export const APP_VERSION = \"$VERSION\";" "$REPO_DIR/website/src/seo.
 echo "Refreshing Cargo.lock..."
 (cd "$REPO_DIR" && cargo update --workspace --offline)
 
-# The vendored crates carry the workspace version, so every bump makes the generated
-# notices stale — and `build-app.sh` refuses to assemble the bundle until they match.
+# The notices list vendored crates as `vendored`, so a bump alone leaves them unchanged.
+# Regenerate anyway: `build-app.sh` refuses to assemble the bundle until they match.
 echo "Regenerating THIRD_PARTY_NOTICES.txt..."
 (cd "$REPO_DIR" && node scripts/generate-third-party-notices.mjs)
 
 echo "Done. Next steps:"
+# main is protected: the bump lands through a pull request, and the tag goes on the
+# merge commit once it is on main, so a tag never points at a commit main does not have.
+BRANCH="chore/release-${VERSION}"
+STEP=1
 # Prereleases get no CHANGELOG section (see AGENTS.md); the stable release covers them.
 # Same pattern release.yml uses to publish a tag as a prerelease.
 if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+-(alpha|beta|rc)(\.[0-9A-Za-z-]+)*$ ]]; then
-  echo "  (prerelease: no CHANGELOG entry; put any notes in the GitHub prerelease body)"
-  echo "  1. git add -A && git commit -m \"chore: bump version to v${VERSION}\"  # includes Cargo.lock"
-  echo "  2. git tag v${VERSION} && git push origin main --tags"
+  echo "  (prerelease: leave ## Unreleased in CHANGELOG as it is; copy any notes into the GitHub prerelease body)"
 else
-  echo "  1. Add a ## v${VERSION} - $(date +%Y-%m-%d) entry to both CHANGELOG.md (English) and CHANGELOG.zh-CN.md (Chinese),"
-  echo "     covering every change since the previous stable release"
-  echo "  2. git add -A && git commit -m \"chore: bump version to v${VERSION}\"  # includes Cargo.lock"
-  echo "  3. git tag v${VERSION} && git push origin main --tags"
+  echo "  ${STEP}. Rename ## Unreleased to ## v${VERSION} - $(date +%Y-%m-%d) in both CHANGELOG.md (English) and CHANGELOG.zh-CN.md (Chinese)"
+  STEP=$((STEP + 1))
 fi
+echo "  ${STEP}. git switch -c ${BRANCH} && git add -A && git commit -m \"chore: bump version to v${VERSION}\"  # includes Cargo.lock"
+echo "  $((STEP + 1)). git push -u origin ${BRANCH} && gh pr create --fill"
+echo "  $((STEP + 2)). Merge the pull request after CI passes"
+echo "  $((STEP + 3)). git switch main && git pull --ff-only && git tag v${VERSION} && git push origin v${VERSION}"

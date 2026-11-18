@@ -187,5 +187,5 @@ export async function localizeSpecIcons(specsDir, cacheDir = iconCacheDir) {
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  await localizeSpecIcons(process.argv[2] ?? join(repoDir, "bundle", "specs"));
+  await localizeSpecIcons(process.argv[2] ?? join(repoDir, "build", "specs"));
 }

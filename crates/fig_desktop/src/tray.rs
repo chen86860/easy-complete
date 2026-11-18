@@ -1,8 +1,6 @@
 use std::borrow::Cow;
 
 use cfg_if::cfg_if;
-use fig_install::InstallComponents;
-use fig_os_shim::Context;
 use fig_remote_ipc::figterm::FigtermState;
 use fig_util::consts::PRODUCT_NAME;
 use fig_util::url::USER_MANUAL;
@@ -124,15 +122,6 @@ pub fn handle_event(menu_event: &MenuEvent, proxy: &EventLoopProxy) {
                     ]),
                 })
                 .unwrap();
-        },
-        "uninstall" => {
-            tokio::runtime::Handle::current().spawn(async {
-                fig_install::uninstall(InstallComponents::all(), Context::new())
-                    .await
-                    .ok();
-                #[allow(clippy::exit)]
-                std::process::exit(0);
-            });
         },
         ACCESSIBILITY_MENU_ID => {
             #[cfg(target_os = "macos")]

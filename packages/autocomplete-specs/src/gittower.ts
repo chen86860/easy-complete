@@ -18,6 +18,7 @@ const gitInRepository = async (
   const home = context.environmentVariables.HOME;
   const path =
     repository && home ? repository.replace(/^~(?=\/|$)/, home) : repository;
+  // spec-check-allow denied-command: callers pass read-only subcommands (for-each-ref, log)
   const { stdout } = await executeCommand({
     command: "git",
     args: [...(path ? ["-C", path] : []), "--no-optional-locks", ...args],

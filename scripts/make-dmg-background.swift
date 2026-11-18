@@ -1,5 +1,5 @@
 #!/usr/bin/swift
-// Generates bundle/dmg/background.png (660×460) and background@2x.png (1980×1380)
+// Generates assets/dmg/background.png (660×460) and background@2x.png (1980×1380)
 // The @2x file uses 3× pixel density so text and edges stay crisp on Retina.
 // Run: swift scripts/make-dmg-background.swift
 import AppKit
@@ -85,14 +85,14 @@ func renderBackground(scale: CGFloat) -> Data {
 let repoURL = URL(fileURLWithPath: #file)
     .deletingLastPathComponent()   // scripts/
     .deletingLastPathComponent()   // repo root
-let dmgDir  = repoURL.appendingPathComponent("bundle/dmg")
+let dmgDir  = repoURL.appendingPathComponent("assets/dmg")
 
 // 1×  — 660×460
 let data1x = renderBackground(scale: 1)
 try! data1x.write(to: dmgDir.appendingPathComponent("background.png"))
-print("✓ bundle/dmg/background.png    (660×460)")
+print("✓ assets/dmg/background.png    (660×460)")
 
 // @2× — 1980×1380 at 3× pixel density (named @2x so create-dmg picks it up)
 let data2x = renderBackground(scale: 3)
 try! data2x.write(to: dmgDir.appendingPathComponent("background@2x.png"))
-print("✓ bundle/dmg/background@2x.png (1980×1380, 3× density)")
+print("✓ assets/dmg/background@2x.png (1980×1380, 3× density)")

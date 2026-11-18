@@ -49,6 +49,7 @@ pub async fn uninstall_command(no_confirm: bool) -> Result<ExitCode> {
 #[cfg(target_os = "macos")]
 async fn uninstall(ctx: std::sync::Arc<fig_os_shim::Context>) -> Result<()> {
     fig_install::uninstall(fig_install::InstallComponents::all(), ctx).await?;
+    println!("\nRestart your shell to finish: {}", "exec $SHELL".bold().magenta());
     Ok(())
 }
 

@@ -41,11 +41,22 @@ terminal, type the command and check the suggestions. Ctrl+C turns dev mode off 
 
 A spec may run commands to build its suggestions, for example `git branch` to list branches.
 Keep those read-only, pass what the user typed as separate arguments, never inside a shell
-string, and do not call the network.
+string, and do not call the network. `pnpm lint` checks this (CI runs it on every pull request);
+to run only that check, use `pnpm --filter @easy-complete/autocomplete-specs check-commands`.
+When a flagged command has been reviewed and is needed, mark it with a comment that gives the
+reason:
+
+```ts
+// spec-check-allow network: package lookup against crates.io; network generators are kept on purpose
+```
+
+The check reads the spec's source and is an aid to review, not a sandbox. It does not follow
+commands built by helper functions, executables chosen at run time, or git subcommands such as
+`branch` and `config` that read or write depending on their arguments; reviewers check those.
 
 **2. Open a pull request with your file under `src/`**
 
-That is all a spec change needs. The app ships specs from `bundle/specs/`, which every build
+That is all a spec change needs. The app ships specs from `build/specs/`, which every build
 generates from `src/`, so there is nothing to regenerate or commit besides your spec. CI builds
 the bundle on your pull request; on a first contribution from a fork, it waits for a
 maintainer to approve the run, so the checks stay pending until then.
@@ -95,7 +106,7 @@ pnpm test
   for example `fix(figterm): keep the cursor position after a resize`.
 - Keep a pull request to one change. Unrelated cleanups are easier to review on their own.
 - Changes to what users see need a screenshot or a short recording.
-- Do not edit `CHANGELOG.md`. Release notes are written when a version ships.
+- Do not edit `CHANGELOG.md`. The maintainer adds the line for your change when merging it.
 
 ## Licensing
 

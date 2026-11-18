@@ -131,15 +131,12 @@ See the [docs](https://easy-complete.emmmm.dev/docs) for more troubleshooting.
 ec uninstall
 ```
 
-This removes the shell and terminal integrations, the input method (only Easy Complete's
-own input source), the LaunchAgent and application data — but not the app itself. Finish
-with the step for your install method, then run `exec $SHELL`:
+This removes everything Easy Complete installed: the shell and terminal integrations, the
+command-line tools, the input method (only Easy Complete's own input source), the login item,
+the preferences, the Accessibility permission, caches and application data, and then the app itself.
+Run `exec $SHELL` afterwards.
 
-| Installed via | Then run                                                                   |
-| ------------- | -------------------------------------------------------------------------- |
-| Homebrew      | `brew uninstall chen86860/tap/easy-complete`                               |
-| DMG           | Move `/Applications/Easy Complete.app` to the Trash                        |
-| Source        | `./scripts/uninstall.sh` from the repo (does everything above in one pass) |
+A Homebrew install is removed with `brew uninstall --zap`, so the cask goes too.
 
 ## 🛠 Development
 

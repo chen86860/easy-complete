@@ -1,4 +1,5 @@
 const packageList: Fig.Generator = {
+  // spec-check-allow network: package lookup against the Elm package registry; network generators are kept on purpose
   script: [
     "curl",
     "-sH",

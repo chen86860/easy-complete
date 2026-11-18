@@ -7,6 +7,7 @@ interface RegistryItem {
 
 const componentGenerator: Fig.Generator = {
   custom: async (_tokens, executeShellCommand) => {
+    // spec-check-allow network: package lookup against the shadcn/ui registry on GitHub; network generators are kept on purpose
     const { stdout } = await executeShellCommand({
       command: "curl",
       args: [

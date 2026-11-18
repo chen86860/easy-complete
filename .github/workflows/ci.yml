@@ -75,7 +75,7 @@ jobs:
           rust=false javascript=false website=false licenses=false
           while IFS= read -r f; do
             [ -n "$f" ] || continue
-            # THIRD_PARTY_NOTICES.txt is generated from the lockfiles and carries the app version.
+            # THIRD_PARTY_NOTICES.txt is generated from the lockfiles and manifests.
             case "$f" in
               Cargo.lock | Cargo.toml | crates/*/Cargo.toml | pnpm-lock.yaml | package.json | packages/*/package.json \
                 | THIRD_PARTY_NOTICES.txt | scripts/generate-third-party-notices.mjs) licenses=true ;;
@@ -85,7 +85,7 @@ jobs:
               website/*) website=true; continue ;;
               *.md | docs/* | LICENSE | NOTICE | .github/ISSUE_TEMPLATE/* | .claude/*) continue ;;
               # Release-only inputs: no build or test job reads them.
-              bundle/* | assets/* | THIRD_PARTY_NOTICES.txt) continue ;;
+              assets/* | THIRD_PARTY_NOTICES.txt) continue ;;
               .github/workflows/*) rust=true javascript=true website=true licenses=true ;;
               crates/* | Cargo.toml | Cargo.lock | rust-toolchain.toml | .cargo/* | .rustfmt.toml) rust=true ;;
               # The dashboard imports themes/*.json for its theme previews.
@@ -272,12 +272,14 @@ jobs:
           key: turbo-${{ github.sha }}
 
   # THIRD_PARTY_NOTICES.txt is generated from both lockfiles and ships inside the app.
-  # macOS, like the machines that generate it: pnpm resolves platform-specific packages.
+  # Linux gives the same file as macOS: the npm side lists only --prod dependencies,
+  # and the Rust side resolves for aarch64-apple-darwin whatever the host is.
+  # Checked in a linux/amd64 container on 2026-11-17 (#258).
   licenses:
     name: Third-party notices
     needs: changes
     if: needs.changes.outputs.licenses == 'true'
-    runs-on: macos-26
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7

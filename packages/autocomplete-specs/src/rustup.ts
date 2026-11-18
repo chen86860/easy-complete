@@ -29,6 +29,7 @@ const toolchainLocalGenertor: (
 
 const toolchainAllGenerator: Fig.Generator = {
   // Grab the latest versions of rust from github, try the gh cli first as it has a higher rate limit
+  // spec-check-allow network: GitHub releases lookup for toolchain names, kept by decision
   script: [
     "bash",
     "-c",

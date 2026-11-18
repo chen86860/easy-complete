@@ -114,16 +114,22 @@ async fn run(action: &str, program: &Path, args: &[&str]) {
     }
 }
 
-/// Identifiers the app and its WebViews store data under: the bundle id, the executable name
-/// (used by WebKit and tao) and the bundle id of releases before the rename.
-const APP_IDS: [&str; 3] = [APP_BUNDLE_ID, "easy-complete", "dev.emmmm.autocomplete-v5"];
+/// Identifiers the app and its WebViews store data under: the bundle id and the executable name
+/// (used by WebKit and tao), for this release and for those before the rename.
+const APP_IDS: [&str; 4] = [
+    APP_BUNDLE_ID,
+    "easy-complete",
+    "dev.emmmm.autocomplete-v5",
+    "autocomplete-v5",
+];
 
-const PREFERENCE_DOMAINS: [&str; 5] = [
+const PREFERENCE_DOMAINS: [&str; 6] = [
     APP_BUNDLE_ID,
     "dev.emmmm.easy-complete.inputmethod",
     "easy-complete",
     "dev.emmmm.autocomplete-v5",
     "dev.emmmm.autocomplete-v5.inputmethod",
+    "autocomplete-v5",
 ];
 
 /// Files under the home directory. Most are removed by earlier steps already (integrations,
@@ -203,6 +209,7 @@ mod tests {
             "com.apple.WebKit.GPU+dev.emmmm.easy-complete",
             "com.apple.WebKit.Networking+easy_complete-bb8a9ea68e47457e",
             "com.apple.WebKit.WebContent+dev.emmmm.autocomplete-v5",
+            "autocomplete-v5",
             // Other apps of the same developer, and other WebKit hosts
             "dev.emmmm.Dropline",
             "dev.emmmm.easy-complete-helper",
@@ -222,6 +229,7 @@ mod tests {
         assert_eq!(
             found,
             [
+                "autocomplete-v5",
                 "com.apple.WebKit.GPU+dev.emmmm.easy-complete",
                 "com.apple.WebKit.Networking+easy_complete-bb8a9ea68e47457e",
                 "com.apple.WebKit.WebContent+dev.emmmm.autocomplete-v5",

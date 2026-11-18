@@ -18,9 +18,9 @@ APP_SUPPORT="${HOME}/Library/Application Support/${APP_NAME}"
 # Logs live in the per-user temp dir (fig_util::directories::logs_dir). getconf, not $TMPDIR,
 # so an unset TMPDIR can never turn this into a relative path.
 LOGS_DIR="$(getconf DARWIN_USER_TEMP_DIR)eclog"
-# Identifiers the app and its WebViews store data under: the bundle id, the executable name
-# (used by WebKit and tao) and the bundle id of releases before the rename.
-APP_IDS=("$BUNDLE_ID" "$APP_NAME" "dev.emmmm.autocomplete-v5")
+# Identifiers the app and its WebViews store data under: the bundle id and the executable name
+# (used by WebKit and tao), for this release and for those before the rename.
+APP_IDS=("$BUNDLE_ID" "$APP_NAME" "dev.emmmm.autocomplete-v5" "autocomplete-v5")
 HOMEBREW_CASK="chen86860/tap/easy-complete"
 
 GREEN='\033[0;32m'; YELLOW='\033[0;33m'; RED='\033[0;31m'; NC='\033[0m'
@@ -192,13 +192,13 @@ for key in DARWIN_USER_CACHE_DIR DARWIN_USER_TEMP_DIR; do
     owner="$name"
     [[ "$name" == com.apple.WebKit.*+* ]] && owner="${name#*+}"
     case "$owner" in
-      "$BUNDLE_ID" | "$APP_NAME" | dev.emmmm.autocomplete-v5 | easy_complete-*) rm -rf "$path" ;;
+      "$BUNDLE_ID" | "$APP_NAME" | dev.emmmm.autocomplete-v5 | autocomplete-v5 | easy_complete-*) rm -rf "$path" ;;
     esac
   done
 done
 
 # Preferences, under the current and earlier identifiers
-for domain in "$BUNDLE_ID" "$IME_BUNDLE_ID" "$APP_NAME" dev.emmmm.autocomplete-v5 dev.emmmm.autocomplete-v5.inputmethod; do
+for domain in "$BUNDLE_ID" "$IME_BUNDLE_ID" "$APP_NAME" dev.emmmm.autocomplete-v5 dev.emmmm.autocomplete-v5.inputmethod autocomplete-v5; do
   defaults delete "$domain" 2>/dev/null || true
 done
 

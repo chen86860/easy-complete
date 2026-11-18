@@ -70,25 +70,25 @@ TypeScript is linted and formatted with biome. The root `biome.json` covers `api
 ### Release
 
 ```bash
-# Bump version across Cargo.toml and TS packages, then follow the printed steps
-./scripts/bump-version.sh <version>   # e.g. ./scripts/bump-version.sh 2.0.18
+# Bump the version in Cargo.toml, the TS packages and website/src/seo.tsx, then follow the printed steps
+./scripts/bump-version.sh <version>   # e.g. ./scripts/bump-version.sh 2.9.0
 ```
 
 The script also refreshes `Cargo.lock` and regenerates `THIRD_PARTY_NOTICES.txt`. CI checks that file with `pnpm licenses:check` whenever a lockfile or manifest changes, so run `pnpm licenses:generate` after changing dependencies. The script then prints the exact next steps:
 
-1. In both `CHANGELOG.md` (English) and `CHANGELOG.zh-CN.md` (Chinese), rename `## Unreleased` to `## v<version> - YYYY-MM-DD`, dated the day the tag is pushed, and tidy its lines. Stable releases only: prereleases leave `## Unreleased` as it is (see below)
+1. In both `CHANGELOG.md` (English) and `CHANGELOG.zh-CN.md` (Chinese), rename `## Unreleased` to `## v<version> - YYYY-MM-DD`, dated the day the tag is pushed, and tidy its lines. Stable releases only (see the prerelease note below)
 2. On a `chore/release-<version>` branch: `git add -A && git commit -m "chore: bump version to v<version>"`
 3. Push the branch and open a pull request. `main` is protected, so the bump cannot be pushed to it directly
 4. Merge the pull request once CI passes
 5. Tag the merge commit on `main`: `git switch main && git pull --ff-only && git tag v<version> && git push origin v<version>`
 
-Never tag the bump branch before it merges: the tag would point at a commit that is not on `main`, and CI may still reject it (`v2.8.0-beta.6` was tagged on a commit whose lockfile CI later rejected). Prereleases follow the same steps without the CHANGELOG entry.
+Never tag the bump branch before it merges: the tag would point at a commit that is not on `main`, and CI may still reject it (`v2.8.0-beta.6` was tagged on a commit whose lockfile CI later rejected). `release.yml` also fails at once when the tag does not match the `[workspace.package]` version in `Cargo.toml`, so a tag pushed before the bump merges never builds.
 
 Prereleases use `X.Y.Z-alpha|beta|rc[.N]` tags. They publish as GitHub prereleases (no Homebrew tap update), and every tag also refreshes the `appcast.xml` on the rolling `beta-feed` release, which users who enable `app.betaUpdates` read. Sparkle's version comparator stops at the first `-`, so `CFBundleVersion` / `sparkle:version` drop the separators (`2.4.0-beta.1` → `2.4.0beta1`, via `scripts/sparkle-version.sh`); `CFBundleShortVersionString` keeps the tag form.
 
 Signing, notarization, the Sparkle appcast and deltas, the required GitHub secrets and the local commands for each step are documented in [docs/release-updates.md](docs/release-updates.md). Read it before touching `release.yml` or the `scripts/*sparkle*`, `sign-macos-app.sh`, `notarize-dmg.sh` and `make-dmg.sh` scripts.
 
-Prereleases get no CHANGELOG section. Put their notes in the GitHub prerelease body if needed (copy them from `## Unreleased`), and when the stable version ships, `## Unreleased` becomes its `## vX.Y.Z` entry. Do not mention the beta line in it.
+Prereleases follow the same steps without the CHANGELOG change: they get no CHANGELOG section and leave `## Unreleased` as it is. Put their notes in the GitHub prerelease body if needed (copy them from `## Unreleased`), and when the stable version ships, `## Unreleased` becomes its `## vX.Y.Z` entry. Do not mention the beta line in it.
 
 ### Changelog
 
@@ -104,7 +104,7 @@ Three cooperating native processes communicate via Unix domain sockets (protobuf
 
 2. **`ecterm`** (`figterm`) — Pseudoterminal that sits between the user's shell and their terminal emulator. Intercepts keystrokes and the shell edit buffer to drive autocomplete. Built on a vendored fork of `alacritty_terminal`.
 
-3. **`ec`** (`ec_cli`) — CLI entry point. User-facing subcommands: `settings`, `update`, `diagnostic`, `issue`, `doctor`, `launch`, `quit`, `restart`, `integrations`, `telemetry`, `version`. Hidden ones used by the shell integration and tooling: `init`, `hook`, `internal`, `completion`, `debug`, `uninstall`.
+3. **`ec`** (`ec_cli`) — CLI entry point. Subcommands listed in `ec --help`: `settings`, `uninstall`, `update`, `diagnostic`, `issue`, `doctor`, `debug`, `launch`, `quit`, `restart`, `integrations`, `telemetry`, `version`. Hidden ones used by the shell integration and tooling: `init`, `hook`, `internal`, `completion`.
 
 ### IPC
 
@@ -166,9 +166,11 @@ Completion specs are **bundled into the `.app` at build time**, not fetched at r
 
 **Source.** The specs live in this repository under `packages/autocomplete-specs` (TypeScript in `src/`, icons in `icons/`, remote images specs reference cached in `icons/remote/`). They were forked from [withfig/autocomplete](https://github.com/withfig/autocomplete) and maintained in [chen86860/autocomplete-specs](https://github.com/chen86860/autocomplete-specs) until its 3.1.3 release, which moved here without its git history. `scripts/sync-bundled-specs.mjs` builds that package (`pnpm --filter @easy-complete/autocomplete-specs... build`), copies `build/*.js` and the referenced `icons/*.png` into `build/specs`, then derives `index.json` from the bundled file tree.
 
-**Changing a spec.** Edit `packages/autocomplete-specs/src` and commit only that: the bundle is not committed. Inside the package, `pnpm dev` rebuilds on save and points the running app at its `build/` through `ec settings`; `pnpm create-spec <name>` scaffolds a new spec. `pnpm build` in the package clears `build/`, compiles and smoke-tests every spec, and `pnpm lint` runs biome and `tsc`; CI runs both through the workspace `build` and `lint`, then builds the bundle.
+**Changing a spec.** Edit `packages/autocomplete-specs/src` and commit only that: the bundle is not committed. Inside the package, `pnpm dev` rebuilds on save and points the running app at its `build/` through `ec settings`; `pnpm create-spec <name>` scaffolds a new spec. `pnpm build` in the package clears `build/`, compiles and smoke-tests every spec, and `pnpm lint` runs biome, `tsc` and `check-spec-commands` (the commands a spec runs must be read-only and not reach the network; `// spec-check-allow` marks a reviewed exception); CI runs both through the workspace `build` and `lint`, then builds the bundle.
 
 **Remote icons.** Specs may point an `icon` at a URL. `scripts/localize-spec-icons.mjs` rewrites each such literal to `spec://localhost/icons/remote/<hash>.<ext>`, where the hash is derived from the URL, and copies the file from `packages/autocomplete-specs/icons/remote/`. So a build is offline. A URL with no file there is downloaded once, saved there, and reported as a file to commit; one that cannot be downloaded falls back to the generic box icon.
+
+**Versioned specs.** A CLI whose commands differ across versions gets a directory instead of a single file: `src/pnpm/` holds `10.0.0.ts`, `11.0.0.ts`, `12.0.0.ts` and an `index.ts` that calls `createVersionedSpec("pnpm", [...])` (`packages/autocomplete-helpers/src/versions.ts`). At runtime the parser asks the installed CLI for its version (the spec's `getVersionCommand`, else `<cli> --version`, cached per CLI) and loads the newest file not newer than it. A CLI older than every file gets the oldest one, and an unknown version gets the newest. Add a version by adding its file and listing it in `index.ts`.
 
 There is no spec for the AWS CLI or the Azure CLI. Their specs (`aws`, 419 files, and `az`, 230 files) made up 62% of the spec sources and were never bundled, because they are large and most users never trigger them. They were removed from the repository in November 2026; `git log -- packages/autocomplete-specs/src/aws.ts` finds the last commit that had them. `gcloud` is bundled and accounts for about 14 MB of the bundle.
 
@@ -191,7 +193,7 @@ There is no spec for the AWS CLI or the Azure CLI. Their specs (`aws`, 419 files
 | `fig_os_shim`      | Injectable env, filesystem and process info, faked in tests      |
 | `fig_remote_ipc`   | Session socket between `ecterm` and the desktop app              |
 | `fig_install`      | Install and uninstall of the app's components                     |
-| `fig_telemetry`    | Opt-in PostHog events, queued on disk; the only HTTP client      |
+| `fig_telemetry`    | PostHog events, on by default (`telemetry.enabled`); a fresh install holds them in the on-disk queue until setup has shown the toggle. The only HTTP client |
 | `fig_diagnostic`, `fig_log` | `ec diagnostic` report and logging setup                |
 | `macos-utils`      | macOS Accessibility API, NSWorkspace, AppKit ObjC2 bindings      |
 | `alacritty_terminal`, `shell-color` | Vendored terminal emulation and shell color parsing |

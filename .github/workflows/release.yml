@@ -46,6 +46,18 @@ jobs:
           test "$(uname -m)" = "arm64"
           sw_vers
 
+      # A tag pushed before its version bump is merged would ship the previous version's build
+      # under the new tag, so fail before anything is built.
+      - name: Check the tag matches the workspace version
+        run: |
+          set -euo pipefail
+          tag_version="${GITHUB_REF_NAME#v}"
+          cargo_version="$(awk '/^\[workspace\.package\]/ { s = 1; next } /^\[/ { s = 0 } s && /^version = / { gsub(/"/, "", $3); print $3; exit }' Cargo.toml)"
+          if [[ "$tag_version" != "$cargo_version" ]]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match the workspace version $cargo_version in Cargo.toml. Merge the version bump first, then tag that commit."
+            exit 1
+          fi
+
       # No actions/cache here: caches saved from a tag are scoped to that tag, so the next
       # release could never restore them. They only filled the repository's 10 GB quota.
       # bash 4+ (mapfile) and jq run the release steps.

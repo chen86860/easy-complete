@@ -9,6 +9,7 @@
 - change: `ec uninstall` removes everything Easy Complete installed, including the login item, preferences, Accessibility permission and caches, and deletes the app; a Homebrew install is removed with `brew uninstall --zap` (#283)
 - change: `ec uninstall` and `ec debug` are listed in `ec --help` (#283)
 - docs: [docs/how-it-works.md](./docs/how-it-works.md) explains how Easy Complete reads what you type, places the overlay and inserts completions
+- docs: CONTRIBUTING.md has a Chinese version, CONTRIBUTING.zh-CN.md (#266)
 
 ## v2.8.0 - 2026-11-16
 

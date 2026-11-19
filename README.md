@@ -50,7 +50,7 @@ app that runs on your Mac:
 
 - **No account** — install it and start typing.
 - **Completion only** — no AI chat. A few specs (such as `npm`) look up package names online;
-  the [Privacy page](https://easy-complete.emmmm.dev/privacy-policy) lists every request.
+  see the [Privacy page](https://easy-complete.emmmm.dev/privacy-policy) for details.
 - **Built on Fig's specs** — completions start from Fig's MIT-licensed spec collection (see
   [Acknowledgements](#-acknowledgements)).
 

@@ -47,7 +47,8 @@ Fig 已于 2024 年 9 月 1 日停止服务，它的自动补全并入了需要�
 CLI。Easy Complete 只保留补全这一部分，做成一款在你的 Mac 本机运行的开源应用：
 
 - **无需账号** —— 装好就能用。
-- **只做补全** —— 没有 AI 对话，也没有云端功能。
+- **只做补全** —— 没有 AI 对话。少数 spec（如 `npm`）会联网查询包名，所有联网请求见
+  [隐私页面](https://easy-complete.emmmm.dev/privacy-policy)。
 - **沿用 Fig 的 spec** —— 补全规则来自 Fig 以 MIT 许可证发布的 spec 集合（见[致谢](#-致谢)）。
 
 ## ✨ 功能特性
@@ -145,8 +146,12 @@ ec uninstall
 Complete 自己的输入源）、登录项、偏好设置、辅助功能权限、缓存和应用数据，最后删除应用本身。完成后运行
 `exec $SHELL`。
 
-如果是用 Homebrew 安装的，`ec uninstall` 会自动执行 `brew uninstall --zap --cask`，无需再单独卸载
-cask。
+如果是用 Homebrew 安装的，v2.9.0 及以上版本的 `ec uninstall` 会一并移除 cask。如果之后
+`brew list --cask` 里还有 `easy-complete`（v2.8.0 及更早版本一定会有），手动移除：
+
+```bash
+brew uninstall --zap --cask chen86860/tap/easy-complete
+```
 
 ## 🛠 开发
 

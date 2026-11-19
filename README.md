@@ -49,7 +49,8 @@ which needs an AWS sign-in. Easy Complete keeps only the completion part, as an 
 app that runs on your Mac:
 
 - **No account** — install it and start typing.
-- **Completion only** — no AI chat and no cloud features.
+- **Completion only** — no AI chat. A few specs (such as `npm`) look up package names online;
+  the [Privacy page](https://easy-complete.emmmm.dev/privacy-policy) lists every request.
 - **Built on Fig's specs** — completions start from Fig's MIT-licensed spec collection (see
   [Acknowledgements](#-acknowledgements)).
 
@@ -154,8 +155,13 @@ command-line tools, the input method (only Easy Complete's own input source), th
 the preferences, the Accessibility permission, caches and application data, and then the app itself.
 Run `exec $SHELL` afterwards.
 
-If you installed with Homebrew, `ec uninstall` also runs `brew uninstall --zap --cask` for
-you, so there is no separate Homebrew step.
+If you installed with Homebrew, `ec uninstall` in v2.9.0 and later also removes the cask. If
+`brew list --cask` still shows `easy-complete` afterwards (always the case on v2.8.0 and
+earlier), remove it yourself:
+
+```bash
+brew uninstall --zap --cask chen86860/tap/easy-complete
+```
 
 ## 🛠 Development
 

@@ -11,9 +11,10 @@
 
 <p align="center">
   <a href="https://github.com/chen86860/easy-complete/releases"><img alt="Release" src="https://img.shields.io/github/v/release/chen86860/easy-complete?color=brightgreen"></a>
+  <a href="https://github.com/chen86860/easy-complete/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/chen86860/easy-complete/actions/workflows/ci.yml/badge.svg?branch=main"></a>
   <img alt="Platform" src="https://img.shields.io/badge/platform-macOS-lightgrey">
   <img alt="Built with Rust" src="https://img.shields.io/badge/built%20with-Rust-orange">
-  <a href="#-许可证"><img alt="License" src="https://img.shields.io/badge/license-MIT-blue"></a>
+  <a href="#-许可证"><img alt="License" src="https://img.shields.io/github/license/chen86860/easy-complete?color=blue"></a>
   <a href="https://github.com/chen86860/easy-complete/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/chen86860/easy-complete?style=social"></a>
 </p>
 
@@ -39,6 +40,15 @@ fish shell 的建议——子命令、选项、参数和文件路径，以跟随
 <p align="center">
   <img src="./.github/media/screenshot.png" alt="Easy Complete 自动补全效果">
 </p>
+
+## 🤔 为什么选择 Easy Complete？
+
+Fig 已于 2024 年 9 月 1 日停止服务，它的自动补全并入了需要登录 AWS 账号的 Amazon Q Developer
+CLI。Easy Complete 只保留补全这一部分，做成一款在你的 Mac 本机运行的开源应用：
+
+- **无需账号** —— 装好就能用。
+- **只做补全** —— 没有 AI 对话，也没有云端功能。
+- **沿用 Fig 的 spec** —— 补全规则来自 Fig 以 MIT 许可证发布的 spec 集合（见[致谢](#-致谢)）。
 
 ## ✨ 功能特性
 
@@ -119,6 +129,12 @@ ec settings <key> <value>              # 修改某项设置
 
 更多排查方法见[文档](https://easy-complete.emmmm.dev/docs)。
 
+## 💬 获取帮助
+
+- **提问与建议** —— 到 [GitHub Discussions](https://github.com/chen86860/easy-complete/discussions) 发帖。
+- **反馈 Bug** —— 运行 `ec issue`，或直接[提交 Issue](https://github.com/chen86860/easy-complete/issues/new/choose)。
+- **安全问题** —— 请按 [SECURITY.md](./SECURITY.md) 的流程反馈，不要提交公开 Issue。
+
 ## 🗑 卸载
 
 ```bash
@@ -129,7 +145,8 @@ ec uninstall
 Complete 自己的输入源）、登录项、偏好设置、辅助功能权限、缓存和应用数据，最后删除应用本身。完成后运行
 `exec $SHELL`。
 
-如果是用 Homebrew 安装的，会通过 `brew uninstall --zap` 移除，cask 记录也一并清掉。
+如果是用 Homebrew 安装的，`ec uninstall` 会自动执行 `brew uninstall --zap --cask`，无需再单独卸载
+cask。
 
 ## 🛠 开发
 

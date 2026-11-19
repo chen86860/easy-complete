@@ -174,6 +174,8 @@ Issues and pull requests are welcome. [CONTRIBUTING.md](./CONTRIBUTING.md) has t
   pull request and commits the result (`pnpm format` does the same locally). Commits follow
   [Conventional Commits](https://www.conventionalcommits.org/).
 - **Security issues** — follow [SECURITY.md](./SECURITY.md) instead of filing a public issue.
+- **Accessibility barriers** — [ACCESSIBILITY.md](./ACCESSIBILITY.md) lists known limitations
+  and how to report one.
 
 ## 📜 License
 

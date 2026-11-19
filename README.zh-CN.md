@@ -165,6 +165,7 @@ pnpm dev:autocomplete   # 可选：监听补全 UI（端口 3124）
   `pnpm format`，效果相同）。提交信息遵循
   [Conventional Commits](https://www.conventionalcommits.org/)。
 - **安全问题**请按 [SECURITY.md](./SECURITY.md) 的流程反馈，不要提交公开 Issue。
+- **无障碍问题** —— 已知限制和反馈方式见 [ACCESSIBILITY.md](./ACCESSIBILITY.md)（英文）。
 
 ## 📜 许可证
 

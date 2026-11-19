@@ -32,7 +32,7 @@ measured color contrast for the bundled themes. No WCAG conformance is claimed.
 
 | Barrier | Effect | Workaround |
 | --- | --- | --- |
-| VoiceOver does not announce suggestions | A screen reader user does not hear that the popup opened or which suggestion is highlighted. | None inside the popup yet. `ec settings autocomplete.onlyShowOnTab true` keeps the popup closed until you press `⇥`, so suggestions appear only when you ask for them. |
+| VoiceOver does not announce suggestions | A screen reader user does not hear that the popup opened or which suggestion is highlighted. | None inside the popup yet. Run `ec settings autocomplete.onlyShowOnTab true` and open a new terminal to keep the popup closed until you press `⇥`. If exactly one suggestion matches, Tab inserts it directly instead of opening the popup; review the command before running it. |
 | Small default text | Suggestions use 12.8 px text by default. | Raise **Font Size** in Settings → Appearance (10–24 px), or run `ec settings autocomplete.fontSize 18`. |
 | Contrast varies between themes | Some themes may have low contrast between text, descriptions and the highlighted row. | Pick another one under Settings → Appearance → **Suggestion Popup Theme**. Please tell us which theme is hard to read. |
 | The loading indicator ignores Reduce Motion | A small spinner animates while suggestions load, even with **Reduce motion** turned on in macOS. | None yet. |

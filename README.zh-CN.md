@@ -49,21 +49,23 @@ fish shell 的建议——子命令、选项、参数和文件路径，以跟随
   （见[受支持的终端](#受支持的终端)）。
 - **支持 `zsh`、`bash` 与 `fish`** —— Shell 集成由应用自动安装与维护。
 
-## 💻 系统要求
+## 📦 快速开始
+
+### 系统要求
 
 - macOS 13（Ventura）及以上，Apple Silicon（当前发布的 DMG 仅支持 arm64）
 - `zsh`、`bash` 或 `fish`
 - **辅助功能**权限，首次启动时按提示授予即可
 
-## ⚡ 安装
+### 安装
 
-### Homebrew（推荐）
+**Homebrew（推荐）**
 
 ```bash
 brew install chen86860/tap/easy-complete
 ```
 
-### DMG
+**DMG**
 
 [下载最新版 DMG](https://github.com/chen86860/easy-complete/releases/latest/download/Easy-Complete-arm64.dmg)，
 把 **Easy Complete.app** 拖到 `/Applications`。
@@ -77,12 +79,16 @@ brew install chen86860/tap/easy-complete
 
 在任意受支持的终端里直接输入，建议会实时出现在行内。
 
+### 快捷键
+
 | 按键        | 操作                                             |
 | ----------- | ------------------------------------------------ |
 | `↑` / `↓`   | 在建议间移动（也可用 `⇧⇥`、`⌃P` / `⌃N`）         |
 | `↩`（回车） | 采用高亮的建议                                   |
 | `⇥` (Tab)   | 补全所有建议共有的前缀；没有共同前缀时移到下一项 |
 | `Esc`       | 关闭补全浮层                                     |
+
+### 设置与 CLI
 
 设置入口在**菜单栏的 Easy Complete 图标**。常用 CLI 命令：
 
@@ -106,7 +112,7 @@ ec settings <key> <value>              # 修改某项设置
 程序，补全浮层就不知道该出现在哪里。Easy Complete 自带一个 macOS 输入法，它只做一件事：
 报告光标位置。首次设置时，如果检测到你装有这类终端，会提示你启用它。
 
-## ❓ 常见问题
+## 🛟 帮助
 
 ### 补全没有出现
 
@@ -120,13 +126,13 @@ ec settings <key> <value>              # 修改某项设置
 
 更多排查方法见[文档](https://easy-complete.emmmm.dev/docs)。
 
-## 💬 获取帮助
+### 获取支持
 
 - **提问与建议** —— 到 [GitHub Discussions](https://github.com/chen86860/easy-complete/discussions) 发帖。
 - **反馈 Bug** —— 运行 `ec issue`，或直接[提交 Issue](https://github.com/chen86860/easy-complete/issues/new/choose)。
 - **安全问题** —— 请按 [SECURITY.md](./SECURITY.md) 的流程反馈，不要提交公开 Issue。
 
-## 🗑 卸载
+### 卸载
 
 ```bash
 ec uninstall
@@ -151,26 +157,7 @@ CLI。Easy Complete 只保留补全这一部分，做成一款在你的 Mac 本�
 - **无需账号** —— 装好就能用。
 - **只做补全** —— 没有 AI 对话。少数 spec（如 `npm`）会联网查询包名，详见
   [隐私页面](https://easy-complete.emmmm.dev/privacy-policy)。
-- **沿用 Fig 的 spec** —— 补全规则来自 Fig 以 MIT 许可证发布的 spec 集合（见[致谢](#-致谢)）。
-
-## 🛠 开发
-
-Easy Complete 由三个协作进程组成：桌面应用（`easy-complete`，承载补全浮层和设置界面）、读取
-shell 编辑缓冲区的伪终端（`ecterm`），以及 `ec` CLI，三者通过 Unix 套接字以 Protobuf 通信。
-[工作原理](./docs/how-it-works.md)（英文）跟随一次按键走完整条链路。
-
-[AGENTS.md](./AGENTS.md) 是完整的架构与贡献指南：工具链、crate 索引、IPC、构建与测试命令、
-内置 spec 和发布流程都在其中。
-
-从源码构建并安装：
-
-```bash
-git clone https://github.com/chen86860/easy-complete.git
-cd easy-complete
-./scripts/install.sh    # 构建、安装到 /Applications，并配置 shell 集成
-exec $SHELL
-pnpm dev:autocomplete   # 可选：监听补全 UI（端口 3124）
-```
+- **沿用 Fig 的 spec** —— 补全规则来自 Fig 以 MIT 许可证发布的 spec 集合（见[致谢](#致谢)）。
 
 ## 🤝 参与贡献
 
@@ -189,6 +176,25 @@ pnpm dev:autocomplete   # 可选：监听补全 UI（端口 3124）
 - **安全问题**请按 [SECURITY.md](./SECURITY.md) 的流程反馈，不要提交公开 Issue。
 - **无障碍问题** —— 已知限制和反馈方式见 [ACCESSIBILITY.md](./ACCESSIBILITY.md)（英文）。
 
+### 开发
+
+Easy Complete 由三个协作进程组成：桌面应用（`easy-complete`，承载补全浮层和设置界面）、读取
+shell 编辑缓冲区的伪终端（`ecterm`），以及 `ec` CLI，三者通过 Unix 套接字以 Protobuf 通信。
+[工作原理](./docs/how-it-works.md)（英文）跟随一次按键走完整条链路。
+
+[AGENTS.md](./AGENTS.md) 是完整的架构与贡献指南：工具链、crate 索引、IPC、构建与测试命令、
+内置 spec 和发布流程都在其中。
+
+从源码构建并安装：
+
+```bash
+git clone https://github.com/chen86860/easy-complete.git
+cd easy-complete
+./scripts/install.sh    # 构建、安装到 /Applications，并配置 shell 集成
+exec $SHELL
+pnpm dev:autocomplete   # 可选：监听补全 UI（端口 3124）
+```
+
 ## 📜 许可证
 
 采用 MIT 许可证。Easy Complete 基于上游 Amazon Q Developer CLI，并在
@@ -199,7 +205,7 @@ pnpm dev:autocomplete   # 可选：监听补全 UI（端口 3124）
 许可证只覆盖代码，不包括 Easy Complete 的名称、Logo 和图标。发布 fork 时须更换名称和图标，详见
 [TRADEMARKS.zh-CN.md](./TRADEMARKS.zh-CN.md)。
 
-## 🙏 致谢
+### 致谢
 
 补全规则最初来自 [withfig/autocomplete](https://github.com/withfig/autocomplete)，spec 依赖库和
 构建工具来自 [withfig/autocomplete-tools](https://github.com/withfig/autocomplete-tools)，两者均由

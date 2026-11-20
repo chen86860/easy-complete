@@ -52,21 +52,23 @@ requests and how to disable them.
   (see [Supported terminals](#supported-terminals)).
 - **`zsh`, `bash` and `fish`** — shell integration is installed and managed for you.
 
-## 💻 Requirements
+## 📦 Getting started
+
+### Requirements
 
 - macOS 13 (Ventura) or later, Apple Silicon (the published DMG is arm64 only)
 - `zsh`, `bash` or `fish`
 - **Accessibility** permission, granted when the app first asks for it
 
-## ⚡ Install
+### Install
 
-### Homebrew (recommended)
+**Homebrew (recommended)**
 
 ```bash
 brew install chen86860/tap/easy-complete
 ```
 
-### DMG
+**DMG**
 
 [Download the latest DMG](https://github.com/chen86860/easy-complete/releases/latest/download/Easy-Complete-arm64.dmg)
 and drag **Easy Complete.app** into `/Applications`.
@@ -80,12 +82,16 @@ when asked. Then open a new terminal window and type `git ` to try it.
 
 Start typing in any supported terminal — suggestions appear inline.
 
+### Keyboard shortcuts
+
 | Key         | Action                                                           |
 | ----------- | ---------------------------------------------------------------- |
 | `↑` / `↓`   | Move through suggestions (also `⇧⇥`, `⌃P` / `⌃N`)                |
 | `↩` (Enter) | Accept the highlighted suggestion                                |
 | `⇥` (Tab)   | Insert the prefix all suggestions share, or move to the next one |
 | `Esc`       | Dismiss the popup                                                |
+
+### Settings and CLI
 
 Settings live in the **Easy Complete menu bar icon**. Useful CLI commands:
 
@@ -111,7 +117,7 @@ appear. Easy Complete ships a small macOS input method that does one thing: repo
 cursor position. If setup finds one of these terminals on your Mac, it offers to turn the
 input method on.
 
-## ❓ FAQ
+## 🛟 Help
 
 ### Completions do not appear
 
@@ -126,13 +132,13 @@ Complete started are not covered either: open a new one.
 
 See the [docs](https://easy-complete.emmmm.dev/docs) for more troubleshooting.
 
-## 💬 Support
+### Get support
 
 - **Questions and ideas** — ask in [GitHub Discussions](https://github.com/chen86860/easy-complete/discussions).
 - **Bugs** — run `ec issue`, or open an [issue](https://github.com/chen86860/easy-complete/issues/new/choose).
 - **Security issues** — follow [SECURITY.md](./SECURITY.md) instead of filing a public issue.
 
-## 🗑 Uninstall
+### Uninstall
 
 ```bash
 ec uninstall
@@ -161,27 +167,7 @@ app that runs on your Mac:
 - **Completion only** — no AI chat. A few specs (such as `npm`) look up package names online;
   see the [Privacy page](https://easy-complete.emmmm.dev/privacy-policy) for details.
 - **Built on Fig's specs** — completions start from Fig's MIT-licensed spec collection (see
-  [Acknowledgements](#-acknowledgements)).
-
-## 🛠 Development
-
-Easy Complete is three cooperating processes: the desktop app (`easy-complete`, overlay and
-settings UI), a pseudoterminal (`ecterm`) that reads the shell edit buffer, and the `ec`
-CLI. They talk over Unix sockets using Protobuf. [How it works](./docs/how-it-works.md)
-follows one keystroke through all of them.
-
-[AGENTS.md](./AGENTS.md) is the full architecture and contributor guide: toolchain, crate
-map, IPC, build and test commands, bundled specs and the release process.
-
-To build and install from source:
-
-```bash
-git clone https://github.com/chen86860/easy-complete.git
-cd easy-complete
-./scripts/install.sh    # builds, installs to /Applications, sets up shell integration
-exec $SHELL
-pnpm dev:autocomplete   # optional: watch the autocomplete UI (port 3124)
-```
+  [Acknowledgements](#acknowledgements)).
 
 ## 🤝 Contributing
 
@@ -202,6 +188,26 @@ Issues and pull requests are welcome. [CONTRIBUTING.md](./CONTRIBUTING.md) has t
 - **Accessibility barriers** — [ACCESSIBILITY.md](./ACCESSIBILITY.md) lists known limitations
   and how to report one.
 
+### Development
+
+Easy Complete is three cooperating processes: the desktop app (`easy-complete`, overlay and
+settings UI), a pseudoterminal (`ecterm`) that reads the shell edit buffer, and the `ec`
+CLI. They talk over Unix sockets using Protobuf. [How it works](./docs/how-it-works.md)
+follows one keystroke through all of them.
+
+[AGENTS.md](./AGENTS.md) is the full architecture and contributor guide: toolchain, crate
+map, IPC, build and test commands, bundled specs and the release process.
+
+To build and install from source:
+
+```bash
+git clone https://github.com/chen86860/easy-complete.git
+cd easy-complete
+./scripts/install.sh    # builds, installs to /Applications, sets up shell integration
+exec $SHELL
+pnpm dev:autocomplete   # optional: watch the autocomplete UI (port 3124)
+```
+
 ## 📜 License
 
 Licensed under the MIT License. Easy Complete is based on the upstream Amazon Q
@@ -212,7 +218,7 @@ Third-party copyright and license terms are collected in
 The license covers the code, not the Easy Complete name, logo, or icon. Forks
 must ship under a new name and icon; see [TRADEMARKS.md](./TRADEMARKS.md).
 
-## 🙏 Acknowledgements
+### Acknowledgements
 
 The completion specs started from [withfig/autocomplete](https://github.com/withfig/autocomplete),
 and the spec libraries and build CLI from

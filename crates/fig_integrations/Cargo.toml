@@ -44,5 +44,4 @@ objc2-app-kit = { workspace = true, features = ["NSRunningApplication"] }
 objc2-foundation = { workspace = true, features = ["NSArray", "NSError", "NSString"] }
 
 [dev-dependencies]
-insta.workspace = true
 tempfile.workspace = true

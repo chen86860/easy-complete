@@ -114,11 +114,6 @@ pub fn menu_bar() -> Menu {
     menu_bar
 }
 
-#[cfg(target_os = "linux")]
-pub fn menu_bar() -> Menu {
-    Menu::new()
-}
-
 pub fn handle_event(menu_event: &MenuEvent, proxy: &EventLoopProxy) {
     match &menu_event.id().0 {
         menu_id if menu_id == DASHBOARD_QUIT => proxy.send_event(Event::ControlFlow(ControlFlow::Exit)).unwrap(),

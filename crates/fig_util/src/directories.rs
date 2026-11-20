@@ -9,10 +9,7 @@ use time::OffsetDateTime;
 
 #[cfg(unix)]
 use crate::RUNTIME_DIR_NAME;
-use crate::env_var::{Q_BUNDLE_METADATA_PATH, Q_PARENT};
-#[cfg(target_os = "linux")]
-use crate::linux::PACKAGE_NAME;
-use crate::system_info::{in_cloudshell, is_remote};
+use crate::env_var::Q_BUNDLE_METADATA_PATH;
 use crate::{BACKUP_DIR_NAME, DATA_DIR_NAME, TAURI_PRODUCT_NAME};
 
 macro_rules! utf8_dir {
@@ -50,10 +47,6 @@ pub enum DirectoryError {
     FromVecWithNul(#[from] std::ffi::FromVecWithNulError),
     #[error(transparent)]
     IntoString(#[from] std::ffi::IntoStringError),
-    #[error("{Q_PARENT} env variable not set")]
-    QParentNotSet,
-    #[error("must be ran from an appimage executable")]
-    NotAppImage,
 }
 
 type Result<T, E = DirectoryError> = std::result::Result<T, E>;
@@ -265,23 +258,9 @@ pub fn desktop_socket_path() -> Result<PathBuf> {
     Ok(host_sockets_dir()?.join("desktop.sock"))
 }
 
-/// The path to remote socket
-// - Linux/MacOS on ssh: At the value of `Q_PARENT`
-// - Linux/MacOS not on ssh:
-/// - MacOS: `$TMPDIR/ecrun/remote.sock`
-/// - Linux: `$XDG_RUNTIME_DIR/ecrun/remote.sock`
+/// The path to remote socket: `$TMPDIR/ecrun/remote.sock`
 pub fn remote_socket_path() -> Result<PathBuf> {
-    // Normal implementation for non-test code
-    // TODO(grant): This is only enabled on Linux for now to prevent public dist
-    if is_remote() && !in_cloudshell() && cfg!(target_os = "linux") {
-        if let Some(parent_socket) = fig_os_shim::Env::new().get_os(Q_PARENT) {
-            Ok(PathBuf::from(parent_socket))
-        } else {
-            Err(DirectoryError::QParentNotSet)
-        }
-    } else {
-        local_remote_socket_path()
-    }
+    local_remote_socket_path()
 }
 
 /// The path to local remote socket
@@ -395,39 +374,6 @@ pub fn bundled_gnome_extension_version_path<Ctx: EnvProvider + PlatformProvider>
         .join(format!("{}.version.txt", extension_uuid)))
 }
 
-/// The path to the desktop entry bundled with the AppImage.
-///
-/// Only applicable to the desktop app binary when ran as an AppImage.
-pub fn appimage_desktop_entry_path<Ctx: EnvProvider>(ctx: &Ctx) -> Result<PathBuf> {
-    if !ctx.env().in_appimage() {
-        return Err(DirectoryError::NotAppImage);
-    }
-    Ok(ctx.env().current_dir()?.join("share/applications/q-desktop.desktop"))
-}
-
-/// The path to the icon bundled with the AppImage to be used for the desktop entry file.
-///
-/// Only applicable to the desktop app binary when ran as an AppImage.
-pub fn appimage_desktop_entry_icon_path<Ctx: EnvProvider>(ctx: &Ctx) -> Result<PathBuf> {
-    if !ctx.env().in_appimage() {
-        return Err(DirectoryError::NotAppImage);
-    }
-    Ok(ctx
-        .env()
-        .current_dir()?
-        .join("share/icons/hicolor/128x128/apps/q-desktop.png"))
-}
-
-/// The path to the data directory auto-created by the Linux windowing application.
-#[cfg(target_os = "linux")]
-pub fn local_webview_data_dir<Ctx: FsProvider + EnvProvider + PlatformProvider>(ctx: &Ctx) -> Result<PathBuf> {
-    let os = ctx.platform().os();
-    if os != Os::Linux {
-        return Err(DirectoryError::UnsupportedOs(os));
-    }
-    Ok(local_data_dir(ctx)?.join(crate::consts::linux::DESKTOP_APP_WM_CLASS))
-}
-
 utf8_dir!(home_dir);
 #[cfg(unix)]
 utf8_dir!(home_local_bin);
@@ -463,7 +409,7 @@ mod linux_tests {
 }
 
 // TODO(grant): Add back path tests on linux
-#[cfg(all(test, not(target_os = "linux")))]
+#[cfg(test)]
 mod tests {
     use insta;
 
@@ -504,13 +450,6 @@ mod tests {
         };
     }
 
-    macro_rules! linux {
-        ($value:expr, @$snapshot:literal) => {
-            #[cfg(target_os = "linux")]
-            assert_directory!($value, @$snapshot)
-        };
-    }
-
     fn sanitized_directory_path(path: Result<PathBuf>) -> String {
         let mut path = path.unwrap().into_os_string().into_string().unwrap();
 
@@ -542,74 +481,58 @@ mod tests {
             path = path.replace(xdg_runtime_dir, "$XDG_RUNTIME_DIR");
         }
 
-        #[cfg(target_os = "linux")]
-        {
-            path = path.replace("/tmp", "$TMPDIR");
-        }
-
         path
     }
 
     #[cfg(unix)]
     #[test]
     fn snapshot_home_local_bin() {
-        #[cfg(target_os = "linux")]
-        linux!(home_local_bin(), @"$HOME/.local/bin");
         #[cfg(target_os = "macos")]
         macos!(home_local_bin(), @"$HOME/.local/bin");
     }
 
     #[test]
     fn snapshot_fig_data_dir() {
-        linux!(fig_data_dir(), @"$HOME/.local/share/easy-complete");
         macos!(fig_data_dir(), @"$HOME/Library/Application Support/easy-complete");
     }
 
     #[test]
     fn snapshot_sockets_dir() {
-        linux!(sockets_dir(), @"$XDG_RUNTIME_DIR/ecrun");
         macos!(sockets_dir(), @"$TMPDIR/ecrun");
     }
 
     #[test]
     fn snapshot_themes_dir() {
-        linux!(themes_dir(&Context::new()), @"/usr/share/fig/themes");
         macos!(themes_dir(&Context::new()), @"/Applications/Easy Complete.app/Contents/Resources/themes");
     }
 
     #[test]
     fn snapshot_backups_dir() {
-        linux!(backups_dir(), @"$HOME/.easy-complete.dotfiles.bak");
         macos!(backups_dir(), @"$HOME/.easy-complete.dotfiles.bak");
     }
 
     #[test]
     fn snapshot_fig_socket_path() {
-        linux!(desktop_socket_path(), @"$XDG_RUNTIME_DIR/ecrun/desktop.sock");
         macos!(desktop_socket_path(), @"$TMPDIR/ecrun/desktop.sock");
     }
 
     #[test]
     fn snapshot_remote_socket_path() {
-        linux!(remote_socket_path(), @"$XDG_RUNTIME_DIR/ecrun/remote.sock");
         macos!(remote_socket_path(), @"$TMPDIR/ecrun/remote.sock");
     }
 
     #[test]
     fn snapshot_local_remote_socket_path() {
-        linux!(local_remote_socket_path(), @"$XDG_RUNTIME_DIR/ecrun/remote.sock");
         macos!(local_remote_socket_path(), @"$TMPDIR/ecrun/remote.sock");
     }
 
     #[test]
     fn snapshot_figterm_socket_path() {
-        linux!(figterm_socket_path("$SESSION_ID"), @"$XDG_RUNTIME_DIR/ecrun/t/$SESSION_ID.sock");
         macos!(figterm_socket_path("$SESSION_ID"), @"$TMPDIR/ecrun/t/$SESSION_ID.sock");
     }
 
     #[test]
     fn snapshot_settings_path() {
-        linux!(settings_path(), @"$HOME/.local/share/easy-complete/settings.json");
         macos!(settings_path(), @"$HOME/Library/Application Support/easy-complete/settings.json");
     }
 

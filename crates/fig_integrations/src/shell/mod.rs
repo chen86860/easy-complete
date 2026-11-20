@@ -888,34 +888,4 @@ mod test {
                 .unwrap_or_else(|err| panic!("guarded Otty {ext} trailer must not fail post status: {err}"));
         }
     }
-
-    #[cfg(target_os = "linux")]
-    fn all_dotfile_shell_integrations() -> Vec<ShellScriptShellIntegration> {
-        Shell::all()
-            .iter()
-            .flat_map(|shell| shell.get_script_integrations().unwrap())
-            .collect()
-    }
-
-    #[test]
-    #[cfg(target_os = "linux")]
-    fn dotfile_shell_integrations_snapshot() {
-        for integration in all_dotfile_shell_integrations() {
-            let integration_name = format!(
-                "{} {}",
-                integration.describe(),
-                integration.path.file_name().unwrap().to_str().unwrap()
-            )
-            .replace(' ', "_");
-            insta::assert_snapshot!(integration_name, integration.get_contents());
-        }
-    }
-
-    #[test]
-    #[cfg(target_os = "linux")]
-    fn dotfile_shell_integrations_shellcheck() {
-        for integration in all_dotfile_shell_integrations() {
-            run_shellcheck(integration.get_contents());
-        }
-    }
 }

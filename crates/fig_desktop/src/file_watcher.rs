@@ -61,25 +61,6 @@ pub async fn setup_listeners(notifications_state: Arc<WebviewNotificationsState>
             },
         };
 
-        #[cfg(target_os = "linux")]
-        {
-            use crate::Event;
-            use crate::event::WindowEvent;
-            use crate::webview::AUTOCOMPLETE_ID;
-            proxy
-                .send_event(Event::WindowEvent {
-                    window_id: AUTOCOMPLETE_ID,
-                    window_event: WindowEvent::SetEnabled(
-                        !prev_settings
-                            .get("autocomplete.disable")
-                            .and_then(|v| v.as_bool())
-                            .unwrap_or(false),
-                    ),
-                })
-                .map_err(|err| error!(?err, "failed initializing autocomplete.disable state"))
-                .ok();
-        }
-
         while let Some(event) = rx.recv().await {
             trace!(?event, "Settings event");
 

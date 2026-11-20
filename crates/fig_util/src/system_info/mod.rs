@@ -1,5 +1,3 @@
-pub mod linux;
-
 use std::borrow::Cow;
 use std::sync::OnceLock;
 
@@ -9,7 +7,6 @@ use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
 use crate::Error;
-use crate::manifest::is_minimal;
 
 /// The support level for different platforms
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -33,11 +30,6 @@ pub enum OSVersion {
         patch: Option<i32>,
         build: String,
     },
-    Linux {
-        kernel_version: String,
-        #[serde(flatten)]
-        os_release: Option<linux::OsRelease>,
-    },
     FreeBsd {
         version: String,
     },
@@ -54,52 +46,12 @@ impl OSVersion {
                     SupportLevel::Unsupported
                 }
             },
-            OSVersion::Linux { .. } => match (is_remote(), is_minimal()) {
-                (true, true) => SupportLevel::Supported,
-                (false, true) => SupportLevel::SupportedWithCaveat {
-                    info: "Autocomplete is not yet available on Linux, but other products should work as expected."
-                        .into(),
-                },
-                (_, _) => SupportLevel::Supported,
-            },
             OSVersion::FreeBsd { .. } => SupportLevel::InDevelopment { info: None },
         }
     }
 
     pub fn user_readable(&self) -> Vec<String> {
-        match self {
-            OSVersion::Linux {
-                kernel_version,
-                os_release,
-            } => {
-                let mut v = vec![format!("kernel: {kernel_version}")];
-
-                if let Some(os_release) = os_release {
-                    if let Some(name) = &os_release.name {
-                        v.push(format!("distro: {name}"));
-                    }
-
-                    if let Some(version) = &os_release.version {
-                        v.push(format!("distro-version: {version}"));
-                    } else if let Some(version) = &os_release.version_id {
-                        v.push(format!("distro-version: {version}"));
-                    }
-
-                    if let Some(variant) = &os_release.variant {
-                        v.push(format!("distro-variant: {variant}"));
-                    } else if let Some(variant) = &os_release.variant_id {
-                        v.push(format!("distro-variant: {variant}"));
-                    }
-
-                    if let Some(build) = &os_release.build_id {
-                        v.push(format!("distro-build: {build}"));
-                    }
-                }
-
-                v
-            },
-            other => vec![format!("{other}")],
-        }
+        vec![format!("{self}")]
     }
 }
 
@@ -114,16 +66,6 @@ impl std::fmt::Display for OSVersion {
             } => {
                 let patch = patch.unwrap_or(0);
                 write!(f, "macOS {major}.{minor}.{patch} ({build})")
-            },
-            OSVersion::Linux {
-                kernel_version,
-                os_release,
-            } => match os_release
-                .as_ref()
-                .and_then(|r| r.pretty_name.as_ref().or(r.name.as_ref()))
-            {
-                Some(distro_name) => write!(f, "Linux {kernel_version} - {distro_name}"),
-                None => write!(f, "Linux {kernel_version}"),
             },
             OSVersion::FreeBsd { version } => write!(f, "FreeBSD {version}"),
         }
@@ -177,16 +119,6 @@ pub fn os_version() -> Option<&'static OSVersion> {
                         patch,
                         build,
                     })
-                } else if #[cfg(target_os = "linux")] {
-                    use nix::sys::utsname::uname;
-
-                    let kernel_version = uname().ok()?.release().to_string_lossy().into();
-                    let os_release = linux::get_os_release().cloned();
-
-                    Some(OSVersion::Linux {
-                        kernel_version,
-                        os_release,
-                    })
                 } else if #[cfg(target_os = "freebsd")] {
                     use nix::sys::utsname::uname;
 
@@ -207,30 +139,10 @@ pub fn in_ssh() -> bool {
     *IN_SSH.get_or_init(|| Env::new().in_ssh())
 }
 
-/// Test if the program is running under WSL
-pub fn in_wsl() -> bool {
-    cfg_if! {
-        if #[cfg(target_os = "linux")] {
-            static IN_WSL: OnceLock<bool> = OnceLock::new();
-            *IN_WSL.get_or_init(|| {
-                if let Ok(b) = std::fs::read("/proc/sys/kernel/osrelease") {
-                    if let Ok(s) = std::str::from_utf8(&b) {
-                        let a = s.to_ascii_lowercase();
-                        return a.contains("microsoft") || a.contains("wsl");
-                    }
-                }
-                false
-            })
-        } else {
-            false
-        }
-    }
-}
-
 /// Is the calling binary running on a remote instance
 pub fn is_remote() -> bool {
     // TODO(chay): Add detection for inside docker container
-    in_ssh() || in_cloudshell() || in_wsl() || fig_os_shim::Env::new().q_fake_is_remote()
+    in_ssh() || in_cloudshell() || fig_os_shim::Env::new().q_fake_is_remote()
 }
 
 /// Determines if we have an IPC path to a Desktop app from a remote environment
@@ -295,16 +207,6 @@ fn raw_system_id() -> Result<String, Error> {
         .into();
 
     Ok(machine_id)
-}
-
-#[cfg(target_os = "linux")]
-fn raw_system_id() -> Result<String, Error> {
-    for path in ["/var/lib/dbus/machine-id", "/etc/machine-id"] {
-        if std::path::Path::new(path).exists() {
-            return Ok(std::fs::read_to_string(path)?);
-        }
-    }
-    Err(Error::HwidNotFound)
 }
 
 #[cfg(target_os = "freebsd")]

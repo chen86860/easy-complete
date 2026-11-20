@@ -18,12 +18,7 @@ impl Os {
             return Self::Mac;
         }
 
-        #[cfg(target_os = "linux")]
-        {
-            return Self::Linux;
-        }
-
-        #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+        #[cfg(not(target_os = "macos"))]
         {
             compile_error!("unsupported platform");
         }

@@ -1,5 +1,5 @@
 use std::borrow::Cow;
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(target_os = "macos")]
 use std::io::{Write, stdout};
 use std::process::ExitCode;
 
@@ -14,7 +14,7 @@ const TERM_PROGRAM: &str = "TERM_PROGRAM";
 const WARP_TERMINAL: &str = "WarpTerminal";
 const REX_TERMINAL: &str = "rex";
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(target_os = "macos")]
 #[allow(dead_code)]
 struct ProcessInfo {
     pid: Box<fig_os_shim::process_info::Pid>,
@@ -24,14 +24,14 @@ struct ProcessInfo {
     is_special: bool,
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(target_os = "macos")]
 enum Status {
     Launch(Cow<'static, str>),
     DontLaunch(Cow<'static, str>),
     Process(ProcessInfo),
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(target_os = "macos")]
 impl Status {
     fn exit_status(self, quiet: bool) -> Result<ProcessInfo, u8> {
         match self {
@@ -160,7 +160,7 @@ fn grandparent_status(ctx: &Context, parent_pid: fig_os_shim::process_info::Pid)
     })
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(target_os = "macos")]
 fn should_launch(ctx: &Context, quiet: bool) -> u8 {
     use fig_os_shim::Os;
 
@@ -201,7 +201,7 @@ fn should_launch(ctx: &Context, quiet: bool) -> u8 {
     u8::from(!(grandparent_info.is_valid && parent_info.is_valid))
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(target_os = "macos")]
 pub fn should_figterm_launch_exit_status(ctx: &Context, quiet: bool) -> u8 {
     use fig_util::env_var::{PROCESS_LAUNCHED_BY_Q, Q_PARENT};
 
@@ -302,22 +302,15 @@ pub fn should_figterm_launch_exit_status(ctx: &Context, quiet: bool) -> u8 {
         return 1;
     }
 
-    if fig_util::system_info::in_wsl() {
-        if !quiet {
-            writeln!(stdout(), "🟡 Falling back to old mechanism since in WSL").ok();
-        }
-        2
-    } else {
-        should_launch(ctx, quiet)
-    }
+    should_launch(ctx, quiet)
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(target_os = "macos")]
 pub fn should_figterm_launch(ctx: &Context) -> ExitCode {
     ExitCode::from(should_figterm_launch_exit_status(ctx, false))
 }
 
-#[cfg(not(any(target_os = "macos", target_os = "linux")))]
+#[cfg(not(target_os = "macos"))]
 pub fn should_qterm_launch() -> ExitCode {
     ExitCode::from(2);
 }

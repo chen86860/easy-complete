@@ -125,14 +125,7 @@ pub async fn quit_fig(verbose: bool) -> Result<ExitCode> {
         let second_try = quit_command().await;
         if second_try.is_err() {
             cfg_if! {
-                if #[cfg(target_os = "linux")] {
-                    use fig_util::APP_PROCESS_NAME;
-                    if let Ok(output) = Command::new("killall").arg(APP_PROCESS_NAME).output() {
-                        if output.status.success() {
-                            return Ok(ExitCode::SUCCESS);
-                        }
-                    }
-                } else if #[cfg(target_os = "macos")] {
+                if #[cfg(target_os = "macos")] {
                     if let Ok(info) = get_app_info() {
                         let pid = Regex::new(r"pid = (\S+)")
                             .unwrap()

@@ -91,26 +91,8 @@ where
     }
 }
 
-#[cfg(target_os = "linux")]
-pub fn icon() -> Icon {
-    load_icon(
-        fig_util::search_xdg_data_dirs("icons/hicolor/512x512/apps/fig.png")
-            .unwrap_or_else(|| "/usr/share/icons/hicolor/512x512/apps/fig.png".into()),
-    )
-    .unwrap_or_else(load_from_memory)
-}
-
-#[cfg(not(target_os = "linux"))]
 pub fn icon() -> Icon {
     load_from_memory()
-}
-
-#[cfg(target_os = "linux")]
-fn load_icon(path: impl AsRef<std::path::Path>) -> Option<Icon> {
-    let image = image::open(path).ok()?.into_rgba8();
-    let (width, height) = image.dimensions();
-    let rgba = image.into_raw();
-    Icon::from_rgba(rgba, width, height).ok()
 }
 
 fn load_from_memory() -> Icon {
@@ -167,7 +149,6 @@ impl Rect {
 mod tests {
     use super::*;
 
-    #[cfg_attr(target_os = "linux", ignore)]
     #[test]
     fn test_icon() {
         icon();

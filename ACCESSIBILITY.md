@@ -36,6 +36,7 @@ measured color contrast for the bundled themes. No WCAG conformance is claimed.
 | Small default text | Suggestions use 12.8 px text by default. | Raise **Font Size** in Settings → Appearance (10–24 px), or run `ec settings autocomplete.fontSize 18`. |
 | Contrast varies between themes | Some themes may have low contrast between text, descriptions and the highlighted row. | Pick another one under Settings → Appearance → **Suggestion Popup Theme**. Please tell us which theme is hard to read. |
 | The loading indicator ignores Reduce Motion | A small spinner animates while suggestions load, even with **Reduce motion** turned on in macOS. | None yet. |
+| The setup guide needs a mouse drag | The first-run guide asks you to drag the app tile into the Accessibility list, which cannot be done from the keyboard. | In System Settings → Privacy & Security → **Accessibility**, use the **+** button below the list, choose **Easy Complete.app** in Applications, then turn it on. |
 
 The **Accessibility** permission that setup asks for is macOS's name for the access Easy
 Complete needs to find your terminal cursor. Granting it does not change how the app works
@@ -45,8 +46,11 @@ with assistive technologies.
 
 If something in Easy Complete is hard or impossible for you to use, please
 [open an issue](https://github.com/chen86860/easy-complete/issues/new/choose) and start the
-title with **"Accessibility:"**. If you would rather not file a public issue, ask in
-[GitHub Discussions](https://github.com/chen86860/easy-complete/discussions).
+title with **"Accessibility:"**. If the bug report form asks for steps you cannot complete
+(such as running `ec doctor` or `ec restart`), post in
+[GitHub Discussions](https://github.com/chen86860/easy-complete/discussions) instead; no form
+or prerequisites are needed there. Issues and Discussions are both public, so share only what
+you are comfortable making public.
 
 It helps to include, if you can:
 
@@ -54,7 +58,9 @@ It helps to include, if you can:
 - Your macOS version, terminal and shell.
 - Any assistive technology or system setting you use (VoiceOver, Zoom, larger text,
   Increase contrast, Reduce motion, and so on).
-- The output of `ec doctor`.
+- The output of `ec doctor --all`, which only runs checks. Plain `ec doctor` also tries to
+  repair problems, which can change your settings and shell integration. Remove your
+  username, paths or anything else personal before posting the output.
 
 A description in words is enough. You do not need to send screenshots or recordings, and
 you do not need to tell us about any disability.

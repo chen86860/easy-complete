@@ -34,7 +34,7 @@ fish shell 的建议——子命令、选项、参数和文件路径，以跟随
 本地优先的 Fig 替代品。
 
 补全在本机运行，无需账号，也没有 AI 请求。匿名使用统计（绝不包含命令内容）可通过
-`ec telemetry disable` 关闭；所有联网请求及其关闭方式见
+`ec telemetry disable` 关闭；主要的联网请求及其关闭方式见
 [隐私页面](https://easy-complete.emmmm.dev/privacy-policy)。
 
 <p align="center">
@@ -47,7 +47,7 @@ Fig 已于 2024 年 9 月 1 日停止服务，它的自动补全并入了需要�
 CLI。Easy Complete 只保留补全这一部分，做成一款在你的 Mac 本机运行的开源应用：
 
 - **无需账号** —— 装好就能用。
-- **只做补全** —— 没有 AI 对话。少数 spec（如 `npm`）会联网查询包名，所有联网请求见
+- **只做补全** —— 没有 AI 对话。少数 spec（如 `npm`）会联网查询包名，详见
   [隐私页面](https://easy-complete.emmmm.dev/privacy-policy)。
 - **沿用 Fig 的 spec** —— 补全规则来自 Fig 以 MIT 许可证发布的 spec 集合（见[致谢](#-致谢)）。
 

@@ -35,8 +35,8 @@ native overlay that follows your cursor. A lightweight, local-first alternative 
 
 Completion runs on-device, with no account and no AI requests. Anonymous usage statistics
 (never command content) can be turned off with `ec telemetry disable`; the
-[Privacy page](https://easy-complete.emmmm.dev/privacy-policy) lists every network request
-and how to disable it.
+[Privacy page](https://easy-complete.emmmm.dev/privacy-policy) describes the main network
+requests and how to disable them.
 
 <p align="center">
   <img src="./.github/media/screenshot.png" alt="Easy Complete autocomplete in action">

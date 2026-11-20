@@ -5,6 +5,7 @@
 ## Unreleased
 
 - new: suggestions work in Orca and Antigravity IDE (#268, thanks @MichaelChene)
+- new: a command without built-in completions gets its subcommands and options from its own `--help`, read once per installed version. Only compiled programs and Python, Node or Ruby scripts are run, never macOS system tools. Turn it off with "Learn Commands From --help" in Settings › Autocomplete (#280)
 - fix: a CLI older than every versioned spec gets completions for the oldest supported version instead of the newest, so pnpm 9 gets pnpm 10 completions rather than pnpm 12 (#272, thanks @joshuaallgaier2-cmd)
 - change: `ec uninstall` removes everything Easy Complete installed, including the login item, preferences, Accessibility permission and caches, and deletes the app; a Homebrew install is removed with `brew uninstall --zap` (#283)
 - change: `ec uninstall` and `ec debug` are listed in `ec --help` (#283)

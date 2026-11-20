@@ -52,6 +52,8 @@ export enum SETTINGS {
   HISTORY_COMMAND = "beta.history.customCommand",
   HISTORY_MERGE_SHELLS = "beta.history.allShells",
   FIRST_COMMAND_COMPLETION = "autocomplete.firstTokenCompletion",
+  // Read a command's --help when it has no spec.
+  HELP_FALLBACK = "autocomplete.helpFallback",
 
   TELEMETRY_ENABLED = "telemetry.enabled",
 }
@@ -80,6 +82,7 @@ export const DEFAULT_SETTINGS: SettingsMap = {
   [SETTINGS.ONLY_SHOW_ON_TAB]: false,
   [SETTINGS.FUZZY_SEARCH]: true,
   [SETTINGS.FIRST_COMMAND_COMPLETION]: false,
+  [SETTINGS.HELP_FALLBACK]: true,
   [SETTINGS.SORT_METHOD]: "default",
   [SETTINGS.TAB_KEYBINDING]: "insertCommonPrefixOrNavigateDown",
   [SETTINGS.INSERT_SPACE_AUTOMATICALLY]: true,

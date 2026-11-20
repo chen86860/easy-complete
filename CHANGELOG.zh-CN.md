@@ -5,6 +5,7 @@
 ## Unreleased
 
 - 新增：支持 Orca 和 Antigravity IDE（#268，感谢 @MichaelChene）
+- 新增：没有内置补全的命令，会从它自己的 `--help` 读取子命令和选项，每个安装版本只读一次。只运行编译好的程序和 Python、Node、Ruby 脚本，不会运行 macOS 系统工具。可在设置「补全」中关闭「从 --help 学习命令」（#280）
 - 修复：已安装的命令比所有分版本补全都旧时，改用最旧那份补全，不再用最新的。例如 pnpm 9 会得到 pnpm 10 的补全，而不是 pnpm 12（#272，感谢 @joshuaallgaier2-cmd）
 - 变更：`ec uninstall` 会移除 Easy Complete 安装的全部内容，包括登录项、偏好设置、辅助功能权限和缓存，并删除应用本身；Homebrew 安装会通过 `brew uninstall --zap` 移除（#283）
 - 变更：`ec --help` 现在会列出 `ec uninstall` 和 `ec debug`（#283）

@@ -22,6 +22,7 @@
     "dev": "turbo dev",
     "dev:autocomplete": "pnpm -C packages/autocomplete-app dev",
     "preview:autocomplete": "pnpm -C packages/autocomplete-app preview",
+    "complete": "pnpm -s -C packages/autocomplete-app complete",
     "clean": "turbo clean"
   },
   "devDependencies": {

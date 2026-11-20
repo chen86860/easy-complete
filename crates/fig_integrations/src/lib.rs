@@ -1,10 +1,6 @@
 pub mod backup;
-#[cfg(target_os = "linux")]
-pub mod desktop_entry;
 pub mod error;
 pub mod file;
-#[cfg(target_os = "linux")]
-pub mod gnome_extension;
 #[cfg(target_os = "macos")]
 pub mod input_method;
 #[cfg(target_os = "macos")]

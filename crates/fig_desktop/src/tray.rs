@@ -156,15 +156,6 @@ pub fn handle_event(menu_event: &MenuEvent, proxy: &EventLoopProxy) {
     // fig_telemetry removed
 }
 
-#[allow(dead_code)]
-#[cfg(target_os = "linux")]
-fn load_icon(path: impl AsRef<std::path::Path>) -> Option<Icon> {
-    let image = image::open(path).ok()?.into_rgba8();
-    let (width, height) = image.dimensions();
-    let rgba = image.into_raw();
-    Icon::from_rgba(rgba, width, height).ok()
-}
-
 pub async fn build_tray(
     _event_loop_window_target: &EventLoopWindowTarget,
     _figterm_state: &FigtermState,
@@ -179,9 +170,7 @@ pub fn get_icon() -> Icon {
     let (icon_rgba, icon_width, icon_height) = {
         let bytes = {
             cfg_if! {
-                if #[cfg(target_os = "linux")] {
-                    include_bytes!("../icons/icon-monochrome-light.png").to_vec()
-                } else if #[cfg(target_os = "macos")] {
+                if #[cfg(target_os = "macos")] {
                     include_bytes!("../icons/icon-monochrome@2x.png").to_vec()
                 } else {
                     include_bytes!("../icons/icon-monochrome.png").to_vec()

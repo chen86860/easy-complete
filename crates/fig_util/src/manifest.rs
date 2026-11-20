@@ -64,14 +64,6 @@ impl TargetTriple {
         cfg_if! {
             if #[cfg(target_os = "macos")] {
                 TargetTriple::UniversalAppleDarwin
-            } else if #[cfg(all(target_os = "linux", target_env = "gnu", target_arch = "x86_64"))] {
-                TargetTriple::X86_64UnknownLinuxGnu
-            } else if #[cfg(all(target_os = "linux", target_env = "gnu", target_arch = "aarch64"))] {
-                TargetTriple::AArch64UnknownLinuxGnu
-            } else if #[cfg(all(target_os = "linux", target_env = "musl", target_arch = "x86_64"))] {
-                TargetTriple::X86_64UnknownLinuxMusl
-            } else if #[cfg(all(target_os = "linux", target_env = "musl", target_arch = "aarch64"))] {
-                TargetTriple::AArch64UnknownLinuxMusl
             } else {
                 compile_error!("unknown target")
             }

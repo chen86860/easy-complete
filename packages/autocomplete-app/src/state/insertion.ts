@@ -104,11 +104,24 @@ const insertString = (
   updateVisibilityPostInsert(item, isFullCompletion);
 };
 
-const escapeInsertion = (str: string, isFolder: boolean) => {
-  // Check if insertion character has any special chars
-  // TODO: ultimately replace this with a regex
-  const specialCharsNotSpace = "\\?*'\"#|<>()[]!&".split("");
-  if (specialCharsNotSpace.every((char) => !str.includes(char))) {
+// `;` and the backquote end or run a command, so a name holding one (a file or
+// a branch called `a;rm -rf ~`) must never be typed bare.
+const SPECIAL_CHARS_NOT_SPACE = "\\?*'\"#|<>()[]!&;`".split("");
+
+/**
+ * `$` counts only in a file or folder's own name: other rows such as `$PATH`
+ * are meant to expand, and braces stay bare so `stash@{0}` is typed as is.
+ */
+export const needsQuoting = (str: string, isFileOrFolder: boolean) =>
+  SPECIAL_CHARS_NOT_SPACE.some((char) => str.includes(char)) ||
+  (isFileOrFolder && str.includes("$"));
+
+export const escapeInsertion = (
+  str: string,
+  isFolder: boolean,
+  isFileOrFolder = isFolder,
+) => {
+  if (!needsQuoting(str, isFileOrFolder)) {
     return !str.includes(" ") ? str : `${str.replace(/\s/g, "\\ ")}`;
   }
 
@@ -139,10 +152,11 @@ const getFullInsertion = (
     fuzzySearch,
     preferVerboseSuggestions,
   );
-  if (!match) return escapeInsertion("", isFolder);
+  if (!match) return escapeInsertion("", isFolder, isFileOrFolder);
   return escapeInsertion(
     item.separatorToAdd ? `${match}${item.separatorToAdd}{cursor}` : match,
     isFolder,
+    isFileOrFolder,
   );
 };
 
@@ -240,6 +254,16 @@ const makeInsertCommonPrefix =
     );
     if (!sharedPrefix || sharedPrefix === queryTerm) {
       throw new InsertPrefixError("No remaining prefix to insert");
+    }
+    // A prefix is typed bare, so one whose untyped part needs quoting is not
+    // inserted in part; the caller falls back to its other action.
+    if (
+      needsQuoting(
+        sharedPrefix.slice(queryTerm.length),
+        itemType === "file" || itemType === "folder",
+      )
+    ) {
+      throw new InsertPrefixError("Common prefix needs quoting");
     }
     const text = sharedPrefix.replace(/\s/g, "\\ ");
     if (

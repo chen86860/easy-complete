@@ -469,7 +469,7 @@ static void updateGuidePosition(void) {
     NSRect visible = screen != nil ? screen.visibleFrame : settings;
     CGFloat x = NSMaxX(settings) - size.width - 16;
     // Just above the bottom edge, clear of the list's +/− buttons.
-    CGFloat y = NSMinY(settings) + 20;
+    CGFloat y = NSMinY(settings) + 25;
     x = MIN(MAX(x, NSMinX(visible) + 8), NSMaxX(visible) - size.width - 8);
     y = MIN(MAX(y, NSMinY(visible) + 8), NSMaxY(visible) - size.height - 8);
     [guidePanel setFrameOrigin:NSMakePoint(x, y)];
@@ -493,7 +493,7 @@ static void showGuideOnMain(BOOL chinese) {
     // The pane's title right above already names the list (renamed on macOS
     // 27), so the instruction stays short enough for a panel that fits the
     // list column.
-    NSString *format = chinese ? @"↑  将 %@ 拖到上方列表中" : @"↑  Drag %@ into the list above";
+    NSString *format = chinese ? @"↑  将 %@ 拖到上方列表，或点 + 手动添加" : @"↑  Drag %@ into the list above, or click + to add it";
     NSString *text = [NSString stringWithFormat:format, appName(bundleURL)];
     NSFont *instructionFont = [NSFont systemFontOfSize:13 weight:NSFontWeightMedium];
     NSSize panelSize = NSMakeSize(480, 116);

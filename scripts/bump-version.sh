@@ -15,6 +15,10 @@ fi
 # Strip leading 'v' if present
 VERSION="${VERSION#v}"
 
+# Same pre-checks CI runs, so a release PR doesn't fail on them after the bump.
+echo "Checking pnpm-lock.yaml matches package.json..."
+(cd "$REPO_DIR" && pnpm install --frozen-lockfile)
+
 echo "Bumping version to $VERSION"
 
 # Cargo workspace (all crates inherit this)
@@ -44,6 +48,7 @@ echo "Refreshing Cargo.lock..."
 # Regenerate anyway: `build-app.sh` refuses to assemble the bundle until they match.
 echo "Regenerating THIRD_PARTY_NOTICES.txt..."
 (cd "$REPO_DIR" && node scripts/generate-third-party-notices.mjs)
+(cd "$REPO_DIR" && pnpm licenses:check)
 
 echo "Done. Next steps:"
 # main is protected: the bump lands through a pull request, and the tag goes on the

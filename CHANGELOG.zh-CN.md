@@ -8,6 +8,7 @@
 - 修复：已安装的命令比所有分版本补全都旧时，改用最旧那份补全，不再用最新的。例如 pnpm 9 会得到 pnpm 10 的补全，而不是 pnpm 12（#272，感谢 @joshuaallgaier2-cmd）
 - 变更：`ec uninstall` 会移除 Easy Complete 安装的全部内容，包括登录项、偏好设置、辅助功能权限和缓存，并删除应用本身；Homebrew 安装会通过 `brew uninstall --zap` 移除（#283）
 - 变更：`ec --help` 现在会列出 `ec uninstall` 和 `ec debug`（#283）
+- 变更：使用统计额外上报 macOS 主版本号（`os_major`，如 15），这一信息 `os_version` 本来就包含
 - 文档：新增 [docs/how-it-works.md](./docs/how-it-works.md)，说明 Easy Complete 如何读取输入内容、定位补全浮层并插入补全
 - 文档：新增 CONTRIBUTING.md 的中文版 CONTRIBUTING.zh-CN.md（#266）
 

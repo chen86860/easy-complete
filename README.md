@@ -167,7 +167,7 @@ app that runs on your Mac:
 - **Completion only** — no AI chat. A few specs (such as `npm`) look up package names online;
   see the [Privacy page](https://easy-complete.emmmm.dev/privacy-policy) for details.
 - **Built on Fig's specs** — completions start from Fig's MIT-licensed spec collection (see
-  [Acknowledgements](#acknowledgements)).
+  [Acknowledgements](#-acknowledgements)).
 
 ## 🤝 Contributing
 
@@ -218,7 +218,7 @@ Third-party copyright and license terms are collected in
 The license covers the code, not the Easy Complete name, logo, or icon. Forks
 must ship under a new name and icon; see [TRADEMARKS.md](./TRADEMARKS.md).
 
-### Acknowledgements
+## 🙏 Acknowledgements
 
 The completion specs started from [withfig/autocomplete](https://github.com/withfig/autocomplete),
 and the spec libraries and build CLI from

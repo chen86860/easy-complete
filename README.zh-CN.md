@@ -157,7 +157,7 @@ CLI。Easy Complete 只保留补全这一部分，做成一款在你的 Mac 本�
 - **无需账号** —— 装好就能用。
 - **只做补全** —— 没有 AI 对话。少数 spec（如 `npm`）会联网查询包名，详见
   [隐私页面](https://easy-complete.emmmm.dev/privacy-policy)。
-- **沿用 Fig 的 spec** —— 补全规则来自 Fig 以 MIT 许可证发布的 spec 集合（见[致谢](#致谢)）。
+- **沿用 Fig 的 spec** —— 补全规则来自 Fig 以 MIT 许可证发布的 spec 集合（见[致谢](#-致谢)）。
 
 ## 🤝 参与贡献
 
@@ -205,7 +205,7 @@ pnpm dev:autocomplete   # 可选：监听补全 UI（端口 3124）
 许可证只覆盖代码，不包括 Easy Complete 的名称、Logo 和图标。发布 fork 时须更换名称和图标，详见
 [TRADEMARKS.zh-CN.md](./TRADEMARKS.zh-CN.md)。
 
-### 致谢
+## 🙏 致谢
 
 补全规则最初来自 [withfig/autocomplete](https://github.com/withfig/autocomplete)，spec 依赖库和
 构建工具来自 [withfig/autocomplete-tools](https://github.com/withfig/autocomplete-tools)，两者均由

@@ -11,9 +11,10 @@
 
 <p align="center">
   <a href="https://github.com/chen86860/easy-complete/releases"><img alt="Release" src="https://img.shields.io/github/v/release/chen86860/easy-complete?color=brightgreen"></a>
+  <a href="https://github.com/chen86860/easy-complete/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/chen86860/easy-complete/actions/workflows/ci.yml/badge.svg?branch=main"></a>
   <img alt="Platform" src="https://img.shields.io/badge/platform-macOS-lightgrey">
   <img alt="Built with Rust" src="https://img.shields.io/badge/built%20with-Rust-orange">
-  <a href="#-license"><img alt="License" src="https://img.shields.io/badge/license-MIT-blue"></a>
+  <a href="#-license"><img alt="License" src="https://img.shields.io/github/license/chen86860/easy-complete?color=blue"></a>
   <a href="https://github.com/chen86860/easy-complete/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/chen86860/easy-complete?style=social"></a>
 </p>
 
@@ -34,12 +35,24 @@ native overlay that follows your cursor. A lightweight, local-first alternative 
 
 Completion runs on-device, with no account and no AI requests. Anonymous usage statistics
 (never command content) can be turned off with `ec telemetry disable`; the
-[Privacy page](https://easy-complete.emmmm.dev/privacy-policy) lists every network request
-and how to disable it.
+[Privacy page](https://easy-complete.emmmm.dev/privacy-policy) describes the main network
+requests and how to disable them.
 
 <p align="center">
   <img src="./.github/media/screenshot.png" alt="Easy Complete autocomplete in action">
 </p>
+
+## 🤔 Why Easy Complete?
+
+Fig shut down on September 1, 2024, and its autocomplete moved into Amazon Q Developer CLI,
+which needs an AWS sign-in. Easy Complete keeps only the completion part, as an open-source
+app that runs on your Mac:
+
+- **No account** — install it and start typing.
+- **Completion only** — no AI chat. A few specs (such as `npm`) look up package names online;
+  see the [Privacy page](https://easy-complete.emmmm.dev/privacy-policy) for details.
+- **Built on Fig's specs** — completions start from Fig's MIT-licensed spec collection (see
+  [Acknowledgements](#-acknowledgements)).
 
 ## ✨ Features
 
@@ -125,6 +138,12 @@ Complete started are not covered either: open a new one.
 
 See the [docs](https://easy-complete.emmmm.dev/docs) for more troubleshooting.
 
+## 💬 Support
+
+- **Questions and ideas** — ask in [GitHub Discussions](https://github.com/chen86860/easy-complete/discussions).
+- **Bugs** — run `ec issue`, or open an [issue](https://github.com/chen86860/easy-complete/issues/new/choose).
+- **Security issues** — follow [SECURITY.md](./SECURITY.md) instead of filing a public issue.
+
 ## 🗑 Uninstall
 
 ```bash
@@ -136,7 +155,13 @@ command-line tools, the input method (only Easy Complete's own input source), th
 the preferences, the Accessibility permission, caches and application data, and then the app itself.
 Run `exec $SHELL` afterwards.
 
-A Homebrew install is removed with `brew uninstall --zap`, so the cask goes too.
+If you installed with Homebrew, `ec uninstall` in v2.9.0 and later also removes the cask. If
+`brew list --cask` still shows `easy-complete` afterwards (always the case on v2.8.0 and
+earlier), remove it yourself:
+
+```bash
+brew uninstall --zap --cask chen86860/tap/easy-complete
+```
 
 ## 🛠 Development
 

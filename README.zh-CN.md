@@ -41,16 +41,6 @@ fish shell 的建议——子命令、选项、参数和文件路径，以跟随
   <img src="./.github/media/screenshot.png" alt="Easy Complete 自动补全效果">
 </p>
 
-## 🤔 为什么选择 Easy Complete？
-
-Fig 已于 2024 年 9 月 1 日停止服务，它的自动补全并入了需要登录 AWS 账号的 Amazon Q Developer
-CLI。Easy Complete 只保留补全这一部分，做成一款在你的 Mac 本机运行的开源应用：
-
-- **无需账号** —— 装好就能用。
-- **只做补全** —— 没有 AI 对话。少数 spec（如 `npm`）会联网查询包名，详见
-  [隐私页面](https://easy-complete.emmmm.dev/privacy-policy)。
-- **沿用 Fig 的 spec** —— 补全规则来自 Fig 以 MIT 许可证发布的 spec 集合（见[致谢](#-致谢)）。
-
 ## ✨ 功能特性
 
 - **IDE 风格的行内补全** —— 覆盖数百种 CLI，以跟随终端光标的原生浮层呈现。
@@ -152,6 +142,16 @@ Complete 自己的输入源）、登录项、偏好设置、辅助功能权限�
 ```bash
 brew uninstall --zap --cask chen86860/tap/easy-complete
 ```
+
+## 🤔 为什么选择 Easy Complete？
+
+Fig 已于 2024 年 9 月 1 日停止服务，它的自动补全并入了需要登录 AWS 账号的 Amazon Q Developer
+CLI。Easy Complete 只保留补全这一部分，做成一款在你的 Mac 本机运行的开源应用：
+
+- **无需账号** —— 装好就能用。
+- **只做补全** —— 没有 AI 对话。少数 spec（如 `npm`）会联网查询包名，详见
+  [隐私页面](https://easy-complete.emmmm.dev/privacy-policy)。
+- **沿用 Fig 的 spec** —— 补全规则来自 Fig 以 MIT 许可证发布的 spec 集合（见[致谢](#-致谢)）。
 
 ## 🛠 开发
 

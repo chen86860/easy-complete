@@ -42,18 +42,6 @@ requests and how to disable them.
   <img src="./.github/media/screenshot.png" alt="Easy Complete autocomplete in action">
 </p>
 
-## 🤔 Why Easy Complete?
-
-Fig shut down on September 1, 2024, and its autocomplete moved into Amazon Q Developer CLI,
-which needs an AWS sign-in. Easy Complete keeps only the completion part, as an open-source
-app that runs on your Mac:
-
-- **No account** — install it and start typing.
-- **Completion only** — no AI chat. A few specs (such as `npm`) look up package names online;
-  see the [Privacy page](https://easy-complete.emmmm.dev/privacy-policy) for details.
-- **Built on Fig's specs** — completions start from Fig's MIT-licensed spec collection (see
-  [Acknowledgements](#-acknowledgements)).
-
 ## ✨ Features
 
 - **IDE-style inline completions** for hundreds of CLIs, in a native overlay that follows
@@ -162,6 +150,18 @@ earlier), remove it yourself:
 ```bash
 brew uninstall --zap --cask chen86860/tap/easy-complete
 ```
+
+## 🤔 Why Easy Complete?
+
+Fig shut down on September 1, 2024, and its autocomplete moved into Amazon Q Developer CLI,
+which needs an AWS sign-in. Easy Complete keeps only the completion part, as an open-source
+app that runs on your Mac:
+
+- **No account** — install it and start typing.
+- **Completion only** — no AI chat. A few specs (such as `npm`) look up package names online;
+  see the [Privacy page](https://easy-complete.emmmm.dev/privacy-policy) for details.
+- **Built on Fig's specs** — completions start from Fig's MIT-licensed spec collection (see
+  [Acknowledgements](#-acknowledgements)).
 
 ## 🛠 Development
 

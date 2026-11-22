@@ -2,14 +2,20 @@
 
 **English** · [简体中文](./CHANGELOG.zh-CN.md)
 
-## Unreleased
+## v2.9.0 - 2026-11-23
 
 - new: suggestions work in Orca and Antigravity IDE (#268, thanks @MichaelChene)
+- change: `ec uninstall` removes everything Easy Complete installed: the app, its login item, preferences, Accessibility permission, caches and web view data. A Homebrew install is removed with `brew uninstall --zap`, so `brew upgrade` cannot bring it back (#283, #287, #290)
+- change: `ec --help` lists `ec uninstall` and `ec debug` (#283)
+- change: the Accessibility setup guide also mentions the list's + button, for when macOS refuses the drag (#302)
+- change: usage stats also report the macOS major version (`os_major`, e.g. 15) (#300)
+- change: the app is about 2.5 MB smaller, because the bundled third-party notices print each license text once (#307)
+- fix: a typo in a hand-edited settings.json no longer erases all your settings. Easy Complete runs on defaults and leaves the file alone until it parses again, and saves now replace the file atomically (#306)
+- fix: a completed file or branch name containing `;`, a backquote, or a `$` in a file name is quoted, so pressing Enter cannot run part of the name as a command (#305)
 - fix: a CLI older than every versioned spec gets completions for the oldest supported version instead of the newest, so pnpm 9 gets pnpm 10 completions rather than pnpm 12 (#272, thanks @joshuaallgaier2-cmd)
-- change: `ec uninstall` removes everything Easy Complete installed, including the login item, preferences, Accessibility permission and caches, and deletes the app; a Homebrew install is removed with `brew uninstall --zap` (#283)
-- change: `ec uninstall` and `ec debug` are listed in `ec --help` (#283)
-- change: usage stats also report the macOS major version (`os_major`, e.g. 15), the same information `os_version` already carries
+- fix: update the bundled `url` library for security advisory RUSTSEC-2026-0592 (#311)
 - docs: [docs/how-it-works.md](./docs/how-it-works.md) explains how Easy Complete reads what you type, places the overlay and inserts completions
+- docs: [ACCESSIBILITY.md](./ACCESSIBILITY.md) describes what Easy Complete aims for with the keyboard, magnification, larger text and screen readers, and how to report a problem (#297)
 - docs: CONTRIBUTING.md has a Chinese version, CONTRIBUTING.zh-CN.md (#266)
 
 ## v2.8.0 - 2026-11-16

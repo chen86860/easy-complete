@@ -7,8 +7,9 @@ pub mod sqlite;
 pub mod state;
 
 use std::fs::{self, File};
-use std::io::{Read, Seek, SeekFrom, Write};
+use std::io::{Read, Write};
 use std::path::PathBuf;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 pub use error::{Error, Result};
 use fd_lock::RwLock as FileRwLock;
@@ -25,6 +26,8 @@ pub type Map = serde_json::Map<String, Value>;
 static SETTINGS_FILE_LOCK: RwLock<()> = RwLock::new(());
 
 static SETTINGS_DATA: RwLock<Option<Map>> = RwLock::new(None);
+
+static SETTINGS_LOAD_FAILED: AtomicBool = AtomicBool::new(false);
 
 #[derive(Debug, Clone)]
 pub enum Backend {
@@ -178,9 +181,19 @@ pub trait JsonStore: Sized {
 
     fn map_mut(&mut self) -> WriteGuard<'_, Map>;
 
+    /// Set while the global backend runs on defaults because the file did not parse.
+    fn global_load_failed() -> &'static AtomicBool;
+
     fn load() -> Result<Self> {
         let is_global = Self::data_lock().read().as_ref().is_some();
         if is_global {
+            // The global copy holds defaults, not the user's settings, so a save from it would
+            // overwrite the file. Read the file again and refuse until it parses.
+            if Self::global_load_failed().load(Ordering::Acquire) {
+                let json = Self::load_from_file()?;
+                *Self::data_lock().write() = Some(json);
+                Self::global_load_failed().store(false, Ordering::Release);
+            }
             Ok(Self::new_from_backend(Backend::Global))
         } else {
             Ok(Self::new_from_backend(Backend::Memory(Self::load_from_file()?)))
@@ -200,15 +213,25 @@ pub trait JsonStore: Sized {
         let json: Map = {
             let _lock_guard = Self::file_lock().write();
 
-            // If the file doesn't exist, create it.
+            // If the file doesn't exist, create it. `create_new` so this never truncates what
+            // another process wrote in the meantime.
             if !path.exists() {
-                let mut file = FileRwLock::new(File::create(path)?);
-                file.write()?.write_all(b"{}")?;
-                serde_json::Map::new()
+                match File::options().write(true).create_new(true).open(&path) {
+                    Ok(mut file) => file.write_all(b"{}")?,
+                    Err(err) if err.kind() == std::io::ErrorKind::AlreadyExists => {},
+                    Err(err) => return Err(err.into()),
+                }
+            }
+
+            let mut file = FileRwLock::new(File::open(&path)?);
+            let mut read = file.write()?;
+            let mut content = String::new();
+            #[allow(clippy::verbose_file_reads)]
+            read.read_to_string(&mut content)?;
+            if content.trim().is_empty() {
+                Map::new()
             } else {
-                let mut file = FileRwLock::new(File::open(&path)?);
-                let mut read = file.write()?;
-                serde_json::from_reader(&mut *read)?
+                serde_json::from_str(&content)?
             }
         };
 
@@ -223,26 +246,11 @@ pub trait JsonStore: Sized {
                 Ok(())
             },
             Err(err) => {
+                // Run on defaults but leave the file alone: a hand-edit typo must not erase
+                // every setting. `load` reads the file again before any change is saved.
                 *Self::data_lock().write() = Some(Map::new());
-
-                let file_content: Result<String> = (|| {
-                    let _lock_guard = Self::file_lock().write();
-                    let mut file = FileRwLock::new(File::open(Self::path()?)?);
-                    let mut read = file.write()?;
-                    let mut content = String::new();
-                    #[allow(clippy::verbose_file_reads)]
-                    read.read_to_string(&mut content)?;
-                    Ok(content)
-                })();
-
-                error!(%err, ?file_content, "Failed to load json file into global backend");
-
-                // Write default data to file
-                let json = Self::new_from_backend(Backend::Memory(Map::new()));
-                if let Err(err) = json.save_to_file() {
-                    error!(%err, "Failed to write default data to file");
-                }
-
+                Self::global_load_failed().store(true, Ordering::Release);
+                error!(%err, "Failed to load json file into global backend, running on defaults");
                 Err(err)
             },
         }
@@ -250,6 +258,8 @@ pub trait JsonStore: Sized {
 
     fn save_to_file(&self) -> Result<()> {
         let path = Self::path()?;
+        // Write a symlinked file's target, so the link (e.g. from a dotfile manager) stays.
+        let path = fs::canonicalize(&path).unwrap_or(path);
 
         // If the folder doesn't exist, create it.
         if let Some(parent) = path.parent()
@@ -258,29 +268,38 @@ pub trait JsonStore: Sized {
             fs::create_dir_all(parent)?;
         }
 
+        let content = serde_json::to_vec_pretty(&*self.map())?;
+
         let _lock_guard = Self::file_lock().write();
 
-        let mut file_opts = File::options();
-        file_opts.create(true).write(true).truncate(true);
+        // Write a sibling file and rename it over the old one, so a reader sees the old or the
+        // new file, never a truncated one.
+        let mut tmp_name = path.file_name().unwrap_or_default().to_os_string();
+        tmp_name.push(format!(".tmp-{}", std::process::id()));
+        let tmp_path = path.with_file_name(tmp_name);
 
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::OpenOptionsExt;
-            file_opts.mode(0o600);
+        let result = (|| -> Result<()> {
+            let mut file_opts = File::options();
+            file_opts.create(true).write(true).truncate(true);
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::OpenOptionsExt;
+                file_opts.mode(0o600);
+            }
+            let mut file = file_opts.open(&tmp_path)?;
+            if let Ok(metadata) = fs::metadata(&path) {
+                file.set_permissions(metadata.permissions())?;
+            }
+            file.write_all(&content)?;
+            file.sync_data()?;
+            fs::rename(&tmp_path, &path)?;
+            Ok(())
+        })();
+
+        if result.is_err() {
+            let _ = fs::remove_file(&tmp_path);
         }
-
-        let mut file = FileRwLock::new(file_opts.open(&path)?);
-        let mut lock = file.write()?;
-
-        if let Err(_err) = serde_json::to_writer_pretty(&mut *lock, &*self.map()) {
-            // Write {} to the file if the serialization failed
-            lock.seek(SeekFrom::Start(0))?;
-            lock.set_len(0)?;
-            lock.write_all(b"{}")?;
-        };
-        lock.flush()?;
-
-        Ok(())
+        result
     }
 
     fn set(&mut self, key: impl Into<String>, value: impl Into<serde_json::Value>) {
@@ -339,6 +358,10 @@ impl JsonStore for OldSettings {
 
     fn data_lock() -> &'static RwLock<Option<Map>> {
         &SETTINGS_DATA
+    }
+
+    fn global_load_failed() -> &'static AtomicBool {
+        &SETTINGS_LOAD_FAILED
     }
 
     fn new_from_backend(backend: Backend) -> Self {
@@ -416,3 +439,108 @@ impl JsonStore for OldSettings {
 //         test_store_type(&path, JsonType::State);
 //     }
 // }
+
+#[cfg(test)]
+mod store_tests {
+    use std::sync::OnceLock;
+
+    use super::*;
+
+    static DIR: OnceLock<tempfile::TempDir> = OnceLock::new();
+    static FILE_LOCK: RwLock<()> = RwLock::new(());
+    static DATA: RwLock<Option<Map>> = RwLock::new(None);
+    static LOAD_FAILED: AtomicBool = AtomicBool::new(false);
+
+    /// A store on its own file and statics, so the test never touches the real settings.
+    struct TestStore(Backend);
+
+    impl JsonStore for TestStore {
+        fn path() -> Result<PathBuf> {
+            Ok(DIR
+                .get_or_init(|| tempfile::tempdir().unwrap())
+                .path()
+                .join("settings.json"))
+        }
+
+        fn file_lock() -> &'static RwLock<()> {
+            &FILE_LOCK
+        }
+
+        fn data_lock() -> &'static RwLock<Option<Map>> {
+            &DATA
+        }
+
+        fn global_load_failed() -> &'static AtomicBool {
+            &LOAD_FAILED
+        }
+
+        fn new_from_backend(backend: Backend) -> Self {
+            Self(backend)
+        }
+
+        fn map(&self) -> ReadGuard<'_, Map> {
+            match &self.0 {
+                Backend::Global => ReadGuard::Global(Self::data_lock().read()),
+                Backend::Memory(map) => ReadGuard::Memory(map),
+            }
+        }
+
+        fn map_mut(&mut self) -> WriteGuard<'_, Map> {
+            match &mut self.0 {
+                Backend::Global => WriteGuard::Global(Self::data_lock().write()),
+                Backend::Memory(map) => WriteGuard::Memory(map),
+            }
+        }
+    }
+
+    fn set_and_save(key: &str, value: Value) -> Result<()> {
+        let mut store = TestStore::load()?;
+        store.set(key, value);
+        store.save_to_file()
+    }
+
+    /// One test, since the store's statics are shared.
+    #[cfg(unix)]
+    #[test]
+    fn broken_file_is_kept_and_saves_replace_the_file_whole() {
+        use std::os::unix::fs::{PermissionsExt, symlink};
+
+        // settings.json links to a 0644 file, as a dotfile manager would set it up.
+        let path = TestStore::path().unwrap();
+        let target = path.with_file_name("target.json");
+        fs::write(&target, "").unwrap();
+        fs::set_permissions(&target, fs::Permissions::from_mode(0o644)).unwrap();
+        symlink(&target, &path).unwrap();
+
+        let broken = "{\n  \"a\": 1,\n  \"b\": oops\n}";
+        fs::write(&path, broken).unwrap();
+
+        // Loading a broken file runs on defaults and leaves the file as it was.
+        assert!(TestStore::load_into_global().is_err());
+        assert_eq!(fs::read_to_string(&path).unwrap(), broken);
+
+        // A change is refused while the file still does not parse.
+        assert!(set_and_save("c", Value::Bool(true)).is_err());
+        assert_eq!(fs::read_to_string(&path).unwrap(), broken);
+
+        // Once fixed, the change lands on top of what the file holds.
+        fs::write(&path, "{\"a\": 1, \"b\": 2}").unwrap();
+        set_and_save("c", Value::Bool(true)).unwrap();
+        let saved: Map = serde_json::from_str(&fs::read_to_string(&path).unwrap()).unwrap();
+        assert_eq!(saved, serde_json::from_str::<Map>(r#"{"a":1,"b":2,"c":true}"#).unwrap());
+
+        // The save wrote the link's target, kept its mode and left no temp file behind.
+        assert!(fs::symlink_metadata(&path).unwrap().file_type().is_symlink());
+        assert_eq!(fs::metadata(&target).unwrap().permissions().mode() & 0o777, 0o644);
+        let mut names: Vec<_> = fs::read_dir(path.parent().unwrap())
+            .unwrap()
+            .map(|entry| entry.unwrap().file_name().into_string().unwrap())
+            .collect();
+        names.sort();
+        assert_eq!(names, ["settings.json", "target.json"]);
+
+        // An empty file reads as `{}`.
+        fs::write(&path, "").unwrap();
+        assert!(TestStore::load_from_file().unwrap().is_empty());
+    }
+}

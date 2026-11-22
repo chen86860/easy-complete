@@ -75,35 +75,6 @@ impl AsyncWrite for MessageSink {
 }
 
 async fn get_forwarded_stream() -> Result<(MessageSource, MessageSink, Option<JoinHandle<()>>)> {
-    #[cfg(target_os = "linux")]
-    if fig_util::system_info::in_wsl() {
-        use std::process::Stdio;
-
-        use anyhow::Context as AnyhowContext;
-
-        let mut child = tokio::process::Command::new("fig.exe")
-            .args(["_", "stream-from-socket"])
-            .stdin(Stdio::piped())
-            .stdout(Stdio::piped())
-            .stderr(Stdio::null())
-            .spawn()?;
-
-        let stdin = child.stdin.take().context("Failed to open stdin")?;
-        let stdout = child.stdout.take().context("Failed to open stdout")?;
-
-        let child_task = tokio::spawn(async move {
-            if let Err(err) = child.wait().await {
-                error!(%err, "Error waiting for child");
-            }
-        });
-
-        return Ok((
-            MessageSource::ChildStdout(stdout),
-            MessageSink::ChildStdin(stdin),
-            Some(child_task),
-        ));
-    }
-
     let socket = directories::remote_socket_path()?;
     let stream = fig_ipc::socket_connect_timeout(&socket, Duration::from_secs(5)).await?;
     let (reader, writer) = tokio::io::split(stream);

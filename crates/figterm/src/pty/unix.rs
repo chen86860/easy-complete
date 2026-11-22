@@ -49,7 +49,7 @@ pub fn open_pty(pty_size: &PtySize) -> Result<PtyPair> {
     // it can not be safely set with fcntl() later on.
     // https://github.com/pkgw/stund/blob/master/tokio-pty-process/src/lib.rs#L127-L133
     cfg_if::cfg_if! {
-        if #[cfg(any(target_os = "macos", target_os = "linux"))] {
+        if #[cfg(target_os = "macos")] {
             let oflag = OFlag::O_RDWR | OFlag::O_NONBLOCK;
         } else if #[cfg(target_os = "freebsd")] {
             let oflag = OFlag::O_RDWR;

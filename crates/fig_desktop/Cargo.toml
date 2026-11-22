@@ -90,7 +90,6 @@ whoami.workspace = true
 wry = { version = "0.57.0", default-features = false, features = [
     # "tao",
     "devtools",
-    "linux-body",
 ] }
 
 [dev-dependencies]

@@ -42,9 +42,6 @@ objc2.workspace = true
 objc2-app-kit = { workspace = true, features = ["NSWorkspace"] }
 objc2-foundation = { workspace = true, features = ["NSURL"] }
 
-[target.'cfg(target_os = "linux")'.dependencies]
-bstr.workspace = true
-
 [target.'cfg(unix)'.dependencies]
 sysinfo.workspace = true
 nix.workspace = true

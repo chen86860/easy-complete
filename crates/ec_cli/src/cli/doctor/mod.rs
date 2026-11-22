@@ -163,13 +163,6 @@ macro_rules! doctor_fix {
     };
 }
 
-#[cfg(target_os = "linux")]
-pub(crate) use doctor_error;
-#[cfg(target_os = "linux")]
-pub(crate) use doctor_fix;
-#[cfg(target_os = "linux")]
-pub(crate) use doctor_warning;
-
 macro_rules! doctor_fix_async {
     ({ reason: $reason:expr,fix: $fix:expr }) => {
         DoctorError::Error {
@@ -1401,30 +1394,6 @@ impl DoctorCheck for DesktopCompatibilityCheck {
         DoctorCheckType::NormalCheck
     }
 
-    #[cfg(target_os = "linux")]
-    async fn check(&self, _: &()) -> Result<(), DoctorError> {
-        use fig_os_shim::Context;
-        use fig_util::system_info::linux::{
-            DesktopEnvironment, DisplayServer, get_desktop_environment, get_display_server,
-        };
-
-        let ctx = Context::new();
-        let (display_server, desktop_environment) = (get_display_server(&ctx)?, get_desktop_environment(&ctx)?);
-
-        match (display_server, desktop_environment) {
-            (DisplayServer::X11, DesktopEnvironment::Gnome | DesktopEnvironment::Plasma | DesktopEnvironment::I3) => {
-                Ok(())
-            },
-            (DisplayServer::Wayland, DesktopEnvironment::Gnome) => Err(doctor_warning!(
-                "Support for GNOME on Wayland is in development. It may not work properly on your system."
-            )),
-            (display_server, desktop_environment) => Err(doctor_warning!(
-                "Unknown desktop configuration {desktop_environment:?} on {display_server:?}"
-            )),
-        }
-    }
-
-    #[cfg(not(target_os = "linux"))]
     async fn check(&self, _: &()) -> Result<(), DoctorError> {
         Ok(())
     }
@@ -1869,47 +1838,6 @@ async fn run_all_checks(config: CheckConfiguration<'_>, spinner: &mut Option<Spi
             spinner,
         )
         .await?;
-    }
-
-    #[cfg(target_os = "linux")]
-    {
-        use checks::linux::{
-            DisplayServerCheck, GnomeExtensionCheck, IBusConnectionCheck, IBusEnvCheck, IBusRunningCheck, SandboxCheck,
-            get_linux_context,
-        };
-        // Linux desktop checks
-        if fig_util::manifest::is_full() && !fig_util::system_info::is_remote() {
-            run_checks_with_context(
-                "Let's check Linux integrations",
-                vec![
-                    &DisplayServerCheck,
-                    &IBusEnvCheck,
-                    &GnomeExtensionCheck,
-                    &IBusRunningCheck,
-                    &IBusConnectionCheck,
-                    // &DesktopCompatibilityCheck, // we need a better way of getting the data
-                    &SandboxCheck,
-                ],
-                get_linux_context,
-                config,
-                spinner,
-            )
-            .await?;
-        }
-    }
-
-    #[cfg(target_os = "linux")]
-    {
-        if fig_util::manifest::is_full() && !fig_util::system_info::is_remote() {
-            run_checks_with_context(
-                format!("Let's check {}...", format!("{CLI_BINARY_NAME} diagnostic").bold()),
-                vec![&AutocompleteActiveCheck],
-                super::diagnostics::get_diagnostics,
-                config,
-                spinner,
-            )
-            .await?;
-        }
     }
 
     run_checks_with_context(

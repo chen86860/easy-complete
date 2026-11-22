@@ -119,13 +119,6 @@ pub fn launch_fig_desktop(args: LaunchArgs) -> Result<()> {
             if !output.status.success() {
                 eyre::bail!("failed to launch: {}", String::from_utf8_lossy(&output.stderr));
             }
-        } else {
-            let state = fig_settings::State::new();
-            let ctx = fig_os_shim::Context::new();
-            launch_linux_desktop(ctx, &state)?;
-            // Need to wait some time for the app to launch and appear in the process list.
-            // 1 second to be safe.
-            std::thread::sleep(std::time::Duration::from_millis(1000));
         }
     }
 
@@ -173,44 +166,6 @@ fn socket_listener_state(path: &std::path::Path) -> SocketListenerState {
 #[cfg(not(unix))]
 fn socket_listener_state(_path: &std::path::Path) -> SocketListenerState {
     SocketListenerState::Stale
-}
-
-#[cfg(target_os = "linux")]
-fn launch_linux_desktop(ctx: std::sync::Arc<fig_os_shim::Context>, state: &fig_settings::State) -> eyre::Result<()> {
-    use std::process::Stdio;
-
-    use eyre::Context;
-    use fig_integrations::desktop_entry::{EntryContents, local_entry_path};
-    use fig_util::APP_PROCESS_NAME;
-    use tracing::error;
-
-    if state.get_bool_or("appimage.manageDesktopEntry", false) {
-        if let Some(exec) = EntryContents::from_path_sync(&ctx, local_entry_path(&ctx)?)?.get_field("Exec") {
-            match Command::new(exec)
-                .stdin(Stdio::null())
-                .stdout(Stdio::null())
-                .stderr(Stdio::null())
-                .spawn()
-            {
-                Ok(_) => return Ok(()),
-                Err(err) => {
-                    error!(
-                        ?err,
-                        "Unable to launch desktop app according to the local desktop entry."
-                    );
-                },
-            }
-        }
-        // Fall back to calling q-desktop if on the user's path
-    }
-
-    Command::new(APP_PROCESS_NAME)
-        .stdin(Stdio::null())
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .spawn()
-        .context(format!("Executable '{}' not in the user's path", APP_PROCESS_NAME))?;
-    Ok(())
 }
 
 #[cfg(test)]
@@ -281,15 +236,5 @@ mod tests {
             verbose: true,
         })
         .unwrap();
-    }
-
-    #[test]
-    #[ignore = "not in ci"]
-    #[cfg(target_os = "linux")]
-    fn test_e2e_launch_linux_desktop() {
-        use fig_os_shim::Context;
-        use fig_settings::State;
-
-        launch_linux_desktop(Context::new(), &State::new()).unwrap();
     }
 }

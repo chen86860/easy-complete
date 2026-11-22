@@ -7,11 +7,6 @@ pub use pid::{FakePid, Pid, RawPid};
 
 use crate::{Context, Shim};
 
-#[cfg(target_os = "linux")]
-mod linux;
-#[cfg(target_os = "linux")]
-pub use linux::*;
-
 #[cfg(target_os = "macos")]
 mod macos;
 #[cfg(target_os = "macos")]

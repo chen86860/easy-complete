@@ -69,9 +69,6 @@ pub async fn focused_window_data(
     platform_state: &PlatformState,
     proxy: &EventLoopProxy,
 ) -> Result<()> {
-    #[cfg(target_os = "linux")]
-    return crate::platform::integrations::from_hook(hook, platform_state, proxy);
-    #[cfg(not(target_os = "linux"))]
     {
         let (_hook, _platform_state, _proxy) = (hook, platform_state, proxy);
         Ok(())

@@ -128,7 +128,7 @@ fn os_version_string() -> String {
 fn os_major(version: Option<&OSVersion>) -> Option<i32> {
     match version? {
         OSVersion::MacOS { major, .. } => Some(*major),
-        _ => None,
+        OSVersion::FreeBsd { .. } => None,
     }
 }
 

@@ -105,11 +105,6 @@ pub enum InternalSubcommand {
         session_id: String,
     },
     Uuidgen,
-    #[cfg(target_os = "linux")]
-    IbusBootstrap,
-    #[cfg(target_os = "linux")]
-    /// Checks for sandboxing
-    DetectSandbox,
     #[cfg(target_os = "macos")]
     AttemptToFinishInputMethodInstallation {
         bundle_path: Option<PathBuf>,
@@ -238,66 +233,6 @@ impl InternalSubcommand {
             InternalSubcommand::Uuidgen => {
                 let _ = writeln!(stdout(), "{}", uuid::Uuid::new_v4());
                 Ok(ExitCode::SUCCESS)
-            },
-            #[cfg(target_os = "linux")]
-            InternalSubcommand::IbusBootstrap => {
-                use std::ffi::OsString;
-
-                use sysinfo::{ProcessRefreshKind, RefreshKind};
-                use tokio::process::Command;
-
-                let system = tokio::task::block_in_place(|| {
-                    System::new_with_specifics(RefreshKind::nothing().with_processes(ProcessRefreshKind::nothing()))
-                });
-                let ibus_daemon = OsString::from("ibus-daemon");
-                if system.processes_by_name(&ibus_daemon).next().is_none() {
-                    info!("Launching 'ibus-daemon'");
-                    match Command::new("ibus-daemon").arg("-drxR").output().await {
-                        Ok(std::process::Output { status, stdout, stderr }) if !status.success() => {
-                            let stdout = String::from_utf8_lossy(&stdout);
-                            let stderr = String::from_utf8_lossy(&stderr);
-                            eyre::bail!(
-                                "Failed to run 'ibus-daemon -drxR': status={status:?} stdout={stdout:?} stderr={stderr:?}"
-                            );
-                        },
-                        Err(err) => eyre::bail!("Failed to run 'ibus-daemon -drxR': {err}"),
-                        Ok(_) => writeln!(stdout(), "ibus-daemon is now running").ok(),
-                    };
-                } else {
-                    writeln!(stdout(), "ibus-daemon is already running").ok();
-                }
-                Ok(ExitCode::SUCCESS)
-            },
-            #[cfg(target_os = "linux")]
-            InternalSubcommand::DetectSandbox => {
-                use fig_util::system_info::linux::SandboxKind;
-                let exit_code = match fig_util::system_info::linux::detect_sandbox() {
-                    SandboxKind::None => {
-                        println!("No sandbox detected");
-                        0
-                    },
-                    SandboxKind::Flatpak => {
-                        println!("You are in a Flatpak");
-                        1
-                    },
-                    SandboxKind::Snap => {
-                        println!("You are in a Snap");
-                        1
-                    },
-                    SandboxKind::Docker => {
-                        println!("You are in a Docker container");
-                        1
-                    },
-                    SandboxKind::Container(None) => {
-                        println!("You are in a generic container");
-                        1
-                    },
-                    SandboxKind::Container(Some(engine)) => {
-                        println!("You are in a {engine} container");
-                        1
-                    },
-                };
-                Ok(ExitCode::from(exit_code))
             },
             #[cfg(target_os = "macos")]
             InternalSubcommand::AttemptToFinishInputMethodInstallation { bundle_path } => {

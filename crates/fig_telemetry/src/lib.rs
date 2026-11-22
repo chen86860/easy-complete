@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 use std::time::Duration;
 
+use fig_util::system_info::OSVersion;
 use serde_json::{Value, json};
 use tracing::warn;
 use uuid::Uuid;
@@ -122,6 +123,15 @@ fn os_version_string() -> String {
     fig_util::system_info::os_version().map_or_else(|| "unknown".into(), |v| v.to_string())
 }
 
+/// The macOS major version, e.g. 15, for grouping events by OS release. `os_version`
+/// carries the patch and build too, which splits one release into dozens of values.
+fn os_major(version: Option<&OSVersion>) -> Option<i32> {
+    match version? {
+        OSVersion::MacOS { major, .. } => Some(*major),
+        _ => None,
+    }
+}
+
 /// Basename of the user's login shell ($SHELL), e.g. "zsh".
 fn shell_name() -> String {
     shell_basename(std::env::var("SHELL").ok().as_deref())
@@ -191,6 +201,7 @@ fn build_event(event: &str, extra_props: Value) -> Value {
             "app_name":    fig_util::consts::PRODUCT_NAME,
             "app_version": app_version(),
             "os_version":  os_version_string(),
+            "os_major":    os_major(fig_util::system_info::os_version()),
             "shell":       shell_name(),
             "terminal":    terminal_name(),
             "locale":      locale(),
@@ -462,6 +473,20 @@ mod tests {
             normalize_config("https://a.example/capture//", " phc_key\n"),
             Some(("https://a.example/capture".to_owned(), "phc_key".to_owned()))
         );
+    }
+
+    #[test]
+    fn os_major_is_the_macos_major_version_only() {
+        let macos = OSVersion::MacOS {
+            major: 15,
+            minor: 5,
+            patch: Some(1),
+            build: "24F74".into(),
+        };
+        assert_eq!(os_major(Some(&macos)), Some(15));
+        let other = OSVersion::FreeBsd { version: "14.1".into() };
+        assert_eq!(os_major(Some(&other)), None);
+        assert_eq!(os_major(None), None);
     }
 
     #[test]

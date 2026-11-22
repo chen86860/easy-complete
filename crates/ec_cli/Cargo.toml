@@ -16,7 +16,6 @@ workspace = true
 
 [features]
 default = []
-wayland = ["arboard/wayland-data-control"]
 
 [dependencies]
 anstream.workspace = true

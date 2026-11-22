@@ -5,8 +5,6 @@ use std::{fmt, str};
 use cfg_if::cfg_if;
 
 // Platform-specific implementations
-#[cfg(target_os = "linux")]
-use super::linux::{cmdline, current, exe, parent};
 #[cfg(target_os = "macos")]
 use super::macos::{cmdline, current, exe, parent};
 use crate::Context;

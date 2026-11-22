@@ -32,14 +32,6 @@ pub async fn uninstall_command(no_confirm: bool) -> Result<ExitCode> {
     cfg_if::cfg_if! {
         if #[cfg(target_os = "macos")] {
             uninstall(ctx).await?;
-        } else if #[cfg(target_os = "linux")] {
-            use fig_util::manifest::is_minimal;
-            if is_minimal() {
-                uninstall_linux_minimal(ctx).await?;
-            } else {
-                uninstall_linux_full(ctx).await?;
-            }
-
         }
     }
 
@@ -53,61 +45,7 @@ async fn uninstall(ctx: std::sync::Arc<fig_os_shim::Context>) -> Result<()> {
     Ok(())
 }
 
-#[cfg(target_os = "linux")]
-async fn uninstall_linux_minimal(ctx: std::sync::Arc<fig_os_shim::Context>) -> Result<()> {
-    use eyre::bail;
-    use tracing::error;
-
-    let exe_path = ctx.fs().canonicalize(ctx.env().current_exe()?.canonicalize()?).await?;
-    let Some(exe_name) = exe_path.file_name().and_then(|s| s.to_str()) else {
-        bail!("Failed to get name of current executable: {exe_path:?}")
-    };
-    let Some(exe_parent) = exe_path.parent() else {
-        bail!("Failed to get parent of current executable: {exe_path:?}")
-    };
-    // canonicalize to handle if the home dir is a symlink (like on Dev Desktops)
-    let local_bin = fig_util::directories::home_local_bin_ctx(&ctx)?.canonicalize()?;
-
-    if exe_parent != local_bin {
-        bail!(
-            "Uninstall is only supported for binaries installed in {local_bin:?}, the current executable is in {exe_parent:?}"
-        );
-    }
-
-    if exe_name != CLI_BINARY_NAME {
-        bail!("Uninstall is only supported for {CLI_BINARY_NAME:?}, the current executable is {exe_name:?}");
-    }
-
-    fig_install::uninstall(fig_install::InstallComponents::all_linux_minimal(), ctx).await?;
-    Ok(())
-}
-
-#[cfg(target_os = "linux")]
-async fn uninstall_linux_full(ctx: std::sync::Arc<fig_os_shim::Context>) -> Result<()> {
-    use eyre::bail;
-    use fig_install::{InstallComponents, uninstall};
-
-    match ctx.process_info().current_pid().exe() {
-        Some(exe) => {
-            let Some(exe_parent) = exe.parent() else {
-                bail!("Failed to get parent of current executable: {exe:?}")
-            };
-            let local_bin = fig_util::directories::home_local_bin_ctx(&ctx)?.canonicalize()?;
-            if exe_parent != local_bin {
-                bail!(
-                    "Managed uninstalls are not supported. Please use your package manager to uninstall {}",
-                    PRODUCT_NAME
-                );
-            }
-        },
-        None => bail!("Unable to determine the current process executable."),
-    }
-
-    uninstall(InstallComponents::all(), ctx).await?;
-    Ok(())
-}
-
-#[cfg(all(unix, not(any(target_os = "macos", target_os = "linux"))))]
+#[cfg(all(unix, not(target_os = "macos")))]
 async fn uninstall() -> Result<()> {
     eyre::bail!("Guided uninstallation is not supported on this platform. Please uninstall manually.");
 }

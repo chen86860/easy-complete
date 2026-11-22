@@ -11,9 +11,10 @@
 
 <p align="center">
   <a href="https://github.com/chen86860/easy-complete/releases"><img alt="Release" src="https://img.shields.io/github/v/release/chen86860/easy-complete?color=brightgreen"></a>
+  <a href="https://github.com/chen86860/easy-complete/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/chen86860/easy-complete/actions/workflows/ci.yml/badge.svg?branch=main"></a>
   <img alt="Platform" src="https://img.shields.io/badge/platform-macOS-lightgrey">
   <img alt="Built with Rust" src="https://img.shields.io/badge/built%20with-Rust-orange">
-  <a href="#-许可证"><img alt="License" src="https://img.shields.io/badge/license-MIT-blue"></a>
+  <a href="#-许可证"><img alt="License" src="https://img.shields.io/github/license/chen86860/easy-complete?color=blue"></a>
   <a href="https://github.com/chen86860/easy-complete/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/chen86860/easy-complete?style=social"></a>
 </p>
 
@@ -21,7 +22,7 @@
   <a href="https://easy-complete.emmmm.dev">官网</a> ·
   <a href="https://github.com/chen86860/easy-complete/releases/latest">下载</a> ·
   <a href="./CHANGELOG.zh-CN.md">更新日志</a> ·
-  <a href="./CONTRIBUTING.md">参与贡献</a>
+  <a href="./CONTRIBUTING.zh-CN.md">参与贡献</a>
 </p>
 
 <p align="center">
@@ -33,7 +34,7 @@ fish shell 的建议——子命令、选项、参数和文件路径，以跟随
 本地优先的 Fig 替代品。
 
 补全在本机运行，无需账号，也没有 AI 请求。匿名使用统计（绝不包含命令内容）可通过
-`ec telemetry disable` 关闭；所有联网请求及其关闭方式见
+`ec telemetry disable` 关闭；主要的联网请求及其关闭方式见
 [隐私页面](https://easy-complete.emmmm.dev/privacy-policy)。
 
 <p align="center">
@@ -48,21 +49,23 @@ fish shell 的建议——子命令、选项、参数和文件路径，以跟随
   （见[受支持的终端](#受支持的终端)）。
 - **支持 `zsh`、`bash` 与 `fish`** —— Shell 集成由应用自动安装与维护。
 
-## 💻 系统要求
+## 📦 快速开始
+
+### 系统要求
 
 - macOS 13（Ventura）及以上，Apple Silicon（当前发布的 DMG 仅支持 arm64）
 - `zsh`、`bash` 或 `fish`
 - **辅助功能**权限，首次启动时按提示授予即可
 
-## ⚡ 安装
+### 安装
 
-### Homebrew（推荐）
+**Homebrew（推荐）**
 
 ```bash
 brew install chen86860/tap/easy-complete
 ```
 
-### DMG
+**DMG**
 
 [下载最新版 DMG](https://github.com/chen86860/easy-complete/releases/latest/download/Easy-Complete-arm64.dmg)，
 把 **Easy Complete.app** 拖到 `/Applications`。
@@ -76,12 +79,16 @@ brew install chen86860/tap/easy-complete
 
 在任意受支持的终端里直接输入，建议会实时出现在行内。
 
+### 快捷键
+
 | 按键        | 操作                                             |
 | ----------- | ------------------------------------------------ |
 | `↑` / `↓`   | 在建议间移动（也可用 `⇧⇥`、`⌃P` / `⌃N`）         |
 | `↩`（回车） | 采用高亮的建议                                   |
 | `⇥` (Tab)   | 补全所有建议共有的前缀；没有共同前缀时移到下一项 |
 | `Esc`       | 关闭补全浮层                                     |
+
+### 设置与 CLI
 
 设置入口在**菜单栏的 Easy Complete 图标**。常用 CLI 命令：
 
@@ -105,7 +112,7 @@ ec settings <key> <value>              # 修改某项设置
 程序，补全浮层就不知道该出现在哪里。Easy Complete 自带一个 macOS 输入法，它只做一件事：
 报告光标位置。首次设置时，如果检测到你装有这类终端，会提示你启用它。
 
-## ❓ 常见问题
+## 🛟 帮助
 
 ### 补全没有出现
 
@@ -119,7 +126,13 @@ ec settings <key> <value>              # 修改某项设置
 
 更多排查方法见[文档](https://easy-complete.emmmm.dev/docs)。
 
-## 🗑 卸载
+### 获取支持
+
+- **提问与建议** —— 到 [GitHub Discussions](https://github.com/chen86860/easy-complete/discussions) 发帖。
+- **反馈 Bug** —— 运行 `ec issue`，或直接[提交 Issue](https://github.com/chen86860/easy-complete/issues/new/choose)。
+- **安全问题** —— 请按 [SECURITY.md](./SECURITY.md) 的流程反馈，不要提交公开 Issue。
+
+### 卸载
 
 ```bash
 ec uninstall
@@ -129,9 +142,41 @@ ec uninstall
 Complete 自己的输入源）、登录项、偏好设置、辅助功能权限、缓存和应用数据，最后删除应用本身。完成后运行
 `exec $SHELL`。
 
-如果是用 Homebrew 安装的，会通过 `brew uninstall --zap` 移除，cask 记录也一并清掉。
+如果是用 Homebrew 安装的，v2.9.0 及以上版本的 `ec uninstall` 会一并移除 cask。如果之后
+`brew list --cask` 里还有 `easy-complete`（v2.8.0 及更早版本一定会有），手动移除：
 
-## 🛠 开发
+```bash
+brew uninstall --zap --cask chen86860/tap/easy-complete
+```
+
+## 🤔 为什么选择 Easy Complete？
+
+Fig 已于 2024 年 9 月 1 日停止服务，它的自动补全并入了需要登录 AWS 账号的 Amazon Q Developer
+CLI。Easy Complete 只保留补全这一部分，做成一款在你的 Mac 本机运行的开源应用：
+
+- **无需账号** —— 装好就能用。
+- **只做补全** —— 没有 AI 对话。少数 spec（如 `npm`）会联网查询包名，详见
+  [隐私页面](https://easy-complete.emmmm.dev/privacy-policy)。
+- **沿用 Fig 的 spec** —— 补全规则来自 Fig 以 MIT 许可证发布的 spec 集合（见[致谢](#-致谢)）。
+
+## 🤝 参与贡献
+
+欢迎提交 Issue 和 Pull Request。完整指南见 [CONTRIBUTING.zh-CN.md](./CONTRIBUTING.zh-CN.md)。
+
+- **反馈问题** —— 运行 `ec issue` 会打开已附带诊断信息的 Issue 表单，也可以直接使用
+  [Issue 模板](https://github.com/chen86860/easy-complete/issues/new/choose)。请附上 `ec doctor` 的输出。
+- **新增或修正某个 CLI 的补全** —— 补全规则是
+  [`packages/autocomplete-specs/src`](./packages/autocomplete-specs/src) 下的 TypeScript 文件，
+  每个 CLI 一个。新建 spec、边改边在应用里生效，以及如何随应用发布，见该目录的
+  [README](./packages/autocomplete-specs/README.md)。
+- **提 PR 之前** —— 确认 `cargo clippy --locked --workspace --all-targets -- -D warnings`、`pnpm lint` 和
+  `pnpm test` 全部通过。不用手动格式化：机器人会格式化每个 PR 并把结果提交回去（本地可运行
+  `pnpm format`，效果相同）。提交信息遵循
+  [Conventional Commits](https://www.conventionalcommits.org/)。
+- **安全问题**请按 [SECURITY.md](./SECURITY.md) 的流程反馈，不要提交公开 Issue。
+- **无障碍问题** —— 已知限制和反馈方式见 [ACCESSIBILITY.md](./ACCESSIBILITY.md)（英文）。
+
+### 开发
 
 Easy Complete 由三个协作进程组成：桌面应用（`easy-complete`，承载补全浮层和设置界面）、读取
 shell 编辑缓冲区的伪终端（`ecterm`），以及 `ec` CLI，三者通过 Unix 套接字以 Protobuf 通信。
@@ -149,22 +194,6 @@ cd easy-complete
 exec $SHELL
 pnpm dev:autocomplete   # 可选：监听补全 UI（端口 3124）
 ```
-
-## 🤝 参与贡献
-
-欢迎提交 Issue 和 Pull Request。完整指南见 [CONTRIBUTING.md](./CONTRIBUTING.md)（英文）。
-
-- **反馈问题** —— 运行 `ec issue` 会打开已附带诊断信息的 Issue 表单，也可以直接使用
-  [Issue 模板](https://github.com/chen86860/easy-complete/issues/new/choose)。请附上 `ec doctor` 的输出。
-- **新增或修正某个 CLI 的补全** —— 补全规则是
-  [`packages/autocomplete-specs/src`](./packages/autocomplete-specs/src) 下的 TypeScript 文件，
-  每个 CLI 一个。新建 spec、边改边在应用里生效，以及如何随应用发布，见该目录的
-  [README](./packages/autocomplete-specs/README.md)。
-- **提 PR 之前** —— 确认 `cargo clippy --locked --workspace --all-targets -- -D warnings`、`pnpm lint` 和
-  `pnpm test` 全部通过。不用手动格式化：机器人会格式化每个 PR 并把结果提交回去（本地可运行
-  `pnpm format`，效果相同）。提交信息遵循
-  [Conventional Commits](https://www.conventionalcommits.org/)。
-- **安全问题**请按 [SECURITY.md](./SECURITY.md) 的流程反馈，不要提交公开 Issue。
 
 ## 📜 许可证
 

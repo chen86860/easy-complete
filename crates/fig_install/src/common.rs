@@ -23,13 +23,6 @@ bitflags::bitflags! {
     }
 }
 
-#[cfg(target_os = "linux")]
-impl InstallComponents {
-    pub fn all_linux_minimal() -> Self {
-        Self::SHELL_INTEGRATIONS | Self::BINARY
-    }
-}
-
 /// Every step runs even when an earlier one fails, so a broken shell integration cannot leave the
 /// app and its data behind. The first error is returned at the end; the others are logged.
 pub async fn uninstall(components: InstallComponents, ctx: Arc<Context>) -> Result<(), Error> {
@@ -77,17 +70,6 @@ pub async fn uninstall(components: InstallComponents, ctx: Arc<Context>) -> Resu
                 remove_binary(pty_path).await;
             }
         }
-    }
-
-    #[cfg(target_os = "linux")]
-    if components.contains(InstallComponents::GNOME_SHELL_EXTENSION) {
-        let shell_extensions = dbus::gnome_shell::ShellExtensions::new(Arc::downgrade(&ctx));
-        super::os::uninstall_gnome_extension(&ctx, &shell_extensions).await?;
-    }
-
-    #[cfg(target_os = "linux")]
-    if components.contains(InstallComponents::DESKTOP_ENTRY) {
-        super::os::uninstall_desktop_entries(&ctx).await?;
     }
 
     #[cfg(target_os = "macos")]

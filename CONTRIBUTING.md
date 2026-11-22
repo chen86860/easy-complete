@@ -1,5 +1,7 @@
 # Contributing to Easy Complete
 
+**English** · [简体中文](./CONTRIBUTING.zh-CN.md)
+
 Thanks for helping out. Bug reports, completion specs, documentation and code are all welcome,
 in English or 中文. This project follows the [Code of Conduct](./CODE_OF_CONDUCT.md).
 

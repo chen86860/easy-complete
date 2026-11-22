@@ -30,6 +30,7 @@ const EXAMPLE_EVENT = `{
     "app_name": "Easy Complete",
     "app_version": "2.0.41",
     "os_version": "macOS 26.5.1",
+    "os_major": 26,
     "shell": "zsh",
     "terminal": "ghostty",
     "locale": "en-US",

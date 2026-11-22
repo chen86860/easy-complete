@@ -19,7 +19,7 @@ fn open_macos(url_str: impl AsRef<str>) -> Result<(), Error> {
     res.then_some(()).ok_or(Error::Failed)
 }
 
-#[cfg(any(target_os = "linux", target_os = "freebsd"))]
+#[cfg(target_os = "freebsd")]
 fn open_command(url: impl AsRef<str>) -> std::process::Command {
     let executable = if crate::system_info::in_wsl() {
         "wslview"

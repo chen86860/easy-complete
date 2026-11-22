@@ -19,12 +19,10 @@ fig_proto.workspace = true
 fig_util.workspace = true
 flate2.workspace = true
 pin-project-lite = "0.2.12"
-rand.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
 tokio-util.workspace = true
 tracing.workspace = true
-whoami.workspace = true
 
 [target.'cfg(unix)'.dependencies]
 nix.workspace = true

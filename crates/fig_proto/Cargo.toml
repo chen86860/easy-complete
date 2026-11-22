@@ -22,9 +22,6 @@ serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true
 
-[target.'cfg(unix)'.dependencies]
-nix.workspace = true
-
 [build-dependencies]
 prost-build = "0.14.4"
 prost-reflect-build = "0.16.1"

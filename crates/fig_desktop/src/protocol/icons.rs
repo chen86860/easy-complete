@@ -55,7 +55,7 @@ static ASSETS: LazyLock<HashMap<AssetSpecifier<'static>, Arc<Cow<'static, [u8]>>
 
 pub type ProcessedAsset = (Arc<Cow<'static, [u8]>>, AssetKind);
 
-#[cfg_attr(not(target_os = "linux"), allow(dead_code))]
+#[allow(dead_code)]
 static ASSET_CACHE: LazyLock<Cache<PathBuf, ProcessedAsset>> = LazyLock::new(|| {
     Cache::builder()
         .weigher(|k: &PathBuf, v: &(Arc<Cow<'_, [u8]>>, AssetKind)| {
@@ -65,7 +65,7 @@ static ASSET_CACHE: LazyLock<Cache<PathBuf, ProcessedAsset>> = LazyLock::new(|| 
         .build()
 });
 
-#[cfg_attr(not(target_os = "linux"), allow(dead_code))]
+#[allow(dead_code)]
 #[derive(Debug, Clone)]
 pub enum AssetKind {
     Png,
@@ -81,7 +81,7 @@ impl AssetKind {
     }
 }
 
-#[cfg_attr(not(target_os = "linux"), allow(dead_code))]
+#[allow(dead_code)]
 pub async fn process_asset(path: PathBuf) -> Result<ProcessedAsset> {
     if let Some(asset) = ASSET_CACHE.get(&path).await {
         trace!("icon cache hit");

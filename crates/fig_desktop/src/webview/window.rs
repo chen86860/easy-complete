@@ -346,10 +346,8 @@ impl WindowState {
                     }
 
                     // TODO: why are we setting then unsetting resizable?
-                    #[cfg(not(target_os = "linux"))]
                     self.window.set_resizable(true);
 
-                    #[cfg(not(target_os = "linux"))]
                     self.window.set_resizable(false);
 
                     let age = self.created_at.elapsed();

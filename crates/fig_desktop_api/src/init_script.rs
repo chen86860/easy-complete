@@ -3,25 +3,12 @@ use std::env::{consts, var};
 
 use camino::Utf8PathBuf;
 use fig_os_shim::Context;
-#[cfg(target_os = "linux")]
-use fig_util::system_info::linux::{
-    DesktopEnvironment, DisplayServer, OsRelease, get_desktop_environment, get_display_server, get_os_release,
-};
 use fig_util::{CLI_BINARY_NAME, directories};
 use serde::Serialize;
 use serde_json::json;
 use which::which;
 
 const DEFAULT_THEMES: &[&str] = &["light", "dark", "system"];
-
-#[cfg(target_os = "linux")]
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-struct LinuxConstants {
-    display_server: Option<DisplayServer>,
-    desktop_environment: Option<DesktopEnvironment>,
-    os_release: Option<&'static OsRelease>,
-}
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -47,8 +34,6 @@ pub struct Constants {
     api_proto_url: String,
     #[cfg(target_os = "macos")]
     macos_version: String,
-    #[cfg(target_os = "linux")]
-    linux: LinuxConstants,
 }
 
 impl Constants {
@@ -100,12 +85,6 @@ impl Constants {
             api_proto_url: "api://localhost".to_string(),
             #[cfg(target_os = "macos")]
             macos_version: macos_utils::os::OperatingSystemVersion::get().to_string(),
-            #[cfg(target_os = "linux")]
-            linux: LinuxConstants {
-                display_server: get_display_server(&fig_os_shim::Context::new()).ok(),
-                desktop_environment: get_desktop_environment(&fig_os_shim::Context::new()).ok(),
-                os_release: get_os_release(),
-            },
         }
     }
 }

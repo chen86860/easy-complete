@@ -355,9 +355,13 @@ jobs:
             echo "is_prerelease=false" >> "$GITHUB_OUTPUT"
           fi
 
+      # Releases are immutable once published, and an immutable release takes no new assets,
+      # so the release is created as a draft, filled, and only then published.
       - name: Attach DMG to GitHub Release
+        id: gh_release
         uses: softprops/action-gh-release@v3
         with:
+          draft: true
           files: |
             dist/Easy-Complete-arm64.dmg
             dist/Easy-Complete-*-arm64.dmg
@@ -386,6 +390,23 @@ jobs:
             ```
             gh attestation verify Easy-Complete-arm64.dmg --repo ${{ github.repository }}
             ```
+
+      # Publishing makes the release immutable, so every asset must be attached by now. The
+      # appcast's download URLs only resolve once it is published, before the feed below.
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_ID: ${{ steps.gh_release.outputs.id }}
+          IS_PRERELEASE: ${{ steps.release_channel.outputs.is_prerelease }}
+        run: |
+          set -euo pipefail
+          make_latest=true
+          [ "$IS_PRERELEASE" = "true" ] && make_latest=false
+          gh api --method PATCH "repos/${{ github.repository }}/releases/${RELEASE_ID}" \
+            -F draft=false \
+            -F prerelease="$IS_PRERELEASE" \
+            -f make_latest="$make_latest" \
+            --jq '"Published \(.tag_name): draft=\(.draft) prerelease=\(.prerelease) immutable=\(.immutable)"'
 
       # Beta testers read a rolling feed instead of releases/latest, which never points at a
       # prerelease. Every tag refreshes it, so testers also move on to the next stable release.

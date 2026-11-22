@@ -144,19 +144,12 @@ LICENSE-APACHE: see License Text 2
 LICENSE-MIT: see License Text 12
 
 --------------------------------------------------------------------------------
-arboard 3.7.0
-License: MIT OR Apache-2.0
-Source: https://github.com/1Password/arboard
-LICENSE-APACHE.txt: see License Text 2
-LICENSE-MIT.txt: see License Text 17
-
---------------------------------------------------------------------------------
 arrayvec 0.7.8
 License: MIT OR Apache-2.0
 Authors: bluss
 Source: https://github.com/bluss/arrayvec
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 18
+LICENSE-MIT: see License Text 17
 
 --------------------------------------------------------------------------------
 async-compression 0.4.52
@@ -164,7 +157,7 @@ License: MIT OR Apache-2.0
 Authors: Wim Looman <wim@nemo157.com>, Allen Bui <fairingrey@gmail.com>
 Source: https://github.com/Nullus157/async-compression
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 19
+LICENSE-MIT: see License Text 18
 
 --------------------------------------------------------------------------------
 async-lock 3.5.0
@@ -189,7 +182,7 @@ Authors: Stjepan Glavina <stjepang@gmail.com>, Contributors to futures-rs
 Source: https://github.com/smol-rs/atomic-waker
 LICENSE-APACHE: see License Text 8
 LICENSE-MIT: see License Text 12
-LICENSE-THIRD-PARTY: see License Text 20
+LICENSE-THIRD-PARTY: see License Text 19
 
 --------------------------------------------------------------------------------
 backtrace 0.3.77
@@ -197,7 +190,7 @@ License: MIT OR Apache-2.0
 Authors: The Rust Project Developers
 Source: https://github.com/rust-lang/backtrace-rs
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 21
+LICENSE-MIT: see License Text 20
 
 --------------------------------------------------------------------------------
 base64 0.22.1
@@ -205,7 +198,7 @@ License: MIT OR Apache-2.0
 Authors: Marshall Pierce <marshall@mpierce.org>
 Source: https://github.com/marshallpierce/rust-base64
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 22
+LICENSE-MIT: see License Text 21
 
 --------------------------------------------------------------------------------
 base64 0.23.1
@@ -213,7 +206,7 @@ License: MIT OR Apache-2.0
 Authors: Marshall Pierce <marshall@mpierce.org>
 Source: https://github.com/marshallpierce/rust-base64
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 23
+LICENSE-MIT: see License Text 22
 
 --------------------------------------------------------------------------------
 bitflags 2.13.2
@@ -221,7 +214,7 @@ License: MIT OR Apache-2.0
 Authors: The Rust Project Developers
 Source: https://github.com/bitflags/bitflags
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 24
+LICENSE-MIT: see License Text 23
 
 --------------------------------------------------------------------------------
 block-buffer 0.12.1
@@ -229,23 +222,23 @@ License: MIT OR Apache-2.0
 Authors: RustCrypto Developers
 Source: https://github.com/RustCrypto/utils
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 25
+LICENSE-MIT: see License Text 24
 
 --------------------------------------------------------------------------------
 block2 0.6.2
 License: MIT
 Authors: Mads Marquart <mads@marquart.dk>
 Source: https://github.com/madsmtm/objc2
-LICENSE-MIT: see License Text 26
+LICENSE-MIT: see License Text 25
 
 --------------------------------------------------------------------------------
 bstr 1.13.1
 License: MIT OR Apache-2.0
 Authors: Andrew Gallant <jamslam@gmail.com>
 Source: https://github.com/BurntSushi/bstr
-COPYING: see License Text 27
+COPYING: see License Text 26
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 28
+LICENSE-MIT: see License Text 27
 
 --------------------------------------------------------------------------------
 bytemuck 1.25.2
@@ -253,8 +246,8 @@ License: Zlib OR Apache-2.0 OR MIT
 Authors: Lokathor <zefria@gmail.com>
 Source: https://github.com/Lokathor/bytemuck
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 29
-LICENSE-ZLIB: see License Text 30
+LICENSE-MIT: see License Text 28
+LICENSE-ZLIB: see License Text 29
 
 --------------------------------------------------------------------------------
 byteorder-lite 0.1.0
@@ -267,7 +260,7 @@ bytes 1.12.1
 License: MIT
 Authors: Carl Lerche <me@carllerche.com>, Sean McArthur <sean@seanmonstar.com>
 Source: https://github.com/tokio-rs/bytes
-LICENSE: see License Text 31
+LICENSE: see License Text 30
 
 --------------------------------------------------------------------------------
 camino 1.2.6
@@ -282,7 +275,7 @@ cfb 0.14.0
 License: MIT
 Authors: Matthew D. Steele <mdsteele@alum.mit.edu>
 Source: https://github.com/mdsteele/rust-cfb
-LICENSE: see License Text 32
+LICENSE: see License Text 31
 
 --------------------------------------------------------------------------------
 cfg-if 1.0.5
@@ -290,7 +283,7 @@ License: MIT OR Apache-2.0
 Authors: Alex Crichton <alex@alexcrichton.com>
 Source: https://github.com/rust-lang/cfg-if
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 21
+LICENSE-MIT: see License Text 20
 
 --------------------------------------------------------------------------------
 chacha20 0.10.2
@@ -298,19 +291,19 @@ License: MIT OR Apache-2.0
 Authors: RustCrypto Developers
 Source: https://github.com/RustCrypto/stream-ciphers
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 33
+LICENSE-MIT: see License Text 32
 
 --------------------------------------------------------------------------------
 chrono 0.4.45
 License: MIT OR Apache-2.0
 Source: https://github.com/chronotope/chrono
-LICENSE.txt: see License Text 34
+LICENSE.txt: see License Text 33
 
 --------------------------------------------------------------------------------
 clap_builder 4.6.7
 License: MIT OR Apache-2.0
 Source: https://github.com/clap-rs/clap
-LICENSE-APACHE: see License Text 35
+LICENSE-APACHE: see License Text 34
 LICENSE-MIT: see License Text 16
 
 --------------------------------------------------------------------------------
@@ -318,34 +311,34 @@ clap_complete_fig vendored
 License: MIT OR Apache-2.0
 Source: https://github.com/clap-rs/clap
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 36
+LICENSE-MIT: see License Text 35
 
 --------------------------------------------------------------------------------
 clap_complete 4.6.11
 License: MIT OR Apache-2.0
 Source: https://github.com/clap-rs/clap
-LICENSE-APACHE: see License Text 35
+LICENSE-APACHE: see License Text 34
 LICENSE-MIT: see License Text 16
 
 --------------------------------------------------------------------------------
 clap_derive 4.6.7
 License: MIT OR Apache-2.0
 Source: https://github.com/clap-rs/clap
-LICENSE-APACHE: see License Text 35
+LICENSE-APACHE: see License Text 34
 LICENSE-MIT: see License Text 16
 
 --------------------------------------------------------------------------------
 clap_lex 1.1.1
 License: MIT OR Apache-2.0
 Source: https://github.com/clap-rs/clap
-LICENSE-APACHE: see License Text 35
+LICENSE-APACHE: see License Text 34
 LICENSE-MIT: see License Text 16
 
 --------------------------------------------------------------------------------
 clap 4.6.7
 License: MIT OR Apache-2.0
 Source: https://github.com/clap-rs/clap
-LICENSE-APACHE: see License Text 35
+LICENSE-APACHE: see License Text 34
 LICENSE-MIT: see License Text 16
 
 --------------------------------------------------------------------------------
@@ -353,7 +346,7 @@ clsx 2.1.1
 License: MIT
 Authors: Luke Edwards
 Source: lukeed/clsx
-license: see License Text 37
+license: see License Text 36
 
 --------------------------------------------------------------------------------
 color-eyre 0.6.5
@@ -400,7 +393,7 @@ License: MIT OR Apache-2.0
 Authors: Wim Looman <wim@nemo157.com>, Allen Bui <fairingrey@gmail.com>
 Source: https://github.com/Nullus157/async-compression
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 19
+LICENSE-MIT: see License Text 18
 
 --------------------------------------------------------------------------------
 compression-core 0.4.34
@@ -408,13 +401,13 @@ License: MIT OR Apache-2.0
 Authors: Wim Looman <wim@nemo157.com>, Allen Bui <fairingrey@gmail.com>
 Source: https://github.com/Nullus157/async-compression
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 19
+LICENSE-MIT: see License Text 18
 
 --------------------------------------------------------------------------------
 console 0.16.6
 License: MIT
 Source: https://github.com/console-rs/console
-LICENSE: see License Text 38
+LICENSE: see License Text 37
 
 --------------------------------------------------------------------------------
 const-oid 0.10.3
@@ -422,21 +415,14 @@ License: Apache-2.0 OR MIT
 Authors: RustCrypto Developers
 Source: https://github.com/RustCrypto/formats
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 39
+LICENSE-MIT: see License Text 38
 
 --------------------------------------------------------------------------------
 convert_case 0.10.0
 License: MIT
 Authors: rutrum <dave@rutrum.net>
 Source: https://github.com/rutrum/convert-case
-LICENSE: see License Text 40
-
---------------------------------------------------------------------------------
-convert_case 0.11.0
-License: MIT
-Authors: rutrum <dave@rutrum.net>
-Source: https://github.com/rutrum/convert-case
-LICENSE: see License Text 40
+LICENSE: see License Text 39
 
 --------------------------------------------------------------------------------
 cookie_store 0.22.1
@@ -444,15 +430,15 @@ License: MIT OR Apache-2.0
 Authors: Patrick Fernie <patrick.fernie@gmail.com>
 Source: https://github.com/pfernie/cookie_store
 LICENSE-APACHE: see License Text 15
-LICENSE-MIT: see License Text 41
+LICENSE-MIT: see License Text 40
 
 --------------------------------------------------------------------------------
 cookie 0.18.2
 License: MIT OR Apache-2.0
 Authors: Sergio Benitez <sb@sergio.bz>, Alex Crichton <alex@alexcrichton.com>
 Source: https://github.com/SergioBenitez/cookie-rs
-LICENSE-APACHE: see License Text 42
-LICENSE-MIT: see License Text 43
+LICENSE-APACHE: see License Text 41
+LICENSE-MIT: see License Text 42
 
 --------------------------------------------------------------------------------
 core-foundation-sys 0.8.7
@@ -460,7 +446,7 @@ License: MIT OR Apache-2.0
 Authors: The Servo Project Developers
 Source: https://github.com/servo/core-foundation-rs
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 44
+LICENSE-MIT: see License Text 43
 
 --------------------------------------------------------------------------------
 core-foundation 0.10.1
@@ -468,15 +454,7 @@ License: MIT OR Apache-2.0
 Authors: The Servo Project Developers
 Source: https://github.com/servo/core-foundation-rs
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 44
-
---------------------------------------------------------------------------------
-core-foundation 0.9.4
-License: MIT OR Apache-2.0
-Authors: The Servo Project Developers
-Source: https://github.com/servo/core-foundation-rs
-LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 44
+LICENSE-MIT: see License Text 43
 
 --------------------------------------------------------------------------------
 core-graphics-types 0.2.0
@@ -484,16 +462,16 @@ License: MIT OR Apache-2.0
 Authors: The Servo Project Developers
 Source: https://github.com/servo/core-foundation-rs
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 44
+LICENSE-MIT: see License Text 43
 
 --------------------------------------------------------------------------------
 core-graphics 0.25.0
 License: MIT OR Apache-2.0
 Authors: The Servo Project Developers
 Source: https://github.com/servo/core-foundation-rs
-COPYRIGHT: see License Text 45
+COPYRIGHT: see License Text 44
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 44
+LICENSE-MIT: see License Text 43
 
 --------------------------------------------------------------------------------
 cpufeatures 0.3.1
@@ -501,7 +479,7 @@ License: MIT OR Apache-2.0
 Authors: RustCrypto Developers
 Source: https://github.com/RustCrypto/utils
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 39
+LICENSE-MIT: see License Text 38
 
 --------------------------------------------------------------------------------
 crc32fast 1.5.5
@@ -509,36 +487,36 @@ License: MIT OR Apache-2.0
 Authors: Sam Rijs <srijs@airpost.net>, Alex Crichton <alex@alexcrichton.com>
 Source: https://github.com/srijs/rust-crc32fast
 LICENSE-APACHE: see License Text 15
-LICENSE-MIT: see License Text 46
+LICENSE-MIT: see License Text 45
 
 --------------------------------------------------------------------------------
 crossbeam-channel 0.5.17
 License: MIT OR Apache-2.0
 Source: https://github.com/crossbeam-rs/crossbeam
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 47
-LICENSE-THIRD-PARTY: see License Text 48
+LICENSE-MIT: see License Text 46
+LICENSE-THIRD-PARTY: see License Text 47
 
 --------------------------------------------------------------------------------
 crossbeam-epoch 0.9.21
 License: MIT OR Apache-2.0
 Source: https://github.com/crossbeam-rs/crossbeam
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 47
+LICENSE-MIT: see License Text 46
 
 --------------------------------------------------------------------------------
 crossbeam-utils 0.8.23
 License: MIT OR Apache-2.0
 Source: https://github.com/crossbeam-rs/crossbeam
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 47
+LICENSE-MIT: see License Text 46
 
 --------------------------------------------------------------------------------
 crossterm 0.29.0
 License: MIT
 Authors: T. Post
 Source: https://github.com/crossterm-rs/crossterm
-LICENSE: see License Text 49
+LICENSE: see License Text 48
 
 --------------------------------------------------------------------------------
 crypto-common 0.2.2
@@ -546,21 +524,21 @@ License: MIT OR Apache-2.0
 Authors: RustCrypto Developers
 Source: https://github.com/RustCrypto/traits
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 50
+LICENSE-MIT: see License Text 49
 
 --------------------------------------------------------------------------------
 csstype 3.2.3
 License: MIT
 Authors: Fredrik Nicol <fredrik.nicol@gmail.com>
 Source: https://github.com/frenic/csstype
-LICENSE: see License Text 51
+LICENSE: see License Text 50
 
 --------------------------------------------------------------------------------
 ctrlc 3.5.2
 License: MIT/Apache-2.0
 Authors: Antti Keränen <detegr@gmail.com>
 Source: https://github.com/Detegr/rust-ctrlc.git
-LICENSE-APACHE: see License Text 52
+LICENSE-APACHE: see License Text 51
 LICENSE-MIT: see License Text 12
 
 --------------------------------------------------------------------------------
@@ -568,48 +546,42 @@ dashmap 6.2.1
 License: MIT
 Authors: Acrimon <joel.wejdenstal@gmail.com>
 Source: https://github.com/xacrimon/dashmap
-LICENSE: see License Text 53
-
---------------------------------------------------------------------------------
-data-encoding 2.11.1
-License: MIT
-Source: https://github.com/ia0/data-encoding
-LICENSE: see License Text 54
+LICENSE: see License Text 52
 
 --------------------------------------------------------------------------------
 deep-object-diff 1.1.9
 License: MIT
 Authors: Matt Phillips
 Source: git+https://github.com/mattphillips/deep-object-diff.git
-LICENSE: see License Text 55
+LICENSE: see License Text 53
 
 --------------------------------------------------------------------------------
 deranged 0.5.9
 License: MIT OR Apache-2.0
 Authors: Jacob Pratt <jacob@jhpratt.dev>
 Source: https://github.com/jhpratt/deranged
-LICENSE-Apache: see License Text 56
-LICENSE-MIT: see License Text 57
+LICENSE-Apache: see License Text 54
+LICENSE-MIT: see License Text 55
 
 --------------------------------------------------------------------------------
 derive_more-impl 2.1.1
 License: MIT
 Authors: Jelte Fennema <github-tech@jeltef.nl>
 Source: https://github.com/JelteF/derive_more
-LICENSE: see License Text 58
+LICENSE: see License Text 56
 
 --------------------------------------------------------------------------------
 derive_more 2.1.1
 License: MIT
 Authors: Jelte Fennema <github-tech@jeltef.nl>
 Source: https://github.com/JelteF/derive_more
-LICENSE: see License Text 58
+LICENSE: see License Text 56
 
 --------------------------------------------------------------------------------
 dialoguer 0.12.0
 License: MIT
 Source: https://github.com/console-rs/dialoguer
-LICENSE: see License Text 38
+LICENSE: see License Text 37
 
 --------------------------------------------------------------------------------
 digest 0.11.3
@@ -617,38 +589,38 @@ License: MIT OR Apache-2.0
 Authors: RustCrypto Developers
 Source: https://github.com/RustCrypto/traits
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 59
+LICENSE-MIT: see License Text 57
 
 --------------------------------------------------------------------------------
 dirs-sys 0.5.0
 License: MIT OR Apache-2.0
 Authors: Simon Ochsenreither <simon@ochsenreither.de>
 Source: https://github.com/dirs-dev/dirs-sys-rs
-LICENSE-APACHE: see License Text 60
-LICENSE-MIT: see License Text 61
+LICENSE-APACHE: see License Text 58
+LICENSE-MIT: see License Text 59
 
 --------------------------------------------------------------------------------
 dirs 6.0.0
 License: MIT OR Apache-2.0
 Authors: Simon Ochsenreither <simon@ochsenreither.de>
 Source: https://github.com/soc/dirs-rs
-LICENSE-APACHE: see License Text 60
-LICENSE-MIT: see License Text 61
+LICENSE-APACHE: see License Text 58
+LICENSE-MIT: see License Text 59
 
 --------------------------------------------------------------------------------
 dirs 7.0.0
 License: MIT OR Apache-2.0
 Authors: Simon Ochsenreither <simon@ochsenreither.de>
 Source: https://codeberg.org/dirs/dirs-rs
-LICENSE-APACHE: see License Text 60
-LICENSE-MIT: see License Text 61
+LICENSE-APACHE: see License Text 58
+LICENSE-MIT: see License Text 59
 
 --------------------------------------------------------------------------------
 dispatch2 0.3.1
 License: Zlib OR Apache-2.0 OR MIT
 Authors: Mads Marquart <mads@marquart.dk>, Mary <mary@mary.zone>
 Source: https://github.com/madsmtm/objc2
-LICENSE-MIT: see License Text 26
+LICENSE-MIT: see License Text 25
 
 --------------------------------------------------------------------------------
 displaydoc 0.2.7
@@ -664,7 +636,7 @@ License: MIT OR Apache-2.0
 Authors: Slint Developers <info@slint.dev>
 Source: https://github.com/slint-ui/document-features
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 62
+LICENSE-MIT: see License Text 60
 
 --------------------------------------------------------------------------------
 downcast-rs 1.2.1
@@ -672,38 +644,38 @@ License: MIT/Apache-2.0
 Authors: Ashish Myles <marcianx@gmail.com>, Runji Wang <wangrunji0408@163.com>
 Source: https://github.com/marcianx/downcast-rs
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 63
+LICENSE-MIT: see License Text 61
 
 --------------------------------------------------------------------------------
 dpi 0.1.2
 License: Apache-2.0 AND MIT
 Source: https://github.com/rust-windowing/winit
 LICENSE: see License Text 15
-LICENSE-LIBM-MIT: see License Text 64
+LICENSE-LIBM-MIT: see License Text 62
 
 --------------------------------------------------------------------------------
 either 1.19.0
 License: MIT OR Apache-2.0
 Source: https://github.com/rayon-rs/either
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 65
+LICENSE-MIT: see License Text 63
 
 --------------------------------------------------------------------------------
 encoding_rs 0.8.44
 License: (Apache-2.0 OR MIT) AND BSD-3-Clause
 Authors: Henri Sivonen <hsivonen@hsivonen.fi>
 Source: https://github.com/hsivonen/encoding_rs
-COPYRIGHT: see License Text 66
+COPYRIGHT: see License Text 64
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 67
-LICENSE-WHATWG: see License Text 68
+LICENSE-MIT: see License Text 65
+LICENSE-WHATWG: see License Text 66
 
 --------------------------------------------------------------------------------
 equivalent 1.0.3
 License: Apache-2.0 OR MIT
 Source: https://github.com/indexmap-rs/equivalent
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 69
+LICENSE-MIT: see License Text 67
 
 --------------------------------------------------------------------------------
 errno 0.3.14
@@ -711,7 +683,7 @@ License: MIT OR Apache-2.0
 Authors: Chris Wong <lambda.fairy@gmail.com>, Dan Gohman <dev@sunfishcode.online>
 Source: https://github.com/lambda-fairy/rust-errno
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 70
+LICENSE-MIT: see License Text 68
 
 --------------------------------------------------------------------------------
 event-listener-strategy 0.5.4
@@ -743,7 +715,7 @@ License: MIT/Apache-2.0
 Authors: Steven Fackler <sfackler@gmail.com>
 Source: https://github.com/sfackler/rust-fallible-iterator
 LICENSE-APACHE: see License Text 15
-LICENSE-MIT: see License Text 71
+LICENSE-MIT: see License Text 69
 
 --------------------------------------------------------------------------------
 fallible-streaming-iterator 0.1.9
@@ -751,7 +723,7 @@ License: MIT/Apache-2.0
 Authors: Steven Fackler <sfackler@gmail.com>
 Source: https://github.com/sfackler/fallible-streaming-iterator
 LICENSE-APACHE: see License Text 15
-LICENSE-MIT: see License Text 72
+LICENSE-MIT: see License Text 70
 
 --------------------------------------------------------------------------------
 fastrand 2.5.0
@@ -766,8 +738,8 @@ fd-lock 4.0.4
 License: MIT OR Apache-2.0
 Authors: Yoshua Wuyts <yoshuawuyts@gmail.com>
 Source: https://github.com/yoshuawuyts/fd-lock
-LICENSE-APACHE: see License Text 73
-LICENSE-MIT: see License Text 74
+LICENSE-APACHE: see License Text 71
+LICENSE-MIT: see License Text 72
 
 --------------------------------------------------------------------------------
 fdeflate 0.3.7
@@ -775,14 +747,14 @@ License: MIT OR Apache-2.0
 Authors: The image-rs Developers
 Source: https://github.com/image-rs/fdeflate
 LICENSE-APACHE: see License Text 2
-LICENSE-MIT: see License Text 75
+LICENSE-MIT: see License Text 73
 
 --------------------------------------------------------------------------------
 filedescriptor 0.8.3
 License: MIT
 Authors: Wez Furlong
 Source: https://github.com/wezterm/wezterm
-LICENSE.md: see License Text 76
+LICENSE.md: see License Text 74
 
 --------------------------------------------------------------------------------
 flate2 1.1.11
@@ -790,7 +762,7 @@ License: MIT OR Apache-2.0
 Authors: Alex Crichton <alex@alexcrichton.com>, Josh Triplett <josh@joshtriplett.org>
 Source: https://github.com/rust-lang/flate2-rs
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 77
+LICENSE-MIT: see License Text 75
 
 --------------------------------------------------------------------------------
 flume 0.12.0
@@ -806,14 +778,14 @@ License: Apache-2.0 / MIT
 Authors: Alex Crichton <alex@alexcrichton.com>
 Source: https://github.com/servo/rust-fnv
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 78
+LICENSE-MIT: see License Text 76
 
 --------------------------------------------------------------------------------
 foldhash 0.2.0
 License: Zlib
 Authors: Orson Peters <orsonpeters@gmail.com>
 Source: https://github.com/orlp/foldhash
-LICENSE: see License Text 79
+LICENSE: see License Text 77
 
 --------------------------------------------------------------------------------
 foreign-types-macros 0.2.4
@@ -821,7 +793,7 @@ License: MIT/Apache-2.0
 Authors: Steven Fackler <sfackler@gmail.com>
 Source: https://github.com/sfackler/foreign-types
 LICENSE-APACHE: see License Text 15
-LICENSE-MIT: see License Text 80
+LICENSE-MIT: see License Text 78
 
 --------------------------------------------------------------------------------
 foreign-types-shared 0.3.1
@@ -829,7 +801,7 @@ License: MIT/Apache-2.0
 Authors: Steven Fackler <sfackler@gmail.com>
 Source: https://github.com/sfackler/foreign-types
 LICENSE-APACHE: see License Text 15
-LICENSE-MIT: see License Text 80
+LICENSE-MIT: see License Text 78
 
 --------------------------------------------------------------------------------
 foreign-types 0.5.0
@@ -837,7 +809,7 @@ License: MIT/Apache-2.0
 Authors: Steven Fackler <sfackler@gmail.com>
 Source: https://github.com/sfackler/foreign-types
 LICENSE-APACHE: see License Text 15
-LICENSE-MIT: see License Text 80
+LICENSE-MIT: see License Text 78
 
 --------------------------------------------------------------------------------
 form_urlencoded 1.2.3
@@ -845,100 +817,100 @@ License: MIT OR Apache-2.0
 Authors: The rust-url developers
 Source: https://github.com/servo/rust-url
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 81
+LICENSE-MIT: see License Text 79
 
 --------------------------------------------------------------------------------
 futures-channel 0.3.34
 License: MIT OR Apache-2.0
 Source: https://github.com/rust-lang/futures-rs
-LICENSE-APACHE: see License Text 82
-LICENSE-MIT: see License Text 83
+LICENSE-APACHE: see License Text 80
+LICENSE-MIT: see License Text 81
 
 --------------------------------------------------------------------------------
 futures-core 0.3.34
 License: MIT OR Apache-2.0
 Source: https://github.com/rust-lang/futures-rs
-LICENSE-APACHE: see License Text 82
-LICENSE-MIT: see License Text 83
+LICENSE-APACHE: see License Text 80
+LICENSE-MIT: see License Text 81
 
 --------------------------------------------------------------------------------
 futures-executor 0.3.34
 License: MIT OR Apache-2.0
 Source: https://github.com/rust-lang/futures-rs
-LICENSE-APACHE: see License Text 82
-LICENSE-MIT: see License Text 83
+LICENSE-APACHE: see License Text 80
+LICENSE-MIT: see License Text 81
 
 --------------------------------------------------------------------------------
 futures-io 0.3.34
 License: MIT OR Apache-2.0
 Source: https://github.com/rust-lang/futures-rs
-LICENSE-APACHE: see License Text 82
-LICENSE-MIT: see License Text 83
+LICENSE-APACHE: see License Text 80
+LICENSE-MIT: see License Text 81
 
 --------------------------------------------------------------------------------
 futures-macro 0.3.34
 License: MIT OR Apache-2.0
 Source: https://github.com/rust-lang/futures-rs
-LICENSE-APACHE: see License Text 82
-LICENSE-MIT: see License Text 83
+LICENSE-APACHE: see License Text 80
+LICENSE-MIT: see License Text 81
 
 --------------------------------------------------------------------------------
 futures-sink 0.3.34
 License: MIT OR Apache-2.0
 Source: https://github.com/rust-lang/futures-rs
-LICENSE-APACHE: see License Text 82
-LICENSE-MIT: see License Text 83
+LICENSE-APACHE: see License Text 80
+LICENSE-MIT: see License Text 81
 
 --------------------------------------------------------------------------------
 futures-task 0.3.34
 License: MIT OR Apache-2.0
 Source: https://github.com/rust-lang/futures-rs
-LICENSE-APACHE: see License Text 82
-LICENSE-MIT: see License Text 83
+LICENSE-APACHE: see License Text 80
+LICENSE-MIT: see License Text 81
 
 --------------------------------------------------------------------------------
 futures-util 0.3.34
 License: MIT OR Apache-2.0
 Source: https://github.com/rust-lang/futures-rs
-LICENSE-APACHE: see License Text 82
-LICENSE-MIT: see License Text 83
+LICENSE-APACHE: see License Text 80
+LICENSE-MIT: see License Text 81
 
 --------------------------------------------------------------------------------
 futures 0.3.34
 License: MIT OR Apache-2.0
 Source: https://github.com/rust-lang/futures-rs
-LICENSE-APACHE: see License Text 82
-LICENSE-MIT: see License Text 83
+LICENSE-APACHE: see License Text 80
+LICENSE-MIT: see License Text 81
 
 --------------------------------------------------------------------------------
 fuzzy-matcher 0.3.7
 License: MIT
 Authors: Jinzhou Zhang <lotabout@gmail.com>
 Source: https://github.com/lotabout/fuzzy-matcher
-LICENSE: see License Text 84
+LICENSE: see License Text 82
 
 --------------------------------------------------------------------------------
 getrandom 0.2.17
 License: MIT OR Apache-2.0
 Authors: The Rand Project Developers
 Source: https://github.com/rust-random/getrandom
-LICENSE-APACHE: see License Text 85
-LICENSE-MIT: see License Text 86
+LICENSE-APACHE: see License Text 83
+LICENSE-MIT: see License Text 84
 
 --------------------------------------------------------------------------------
 getrandom 0.4.3
 License: MIT OR Apache-2.0
 Authors: The Rand Project Developers
 Source: https://github.com/rust-random/getrandom
-LICENSE-APACHE: see License Text 85
-LICENSE-MIT: see License Text 87
+LICENSE-APACHE: see License Text 83
+LICENSE-MIT: see License Text 85
 
 --------------------------------------------------------------------------------
 gimli 0.34.0
 License: MIT OR Apache-2.0
 Source: https://github.com/gimli-rs/gimli
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 88
+LICENSE-MIT: see License Text 86
 
 --------------------------------------------------------------------------------
 glob 0.3.4
@@ -946,7 +918,7 @@ License: MIT OR Apache-2.0
 Authors: The Rust Project Developers
 Source: https://github.com/rust-lang/glob
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 24
+LICENSE-MIT: see License Text 23
 
 --------------------------------------------------------------------------------
 globset 0.4.21
@@ -961,7 +933,7 @@ h2 0.4.20
 License: MIT
 Authors: Carl Lerche <me@carllerche.com>, Sean McArthur <sean@seanmonstar.com>
 Source: https://github.com/hyperium/h2
-LICENSE: see License Text 89
+LICENSE: see License Text 87
 
 --------------------------------------------------------------------------------
 hashbrown 0.14.5
@@ -969,21 +941,21 @@ License: MIT OR Apache-2.0
 Authors: Amanieu d'Antras <amanieu@gmail.com>
 Source: https://github.com/rust-lang/hashbrown
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 90
+LICENSE-MIT: see License Text 88
 
 --------------------------------------------------------------------------------
 hashbrown 0.17.1
 License: MIT OR Apache-2.0
 Source: https://github.com/rust-lang/hashbrown
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 90
+LICENSE-MIT: see License Text 88
 
 --------------------------------------------------------------------------------
 hashlink 0.12.2
 License: MIT OR Apache-2.0
 Source: https://github.com/djc/hashlink
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 91
+LICENSE-MIT: see License Text 89
 
 --------------------------------------------------------------------------------
 heck 0.4.1
@@ -991,14 +963,14 @@ License: MIT OR Apache-2.0
 Authors: Without Boats <woboats@gmail.com>
 Source: https://github.com/withoutboats/heck
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 88
+LICENSE-MIT: see License Text 86
 
 --------------------------------------------------------------------------------
 heck 0.5.0
 License: MIT OR Apache-2.0
 Source: https://github.com/withoutboats/heck
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 88
+LICENSE-MIT: see License Text 86
 
 --------------------------------------------------------------------------------
 hex 0.4.3
@@ -1006,29 +978,29 @@ License: MIT OR Apache-2.0
 Authors: KokaKiwi <kokakiwi@kokakiwi.net>
 Source: https://github.com/KokaKiwi/rust-hex
 LICENSE-APACHE: see License Text 15
-LICENSE-MIT: see License Text 92
+LICENSE-MIT: see License Text 90
 
 --------------------------------------------------------------------------------
 http-body-util 0.1.5
 License: MIT
 Authors: Carl Lerche <me@carllerche.com>, Lucio Franco <luciofranco14@gmail.com>, Sean McArthur <sean@seanmonstar.com>
 Source: https://github.com/hyperium/http-body
-LICENSE: see License Text 93
+LICENSE: see License Text 91
 
 --------------------------------------------------------------------------------
 http-body 1.1.0
 License: MIT
 Authors: Carl Lerche <me@carllerche.com>, Lucio Franco <luciofranco14@gmail.com>, Sean McArthur <sean@seanmonstar.com>
 Source: https://github.com/hyperium/http-body
-LICENSE: see License Text 93
+LICENSE: see License Text 91
 
 --------------------------------------------------------------------------------
 http 1.5.0
 License: MIT OR Apache-2.0
 Authors: Alex Crichton <alex@alexcrichton.com>, Carl Lerche <me@carllerche.com>, Sean McArthur <sean@seanmonstar.com>
 Source: https://github.com/hyperium/http
-LICENSE-APACHE: see License Text 94
-LICENSE-MIT: see License Text 95
+LICENSE-APACHE: see License Text 92
+LICENSE-MIT: see License Text 93
 
 --------------------------------------------------------------------------------
 httparse 1.10.1
@@ -1036,7 +1008,7 @@ License: MIT OR Apache-2.0
 Authors: Sean McArthur <sean@seanmonstar.com>
 Source: https://github.com/seanmonstar/httparse
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 96
+LICENSE-MIT: see License Text 94
 
 --------------------------------------------------------------------------------
 hybrid-array 0.4.15
@@ -1044,86 +1016,86 @@ License: MIT OR Apache-2.0
 Authors: RustCrypto Developers
 Source: https://github.com/RustCrypto/hybrid-array
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 97
+LICENSE-MIT: see License Text 95
 
 --------------------------------------------------------------------------------
 hyper-rustls 0.27.10
 License: Apache-2.0 OR ISC OR MIT
 Source: https://github.com/rustls/hyper-rustls
 LICENSE-APACHE: see License Text 8
-LICENSE-ISC: see License Text 98
-LICENSE-MIT: see License Text 99
+LICENSE-ISC: see License Text 96
+LICENSE-MIT: see License Text 97
 
 --------------------------------------------------------------------------------
 hyper-util 0.1.21
 License: MIT
 Authors: Sean McArthur <sean@seanmonstar.com>
 Source: https://github.com/hyperium/hyper-util
-LICENSE: see License Text 100
+LICENSE: see License Text 98
 
 --------------------------------------------------------------------------------
 hyper 1.12.0
 License: MIT
 Authors: Sean McArthur <sean@seanmonstar.com>
 Source: https://github.com/hyperium/hyper
-LICENSE: see License Text 101
+LICENSE: see License Text 99
 
 --------------------------------------------------------------------------------
 iana-time-zone 0.1.65
 License: MIT OR Apache-2.0
 Authors: Andrew Straw <strawman@astraw.com>, René Kijewski <rene.kijewski@fu-berlin.de>, Ryan Lopopolo <rjl@hyperbo.la>
 Source: https://github.com/strawlab/iana-time-zone
-LICENSE-APACHE: see License Text 102
-LICENSE-MIT: see License Text 103
+LICENSE-APACHE: see License Text 100
+LICENSE-MIT: see License Text 101
 
 --------------------------------------------------------------------------------
 icu_collections 2.4.0
 License: Unicode-3.0
 Authors: The ICU4X Project Developers
 Source: https://github.com/unicode-org/icu4x
-LICENSE: see License Text 104
+LICENSE: see License Text 102
 
 --------------------------------------------------------------------------------
 icu_locale_core 2.4.0
 License: Unicode-3.0
 Authors: The ICU4X Project Developers
 Source: https://github.com/unicode-org/icu4x
-LICENSE: see License Text 104
+LICENSE: see License Text 102
 
 --------------------------------------------------------------------------------
 icu_normalizer_data 2.4.0
 License: Unicode-3.0
 Authors: The ICU4X Project Developers
 Source: https://github.com/unicode-org/icu4x
-LICENSE: see License Text 104
+LICENSE: see License Text 102
 
 --------------------------------------------------------------------------------
 icu_normalizer 2.4.0
 License: Unicode-3.0
 Authors: The ICU4X Project Developers
 Source: https://github.com/unicode-org/icu4x
-LICENSE: see License Text 104
+LICENSE: see License Text 102
 
 --------------------------------------------------------------------------------
 icu_properties_data 2.4.0
 License: Unicode-3.0
 Authors: The ICU4X Project Developers
 Source: https://github.com/unicode-org/icu4x
-LICENSE: see License Text 104
+LICENSE: see License Text 102
 
 --------------------------------------------------------------------------------
 icu_properties 2.4.0
 License: Unicode-3.0
 Authors: The ICU4X Project Developers
 Source: https://github.com/unicode-org/icu4x
-LICENSE: see License Text 104
+LICENSE: see License Text 102
 
 --------------------------------------------------------------------------------
 icu_provider 2.4.0
 License: Unicode-3.0
 Authors: The ICU4X Project Developers
 Source: https://github.com/unicode-org/icu4x
-LICENSE: see License Text 104
+LICENSE: see License Text 102
 
 --------------------------------------------------------------------------------
 idna_adapter 1.2.2
@@ -1131,7 +1103,7 @@ License: Apache-2.0 OR MIT
 Authors: The rust-url developers
 Source: https://github.com/hsivonen/idna_adapter
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 105
+LICENSE-MIT: see License Text 103
 
 --------------------------------------------------------------------------------
 idna 1.1.0
@@ -1139,7 +1111,7 @@ License: MIT OR Apache-2.0
 Authors: The rust-url developers
 Source: https://github.com/servo/rust-url/
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 106
+LICENSE-MIT: see License Text 104
 
 --------------------------------------------------------------------------------
 image 0.25.10
@@ -1147,7 +1119,7 @@ License: MIT OR Apache-2.0
 Authors: The image-rs Developers
 Source: https://github.com/image-rs/image
 LICENSE-APACHE: see License Text 2
-LICENSE-MIT: see License Text 75
+LICENSE-MIT: see License Text 73
 
 --------------------------------------------------------------------------------
 indenter 0.3.4
@@ -1162,13 +1134,7 @@ indexmap 2.14.2
 License: Apache-2.0 OR MIT
 Source: https://github.com/indexmap-rs/indexmap
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 107
-
---------------------------------------------------------------------------------
-indicatif 0.18.6
-License: MIT
-Source: https://github.com/console-rs/indicatif
-LICENSE: see License Text 38
+LICENSE-MIT: see License Text 105
 
 --------------------------------------------------------------------------------
 indoc 2.0.8
@@ -1183,15 +1149,15 @@ infer 0.22.0
 License: MIT
 Authors: Bojan <dbojan@gmail.com>
 Source: https://github.com/bojand/infer
-LICENSE: see License Text 108
+LICENSE: see License Text 106
 
 --------------------------------------------------------------------------------
 ipnet 2.12.2
 License: MIT OR Apache-2.0
 Authors: Kris Price <kris@krisprice.nz>
 Source: https://github.com/krisprice/ipnet
-LICENSE-APACHE: see License Text 109
-LICENSE-MIT: see License Text 110
+LICENSE-APACHE: see License Text 107
+LICENSE-MIT: see License Text 108
 
 --------------------------------------------------------------------------------
 is_terminal_polyfill 1.70.2
@@ -1206,7 +1172,7 @@ License: MIT OR Apache-2.0
 Authors: bluss
 Source: https://github.com/rust-itertools/itertools
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 65
+LICENSE-MIT: see License Text 63
 
 --------------------------------------------------------------------------------
 itoa 1.0.19
@@ -1222,7 +1188,7 @@ License: MIT OR Apache-2.0
 Authors: Pyfisch <pyfisch@posteo.org>
 Source: https://github.com/rust-windowing/keyboard-types
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 111
+LICENSE-MIT: see License Text 109
 
 --------------------------------------------------------------------------------
 lazy_static 1.5.1
@@ -1237,28 +1203,28 @@ libc 0.2.191
 License: MIT OR Apache-2.0
 Source: https://github.com/rust-lang/libc
 LICENSE-APACHE: see License Text 2
-LICENSE-MIT: see License Text 112
+LICENSE-MIT: see License Text 110
 
 --------------------------------------------------------------------------------
 libmimalloc-sys 0.1.49
 License: MIT
 Authors: Octavian Oncescu <octavonce@gmail.com>
 Source: https://github.com/purpleprotocol/mimalloc_rust/tree/master/libmimalloc-sys
-LICENSE.txt: see License Text 113
+LICENSE.txt: see License Text 111
 
 --------------------------------------------------------------------------------
 libsqlite3-sys 0.39.1
 License: MIT
 Authors: The rusqlite developers
 Source: https://github.com/rusqlite/rusqlite
-LICENSE: see License Text 114
+LICENSE: see License Text 112
 
 --------------------------------------------------------------------------------
 litemap 0.8.3
 License: Unicode-3.0
 Authors: The ICU4X Project Developers
 Source: https://github.com/unicode-org/icu4x
-LICENSE: see License Text 104
+LICENSE: see License Text 102
 
 --------------------------------------------------------------------------------
 litrs 1.0.1
@@ -1266,7 +1232,7 @@ License: MIT OR Apache-2.0
 Authors: Lukas Kalbertodt <lukas.kalbertodt@gmail.com>
 Source: https://github.com/LukasKalbertodt/litrs
 LICENSE-APACHE: see License Text 2
-LICENSE-MIT: see License Text 115
+LICENSE-MIT: see License Text 113
 
 --------------------------------------------------------------------------------
 lock_api 0.4.14
@@ -1274,7 +1240,7 @@ License: MIT OR Apache-2.0
 Authors: Amanieu d'Antras <amanieu@gmail.com>
 Source: https://github.com/Amanieu/parking_lot
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 116
+LICENSE-MIT: see License Text 114
 
 --------------------------------------------------------------------------------
 lock_api 0.5.0
@@ -1282,7 +1248,7 @@ License: MIT OR Apache-2.0
 Authors: Amanieu d'Antras <amanieu@gmail.com>
 Source: https://github.com/Amanieu/parking_lot
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 116
+LICENSE-MIT: see License Text 114
 
 --------------------------------------------------------------------------------
 log 0.4.35
@@ -1290,14 +1256,14 @@ License: MIT OR Apache-2.0
 Authors: The Rust Project Developers
 Source: https://github.com/rust-lang/log
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 24
+LICENSE-MIT: see License Text 23
 
 --------------------------------------------------------------------------------
 loglevel 1.9.2
 License: MIT
 Authors: Tim Perry
 Source: git://github.com/pimterry/loglevel.git
-LICENSE-MIT: see License Text 117
+LICENSE-MIT: see License Text 115
 
 --------------------------------------------------------------------------------
 lru-slab 0.1.3
@@ -1305,8 +1271,8 @@ License: MIT OR Apache-2.0 OR Zlib
 Authors: Benjamin Saunders <ben.e.saunders@gmail.com>
 Source: https://github.com/Ralith/lru-slab
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 118
-LICENSE-ZLIB: see License Text 119
+LICENSE-MIT: see License Text 116
+LICENSE-ZLIB: see License Text 117
 
 --------------------------------------------------------------------------------
 maplit 1.0.2
@@ -1314,14 +1280,14 @@ License: MIT/Apache-2.0
 Authors: bluss
 Source: https://github.com/bluss/maplit
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 65
+LICENSE-MIT: see License Text 63
 
 --------------------------------------------------------------------------------
 matchers 0.2.0
 License: MIT
 Authors: Eliza Weisman <eliza@buoyant.io>
 Source: https://github.com/hawkw/matchers
-LICENSE: see License Text 120
+LICENSE: see License Text 118
 
 --------------------------------------------------------------------------------
 memchr 2.8.3
@@ -1336,14 +1302,14 @@ memoize-one 5.2.1
 License: MIT
 Authors: Alex Reardon <alexreardon@gmail.com>
 Source: https://github.com/alexreardon/memoize-one.git
-LICENSE: see License Text 121
+LICENSE: see License Text 119
 
 --------------------------------------------------------------------------------
 mimalloc 0.1.52
 License: MIT
 Authors: Octavian Oncescu <octavonce@gmail.com>, Vincent Rouillé <vincent@speedy37.fr>, Thom Chiovoloni <chiovolonit@gmail.com>
 Source: https://github.com/purpleprotocol/mimalloc_rust
-LICENSE.txt: see License Text 113
+LICENSE.txt: see License Text 111
 
 --------------------------------------------------------------------------------
 mime 0.3.18
@@ -1351,7 +1317,7 @@ License: MIT OR Apache-2.0
 Authors: Sean McArthur <sean@seanmonstar.com>
 Source: https://github.com/hyperium/mime
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 122
+LICENSE-MIT: see License Text 120
 
 --------------------------------------------------------------------------------
 minimal-lexical 0.2.1
@@ -1360,124 +1326,124 @@ Authors: Alex Huszagh <ahuszagh@gmail.com>
 Source: https://github.com/Alexhuszagh/minimal-lexical
 LICENSE-APACHE: see License Text 8
 LICENSE-MIT: see License Text 12
-LICENSE.md: see License Text 123
+LICENSE.md: see License Text 121
 
 --------------------------------------------------------------------------------
 miniz_oxide 0.8.9
 License: MIT OR Zlib OR Apache-2.0
 Authors: Frommi <daniil.liferenko@gmail.com>, oyvindln <oyvindln@users.noreply.github.com>, Rich Geldreich richgel99@gmail.com
 Source: https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide
-LICENSE: see License Text 124
+LICENSE: see License Text 122
 LICENSE-APACHE.md: see License Text 2
-LICENSE-MIT.md: see License Text 124
-LICENSE-ZLIB.md: see License Text 125
+LICENSE-MIT.md: see License Text 122
+LICENSE-ZLIB.md: see License Text 123
 
 --------------------------------------------------------------------------------
 miniz_oxide 0.9.1
 License: MIT OR Zlib OR Apache-2.0
 Authors: Frommi <daniil.liferenko@gmail.com>, oyvindln <oyvindln@users.noreply.github.com>, Rich Geldreich richgel99@gmail.com
 Source: https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide
-LICENSE: see License Text 124
+LICENSE: see License Text 122
 LICENSE-APACHE.md: see License Text 2
-LICENSE-MIT.md: see License Text 124
-LICENSE-ZLIB.md: see License Text 125
+LICENSE-MIT.md: see License Text 122
+LICENSE-ZLIB.md: see License Text 123
 
 --------------------------------------------------------------------------------
 mio 1.2.4
 License: MIT
 Authors: Carl Lerche <me@carllerche.com>, Thomas de Zeeuw <thomasdezeeuw@gmail.com>, Tokio Contributors <team@tokio.rs>
 Source: https://github.com/tokio-rs/mio
-LICENSE: see License Text 126
+LICENSE: see License Text 124
 
 --------------------------------------------------------------------------------
 moka 0.12.16
 License: (MIT OR Apache-2.0) AND Apache-2.0
 Source: https://github.com/moka-rs/moka
-LICENSE-APACHE: see License Text 127
-LICENSE-MIT: see License Text 128
-NOTICE: see License Text 129
+LICENSE-APACHE: see License Text 125
+LICENSE-MIT: see License Text 126
+NOTICE: see License Text 127
 
 --------------------------------------------------------------------------------
 moxcms 0.8.1
 License: BSD-3-Clause OR Apache-2.0
 Authors: Radzivon Bartoshyk
 Source: https://github.com/awxkee/moxcms.git
-LICENSE-APACHE.md: see License Text 130
-LICENSE.md: see License Text 131
+LICENSE-APACHE.md: see License Text 128
+LICENSE.md: see License Text 129
 
 --------------------------------------------------------------------------------
 muda 0.21.2
 License: Apache-2.0 OR MIT
 Source: https://github.com/tauri-apps/muda
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 132
-LICENSE.spdx: see License Text 133
+LICENSE-MIT: see License Text 130
+LICENSE.spdx: see License Text 131
 
 --------------------------------------------------------------------------------
 multiversion_no_op 1.0.0
 License: Apache-2.0 OR MIT
 Authors: Henri Sivonen <hsivonen@hsivonen.fi>
 Source: https://github.com/hsivonen/multiversion_no_op
-COPYRIGHT: see License Text 134
+COPYRIGHT: see License Text 132
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 67
+LICENSE-MIT: see License Text 65
 
 --------------------------------------------------------------------------------
 nix 0.28.0
 License: MIT
 Authors: The nix-rust Project Developers
 Source: https://github.com/nix-rust/nix
-LICENSE: see License Text 135
+LICENSE: see License Text 133
 
 --------------------------------------------------------------------------------
 nix 0.31.3
 License: MIT
 Source: https://github.com/nix-rust/nix
-LICENSE: see License Text 135
+LICENSE: see License Text 133
 
 --------------------------------------------------------------------------------
 nom 7.1.3
 License: MIT
 Authors: contact@geoffroycouprie.com
 Source: https://github.com/Geal/nom
-LICENSE: see License Text 136
+LICENSE: see License Text 134
 
 --------------------------------------------------------------------------------
 notify-types 2.3.0
 License: MIT OR Apache-2.0
 Authors: Daniel Faust <hessijames@gmail.com>
 Source: https://github.com/notify-rs/notify.git
-LICENSE-APACHE: see License Text 137
-LICENSE-MIT: see License Text 138
+LICENSE-APACHE: see License Text 135
+LICENSE-MIT: see License Text 136
 
 --------------------------------------------------------------------------------
 notify 8.2.2
 License: CC0-1.0
 Authors: Félix Saparelli <me@passcod.name>, Daniel Faust <hessijames@gmail.com>, Aron Heinecke <Ox0p54r36@t-online.de>
 Source: https://github.com/notify-rs/notify.git
-LICENSE-CC0: see License Text 139
+LICENSE-CC0: see License Text 137
 
 --------------------------------------------------------------------------------
 nu-ansi-term 0.50.3
 License: MIT
 Authors: ogham@bsago.me, Ryan Scheel (Havvy) <ryan.havvy@gmail.com>, Josh Triplett <josh@joshtriplett.org>, The Nushell Project Developers
 Source: https://github.com/nushell/nu-ansi-term
-LICENSE: see License Text 140
+LICENSE: see License Text 138
 
 --------------------------------------------------------------------------------
 nu-json 0.104.1
 License: MIT
 Authors: The Nushell Project Developers, Christian Zangl <laktak@cdak.net>
 Source: https://github.com/nushell/nushell/tree/main/crates/nu-json
-LICENSE: see License Text 141
+LICENSE: see License Text 139
 
 --------------------------------------------------------------------------------
 num_threads 0.1.8
 License: MIT OR Apache-2.0
 Authors: Jacob Pratt <open-source@jhpratt.dev>
 Source: https://github.com/jhpratt/num_threads
-LICENSE-Apache: see License Text 142
-LICENSE-MIT: see License Text 143
+LICENSE-Apache: see License Text 140
+LICENSE-MIT: see License Text 141
 
 --------------------------------------------------------------------------------
 num-conv 0.2.2
@@ -1485,7 +1451,7 @@ License: MIT OR Apache-2.0
 Authors: Jacob Pratt <jacob@jhpratt.dev>
 Source: https://github.com/jhpratt/num-conv
 LICENSE-Apache: see License Text 2
-LICENSE-MIT: see License Text 144
+LICENSE-MIT: see License Text 142
 
 --------------------------------------------------------------------------------
 num-traits 0.2.19
@@ -1493,95 +1459,95 @@ License: MIT OR Apache-2.0
 Authors: The Rust Project Developers
 Source: https://github.com/rust-num/num-traits
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 24
+LICENSE-MIT: see License Text 23
 
 --------------------------------------------------------------------------------
 objc2-app-kit 0.3.2
 License: Zlib OR Apache-2.0 OR MIT
 Source: https://github.com/madsmtm/objc2
-LICENSE-MIT: see License Text 26
+LICENSE-MIT: see License Text 25
 
 --------------------------------------------------------------------------------
 objc2-core-foundation 0.3.2
 License: Zlib OR Apache-2.0 OR MIT
 Source: https://github.com/madsmtm/objc2
-LICENSE-MIT: see License Text 26
+LICENSE-MIT: see License Text 25
 
 --------------------------------------------------------------------------------
 objc2-core-graphics 0.3.2
 License: Zlib OR Apache-2.0 OR MIT
 Source: https://github.com/madsmtm/objc2
-LICENSE-MIT: see License Text 26
+LICENSE-MIT: see License Text 25
 
 --------------------------------------------------------------------------------
 objc2-core-services 0.3.2
 License: Zlib OR Apache-2.0 OR MIT
 Source: https://github.com/madsmtm/objc2
-LICENSE-MIT: see License Text 26
+LICENSE-MIT: see License Text 25
 
 --------------------------------------------------------------------------------
 objc2-encode 4.1.0
 License: MIT
 Authors: Mads Marquart <mads@marquart.dk>
 Source: https://github.com/madsmtm/objc2
-LICENSE-MIT: see License Text 26
+LICENSE-MIT: see License Text 25
 
 --------------------------------------------------------------------------------
 objc2-exception-helper 0.1.1
 License: Zlib OR Apache-2.0 OR MIT
 Authors: Mads Marquart <mads@marquart.dk>
 Source: https://github.com/madsmtm/objc2
-LICENSE-MIT: see License Text 26
+LICENSE-MIT: see License Text 25
 
 --------------------------------------------------------------------------------
 objc2-foundation 0.3.2
 License: MIT
 Source: https://github.com/madsmtm/objc2
-LICENSE-MIT: see License Text 26
+LICENSE-MIT: see License Text 25
 
 --------------------------------------------------------------------------------
 objc2-input-method-kit 0.3.2
 License: Zlib OR Apache-2.0 OR MIT
 Source: https://github.com/madsmtm/objc2
-LICENSE-MIT: see License Text 26
+LICENSE-MIT: see License Text 25
 
 --------------------------------------------------------------------------------
 objc2-io-kit 0.3.2
 License: Zlib OR Apache-2.0 OR MIT
 Source: https://github.com/madsmtm/objc2
-LICENSE-MIT: see License Text 26
+LICENSE-MIT: see License Text 25
 
 --------------------------------------------------------------------------------
 objc2-io-surface 0.3.2
 License: Zlib OR Apache-2.0 OR MIT
 Source: https://github.com/madsmtm/objc2
-LICENSE-MIT: see License Text 26
+LICENSE-MIT: see License Text 25
 
 --------------------------------------------------------------------------------
 objc2-system-configuration 0.3.2
 License: Zlib OR Apache-2.0 OR MIT
 Source: https://github.com/madsmtm/objc2
-LICENSE-MIT: see License Text 26
+LICENSE-MIT: see License Text 25
 
 --------------------------------------------------------------------------------
 objc2-web-kit 0.3.2
 License: Zlib OR Apache-2.0 OR MIT
 Source: https://github.com/madsmtm/objc2
-LICENSE-MIT: see License Text 26
+LICENSE-MIT: see License Text 25
 
 --------------------------------------------------------------------------------
 objc2 0.6.5
 License: MIT
 Authors: Mads Marquart <mads@marquart.dk>
 Source: https://github.com/madsmtm/objc2
-LICENSE-MIT: see License Text 26
+LICENSE-MIT: see License Text 25
 
 --------------------------------------------------------------------------------
 object 0.40.0
 License: Apache-2.0 OR MIT
 Source: https://github.com/gimli-rs/object
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 145
+LICENSE-MIT: see License Text 143
 
 --------------------------------------------------------------------------------
 once_cell 1.21.4
@@ -1596,21 +1562,21 @@ option-ext 0.2.0
 License: MPL-2.0
 Authors: Simon Ochsenreither <simon@ochsenreither.de>
 Source: https://github.com/soc/option-ext.git
-LICENSE.txt: see License Text 146
+LICENSE.txt: see License Text 144
 
 --------------------------------------------------------------------------------
 ordered-float 2.10.1
 License: MIT
 Authors: Jonathan Reem <jonathan.reem@gmail.com>, Matt Brubeck <mbrubeck@limpet.net>
 Source: https://github.com/reem/rust-ordered-float
-LICENSE-MIT: see License Text 147
+LICENSE-MIT: see License Text 145
 
 --------------------------------------------------------------------------------
 owo-colors 4.4.0
 License: MIT
 Authors: jam1garner <8260240+jam1garner@users.noreply.github.com>
 Source: https://github.com/owo-colors/owo-colors
-LICENSE: see License Text 148
+LICENSE: see License Text 146
 
 --------------------------------------------------------------------------------
 parking_lot_core 0.10.0
@@ -1618,7 +1584,7 @@ License: MIT OR Apache-2.0
 Authors: Amanieu d'Antras <amanieu@gmail.com>
 Source: https://github.com/Amanieu/parking_lot
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 116
+LICENSE-MIT: see License Text 114
 
 --------------------------------------------------------------------------------
 parking_lot_core 0.9.12
@@ -1626,7 +1592,7 @@ License: MIT OR Apache-2.0
 Authors: Amanieu d'Antras <amanieu@gmail.com>
 Source: https://github.com/Amanieu/parking_lot
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 116
+LICENSE-MIT: see License Text 114
 
 --------------------------------------------------------------------------------
 parking_lot 0.12.5
@@ -1634,7 +1600,7 @@ License: MIT OR Apache-2.0
 Authors: Amanieu d'Antras <amanieu@gmail.com>
 Source: https://github.com/Amanieu/parking_lot
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 116
+LICENSE-MIT: see License Text 114
 
 --------------------------------------------------------------------------------
 parking_lot 0.13.0
@@ -1642,7 +1608,7 @@ License: MIT OR Apache-2.0
 Authors: Amanieu d'Antras <amanieu@gmail.com>
 Source: https://github.com/Amanieu/parking_lot
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 116
+LICENSE-MIT: see License Text 114
 
 --------------------------------------------------------------------------------
 parking 2.2.1
@@ -1651,7 +1617,7 @@ Authors: Stjepan Glavina <stjepang@gmail.com>, The Rust Project Developers
 Source: https://github.com/smol-rs/parking
 LICENSE-APACHE: see License Text 8
 LICENSE-MIT: see License Text 12
-LICENSE-THIRD-PARTY: see License Text 149
+LICENSE-THIRD-PARTY: see License Text 147
 
 --------------------------------------------------------------------------------
 pastey 0.2.3
@@ -1667,7 +1633,7 @@ License: MIT OR Apache-2.0
 Authors: The rust-url developers
 Source: https://github.com/servo/rust-url/
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 106
+LICENSE-MIT: see License Text 104
 
 --------------------------------------------------------------------------------
 pin-project-internal 1.1.13
@@ -1695,7 +1661,7 @@ plist 1.10.3
 License: MIT
 Authors: Ed Barnard <eabarnard@gmail.com>
 Source: https://github.com/ebarnard/rust-plist/
-LICENCE: see License Text 150
+LICENCE: see License Text 148
 
 --------------------------------------------------------------------------------
 png 0.18.1
@@ -1703,7 +1669,7 @@ License: MIT OR Apache-2.0
 Authors: The image-rs Developers
 Source: https://github.com/image-rs/image-png
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 151
+LICENSE-MIT: see License Text 149
 
 --------------------------------------------------------------------------------
 portable-atomic 1.15.0
@@ -1717,22 +1683,22 @@ portable-pty 0.9.0
 License: MIT
 Authors: Wez Furlong
 Source: https://github.com/wezterm/wezterm
-LICENSE.md: see License Text 76
+LICENSE.md: see License Text 74
 
 --------------------------------------------------------------------------------
 potential_utf 0.1.6
 License: Unicode-3.0
 Authors: The ICU4X Project Developers
 Source: https://github.com/unicode-org/icu4x
-LICENSE: see License Text 104
+LICENSE: see License Text 102
 
 --------------------------------------------------------------------------------
 powerfmt 0.2.1
 License: MIT OR Apache-2.0
 Authors: Jacob Pratt <jacob@jhpratt.dev>
 Source: https://github.com/jhpratt/powerfmt
-LICENSE-Apache: see License Text 152
-LICENSE-MIT: see License Text 153
+LICENSE-Apache: see License Text 150
+LICENSE-MIT: see License Text 151
 
 --------------------------------------------------------------------------------
 proc-macro2 1.0.107
@@ -1784,7 +1750,7 @@ psl-types 2.0.11
 License: MIT/Apache-2.0
 Authors: rushmorem <rushmore@webenchanter.com>
 Source: https://github.com/addr-rs/psl-types
-LICENSE: see License Text 154
+LICENSE: see License Text 152
 LICENSE-APACHE: see License Text 8
 
 --------------------------------------------------------------------------------
@@ -1792,7 +1758,7 @@ publicsuffix 2.3.0
 License: MIT/Apache-2.0
 Authors: rushmorem <rushmore@webenchanter.com>
 Source: https://github.com/rushmorem/publicsuffix
-LICENSE: see License Text 155
+LICENSE: see License Text 153
 LICENSE-APACHE: see License Text 8
 
 --------------------------------------------------------------------------------
@@ -1800,35 +1766,35 @@ pxfm 0.1.30
 License: BSD-3-Clause OR Apache-2.0
 Authors: Radzivon Bartoshyk
 Source: https://github.com/awxkee/pxfm
-LICENSE-APACHE.md: see License Text 130
-LICENSE.md: see License Text 131
+LICENSE-APACHE.md: see License Text 128
+LICENSE.md: see License Text 129
 
 --------------------------------------------------------------------------------
 quick-xml 0.42.0
 License: MIT
 Source: https://github.com/tafia/quick-xml
-LICENSE-MIT.md: see License Text 156
+LICENSE-MIT.md: see License Text 154
 
 --------------------------------------------------------------------------------
 quinn-proto 0.11.19
 License: MIT OR Apache-2.0
 Source: https://github.com/quinn-rs/quinn
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 157
+LICENSE-MIT: see License Text 155
 
 --------------------------------------------------------------------------------
 quinn-udp 0.5.16
 License: MIT OR Apache-2.0
 Source: https://github.com/quinn-rs/quinn
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 157
+LICENSE-MIT: see License Text 155
 
 --------------------------------------------------------------------------------
 quinn 0.11.12
 License: MIT OR Apache-2.0
 Source: https://github.com/quinn-rs/quinn
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 157
+LICENSE-MIT: see License Text 155
 
 --------------------------------------------------------------------------------
 quote 1.0.47
@@ -1843,7 +1809,7 @@ r2d2_sqlite 0.36.0
 License: MIT
 Authors: Jovansonlee Cesar <ivanceras@gmail.com>, Hugo Woesthuis <hugo@woesthuis.eu>, Jerebtw <jeremialp41@gmail.com>
 Source: https://github.com/ivanceras/r2d2-sqlite
-LICENSE: see License Text 158
+LICENSE: see License Text 156
 
 --------------------------------------------------------------------------------
 r2d2 0.8.10
@@ -1851,34 +1817,34 @@ License: MIT/Apache-2.0
 Authors: Steven Fackler <sfackler@gmail.com>
 Source: https://github.com/sfackler/r2d2
 LICENSE-APACHE: see License Text 15
-LICENSE-MIT: see License Text 159
+LICENSE-MIT: see License Text 157
 
 --------------------------------------------------------------------------------
 rand_core 0.10.1
 License: MIT OR Apache-2.0
 Authors: The Rand Project Developers
 Source: https://github.com/rust-random/rand_core
-COPYRIGHT: see License Text 160
-LICENSE-APACHE: see License Text 161
-LICENSE-MIT: see License Text 162
+COPYRIGHT: see License Text 158
+LICENSE-APACHE: see License Text 159
+LICENSE-MIT: see License Text 160
 
 --------------------------------------------------------------------------------
 rand_pcg 0.10.2
 License: MIT OR Apache-2.0
 Authors: The Rand Project Developers
 Source: https://github.com/rust-random/rngs
-COPYRIGHT: see License Text 163
-LICENSE-APACHE: see License Text 161
-LICENSE-MIT: see License Text 164
+COPYRIGHT: see License Text 161
+LICENSE-APACHE: see License Text 159
+LICENSE-MIT: see License Text 162
 
 --------------------------------------------------------------------------------
 rand 0.10.3
 License: MIT OR Apache-2.0
 Authors: The Rand Project Developers, The Rust Project Developers
 Source: https://github.com/rust-random/rand
-COPYRIGHT: see License Text 163
-LICENSE-APACHE: see License Text 165
-LICENSE-MIT: see License Text 166
+COPYRIGHT: see License Text 161
+LICENSE-APACHE: see License Text 163
+LICENSE-MIT: see License Text 164
 
 --------------------------------------------------------------------------------
 raw-window-handle 0.6.2
@@ -1886,27 +1852,27 @@ License: MIT OR Apache-2.0 OR Zlib
 Authors: Osspial <osspial@gmail.com>
 Source: https://github.com/rust-windowing/raw-window-handle
 LICENSE-APACHE.md: see License Text 2
-LICENSE-MIT.md: see License Text 167
-LICENSE-ZLIB.md: see License Text 168
+LICENSE-MIT.md: see License Text 165
+LICENSE-ZLIB.md: see License Text 166
 
 --------------------------------------------------------------------------------
 react-dom 19.3.1
 License: MIT
 Source: https://github.com/react/react.git
-LICENSE: see License Text 169
+LICENSE: see License Text 167
 
 --------------------------------------------------------------------------------
 react-window 1.8.11
 License: MIT
 Authors: Brian Vaughn <brian.david.vaughn@gmail.com> (https://github.com/bvaughn/)
 Source: https://github.com/bvaughn/react-window.git
-LICENSE.md: see License Text 170
+LICENSE.md: see License Text 168
 
 --------------------------------------------------------------------------------
 react 19.3.1
 License: MIT
 Source: https://github.com/react/react.git
-LICENSE: see License Text 169
+LICENSE: see License Text 167
 
 --------------------------------------------------------------------------------
 regex-automata 0.4.18
@@ -1914,7 +1880,7 @@ License: MIT OR Apache-2.0
 Authors: The Rust Project Developers, Andrew Gallant <jamslam@gmail.com>
 Source: https://github.com/rust-lang/regex
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 24
+LICENSE-MIT: see License Text 23
 
 --------------------------------------------------------------------------------
 regex-syntax 0.8.11
@@ -1922,7 +1888,7 @@ License: MIT OR Apache-2.0
 Authors: The Rust Project Developers, Andrew Gallant <jamslam@gmail.com>
 Source: https://github.com/rust-lang/regex
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 24
+LICENSE-MIT: see License Text 23
 
 --------------------------------------------------------------------------------
 regex 1.13.1
@@ -1930,51 +1896,51 @@ License: MIT OR Apache-2.0
 Authors: The Rust Project Developers, Andrew Gallant <jamslam@gmail.com>
 Source: https://github.com/rust-lang/regex
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 24
+LICENSE-MIT: see License Text 23
 
 --------------------------------------------------------------------------------
 reqwest 0.12.28
 License: MIT OR Apache-2.0
 Authors: Sean McArthur <sean@seanmonstar.com>
 Source: https://github.com/seanmonstar/reqwest
-LICENSE-APACHE: see License Text 171
-LICENSE-MIT: see License Text 172
+LICENSE-APACHE: see License Text 169
+LICENSE-MIT: see License Text 170
 
 --------------------------------------------------------------------------------
 rfd 0.17.2
 License: MIT
 Authors: Poly <marynczak.bartlomiej@gmail.com>
 Source: https://github.com/PolyMeilex/rfd
-LICENSE: see License Text 173
+LICENSE: see License Text 171
 
 --------------------------------------------------------------------------------
 ring 0.17.14
 License: Apache-2.0 AND ISC
 Source: https://github.com/briansmith/ring
-LICENSE: see License Text 174
-LICENSE-BoringSSL: see License Text 175
-LICENSE-other-bits: see License Text 176
+LICENSE: see License Text 172
+LICENSE-BoringSSL: see License Text 173
+LICENSE-other-bits: see License Text 174
 
 --------------------------------------------------------------------------------
 rmp-serde 1.3.1
 License: MIT
 Authors: Evgeny Safronov <division494@gmail.com>
 Source: https://github.com/3Hren/msgpack-rust
-LICENSE: see License Text 177
+LICENSE: see License Text 175
 
 --------------------------------------------------------------------------------
 rmp 0.8.15
 License: MIT
 Authors: Evgeny Safronov <division494@gmail.com>, Kornel <kornel@geekhood.net>
 Source: https://github.com/3Hren/msgpack-rust
-LICENSE: see License Text 177
+LICENSE: see License Text 175
 
 --------------------------------------------------------------------------------
 rusqlite 0.41.1
 License: MIT
 Authors: The rusqlite developers
 Source: https://github.com/rusqlite/rusqlite
-LICENSE: see License Text 114
+LICENSE: see License Text 112
 
 --------------------------------------------------------------------------------
 rustc-demangle 0.1.28
@@ -1982,7 +1948,7 @@ License: MIT/Apache-2.0
 Authors: Alex Crichton <alex@alexcrichton.com>
 Source: https://github.com/rust-lang/rustc-demangle
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 21
+LICENSE-MIT: see License Text 20
 
 --------------------------------------------------------------------------------
 rustc-hash 2.1.3
@@ -1997,40 +1963,40 @@ rustix 1.1.6
 License: Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT
 Authors: Dan Gohman <dev@sunfishcode.online>, Jakub Konka <kubkon@jakubkonka.com>
 Source: https://github.com/bytecodealliance/rustix
-COPYRIGHT: see License Text 178
+COPYRIGHT: see License Text 176
 LICENSE-APACHE: see License Text 8
-LICENSE-Apache-2.0_WITH_LLVM-exception: see License Text 179
+LICENSE-Apache-2.0_WITH_LLVM-exception: see License Text 177
 LICENSE-MIT: see License Text 12
 
 --------------------------------------------------------------------------------
 rustls-native-certs 0.8.5
 License: Apache-2.0 OR ISC OR MIT
 Source: https://github.com/rustls/rustls-native-certs
-LICENSE: see License Text 180
+LICENSE: see License Text 178
 LICENSE-APACHE: see License Text 8
-LICENSE-ISC: see License Text 98
-LICENSE-MIT: see License Text 99
+LICENSE-ISC: see License Text 96
+LICENSE-MIT: see License Text 97
 
 --------------------------------------------------------------------------------
 rustls-pki-types 1.16.0
 License: MIT OR Apache-2.0
 Source: https://github.com/rustls/pki-types
-LICENSE-APACHE: see License Text 181
-LICENSE-MIT: see License Text 182
+LICENSE-APACHE: see License Text 179
+LICENSE-MIT: see License Text 180
 
 --------------------------------------------------------------------------------
 rustls-webpki 0.103.16
 License: ISC
 Source: https://github.com/rustls/webpki
-LICENSE: see License Text 183
+LICENSE: see License Text 181
 
 --------------------------------------------------------------------------------
 rustls 0.23.46
 License: Apache-2.0 OR ISC OR MIT
 Source: https://github.com/rustls/rustls
 LICENSE-APACHE: see License Text 8
-LICENSE-ISC: see License Text 98
-LICENSE-MIT: see License Text 99
+LICENSE-ISC: see License Text 96
+LICENSE-MIT: see License Text 97
 
 --------------------------------------------------------------------------------
 rustversion 1.0.23
@@ -2046,7 +2012,7 @@ License: Apache-2.0 OR BSL-1.0
 Authors: David Tolnay <dtolnay@gmail.com>
 Source: https://github.com/dtolnay/ryu
 LICENSE-APACHE: see License Text 2
-LICENSE-BOOST: see License Text 184
+LICENSE-BOOST: see License Text 182
 
 --------------------------------------------------------------------------------
 same-file 1.0.6
@@ -2054,7 +2020,7 @@ License: Unlicense/MIT
 Authors: Andrew Gallant <jamslam@gmail.com>
 Source: https://github.com/BurntSushi/same-file
 COPYING: see License Text 13
-LICENSE-MIT: see License Text 185
+LICENSE-MIT: see License Text 183
 
 --------------------------------------------------------------------------------
 scheduled-thread-pool 0.2.8
@@ -2062,13 +2028,13 @@ License: MIT/Apache-2.0
 Authors: Steven Fackler <sfackler@gmail.com>
 Source: https://github.com/sfackler/scheduled-thread-pool
 LICENSE-APACHE: see License Text 15
-LICENSE-MIT: see License Text 186
+LICENSE-MIT: see License Text 184
 
 --------------------------------------------------------------------------------
 scheduler 0.28.0
 License: MIT
 Source: https://github.com/react/react.git
-LICENSE: see License Text 169
+LICENSE: see License Text 167
 
 --------------------------------------------------------------------------------
 scopeguard 1.2.0
@@ -2076,7 +2042,7 @@ License: MIT OR Apache-2.0
 Authors: bluss
 Source: https://github.com/bluss/scopeguard
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 187
+LICENSE-MIT: see License Text 185
 
 --------------------------------------------------------------------------------
 security-framework-sys 2.17.0
@@ -2084,7 +2050,7 @@ License: MIT OR Apache-2.0
 Authors: Steven Fackler <sfackler@gmail.com>, Kornel <kornel@geekhood.net>
 Source: https://github.com/kornelski/rust-security-framework
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 188
+LICENSE-MIT: see License Text 186
 
 --------------------------------------------------------------------------------
 security-framework 3.7.0
@@ -2092,7 +2058,7 @@ License: MIT OR Apache-2.0
 Authors: Steven Fackler <sfackler@gmail.com>, Kornel <kornel@geekhood.net>
 Source: https://github.com/kornelski/rust-security-framework
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 188
+LICENSE-MIT: see License Text 186
 
 --------------------------------------------------------------------------------
 semver 1.0.28
@@ -2107,7 +2073,7 @@ semver 7.8.6
 License: ISC
 Authors: GitHub Inc.
 Source: git+https://github.com/npm/node-semver.git
-LICENSE: see License Text 189
+LICENSE: see License Text 187
 
 --------------------------------------------------------------------------------
 serde_core 1.0.229
@@ -2136,7 +2102,7 @@ LICENSE-MIT: see License Text 12
 serde_spanned 1.1.3
 License: MIT OR Apache-2.0
 Source: https://github.com/toml-rs/toml
-LICENSE-APACHE: see License Text 35
+LICENSE-APACHE: see License Text 34
 LICENSE-MIT: see License Text 16
 
 --------------------------------------------------------------------------------
@@ -2145,14 +2111,14 @@ License: MIT/Apache-2.0
 Authors: Anthony Ramine <n.oxyde@gmail.com>
 Source: https://github.com/nox/serde_urlencoded
 LICENSE-APACHE: see License Text 2
-LICENSE-MIT: see License Text 190
+LICENSE-MIT: see License Text 188
 
 --------------------------------------------------------------------------------
 serde-value 0.7.0
 License: MIT
 Authors: arcnmx
 Source: https://github.com/arcnmx/serde-value
-COPYING: see License Text 191
+COPYING: see License Text 189
 
 --------------------------------------------------------------------------------
 serde 1.0.229
@@ -2166,16 +2132,8 @@ LICENSE-MIT: see License Text 12
 serial2 0.2.39
 License: BSD-2-Clause OR Apache-2.0
 Source: https://github.com/de-vri-es/serial2-rs
-LICENSE-APACHE: see License Text 192
-LICENSE-BSD: see License Text 193
-
---------------------------------------------------------------------------------
-sha1 0.11.0
-License: MIT OR Apache-2.0
-Authors: RustCrypto Developers
-Source: https://github.com/RustCrypto/hashes
-LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 194
+LICENSE-APACHE: see License Text 190
+LICENSE-BSD: see License Text 191
 
 --------------------------------------------------------------------------------
 sha2 0.11.1
@@ -2183,14 +2141,14 @@ License: MIT OR Apache-2.0
 Authors: RustCrypto Developers
 Source: https://github.com/RustCrypto/hashes
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 194
+LICENSE-MIT: see License Text 192
 
 --------------------------------------------------------------------------------
 sharded-slab 0.1.7
 License: MIT
 Authors: Eliza Weisman <eliza@buoyant.io>
 Source: https://github.com/hawkw/sharded-slab
-LICENSE: see License Text 120
+LICENSE: see License Text 118
 
 --------------------------------------------------------------------------------
 shell-color vendored
@@ -2198,8 +2156,8 @@ License: MIT OR Apache-2.0
 Authors: Chay Nabors <chaynabors@gmail.com>, The Nushell Project Developers
 Source: https://codeberg.org/chaynabors/shell-color
 LICENSE-APACHE: see License Text 2
-LICENSE-MIT: see License Text 195
-LICENSE-NUSHELL: see License Text 196
+LICENSE-MIT: see License Text 193
+LICENSE-NUSHELL: see License Text 194
 
 --------------------------------------------------------------------------------
 shell-words 1.1.1
@@ -2207,7 +2165,7 @@ License: MIT/Apache-2.0
 Authors: Tomasz Miąsko <tomasz.miasko@gmail.com>
 Source: https://github.com/tmiasko/shell-words
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 197
+LICENSE-MIT: see License Text 195
 
 --------------------------------------------------------------------------------
 shellexpand 3.1.2
@@ -2215,15 +2173,15 @@ License: MIT/Apache-2.0
 Authors: Vladimir Matveev <vmatveev@citrine.cc>, Ian Jackson <iwj@torproject.org>
 Source: https://gitlab.com/ijackson/rust-shellexpand
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 198
+LICENSE-MIT: see License Text 196
 
 --------------------------------------------------------------------------------
 shlex 2.0.1
 License: MIT OR Apache-2.0
 Authors: comex <comexk@gmail.com>, Fenhl <fenhl@fenhl.net>, Adrian Taylor <adetaylor@chromium.org>, Alex Touchet <alextouchet@outlook.com>, Daniel Parks <dp+git@oxidized.org>, Garrett Berg <googberg@gmail.com>
 Source: https://github.com/comex/rust-shlex
-LICENSE-APACHE: see License Text 199
-LICENSE-MIT: see License Text 200
+LICENSE-APACHE: see License Text 197
+LICENSE-MIT: see License Text 198
 
 --------------------------------------------------------------------------------
 signal-hook-mio 0.2.5
@@ -2231,7 +2189,7 @@ License: MIT OR Apache-2.0
 Authors: Michal 'vorner' Vaner <vorner@vorner.cz>, Thomas Himmelstoss <thimm@posteo.de>
 Source: https://github.com/vorner/signal-hook
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 201
+LICENSE-MIT: see License Text 199
 
 --------------------------------------------------------------------------------
 signal-hook-registry 1.4.8
@@ -2239,7 +2197,7 @@ License: MIT OR Apache-2.0
 Authors: Michal 'vorner' Vaner <vorner@vorner.cz>, Masaki Hara <ackie.h.gmai@gmail.com>
 Source: https://github.com/vorner/signal-hook
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 201
+LICENSE-MIT: see License Text 199
 
 --------------------------------------------------------------------------------
 signal-hook 0.3.18
@@ -2247,14 +2205,14 @@ License: Apache-2.0/MIT
 Authors: Michal 'vorner' Vaner <vorner@vorner.cz>, Thomas Himmelstoss <thimm@posteo.de>
 Source: https://github.com/vorner/signal-hook
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 201
+LICENSE-MIT: see License Text 199
 
 --------------------------------------------------------------------------------
 simd-adler32 0.3.10
 License: MIT
 Authors: Marvin Countryman <me@maar.vin>
 Source: https://github.com/mcountryman/simd-adler32
-LICENSE.md: see License Text 202
+LICENSE.md: see License Text 200
 
 --------------------------------------------------------------------------------
 simdutf8 0.1.5
@@ -2262,14 +2220,14 @@ License: MIT OR Apache-2.0
 Authors: Hans Kratz <hans@appfour.com>
 Source: https://github.com/rusticstuff/simdutf8
 LICENSE-Apache: see License Text 2
-LICENSE-MIT: see License Text 75
+LICENSE-MIT: see License Text 73
 
 --------------------------------------------------------------------------------
 slab 0.4.12
 License: MIT
 Authors: Carl Lerche <me@carllerche.com>
 Source: https://github.com/tokio-rs/slab
-LICENSE: see License Text 203
+LICENSE: see License Text 201
 
 --------------------------------------------------------------------------------
 smallvec 1.16.5
@@ -2277,7 +2235,7 @@ License: MIT OR Apache-2.0
 Authors: The Servo Project Developers
 Source: https://github.com/servo/rust-smallvec
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 204
+LICENSE-MIT: see License Text 202
 
 --------------------------------------------------------------------------------
 socket2 0.6.5
@@ -2285,27 +2243,27 @@ License: MIT OR Apache-2.0
 Authors: Alex Crichton <alex@alexcrichton.com>, Thomas de Zeeuw <thomasdezeeuw@gmail.com>
 Source: https://github.com/rust-lang/socket2
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 21
+LICENSE-MIT: see License Text 20
 
 --------------------------------------------------------------------------------
 Sparkle 2.9.3
 License: MIT and bundled third-party licenses
 Source: https://github.com/sparkle-project/Sparkle
-LICENSE: see License Text 205
+LICENSE: see License Text 203
 
 --------------------------------------------------------------------------------
 spin 0.9.9
 License: MIT
 Authors: Mathijs van de Nes <git@mathijs.vd-nes.nl>, John Ericson <git@JohnEricson.me>, Joshua Barretto <joshua.s.barretto@gmail.com>
 Source: https://github.com/mvdnes/spin-rs.git
-LICENSE: see License Text 206
+LICENSE: see License Text 204
 
 --------------------------------------------------------------------------------
 spinners 4.2.0
 License: MIT
 Authors: François-Guillaume RIBREAU <github@fgribreau.com>, jewlexx
 Source: https://github.com/fgribreau/spinners
-LICENSE-MIT: see License Text 26
+LICENSE-MIT: see License Text 25
 
 --------------------------------------------------------------------------------
 stable_deref_trait 1.2.1
@@ -2313,65 +2271,65 @@ License: MIT OR Apache-2.0
 Authors: Robert Grosse <n210241048576@gmail.com>
 Source: https://github.com/storyyeller/stable_deref_trait
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 207
+LICENSE-MIT: see License Text 205
 
 --------------------------------------------------------------------------------
 strip-json-comments 5.0.3
 License: MIT
 Authors: Sindre Sorhus
 Source: sindresorhus/strip-json-comments
-license: see License Text 208
+license: see License Text 206
 
 --------------------------------------------------------------------------------
 strsim 0.11.1
 License: MIT
 Authors: Danny Guo <danny@dannyguo.com>, maxbachmann <oss@maxbachmann.de>
 Source: https://github.com/rapidfuzz/strsim-rs
-LICENSE: see License Text 209
+LICENSE: see License Text 207
 
 --------------------------------------------------------------------------------
 strum_macros 0.24.3
 License: MIT
 Authors: Peter Glotfelty <peter.glotfelty@microsoft.com>
 Source: https://github.com/Peternator7/strum
-LICENSE: see License Text 210
+LICENSE: see License Text 208
 
 --------------------------------------------------------------------------------
 strum_macros 0.28.0
 License: MIT
 Authors: Peter Glotfelty <peter.glotfelty@microsoft.com>
 Source: https://github.com/Peternator7/strum
-LICENSE: see License Text 210
+LICENSE: see License Text 208
 
 --------------------------------------------------------------------------------
 strum 0.24.1
 License: MIT
 Authors: Peter Glotfelty <peter.glotfelty@microsoft.com>
 Source: https://github.com/Peternator7/strum
-LICENSE: see License Text 210
+LICENSE: see License Text 208
 
 --------------------------------------------------------------------------------
 strum 0.28.0
 License: MIT
 Authors: Peter Glotfelty <peter.glotfelty@microsoft.com>
 Source: https://github.com/Peternator7/strum
-LICENSE: see License Text 210
+LICENSE: see License Text 208
 
 --------------------------------------------------------------------------------
 subtle 2.6.1
 License: BSD-3-Clause
 Authors: Isis Lovecruft <isis@patternsinthevoid.net>, Henry de Valence <hdevalence@hdevalence.ca>
 Source: https://github.com/dalek-cryptography/subtle
-LICENSE: see License Text 211
+LICENSE: see License Text 209
 
 --------------------------------------------------------------------------------
 symlink 0.1.0
 License: MIT/Apache-2.0
 Authors: Chris Morgan <me@chrismorgan.info>
 Source: https://gitlab.com/chris-morgan/symlink
-COPYRIGHT: see License Text 212
+COPYRIGHT: see License Text 210
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 213
+LICENSE-MIT: see License Text 211
 
 --------------------------------------------------------------------------------
 syn 1.0.109
@@ -2409,45 +2367,29 @@ synstructure 0.14.0
 License: MIT
 Authors: Nika Layzell <nika@thelayzells.com>
 Source: https://github.com/mystor/synstructure
-LICENSE: see License Text 214
+LICENSE: see License Text 212
 
 --------------------------------------------------------------------------------
 sysinfo 0.36.1
 License: MIT
 Authors: Guillaume Gomez <guillaume1.gomez@gmail.com>
 Source: https://github.com/GuillaumeGomez/sysinfo
-LICENSE: see License Text 215
-
---------------------------------------------------------------------------------
-system-configuration-sys 0.6.0
-License: MIT OR Apache-2.0
-Authors: Mullvad VPN
-Source: https://github.com/mullvad/system-configuration-rs
-LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 216
-
---------------------------------------------------------------------------------
-system-configuration 0.7.0
-License: MIT OR Apache-2.0
-Authors: Mullvad VPN
-Source: https://github.com/mullvad/system-configuration-rs
-LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 216
+LICENSE: see License Text 213
 
 --------------------------------------------------------------------------------
 tagptr 0.2.0
 License: MIT/Apache-2.0
 Authors: Oliver Giersch
 Source: https://github.com/oliver-giersch/tagptr.git
-LICENSE-APACHE: see License Text 217
-LICENSE-MIT: see License Text 218
+LICENSE-APACHE: see License Text 214
+LICENSE-MIT: see License Text 215
 
 --------------------------------------------------------------------------------
 tailwind-merge 3.7.0
 License: MIT
 Authors: Dany Castillo
 Source: https://github.com/dcastil/tailwind-merge.git
-LICENSE.md: see License Text 219
+LICENSE.md: see License Text 216
 
 --------------------------------------------------------------------------------
 tao 0.37.2
@@ -2455,7 +2397,7 @@ License: Apache-2.0
 Authors: Tauri Programme within The Commons Conservancy, The winit contributors
 Source: https://github.com/tauri-apps/tao
 LICENSE: see License Text 15
-LICENSE.spdx: see License Text 220
+LICENSE.spdx: see License Text 217
 
 --------------------------------------------------------------------------------
 tempfile 3.27.0
@@ -2463,7 +2405,7 @@ License: MIT OR Apache-2.0
 Authors: Steven Allen <steven@stebalien.com>, The Rust Project Developers, Ashley Mannix <ashleymannix@live.com.au>, Jason White <me@jasonwhite.io>
 Source: https://github.com/Stebalien/tempfile
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 221
+LICENSE-MIT: see License Text 218
 
 --------------------------------------------------------------------------------
 terminal_size 0.4.4
@@ -2471,7 +2413,7 @@ License: MIT OR Apache-2.0
 Authors: Andrew Chin <achin@eminence32.net>
 Source: https://github.com/eminence/terminal-size
 LICENSE-APACHE: see License Text 15
-LICENSE-MIT: see License Text 222
+LICENSE-MIT: see License Text 219
 
 --------------------------------------------------------------------------------
 thiserror-impl 1.0.69
@@ -2511,7 +2453,7 @@ License: MIT OR Apache-2.0
 Authors: Amanieu d'Antras <amanieu@gmail.com>
 Source: https://github.com/Amanieu/thread_local-rs
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 116
+LICENSE-MIT: see License Text 114
 
 --------------------------------------------------------------------------------
 time-core 0.1.9
@@ -2519,7 +2461,7 @@ License: MIT OR Apache-2.0
 Authors: Jacob Pratt <open-source@jhpratt.dev>, Time contributors
 Source: https://github.com/time-rs/time
 LICENSE-Apache: see License Text 2
-LICENSE-MIT: see License Text 223
+LICENSE-MIT: see License Text 220
 
 --------------------------------------------------------------------------------
 time-macros 0.2.32
@@ -2527,7 +2469,7 @@ License: MIT OR Apache-2.0
 Authors: Jacob Pratt <open-source@jhpratt.dev>, Time contributors
 Source: https://github.com/time-rs/time
 LICENSE-Apache: see License Text 2
-LICENSE-MIT: see License Text 223
+LICENSE-MIT: see License Text 220
 
 --------------------------------------------------------------------------------
 time 0.3.55
@@ -2535,14 +2477,14 @@ License: MIT OR Apache-2.0
 Authors: Jacob Pratt <open-source@jhpratt.dev>, Time contributors
 Source: https://github.com/time-rs/time
 LICENSE-Apache: see License Text 2
-LICENSE-MIT: see License Text 223
+LICENSE-MIT: see License Text 220
 
 --------------------------------------------------------------------------------
 tinystr 0.8.5
 License: Unicode-3.0
 Authors: The ICU4X Project Developers
 Source: https://github.com/unicode-org/icu4x
-LICENSE: see License Text 104
+LICENSE: see License Text 102
 
 --------------------------------------------------------------------------------
 tinyvec 1.13.3
@@ -2551,69 +2493,62 @@ Authors: Lokathor <zefria@gmail.com>
 Source: https://github.com/Lokathor/tinyvec
 LICENSE-APACHE.md: see License Text 8
 LICENSE-MIT.md: see License Text 12
-LICENSE-ZLIB.md: see License Text 30
+LICENSE-ZLIB.md: see License Text 29
 
 --------------------------------------------------------------------------------
 tokio-macros 2.7.2
 License: MIT
 Authors: Tokio Contributors <team@tokio.rs>
 Source: https://github.com/tokio-rs/tokio
-LICENSE: see License Text 224
+LICENSE: see License Text 221
 
 --------------------------------------------------------------------------------
 tokio-rustls 0.26.6
 License: MIT OR Apache-2.0
 Source: https://github.com/rustls/tokio-rustls
-LICENSE-APACHE: see License Text 225
-LICENSE-MIT: see License Text 226
-
---------------------------------------------------------------------------------
-tokio-tungstenite 0.30.0
-License: MIT
-Authors: Daniel Abramov <dabramov@snapview.de>, Alexey Galakhov <agalakhov@snapview.de>
-Source: https://github.com/snapview/tokio-tungstenite
-LICENSE: see License Text 227
+LICENSE-APACHE: see License Text 222
+LICENSE-MIT: see License Text 223
 
 --------------------------------------------------------------------------------
 tokio-util 0.7.20
 License: MIT
 Authors: Tokio Contributors <team@tokio.rs>
 Source: https://github.com/tokio-rs/tokio
-LICENSE: see License Text 228
+LICENSE: see License Text 224
 
 --------------------------------------------------------------------------------
 tokio 1.54.1
 License: MIT
 Authors: Tokio Contributors <team@tokio.rs>
 Source: https://github.com/tokio-rs/tokio
-LICENSE: see License Text 228
+LICENSE: see License Text 224
 
 --------------------------------------------------------------------------------
 toml_datetime 1.1.3+spec-1.1.0
 License: MIT OR Apache-2.0
 Source: https://github.com/toml-rs/toml
-LICENSE-APACHE: see License Text 35
+LICENSE-APACHE: see License Text 34
 LICENSE-MIT: see License Text 16
 
 --------------------------------------------------------------------------------
 toml_parser 1.1.5+spec-1.1.0
 License: MIT OR Apache-2.0
 Source: https://github.com/toml-rs/toml
-LICENSE-APACHE: see License Text 35
+LICENSE-APACHE: see License Text 34
 LICENSE-MIT: see License Text 16
 
 --------------------------------------------------------------------------------
 toml_writer 1.2.0+spec-1.1.0
 License: MIT OR Apache-2.0
 Source: https://github.com/toml-rs/toml
-LICENSE-APACHE: see License Text 35
+LICENSE-APACHE: see License Text 34
 LICENSE-MIT: see License Text 16
 
 --------------------------------------------------------------------------------
 toml 1.2.1+spec-1.1.0
 License: MIT OR Apache-2.0
 Source: https://github.com/toml-rs/toml
-LICENSE-APACHE: see License Text 35
+LICENSE-APACHE: see License Text 34
 LICENSE-MIT: see License Text 16
 
 --------------------------------------------------------------------------------
@@ -2621,115 +2556,107 @@ tower-http 0.6.11
 License: MIT
 Authors: Tower Maintainers <team@tower-rs.com>
 Source: https://github.com/tower-rs/tower-http
-LICENSE: see License Text 229
+LICENSE: see License Text 225
 
 --------------------------------------------------------------------------------
 tower-layer 0.3.3
 License: MIT
 Authors: Tower Maintainers <team@tower-rs.com>
 Source: https://github.com/tower-rs/tower
-LICENSE: see License Text 230
+LICENSE: see License Text 226
 
 --------------------------------------------------------------------------------
 tower-service 0.3.3
 License: MIT
 Authors: Tower Maintainers <team@tower-rs.com>
 Source: https://github.com/tower-rs/tower
-LICENSE: see License Text 230
+LICENSE: see License Text 226
 
 --------------------------------------------------------------------------------
 tower 0.5.3
 License: MIT
 Authors: Tower Maintainers <team@tower-rs.com>
 Source: https://github.com/tower-rs/tower
-LICENSE: see License Text 230
+LICENSE: see License Text 226
 
 --------------------------------------------------------------------------------
 tracing-appender 0.2.5
 License: MIT
 Authors: Zeki Sherif <zekshi@amazon.com>, Tokio Contributors <team@tokio.rs>
 Source: https://github.com/tokio-rs/tracing
-LICENSE: see License Text 231
+LICENSE: see License Text 227
 
 --------------------------------------------------------------------------------
 tracing-attributes 0.1.31
 License: MIT
 Authors: Tokio Contributors <team@tokio.rs>, Eliza Weisman <eliza@buoyant.io>, David Barsky <dbarsky@amazon.com>
 Source: https://github.com/tokio-rs/tracing
-LICENSE: see License Text 231
+LICENSE: see License Text 227
 
 --------------------------------------------------------------------------------
 tracing-core 0.1.36
 License: MIT
 Authors: Tokio Contributors <team@tokio.rs>
 Source: https://github.com/tokio-rs/tracing
-LICENSE: see License Text 231
+LICENSE: see License Text 227
 
 --------------------------------------------------------------------------------
 tracing-error 0.2.1
 License: MIT
 Authors: Eliza Weisman <eliza@buoyant.io>, Jane Lusby <jlusby@yaah.dev>, Tokio Contributors <team@tokio.rs>
 Source: https://github.com/tokio-rs/tracing
-LICENSE: see License Text 231
+LICENSE: see License Text 227
 
 --------------------------------------------------------------------------------
 tracing-log 0.2.0
 License: MIT
 Authors: Tokio Contributors <team@tokio.rs>
 Source: https://github.com/tokio-rs/tracing
-LICENSE: see License Text 231
+LICENSE: see License Text 227
 
 --------------------------------------------------------------------------------
 tracing-subscriber 0.3.23
 License: MIT
 Authors: Eliza Weisman <eliza@buoyant.io>, David Barsky <me@davidbarsky.com>, Tokio Contributors <team@tokio.rs>
 Source: https://github.com/tokio-rs/tracing
-LICENSE: see License Text 231
+LICENSE: see License Text 227
 
 --------------------------------------------------------------------------------
 tracing 0.1.44
 License: MIT
 Authors: Eliza Weisman <eliza@buoyant.io>, Tokio Contributors <team@tokio.rs>
 Source: https://github.com/tokio-rs/tracing
-LICENSE: see License Text 231
+LICENSE: see License Text 227
 
 --------------------------------------------------------------------------------
 tray-icon 0.26.1
 License: MIT OR Apache-2.0
 Source: https://github.com/tauri-apps/tray-icon
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 132
-LICENSE.spdx: see License Text 232
+LICENSE-MIT: see License Text 130
+LICENSE.spdx: see License Text 228
 
 --------------------------------------------------------------------------------
 try-lock 0.2.5
 License: MIT
 Authors: Sean McArthur <sean@seanmonstar.com>
 Source: https://github.com/seanmonstar/try-lock
-LICENSE: see License Text 233
-
---------------------------------------------------------------------------------
-tungstenite 0.30.0
-License: MIT OR Apache-2.0
-Authors: Alexey Galakhov, Daniel Abramov
-Source: https://github.com/snapview/tungstenite-rs
-LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 234
+LICENSE: see License Text 229
 
 --------------------------------------------------------------------------------
 typenum 1.20.1
 License: MIT OR Apache-2.0
 Source: https://github.com/paholg/typenum
-LICENSE: see License Text 235
-LICENSE-APACHE: see License Text 236
-LICENSE-MIT: see License Text 237
+LICENSE: see License Text 230
+LICENSE-APACHE: see License Text 231
+LICENSE-MIT: see License Text 232
 
 --------------------------------------------------------------------------------
 typescript 5.7.3
 License: Apache-2.0
 Authors: Microsoft Corp.
 Source: https://github.com/microsoft/TypeScript.git
-LICENSE.txt: see License Text 238
+LICENSE.txt: see License Text 233
 
 --------------------------------------------------------------------------------
 unicase 2.10.0
@@ -2737,7 +2664,7 @@ License: MIT OR Apache-2.0
 Authors: Sean McArthur <sean@seanmonstar.com>
 Source: https://github.com/seanmonstar/unicase
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 101
+LICENSE-MIT: see License Text 99
 
 --------------------------------------------------------------------------------
 unicode-ident 1.0.27
@@ -2746,39 +2673,32 @@ Authors: David Tolnay <dtolnay@gmail.com>
 Source: https://github.com/dtolnay/unicode-ident
 LICENSE-APACHE: see License Text 2
 LICENSE-MIT: see License Text 12
-LICENSE-UNICODE: see License Text 239
+LICENSE-UNICODE: see License Text 234
 
 --------------------------------------------------------------------------------
 unicode-segmentation 1.13.3
 License: MIT OR Apache-2.0
 Authors: kwantam <kwantam@gmail.com>, Manish Goregaokar <manishsmail@gmail.com>
 Source: https://github.com/unicode-rs/unicode-segmentation
-COPYRIGHT: see License Text 45
+COPYRIGHT: see License Text 44
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 88
+LICENSE-MIT: see License Text 86
 
 --------------------------------------------------------------------------------
 unicode-width 0.2.3
 License: MIT OR Apache-2.0
 Authors: kwantam <kwantam@gmail.com>, Manish Goregaokar <manishsmail@gmail.com>
 Source: https://github.com/unicode-rs/unicode-width
-COPYRIGHT: see License Text 45
+COPYRIGHT: see License Text 44
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 88
-
---------------------------------------------------------------------------------
-unit-prefix 0.5.2
-License: MIT
-Authors: Fabio Valentini <decathorpe@gmail.com>, Benjamin Sago <ogham@bsago.me>
-Source: https://codeberg.org/commons-rs/unit-prefix
-LICENSE: see License Text 240
+LICENSE-MIT: see License Text 86
 
 --------------------------------------------------------------------------------
 untrusted 0.9.0
 License: ISC
 Authors: Brian Smith <brian@briansmith.org>
 Source: https://github.com/briansmith/untrusted
-LICENSE.txt: see License Text 241
+LICENSE.txt: see License Text 235
 
 --------------------------------------------------------------------------------
 url 2.5.9
@@ -2786,38 +2706,38 @@ License: MIT OR Apache-2.0
 Authors: The rust-url developers
 Source: https://github.com/servo/rust-url
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 106
+LICENSE-MIT: see License Text 104
 
 --------------------------------------------------------------------------------
 use-resize-observer 10.0.0
 License: MIT
 Authors: Viktor Hubert <contact@hubertviktor.com>
 Source: git@github.com:ZeeCoder/use-resize-observer.git
-LICENSE: see License Text 242
+LICENSE: see License Text 236
 
 --------------------------------------------------------------------------------
 use-sync-external-store 1.6.0
 License: MIT
 Source: https://github.com/facebook/react.git
-LICENSE: see License Text 169
+LICENSE: see License Text 167
 
 --------------------------------------------------------------------------------
 utf_types 1.0.0
 License: Apache-2.0 OR MIT
 Authors: Henri Sivonen <hsivonen@hsivonen.fi>
 Source: https://github.com/hsivonen/utf_types
-COPYRIGHT: see License Text 243
+COPYRIGHT: see License Text 237
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 67
+LICENSE-MIT: see License Text 65
 
 --------------------------------------------------------------------------------
 utf8_iter 1.1.0
 License: Apache-2.0 OR MIT
 Authors: Henri Sivonen <hsivonen@hsivonen.fi>
 Source: https://github.com/hsivonen/utf8_iter
-COPYRIGHT: see License Text 244
+COPYRIGHT: see License Text 238
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 67
+LICENSE-MIT: see License Text 65
 
 --------------------------------------------------------------------------------
 utf8parse 0.2.2
@@ -2825,14 +2745,14 @@ License: Apache-2.0 OR MIT
 Authors: Joe Wilm <joe@jwilm.com>, Christian Duerr <contact@christianduerr.com>
 Source: https://github.com/alacritty/vte
 LICENSE-APACHE: see License Text 2
-LICENSE-MIT: see License Text 245
+LICENSE-MIT: see License Text 239
 
 --------------------------------------------------------------------------------
 uuid 1.29.2
 License: Apache-2.0 OR MIT
 Source: https://github.com/uuid-rs/uuid
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 246
+LICENSE-MIT: see License Text 240
 
 --------------------------------------------------------------------------------
 vte 0.15.0
@@ -2840,7 +2760,7 @@ License: Apache-2.0 OR MIT
 Authors: Joe Wilm <joe@jwilm.com>, Christian Duerr <contact@christianduerr.com>
 Source: https://github.com/alacritty/vte
 LICENSE-APACHE: see License Text 2
-LICENSE-MIT: see License Text 245
+LICENSE-MIT: see License Text 239
 
 --------------------------------------------------------------------------------
 walkdir 2.5.0
@@ -2855,35 +2775,35 @@ want 0.3.2
 License: MIT
 Authors: Sean McArthur <sean@seanmonstar.com>
 Source: https://github.com/seanmonstar/want
-LICENSE: see License Text 247
+LICENSE: see License Text 241
 
 --------------------------------------------------------------------------------
 web-time 1.1.0
 License: MIT OR Apache-2.0
 Source: https://github.com/daxpedda/web-time
-LICENSE-APACHE: see License Text 248
-LICENSE-MIT: see License Text 249
+LICENSE-APACHE: see License Text 242
+LICENSE-MIT: see License Text 243
 
 --------------------------------------------------------------------------------
 webpki-roots 1.0.12
 License: CDLA-Permissive-2.0
 Source: https://github.com/rustls/webpki-roots
-LICENSE: see License Text 250
+LICENSE: see License Text 244
 
 --------------------------------------------------------------------------------
 which 8.0.6
 License: MIT
 Authors: Harry Fei <tiziyuanfang@gmail.com>, Jacob Kiesel <jake@bitcrafters.co>
 Source: https://github.com/harryfei/which-rs.git
-LICENSE.txt: see License Text 251
+LICENSE.txt: see License Text 245
 
 --------------------------------------------------------------------------------
 whoami 2.1.3
 License: Apache-2.0 OR BSL-1.0 OR MIT
 Source: https://github.com/ardaku/whoami
 LICENSE_APACHE: see License Text 2
-LICENSE_BOOST: see License Text 184
-LICENSE_MIT: see License Text 75
+LICENSE_BOOST: see License Text 182
+LICENSE_MIT: see License Text 73
 
 --------------------------------------------------------------------------------
 winnow 1.0.5
@@ -2896,7 +2816,7 @@ writeable 0.6.4
 License: Unicode-3.0
 Authors: The ICU4X Project Developers
 Source: https://github.com/unicode-org/icu4x
-LICENSE: see License Text 104
+LICENSE: see License Text 102
 
 --------------------------------------------------------------------------------
 wry 0.57.2
@@ -2904,43 +2824,43 @@ License: Apache-2.0 OR MIT
 Authors: Tauri Programme within The Commons Conservancy
 Source: https://github.com/tauri-apps/wry
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 252
-LICENSE.spdx: see License Text 253
+LICENSE-MIT: see License Text 246
+LICENSE.spdx: see License Text 247
 
 --------------------------------------------------------------------------------
 yaml 2.8.3
 License: ISC
 Authors: Eemeli Aro <eemeli@gmail.com>
 Source: github:eemeli/yaml
-LICENSE: see License Text 254
+LICENSE: see License Text 248
 
 --------------------------------------------------------------------------------
 yoke-derive 0.8.4
 License: Unicode-3.0
 Authors: Manish Goregaokar <manishsmail@gmail.com>
 Source: https://github.com/unicode-org/icu4x
-LICENSE: see License Text 104
+LICENSE: see License Text 102
 
 --------------------------------------------------------------------------------
 yoke 0.8.4
 License: Unicode-3.0
 Authors: Manish Goregaokar <manishsmail@gmail.com>
 Source: https://github.com/unicode-org/icu4x
-LICENSE: see License Text 104
+LICENSE: see License Text 102
 
 --------------------------------------------------------------------------------
 zerofrom-derive 0.1.8
 License: Unicode-3.0
 Authors: Manish Goregaokar <manishsmail@gmail.com>
 Source: https://github.com/unicode-org/icu4x
-LICENSE: see License Text 104
+LICENSE: see License Text 102
 
 --------------------------------------------------------------------------------
 zerofrom 0.1.8
 License: Unicode-3.0
 Authors: The ICU4X Project Developers
 Source: https://github.com/unicode-org/icu4x
-LICENSE: see License Text 104
+LICENSE: see License Text 102
 
 --------------------------------------------------------------------------------
 zeroize 1.9.1
@@ -2948,34 +2868,34 @@ License: Apache-2.0 OR MIT
 Authors: The RustCrypto Project Developers
 Source: https://github.com/RustCrypto/utils
 LICENSE-APACHE: see License Text 8
-LICENSE-MIT: see License Text 255
+LICENSE-MIT: see License Text 249
 
 --------------------------------------------------------------------------------
 zerotrie 0.2.5
 License: Unicode-3.0
 Authors: The ICU4X Project Developers
 Source: https://github.com/unicode-org/icu4x
-LICENSE: see License Text 104
+LICENSE: see License Text 102
 
 --------------------------------------------------------------------------------
 zerovec-derive 0.11.7
 License: Unicode-3.0
 Authors: Manish Goregaokar <manishsmail@gmail.com>
 Source: https://github.com/unicode-org/icu4x
-LICENSE: see License Text 104
+LICENSE: see License Text 102
 
 --------------------------------------------------------------------------------
 zerovec 0.11.9
 License: Unicode-3.0
 Authors: The ICU4X Project Developers
 Source: https://github.com/unicode-org/icu4x
-LICENSE: see License Text 104
+LICENSE: see License Text 102
 
 --------------------------------------------------------------------------------
 zlib-rs 0.6.8
 License: Zlib
 Source: https://github.com/trifectatechfoundation/zlib-rs
-LICENSE: see License Text 256
+LICENSE: see License Text 250
 
 --------------------------------------------------------------------------------
 zmij 1.0.23
@@ -2989,14 +2909,14 @@ zod 4.6.7
 License: MIT
 Authors: Colin McDonnell <zod@colinhacks.com>
 Source: git+https://github.com/colinhacks/zod.git
-LICENSE: see License Text 257
+LICENSE: see License Text 251
 
 --------------------------------------------------------------------------------
 zustand 5.1.0
 License: MIT
 Authors: Paul Henschel
 Source: git+https://github.com/pmndrs/zustand.git
-LICENSE: see License Text 258
+LICENSE: see License Text 252
 
 ================================================================================
 License Text 1
@@ -3027,7 +2947,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ================================================================================
 License Text 2
-Used by: @bufbuild/protobuf 2.17.0, alacritty_terminal vendored, anyhow 1.0.104, arboard 3.7.0, async-trait 0.1.92, color-print-proc-macro 0.3.7, color-print 0.3.7, fdeflate 0.3.7, image 0.25.10, indenter 0.3.4, indoc 2.0.8, itoa 1.0.19, libc 0.2.191, litrs 1.0.1, miniz_oxide 0.8.9, miniz_oxide 0.9.1, num-conv 0.2.2, pastey 0.2.3, pin-project-internal 1.1.13, pin-project-lite 0.2.17, pin-project 1.1.13, portable-atomic 1.15.0, proc-macro2 1.0.107, quote 1.0.47, raw-window-handle 0.6.2, rustc-hash 2.1.3, rustversion 1.0.23, ryu 1.0.23, semver 1.0.28, serde_core 1.0.229, serde_derive 1.0.229, serde_json 1.0.154, serde_urlencoded 0.7.1, serde 1.0.229, shell-color vendored, simdutf8 0.1.5, syn 2.0.119, syn 3.0.10, sync_wrapper 1.0.2, thiserror-impl 1.0.69, thiserror-impl 2.0.21, thiserror 1.0.69, thiserror 2.0.21, time-core 0.1.9, time-macros 0.2.32, time 0.3.55, unicode-ident 1.0.27, utf8parse 0.2.2, vte 0.15.0, whoami 2.1.3
+Used by: @bufbuild/protobuf 2.17.0, alacritty_terminal vendored, anyhow 1.0.104, async-trait 0.1.92, color-print-proc-macro 0.3.7, color-print 0.3.7, fdeflate 0.3.7, image 0.25.10, indenter 0.3.4, indoc 2.0.8, itoa 1.0.19, libc 0.2.191, litrs 1.0.1, miniz_oxide 0.8.9, miniz_oxide 0.9.1, num-conv 0.2.2, pastey 0.2.3, pin-project-internal 1.1.13, pin-project-lite 0.2.17, pin-project 1.1.13, portable-atomic 1.15.0, proc-macro2 1.0.107, quote 1.0.47, raw-window-handle 0.6.2, rustc-hash 2.1.3, rustversion 1.0.23, ryu 1.0.23, semver 1.0.28, serde_core 1.0.229, serde_derive 1.0.229, serde_json 1.0.154, serde_urlencoded 0.7.1, serde 1.0.229, shell-color vendored, simdutf8 0.1.5, syn 2.0.119, syn 3.0.10, sync_wrapper 1.0.2, thiserror-impl 1.0.69, thiserror-impl 2.0.21, thiserror 1.0.69, thiserror 2.0.21, time-core 0.1.9, time-macros 0.2.32, time 0.3.55, unicode-ident 1.0.27, utf8parse 0.2.2, vte 0.15.0, whoami 2.1.3
 
 Apache License
                            Version 2.0, January 2004
@@ -3338,7 +3258,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ================================================================================
 License Text 8
-Used by: addr2line 0.27.1, arrayvec 0.7.8, async-compression 0.4.52, async-lock 3.5.0, atomic-waker 1.1.2, backtrace 0.3.77, base64 0.22.1, base64 0.23.1, bitflags 2.13.2, block-buffer 0.12.1, bstr 1.13.1, bytemuck 1.25.2, camino 1.2.6, cfg-if 1.0.5, chacha20 0.10.2, clap_complete_fig vendored, color-eyre 0.6.5, color-spantrace 0.3.0, compression-codecs 0.4.47, compression-core 0.4.34, const-oid 0.10.3, core-foundation-sys 0.8.7, core-foundation 0.10.1, core-foundation 0.9.4, core-graphics-types 0.2.0, core-graphics 0.25.0, cpufeatures 0.3.1, crossbeam-channel 0.5.17, crossbeam-epoch 0.9.21, crossbeam-utils 0.8.23, crypto-common 0.2.2, digest 0.11.3, displaydoc 0.2.7, document-features 0.2.12, downcast-rs 1.2.1, either 1.19.0, encoding_rs 0.8.44, equivalent 1.0.3, errno 0.3.14, event-listener-strategy 0.5.4, event-listener 5.4.2, eyre 0.6.14, fastrand 2.5.0, flate2 1.1.11, flume 0.12.0, fnv 1.0.7, form_urlencoded 1.2.3, gimli 0.34.0, glob 0.3.4, hashbrown 0.14.5, hashbrown 0.17.1, hashlink 0.12.2, heck 0.4.1, heck 0.5.0, httparse 1.10.1, hybrid-array 0.4.15, hyper-rustls 0.27.10, idna_adapter 1.2.2, idna 1.1.0, indexmap 2.14.2, itertools 0.15.0, keyboard-types 0.8.3, lazy_static 1.5.1, lock_api 0.4.14, lock_api 0.5.0, log 0.4.35, lru-slab 0.1.3, maplit 1.0.2, mime 0.3.18, minimal-lexical 0.2.1, muda 0.21.2, multiversion_no_op 1.0.0, num-traits 0.2.19, object 0.40.0, once_cell 1.21.4, parking_lot_core 0.10.0, parking_lot_core 0.9.12, parking_lot 0.12.5, parking_lot 0.13.0, parking 2.2.1, percent-encoding 2.3.2, png 0.18.1, prost-derive 0.14.5, prost-reflect-derive 0.16.1, prost-reflect 0.16.5, prost-types 0.14.5, prost 0.14.5, psl-types 2.0.11, publicsuffix 2.3.0, quinn-proto 0.11.19, quinn-udp 0.5.16, quinn 0.11.12, regex-automata 0.4.18, regex-syntax 0.8.11, regex 1.13.1, rustc-demangle 0.1.28, rustix 1.1.6, rustls-native-certs 0.8.5, rustls 0.23.46, scopeguard 1.2.0, security-framework-sys 2.17.0, security-framework 3.7.0, sha1 0.11.0, sha2 0.11.1, shell-words 1.1.1, shellexpand 3.1.2, signal-hook-mio 0.2.5, signal-hook-registry 1.4.8, signal-hook 0.3.18, smallvec 1.16.5, socket2 0.6.5, stable_deref_trait 1.2.1, symlink 0.1.0, syn 1.0.109, system-configuration-sys 0.6.0, system-configuration 0.7.0, tempfile 3.27.0, thread_local 1.1.10, tinyvec 1.13.3, tray-icon 0.26.1, tungstenite 0.30.0, unicase 2.10.0, unicode-segmentation 1.13.3, unicode-width 0.2.3, url 2.5.9, utf_types 1.0.0, utf8_iter 1.1.0, uuid 1.29.2, wry 0.57.2, zeroize 1.9.1
+Used by: addr2line 0.27.1, arrayvec 0.7.8, async-compression 0.4.52, async-lock 3.5.0, atomic-waker 1.1.2, backtrace 0.3.77, base64 0.22.1, base64 0.23.1, bitflags 2.13.2, block-buffer 0.12.1, bstr 1.13.1, bytemuck 1.25.2, camino 1.2.6, cfg-if 1.0.5, chacha20 0.10.2, clap_complete_fig vendored, color-eyre 0.6.5, color-spantrace 0.3.0, compression-codecs 0.4.47, compression-core 0.4.34, const-oid 0.10.3, core-foundation-sys 0.8.7, core-foundation 0.10.1, core-graphics-types 0.2.0, core-graphics 0.25.0, cpufeatures 0.3.1, crossbeam-channel 0.5.17, crossbeam-epoch 0.9.21, crossbeam-utils 0.8.23, crypto-common 0.2.2, digest 0.11.3, displaydoc 0.2.7, document-features 0.2.12, downcast-rs 1.2.1, either 1.19.0, encoding_rs 0.8.44, equivalent 1.0.3, errno 0.3.14, event-listener-strategy 0.5.4, event-listener 5.4.2, eyre 0.6.14, fastrand 2.5.0, flate2 1.1.11, flume 0.12.0, fnv 1.0.7, form_urlencoded 1.2.3, gimli 0.34.0, glob 0.3.4, hashbrown 0.14.5, hashbrown 0.17.1, hashlink 0.12.2, heck 0.4.1, heck 0.5.0, httparse 1.10.1, hybrid-array 0.4.15, hyper-rustls 0.27.10, idna_adapter 1.2.2, idna 1.1.0, indexmap 2.14.2, itertools 0.15.0, keyboard-types 0.8.3, lazy_static 1.5.1, lock_api 0.4.14, lock_api 0.5.0, log 0.4.35, lru-slab 0.1.3, maplit 1.0.2, mime 0.3.18, minimal-lexical 0.2.1, muda 0.21.2, multiversion_no_op 1.0.0, num-traits 0.2.19, object 0.40.0, once_cell 1.21.4, parking_lot_core 0.10.0, parking_lot_core 0.9.12, parking_lot 0.12.5, parking_lot 0.13.0, parking 2.2.1, percent-encoding 2.3.2, png 0.18.1, prost-derive 0.14.5, prost-reflect-derive 0.16.1, prost-reflect 0.16.5, prost-types 0.14.5, prost 0.14.5, psl-types 2.0.11, publicsuffix 2.3.0, quinn-proto 0.11.19, quinn-udp 0.5.16, quinn 0.11.12, regex-automata 0.4.18, regex-syntax 0.8.11, regex 1.13.1, rustc-demangle 0.1.28, rustix 1.1.6, rustls-native-certs 0.8.5, rustls 0.23.46, scopeguard 1.2.0, security-framework-sys 2.17.0, security-framework 3.7.0, sha2 0.11.1, shell-words 1.1.1, shellexpand 3.1.2, signal-hook-mio 0.2.5, signal-hook-registry 1.4.8, signal-hook 0.3.18, smallvec 1.16.5, socket2 0.6.5, stable_deref_trait 1.2.1, symlink 0.1.0, syn 1.0.109, tempfile 3.27.0, thread_local 1.1.10, tinyvec 1.13.3, tray-icon 0.26.1, unicase 2.10.0, unicode-segmentation 1.13.3, unicode-width 0.2.3, url 2.5.9, utf_types 1.0.0, utf8_iter 1.1.0, uuid 1.29.2, wry 0.57.2, zeroize 1.9.1
 
 Apache License
                         Version 2.0, January 2004
@@ -4089,32 +4009,6 @@ SOFTWARE.
 
 ================================================================================
 License Text 17
-Used by: arboard 3.7.0
-
-MIT License
-
-Copyright (c) 2022 The Arboard contributors
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-================================================================================
-License Text 18
 Used by: arrayvec 0.7.8
 
 Copyright (c) Ulrik Sverdrup "bluss" 2015-2023
@@ -4144,7 +4038,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 19
+License Text 18
 Used by: async-compression 0.4.52, compression-codecs 0.4.47, compression-core 0.4.34
 
 The MIT License (MIT)
@@ -4170,7 +4064,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 20
+License Text 19
 Used by: atomic-waker 1.1.2
 
 ===============================================================================
@@ -4220,7 +4114,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 21
+License Text 20
 Used by: backtrace 0.3.77, cfg-if 1.0.5, rustc-demangle 0.1.28, socket2 0.6.5
 
 Copyright (c) 2014 Alex Crichton
@@ -4250,7 +4144,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 22
+License Text 21
 Used by: base64 0.22.1
 
 The MIT License (MIT)
@@ -4276,7 +4170,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ================================================================================
-License Text 23
+License Text 22
 Used by: base64 0.23.1
 
 The MIT License (MIT)
@@ -4302,7 +4196,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ================================================================================
-License Text 24
+License Text 23
 Used by: bitflags 2.13.2, glob 0.3.4, log 0.4.35, num-traits 0.2.19, regex-automata 0.4.18, regex-syntax 0.8.11, regex 1.13.1
 
 Copyright (c) 2014 The Rust Project Developers
@@ -4332,7 +4226,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 25
+License Text 24
 Used by: block-buffer 0.12.1
 
 Copyright (c) 2018-2025 The RustCrypto Project Developers
@@ -4362,7 +4256,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 26
+License Text 25
 Used by: block2 0.6.2, dispatch2 0.3.1, objc2-app-kit 0.3.2, objc2-core-foundation 0.3.2, objc2-core-graphics 0.3.2, objc2-core-services 0.3.2, objc2-encode 4.1.0, objc2-exception-helper 0.1.1, objc2-foundation 0.3.2, objc2-input-method-kit 0.3.2, objc2-io-kit 0.3.2, objc2-io-surface 0.3.2, objc2-system-configuration 0.3.2, objc2-web-kit 0.3.2, objc2 0.6.5, spinners 4.2.0
 
 MIT License
@@ -4389,7 +4283,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 27
+License Text 26
 Used by: bstr 1.13.1
 
 This project is licensed under either of
@@ -4402,7 +4296,7 @@ This project is licensed under either of
 at your option.
 
 ================================================================================
-License Text 28
+License Text 27
 Used by: bstr 1.13.1
 
 The MIT License (MIT)
@@ -4428,7 +4322,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ================================================================================
-License Text 29
+License Text 28
 Used by: bytemuck 1.25.2
 
 MIT License
@@ -4442,7 +4336,7 @@ The above copyright notice and this permission notice (including the next paragr
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 30
+License Text 29
 Used by: bytemuck 1.25.2, tinyvec 1.13.3
 
 Copyright (c) 2019 Daniel "Lokathor" Gee.
@@ -4458,7 +4352,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 3. This notice may not be removed or altered from any source distribution.
 
 ================================================================================
-License Text 31
+License Text 30
 Used by: bytes 1.12.1
 
 Copyright (c) 2018 Carl Lerche
@@ -4488,7 +4382,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 32
+License Text 31
 Used by: cfb 0.14.0
 
 MIT License
@@ -4514,7 +4408,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 33
+License Text 32
 Used by: chacha20 0.10.2
 
 Copyright (c) 2019-2026 The RustCrypto Project Developers
@@ -4544,7 +4438,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 34
+License Text 33
 Used by: chrono 0.4.45
 
 Rust-chrono is dual-licensed under The MIT License [1] and
@@ -4788,7 +4682,7 @@ limitations under the License.
 ~~~~
 
 ================================================================================
-License Text 35
+License Text 34
 Used by: clap_builder 4.6.7, clap_complete 4.6.11, clap_derive 4.6.7, clap_lex 1.1.1, clap 4.6.7, serde_spanned 1.1.3, toml_datetime 1.1.3+spec-1.1.0, toml_parser 1.1.5+spec-1.1.0, toml_writer 1.2.0+spec-1.1.0, toml 1.2.1+spec-1.1.0
 
 Apache License
@@ -4994,7 +4888,7 @@ Apache License
    limitations under the License.
 
 ================================================================================
-License Text 36
+License Text 35
 Used by: clap_complete_fig vendored
 
 The MIT License (MIT)
@@ -5020,7 +4914,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 37
+License Text 36
 Used by: clsx 2.1.1
 
 MIT License
@@ -5034,8 +4928,8 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 38
-Used by: console 0.16.6, dialoguer 0.12.0, indicatif 0.18.6
+License Text 37
+Used by: console 0.16.6, dialoguer 0.12.0
 
 The MIT License (MIT)
 
@@ -5060,7 +4954,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 39
+License Text 38
 Used by: const-oid 0.10.3, cpufeatures 0.3.1
 
 Copyright (c) 2020-2026 The RustCrypto Project Developers
@@ -5090,8 +4984,8 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 40
-Used by: convert_case 0.10.0, convert_case 0.11.0
+License Text 39
+Used by: convert_case 0.10.0
 
 MIT License
 
@@ -5116,7 +5010,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 41
+License Text 40
 Used by: cookie_store 0.22.1
 
 MIT License
@@ -5142,7 +5036,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 42
+License Text 41
 Used by: cookie 0.18.2
 
 Apache License
@@ -5349,7 +5243,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ================================================================================
-License Text 43
+License Text 42
 Used by: cookie 0.18.2
 
 Copyright (c) 2017 Sergio Benitez
@@ -5380,8 +5274,8 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 44
-Used by: core-foundation-sys 0.8.7, core-foundation 0.10.1, core-foundation 0.9.4, core-graphics-types 0.2.0, core-graphics 0.25.0
+License Text 43
+Used by: core-foundation-sys 0.8.7, core-foundation 0.10.1, core-graphics-types 0.2.0, core-graphics 0.25.0
 
 Copyright (c) 2012-2013 Mozilla Foundation
 
@@ -5410,7 +5304,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 45
+License Text 44
 Used by: core-graphics 0.25.0, unicode-segmentation 1.13.3, unicode-width 0.2.3
 
 Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
@@ -5420,7 +5314,7 @@ option. All files in the project carrying such notice may not be
 copied, modified, or distributed except according to those terms.
 
 ================================================================================
-License Text 46
+License Text 45
 Used by: crc32fast 1.5.5
 
 MIT License
@@ -5446,7 +5340,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 47
+License Text 46
 Used by: crossbeam-channel 0.5.17, crossbeam-epoch 0.9.21, crossbeam-utils 0.8.23
 
 The MIT License (MIT)
@@ -5478,7 +5372,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 48
+License Text 47
 Used by: crossbeam-channel 0.5.17
 
 ===============================================================================
@@ -6076,7 +5970,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ================================================================================
-License Text 49
+License Text 48
 Used by: crossterm 0.29.0
 
 MIT License
@@ -6102,7 +5996,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 50
+License Text 49
 Used by: crypto-common 0.2.2
 
 Copyright (c) 2021-2026 RustCrypto Developers
@@ -6132,7 +6026,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 51
+License Text 50
 Used by: csstype 3.2.3
 
 Copyright (c) 2017-2018 Fredrik Nicol
@@ -6156,7 +6050,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 52
+License Text 51
 Used by: ctrlc 3.5.2
 
 Apache License
@@ -6362,7 +6256,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ================================================================================
-License Text 53
+License Text 52
 Used by: dashmap 6.2.1
 
 MIT License
@@ -6388,34 +6282,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 54
-Used by: data-encoding 2.11.1
-
-The MIT License (MIT)
-
-Copyright (c) 2015-2020 Julien Cretin
-Copyright (c) 2017-2020 Google Inc.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-================================================================================
-License Text 55
+License Text 53
 Used by: deep-object-diff 1.1.9
 
 MIT License
@@ -6441,7 +6308,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 56
+License Text 54
 Used by: deranged 0.5.9
 
 Apache License
@@ -6647,7 +6514,7 @@ Apache License
    limitations under the License.
 
 ================================================================================
-License Text 57
+License Text 55
 Used by: deranged 0.5.9
 
 Copyright (c) 2024 Jacob Pratt et al.
@@ -6671,7 +6538,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 58
+License Text 56
 Used by: derive_more-impl 2.1.1, derive_more 2.1.1
 
 The MIT License (MIT)
@@ -6697,7 +6564,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 59
+License Text 57
 Used by: digest 0.11.3
 
 Copyright (c) 2017-2025 RustCrypto Developers
@@ -6728,7 +6595,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 60
+License Text 58
 Used by: dirs-sys 0.5.0, dirs 6.0.0, dirs 7.0.0
 
 Apache License
@@ -6907,7 +6774,7 @@ TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
    of your accepting any such warranty or additional liability.
 
 ================================================================================
-License Text 61
+License Text 59
 Used by: dirs-sys 0.5.0, dirs 6.0.0, dirs 7.0.0
 
 Copyright (c) 2018-2019 dirs-rs contributors
@@ -6931,7 +6798,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 62
+License Text 60
 Used by: document-features 0.2.12
 
 Copyright (c) 2020 Olivier Goffart <ogoffart@sixtyfps.io>
@@ -6955,7 +6822,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 63
+License Text 61
 Used by: downcast-rs 1.2.1
 
 Copyright (c) 2020 Ashish Myles and contributors
@@ -6985,7 +6852,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 64
+License Text 62
 Used by: dpi 0.1.2
 
 rust-lang/libm as a whole is available for use under the MIT license:
@@ -7041,7 +6908,7 @@ have been licensed under extremely permissive terms.
 ------------------------------------------------------------------------------
 
 ================================================================================
-License Text 65
+License Text 63
 Used by: either 1.19.0, itertools 0.15.0, maplit 1.0.2
 
 Copyright (c) 2015
@@ -7071,7 +6938,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 66
+License Text 64
 Used by: encoding_rs 0.8.44
 
 encoding_rs is copyright Mozilla Foundation.
@@ -7093,7 +6960,7 @@ Test code within encoding_rs is dedicated to the Public Domain when so
 designated (see the individual files for PD/CC0-dedicated sections).
 
 ================================================================================
-License Text 67
+License Text 65
 Used by: encoding_rs 0.8.44, multiversion_no_op 1.0.0, utf_types 1.0.0, utf8_iter 1.1.0
 
 Copyright Mozilla Foundation
@@ -7123,7 +6990,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 68
+License Text 66
 Used by: encoding_rs 0.8.44
 
 Copyright © WHATWG (Apple, Google, Mozilla, Microsoft).
@@ -7154,7 +7021,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ================================================================================
-License Text 69
+License Text 67
 Used by: equivalent 1.0.3
 
 Copyright (c) 2016--2023
@@ -7184,7 +7051,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 70
+License Text 68
 Used by: errno 0.3.14
 
 Copyright (c) 2014 Chris Wong
@@ -7214,7 +7081,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 71
+License Text 69
 Used by: fallible-iterator 0.3.0
 
 Copyright (c) 2015 The rust-openssl-verify Developers
@@ -7238,7 +7105,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 72
+License Text 70
 Used by: fallible-streaming-iterator 0.1.9
 
 Copyright (c) 2016 The fallible-streaming-iterator Developers
@@ -7262,7 +7129,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 73
+License Text 71
 Used by: fd-lock 4.0.4
 
 Apache License
@@ -7457,7 +7324,7 @@ Apache License
    limitations under the License.
 
 ================================================================================
-License Text 74
+License Text 72
 Used by: fd-lock 4.0.4
 
 The MIT License (MIT)
@@ -7483,7 +7350,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 75
+License Text 73
 Used by: fdeflate 0.3.7, image 0.25.10, simdutf8 0.1.5, whoami 2.1.3
 
 MIT License
@@ -7513,7 +7380,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 76
+License Text 74
 Used by: filedescriptor 0.8.3, portable-pty 0.9.0
 
 MIT License
@@ -7539,7 +7406,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 77
+License Text 75
 Used by: flate2 1.1.11
 
 Copyright (c) 2014-2026 Alex Crichton
@@ -7569,7 +7436,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 78
+License Text 76
 Used by: fnv 1.0.7
 
 Copyright (c) 2017 Contributors
@@ -7599,7 +7466,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 79
+License Text 77
 Used by: foldhash 0.2.0
 
 Copyright (c) 2024 Orson Peters
@@ -7623,7 +7490,7 @@ the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 
 ================================================================================
-License Text 80
+License Text 78
 Used by: foreign-types-macros 0.2.4, foreign-types-shared 0.3.1, foreign-types 0.5.0
 
 Copyright (c) 2017 The foreign-types Developers
@@ -7647,7 +7514,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 81
+License Text 79
 Used by: form_urlencoded 1.2.3
 
 Copyright (c) 2013-2016 The rust-url developers
@@ -7677,7 +7544,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 82
+License Text 80
 Used by: futures-channel 0.3.34, futures-core 0.3.34, futures-executor 0.3.34, futures-io 0.3.34, futures-macro 0.3.34, futures-sink 0.3.34, futures-task 0.3.34, futures-util 0.3.34, futures 0.3.34
 
 Apache License
@@ -7884,7 +7751,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ================================================================================
-License Text 83
+License Text 81
 Used by: futures-channel 0.3.34, futures-core 0.3.34, futures-executor 0.3.34, futures-io 0.3.34, futures-macro 0.3.34, futures-sink 0.3.34, futures-task 0.3.34, futures-util 0.3.34, futures 0.3.34
 
 Copyright (c) 2016 Alex Crichton
@@ -7915,7 +7782,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 84
+License Text 82
 Used by: fuzzy-matcher 0.3.7
 
 The MIT License (MIT)
@@ -7941,7 +7808,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 85
+License Text 83
 Used by: getrandom 0.2.17, getrandom 0.4.3
 
 Apache License
@@ -8147,7 +8014,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ================================================================================
-License Text 86
+License Text 84
 Used by: getrandom 0.2.17
 
 Copyright (c) 2018-2024 The rust-random Project Developers
@@ -8178,7 +8045,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 87
+License Text 85
 Used by: getrandom 0.4.3
 
 Copyright (c) 2018-2026 The rust-random Project Developers
@@ -8209,7 +8076,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 88
+License Text 86
 Used by: gimli 0.34.0, heck 0.4.1, heck 0.5.0, unicode-segmentation 1.13.3, unicode-width 0.2.3
 
 Copyright (c) 2015 The Rust Project Developers
@@ -8239,7 +8106,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 89
+License Text 87
 Used by: h2 0.4.20
 
 Copyright (c) 2017 h2 authors
@@ -8269,7 +8136,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 90
+License Text 88
 Used by: hashbrown 0.14.5, hashbrown 0.17.1
 
 Copyright (c) 2016 Amanieu d'Antras
@@ -8299,7 +8166,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 91
+License Text 89
 Used by: hashlink 0.12.2
 
 This work is derived in part from the `linked-hash-map` crate, Copyright (c)
@@ -8330,7 +8197,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 92
+License Text 90
 Used by: hex 0.4.3
 
 Copyright (c) 2013-2014 The Rust Project Developers.
@@ -8355,7 +8222,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 93
+License Text 91
 Used by: http-body-util 0.1.5, http-body 1.1.0
 
 Copyright (c) 2019-2026 Sean McArthur & Hyper Contributors
@@ -8385,7 +8252,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 94
+License Text 92
 Used by: http 1.5.0
 
 Apache License
@@ -8591,7 +8458,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ================================================================================
-License Text 95
+License Text 93
 Used by: http 1.5.0
 
 Copyright (c) 2017 http-rs authors
@@ -8621,7 +8488,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 96
+License Text 94
 Used by: httparse 1.10.1
 
 Copyright (c) 2015-2025 Sean McArthur
@@ -8645,7 +8512,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ================================================================================
-License Text 97
+License Text 95
 Used by: hybrid-array 0.4.15
 
 Copyright (c) 2022-2026 The RustCrypto Project Developers
@@ -8675,7 +8542,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 98
+License Text 96
 Used by: hyper-rustls 0.27.10, rustls-native-certs 0.8.5, rustls 0.23.46
 
 ISC License (ISC)
@@ -8695,7 +8562,7 @@ ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
 
 ================================================================================
-License Text 99
+License Text 97
 Used by: hyper-rustls 0.27.10, rustls-native-certs 0.8.5, rustls 0.23.46
 
 Copyright (c) 2016 Joseph Birr-Pixton <jpixton@gmail.com>
@@ -8725,7 +8592,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 100
+License Text 98
 Used by: hyper-util 0.1.21
 
 Copyright (c) 2023-2025 Sean McArthur
@@ -8749,7 +8616,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ================================================================================
-License Text 101
+License Text 99
 Used by: hyper 1.12.0, unicase 2.10.0
 
 Copyright (c) 2014-2026 Sean McArthur
@@ -8773,7 +8640,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ================================================================================
-License Text 102
+License Text 100
 Used by: iana-time-zone 0.1.65
 
 Apache License
@@ -8979,7 +8846,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ================================================================================
-License Text 103
+License Text 101
 Used by: iana-time-zone 0.1.65
 
 Copyright (c) 2020 Andrew D. Straw
@@ -9009,7 +8876,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 104
+License Text 102
 Used by: icu_collections 2.4.0, icu_locale_core 2.4.0, icu_normalizer_data 2.4.0, icu_normalizer 2.4.0, icu_properties_data 2.4.0, icu_properties 2.4.0, icu_provider 2.4.0, litemap 0.8.3, potential_utf 0.1.6, tinystr 0.8.5, writeable 0.6.4, yoke-derive 0.8.4, yoke 0.8.4, zerofrom-derive 0.1.8, zerofrom 0.1.8, zerotrie 0.2.5, zerovec-derive 0.11.7, zerovec 0.11.9
 
 UNICODE LICENSE V3
@@ -9060,7 +8927,7 @@ Portions of ICU4X may have been adapted from ICU4C and/or ICU4J.
 ICU 1.8.1 to ICU 57.1 © 1995-2016 International Business Machines Corporation and others.
 
 ================================================================================
-License Text 105
+License Text 103
 Used by: idna_adapter 1.2.2
 
 Copyright (c) The rust-url developers
@@ -9090,7 +8957,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 106
+License Text 104
 Used by: idna 1.1.0, percent-encoding 2.3.2, url 2.5.9
 
 Copyright (c) 2013-2025 The rust-url developers
@@ -9120,7 +8987,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 107
+License Text 105
 Used by: indexmap 2.14.2
 
 Copyright (c) 2016--2017
@@ -9150,7 +9017,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 108
+License Text 106
 Used by: infer 0.22.0
 
 MIT License
@@ -9176,7 +9043,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 109
+License Text 107
 Used by: ipnet 2.12.2
 
 Apache License
@@ -9382,7 +9249,7 @@ Apache License
    limitations under the License.
 
 ================================================================================
-License Text 110
+License Text 108
 Used by: ipnet 2.12.2
 
 Copyright 2017 Juniper Networks, Inc.
@@ -9394,7 +9261,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 111
+License Text 109
 Used by: keyboard-types 0.8.3
 
 Copyright (c) 2017 Pyfisch
@@ -9418,7 +9285,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ================================================================================
-License Text 112
+License Text 110
 Used by: libc 0.2.191
 
 Copyright (c) The Rust Project Developers
@@ -9448,7 +9315,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 113
+License Text 111
 Used by: libmimalloc-sys 0.1.49, mimalloc 0.1.52
 
 Copyright 2019 Octavian Oncescu
@@ -9478,7 +9345,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 114
+License Text 112
 Used by: libsqlite3-sys 0.39.1, rusqlite 0.41.1
 
 Copyright (c) 2014 The rusqlite developers
@@ -9502,7 +9369,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ================================================================================
-License Text 115
+License Text 113
 Used by: litrs 1.0.1
 
 Copyright (c) 2020 Project Developers
@@ -9532,7 +9399,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 116
+License Text 114
 Used by: lock_api 0.4.14, lock_api 0.5.0, parking_lot_core 0.10.0, parking_lot_core 0.9.12, parking_lot 0.12.5, parking_lot 0.13.0, thread_local 1.1.10
 
 Copyright (c) 2016 The Rust Project Developers
@@ -9562,7 +9429,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 117
+License Text 115
 Used by: loglevel 1.9.2
 
 Copyright (c) 2013 Tim Perry
@@ -9589,7 +9456,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 118
+License Text 116
 Used by: lru-slab 0.1.3
 
 Copyright (c) 2024 The lru-slab Developers
@@ -9601,7 +9468,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 119
+License Text 117
 Used by: lru-slab 0.1.3
 
 Copyright (c) 2024 The lru-slab Developers
@@ -9625,7 +9492,7 @@ the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 
 ================================================================================
-License Text 120
+License Text 118
 Used by: matchers 0.2.0, sharded-slab 0.1.7
 
 Copyright (c) 2019 Eliza Weisman
@@ -9649,7 +9516,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 121
+License Text 119
 Used by: memoize-one 5.2.1
 
 MIT License
@@ -9675,7 +9542,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 122
+License Text 120
 Used by: mime 0.3.18
 
 Copyright (c) 2014 Sean McArthur
@@ -9699,7 +9566,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ================================================================================
-License Text 123
+License Text 121
 Used by: minimal-lexical 0.2.1
 
 Minimal-lexical is dual licensed under the Apache 2.0 license as well as the MIT
@@ -9741,7 +9608,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ================================================================================
-License Text 124
+License Text 122
 Used by: miniz_oxide 0.8.9, miniz_oxide 0.9.1
 
 MIT License
@@ -9771,7 +9638,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 125
+License Text 123
 Used by: miniz_oxide 0.8.9, miniz_oxide 0.9.1
 
 Copyright 2013-2014 RAD Game Tools and Valve Software
@@ -9790,7 +9657,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 3. This notice may not be removed or altered from any source distribution.
 
 ================================================================================
-License Text 126
+License Text 124
 Used by: mio 1.2.4
 
 Copyright (c) 2014 Carl Lerche and other MIO contributors
@@ -9814,7 +9681,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ================================================================================
-License Text 127
+License Text 125
 Used by: moka 0.12.16
 
 Apache License
@@ -10020,7 +9887,7 @@ Apache License
    limitations under the License.
 
 ================================================================================
-License Text 128
+License Text 126
 Used by: moka 0.12.16
 
 MIT License
@@ -10046,7 +9913,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 129
+License Text 127
 Used by: moka 0.12.16
 
 Additional Notices for Moka
@@ -10065,7 +9932,7 @@ These files were ported from the Java Caffeine library and are not dual-licensed
 Please refer to the LICENSE-APACHE file for more details on the Apache License 2.0.
 
 ================================================================================
-License Text 130
+License Text 128
 Used by: moxcms 0.8.1, pxfm 0.1.30
 
 Apache License
@@ -10271,7 +10138,7 @@ Apache License
    limitations under the License.
 
 ================================================================================
-License Text 131
+License Text 129
 Used by: moxcms 0.8.1, pxfm 0.1.30
 
 Copyright (c) Radzivon Bartoshyk. All rights reserved.
@@ -10302,7 +10169,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ================================================================================
-License Text 132
+License Text 130
 Used by: muda 0.21.2, tray-icon 0.26.1
 
 MIT License
@@ -10328,7 +10195,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 133
+License Text 131
 Used by: muda 0.21.2
 
 SPDXVersion: SPDX-2.1
@@ -10352,7 +10219,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/muda.git
 Creator: Person: Daniel Thompson-Yvetot
 
 ================================================================================
-License Text 134
+License Text 132
 Used by: multiversion_no_op 1.0.0
 
 Copyright Mozilla Foundation
@@ -10372,7 +10239,7 @@ See the Licenses for the specific language governing permissions and
 limitations under the Licenses.
 
 ================================================================================
-License Text 135
+License Text 133
 Used by: nix 0.28.0, nix 0.31.3
 
 The MIT License (MIT)
@@ -10398,7 +10265,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ================================================================================
-License Text 136
+License Text 134
 Used by: nom 7.1.3
 
 Copyright (c) 2014-2019 Geoffroy Couprie
@@ -10423,7 +10290,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 137
+License Text 135
 Used by: notify-types 2.3.0
 
 Apache License
@@ -10629,7 +10496,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ================================================================================
-License Text 138
+License Text 136
 Used by: notify-types 2.3.0
 
 Copyright (c) 2023 Notify Contributors
@@ -10659,7 +10526,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 139
+License Text 137
 Used by: notify 8.2.2
 
 Creative Commons CC0 1.0 Universal
@@ -10705,7 +10572,7 @@ For these and/or other purposes and motivations, and without any expectation of 
      d. Affirmer understands and acknowledges that Creative Commons is not a party to this document and has no duty or obligation with respect to this CC0 or use of the Work.
 
 ================================================================================
-License Text 140
+License Text 138
 Used by: nu-ansi-term 0.50.3
 
 The MIT License (MIT)
@@ -10732,7 +10599,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 141
+License Text 139
 Used by: nu-json 0.104.1
 
 The MIT License (MIT)
@@ -10766,7 +10633,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 142
+License Text 140
 Used by: num_threads 0.1.8
 
 Apache License
@@ -10972,7 +10839,7 @@ Apache License
    limitations under the License.
 
 ================================================================================
-License Text 143
+License Text 141
 Used by: num_threads 0.1.8
 
 Copyright (c) 2021 Jacob Pratt
@@ -10996,7 +10863,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 144
+License Text 142
 Used by: num-conv 0.2.2
 
 Copyright (c) Jacob Pratt
@@ -11020,7 +10887,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 145
+License Text 143
 Used by: object 0.40.0
 
 Copyright (c) 2015 The Gimli Developers
@@ -11050,7 +10917,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 146
+License Text 144
 Used by: option-ext 0.2.0
 
 Mozilla Public License Version 2.0
@@ -11428,7 +11295,7 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
   defined by the Mozilla Public License, v. 2.0.
 
 ================================================================================
-License Text 147
+License Text 145
 Used by: ordered-float 2.10.1
 
 Copyright (c) 2015 Jonathan Reem
@@ -11458,7 +11325,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 148
+License Text 146
 Used by: owo-colors 4.4.0
 
 MIT License
@@ -11484,7 +11351,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 149
+License Text 147
 Used by: parking 2.2.1
 
 ===============================================================================
@@ -11498,7 +11365,7 @@ option. All files in the project carrying such notice may not be
 copied, modified, or distributed except according to those terms.
 
 ================================================================================
-License Text 150
+License Text 148
 Used by: plist 1.10.3
 
 Copyright (c) 2015 Edward Barnard
@@ -11522,7 +11389,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 151
+License Text 149
 Used by: png 0.18.1
 
 Copyright (c) 2015 nwin
@@ -11552,7 +11419,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 152
+License Text 150
 Used by: powerfmt 0.2.1
 
 Apache License
@@ -11758,7 +11625,7 @@ Apache License
    limitations under the License.
 
 ================================================================================
-License Text 153
+License Text 151
 Used by: powerfmt 0.2.1
 
 Copyright (c) 2023 Jacob Pratt et al.
@@ -11782,7 +11649,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 154
+License Text 152
 Used by: psl-types 2.0.11
 
 MIT License
@@ -11808,7 +11675,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 155
+License Text 153
 Used by: publicsuffix 2.3.0
 
 MIT License
@@ -11834,7 +11701,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 156
+License Text 154
 Used by: quick-xml 0.42.0
 
 The MIT License (MIT)
@@ -11862,7 +11729,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ================================================================================
-License Text 157
+License Text 155
 Used by: quinn-proto 0.11.19, quinn-udp 0.5.16, quinn 0.11.12
 
 Copyright (c) 2018 The quinn Developers
@@ -11874,7 +11741,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 158
+License Text 156
 Used by: r2d2_sqlite 0.36.0
 
 The MIT License (MIT)
@@ -11900,7 +11767,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 159
+License Text 157
 Used by: r2d2 0.8.10
 
 The MIT License (MIT)
@@ -11926,7 +11793,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 160
+License Text 158
 Used by: rand_core 0.10.1
 
 Copyrights in the Rand project are retained by their contributors. No
@@ -11940,7 +11807,7 @@ licensed under the Apache License, Version 2.0 <LICENSE-APACHE> or
 <LICENSE-MIT> or <http://opensource.org/licenses/MIT>, at your option.
 
 ================================================================================
-License Text 161
+License Text 159
 Used by: rand_core 0.10.1, rand_pcg 0.10.2
 
 Apache License
@@ -12132,7 +11999,7 @@ APPENDIX: How to apply the Apache License to your work.
    identification within third-party archives.
 
 ================================================================================
-License Text 162
+License Text 160
 Used by: rand_core 0.10.1
 
 Copyright (c) 2018-2026 The Rand Project Developers
@@ -12162,7 +12029,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 163
+License Text 161
 Used by: rand_pcg 0.10.2, rand 0.10.3
 
 Copyrights in the Rand project are retained by their contributors. No
@@ -12179,7 +12046,7 @@ The Rand project includes code from the Rust project
 published under these same licenses.
 
 ================================================================================
-License Text 164
+License Text 162
 Used by: rand_pcg 0.10.2
 
 Copyright (c) 2014-2017 Melissa O'Neill and PCG Project contributors
@@ -12210,7 +12077,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 165
+License Text 163
 Used by: rand 0.10.3
 
 Apache License
@@ -12391,7 +12258,7 @@ TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
 END OF TERMS AND CONDITIONS
 
 ================================================================================
-License Text 166
+License Text 164
 Used by: rand 0.10.3
 
 Copyright 2018 Developers of the Rand project
@@ -12422,7 +12289,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 167
+License Text 165
 Used by: raw-window-handle 0.6.2
 
 MIT License
@@ -12448,7 +12315,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 168
+License Text 166
 Used by: raw-window-handle 0.6.2
 
 Copyright (c) 2020 Osspial
@@ -12464,7 +12331,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 3. This notice may not be removed or altered from any source distribution.
 
 ================================================================================
-License Text 169
+License Text 167
 Used by: react-dom 19.3.1, react 19.3.1, scheduler 0.28.0, use-sync-external-store 1.6.0
 
 MIT License
@@ -12490,7 +12357,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 170
+License Text 168
 Used by: react-window 1.8.11
 
 The MIT License (MIT)
@@ -12516,7 +12383,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 171
+License Text 169
 Used by: reqwest 0.12.28
 
 Apache License
@@ -12722,7 +12589,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ================================================================================
-License Text 172
+License Text 170
 Used by: reqwest 0.12.28
 
 Copyright (c) 2016-2025 Sean McArthur
@@ -12746,7 +12613,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ================================================================================
-License Text 173
+License Text 171
 Used by: rfd 0.17.2
 
 MIT License
@@ -12772,7 +12639,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 174
+License Text 172
 Used by: ring 0.17.14
 
 *ring* uses an "ISC" license, like BoringSSL used to use, for new code
@@ -12786,7 +12653,7 @@ See src/polyfill/once_cell/LICENSE-APACHE and src/polyfill/once_cell/LICENSE-MIT
 for the license to code that was sourced from the once_cell project.
 
 ================================================================================
-License Text 175
+License Text 173
 Used by: ring 0.17.14
 
 Apache License
@@ -13062,7 +12929,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ================================================================================
-License Text 176
+License Text 174
 Used by: ring 0.17.14
 
 Copyright 2015-2025 Brian Smith.
@@ -13080,7 +12947,7 @@ OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
 CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ================================================================================
-License Text 177
+License Text 175
 Used by: rmp-serde 1.3.1, rmp 0.8.15
 
 MIT License
@@ -13106,7 +12973,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 178
+License Text 176
 Used by: rustix 1.1.6
 
 Short version for non-lawyers:
@@ -13140,7 +13007,7 @@ is licensed under:
 at your option.
 
 ================================================================================
-License Text 179
+License Text 177
 Used by: rustix 1.1.6
 
 Apache License
@@ -13363,7 +13230,7 @@ the License, but only in their entirety and only with respect to the Combined
 Software.
 
 ================================================================================
-License Text 180
+License Text 178
 Used by: rustls-native-certs 0.8.5
 
 Rustls is distributed under the following three licenses:
@@ -13377,7 +13244,7 @@ respectively.  You may use this software under the terms of any
 of these licenses, at your option.
 
 ================================================================================
-License Text 181
+License Text 179
 Used by: rustls-pki-types 1.16.0
 
 Apache License
@@ -13583,7 +13450,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ================================================================================
-License Text 182
+License Text 180
 Used by: rustls-pki-types 1.16.0
 
 Copyright (c) 2023 Dirkjan Ochtman <dirkjan@ochtman.nl>
@@ -13613,7 +13480,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 183
+License Text 181
 Used by: rustls-webpki 0.103.16
 
 Except as otherwise noted, this project is licensed under the following
@@ -13637,7 +13504,7 @@ The files under third-party/chromium are licensed as described in
 third-party/chromium/LICENSE.
 
 ================================================================================
-License Text 184
+License Text 182
 Used by: ryu 1.0.23, whoami 2.1.3
 
 Boost Software License - Version 1.0 - August 17th, 2003
@@ -13665,7 +13532,7 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 185
+License Text 183
 Used by: same-file 1.0.6
 
 The MIT License (MIT)
@@ -13691,7 +13558,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ================================================================================
-License Text 186
+License Text 184
 Used by: scheduled-thread-pool 0.2.8
 
 The MIT License (MIT)
@@ -13717,7 +13584,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 187
+License Text 185
 Used by: scopeguard 1.2.0
 
 Copyright (c) 2016-2019 Ulrik Sverdrup "bluss" and scopeguard developers
@@ -13747,7 +13614,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 188
+License Text 186
 Used by: security-framework-sys 2.17.0, security-framework 3.7.0
 
 The MIT License (MIT)
@@ -13772,7 +13639,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 189
+License Text 187
 Used by: semver 7.8.6
 
 The ISC License
@@ -13792,7 +13659,7 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
 IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ================================================================================
-License Text 190
+License Text 188
 Used by: serde_urlencoded 0.7.1
 
 Copyright (c) 2016 Anthony Ramine
@@ -13822,7 +13689,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 191
+License Text 189
 Used by: serde-value 0.7.0
 
 Copyright (c) 2016 arcnmx
@@ -13846,7 +13713,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ================================================================================
-License Text 192
+License Text 190
 Used by: serial2 0.2.39
 
 Copyright 2021, Maarten de Vries <maarten@de-vri.es>
@@ -13864,7 +13731,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ================================================================================
-License Text 193
+License Text 191
 Used by: serial2 0.2.39
 
 BSD 2-Clause License
@@ -13893,8 +13760,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ================================================================================
-License Text 194
-Used by: sha1 0.11.0, sha2 0.11.1
+License Text 192
+Used by: sha2 0.11.1
 
 Copyright (c) 2016-2026 The RustCrypto Project Developers
 Copyright (c) 2016 Artyom Pavlov
@@ -13926,7 +13793,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 195
+License Text 193
 Used by: shell-color vendored
 
 MIT License
@@ -13952,7 +13819,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 196
+License Text 194
 Used by: shell-color vendored
 
 MIT License
@@ -13978,7 +13845,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 197
+License Text 195
 Used by: shell-words 1.1.1
 
 Copyright (c) 2016 Tomasz Miąsko
@@ -14008,7 +13875,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 198
+License Text 196
 Used by: shellexpand 3.1.2
 
 The MIT License (MIT)
@@ -14034,7 +13901,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 199
+License Text 197
 Used by: shlex 2.0.1
 
 Copyright 2015 Nicholas Allegra (comex).
@@ -14052,7 +13919,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ================================================================================
-License Text 200
+License Text 198
 Used by: shlex 2.0.1
 
 The MIT License (MIT)
@@ -14078,7 +13945,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ================================================================================
-License Text 201
+License Text 199
 Used by: signal-hook-mio 0.2.5, signal-hook-registry 1.4.8, signal-hook 0.3.18
 
 Copyright (c) 2017 tokio-jsonrpc developers
@@ -14108,7 +13975,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 202
+License Text 200
 Used by: simd-adler32 0.3.10
 
 MIT License
@@ -14134,7 +14001,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 203
+License Text 201
 Used by: slab 0.4.12
 
 Copyright (c) 2019 Carl Lerche
@@ -14164,7 +14031,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 204
+License Text 202
 Used by: smallvec 1.16.5
 
 Copyright (c) 2018 The Servo Project Developers
@@ -14194,7 +14061,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 205
+License Text 203
 Used by: Sparkle 2.9.3
 
 Copyright (c) 2006-2013 Andy Matuschak.
@@ -14333,7 +14200,7 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 
 ================================================================================
-License Text 206
+License Text 204
 Used by: spin 0.9.9
 
 The MIT License (MIT)
@@ -14359,7 +14226,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 207
+License Text 205
 Used by: stable_deref_trait 1.2.1
 
 Copyright (c) 2017 Robert Grosse
@@ -14389,7 +14256,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 208
+License Text 206
 Used by: strip-json-comments 5.0.3
 
 MIT License
@@ -14403,7 +14270,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 209
+License Text 207
 Used by: strsim 0.11.1
 
 The MIT License (MIT)
@@ -14431,7 +14298,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 210
+License Text 208
 Used by: strum_macros 0.24.3, strum_macros 0.28.0, strum 0.24.1, strum 0.28.0
 
 MIT License
@@ -14457,7 +14324,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 211
+License Text 209
 Used by: subtle 2.6.1
 
 Copyright (c) 2016-2017 Isis Agora Lovecruft, Henry de Valence. All rights reserved.
@@ -14491,7 +14358,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ================================================================================
-License Text 212
+License Text 210
 Used by: symlink 0.1.0
 
 This project is dual-licensed under the terms of the MIT and Apache (version 2.0) licenses.
@@ -14499,7 +14366,7 @@ This project is dual-licensed under the terms of the MIT and Apache (version 2.0
 Copyright (c) 2014 Chris Morgan and the Teepee project developers
 
 ================================================================================
-License Text 213
+License Text 211
 Used by: symlink 0.1.0
 
 Copyright (c) 2014 Chris Morgan and the Teepee project developers
@@ -14529,7 +14396,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 214
+License Text 212
 Used by: synstructure 0.14.0
 
 Copyright 2016 Nika Layzell
@@ -14541,7 +14408,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 215
+License Text 213
 Used by: sysinfo 0.36.1
 
 The MIT License (MIT)
@@ -14567,37 +14434,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 216
-Used by: system-configuration-sys 0.6.0, system-configuration 0.7.0
-
-Copyright (c) 2024 Mullvad VPN AB
-
-Permission is hereby granted, free of charge, to any
-person obtaining a copy of this software and associated
-documentation files (the "Software"), to deal in the
-Software without restriction, including without
-limitation the rights to use, copy, modify, merge,
-publish, distribute, sublicense, and/or sell copies of
-the Software, and to permit persons to whom the Software
-is furnished to do so, subject to the following
-conditions:
-
-The above copyright notice and this permission notice
-shall be included in all copies or substantial portions
-of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
-ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
-TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
-SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
-IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
-
-================================================================================
-License Text 217
+License Text 214
 Used by: tagptr 0.2.0
 
 Copyright 2021 Oliver Giersch
@@ -14615,7 +14452,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ================================================================================
-License Text 218
+License Text 215
 Used by: tagptr 0.2.0
 
 MIT License
@@ -14641,7 +14478,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 219
+License Text 216
 Used by: tailwind-merge 3.7.0
 
 MIT License
@@ -14667,7 +14504,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 220
+License Text 217
 Used by: tao 0.37.2
 
 SPDXVersion: SPDX-2.1
@@ -14690,7 +14527,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/tao.git
 Creator: Person: Daniel Thompson-Yvetot
 
 ================================================================================
-License Text 221
+License Text 218
 Used by: tempfile 3.27.0
 
 Copyright (c) 2015 Steven Allen
@@ -14720,7 +14557,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 222
+License Text 219
 Used by: terminal_size 0.4.4
 
 Copyright (c) 2015 The terminal-size Developers
@@ -14744,7 +14581,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 223
+License Text 220
 Used by: time-core 0.1.9, time-macros 0.2.32, time 0.3.55
 
 Copyright (c) Jacob Pratt et al.
@@ -14768,7 +14605,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 224
+License Text 221
 Used by: tokio-macros 2.7.2
 
 MIT License
@@ -14795,7 +14632,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 225
+License Text 222
 Used by: tokio-rustls 0.26.6
 
 Apache License
@@ -15001,7 +14838,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ================================================================================
-License Text 226
+License Text 223
 Used by: tokio-rustls 0.26.6
 
 Copyright (c) 2017 quininer kel
@@ -15031,32 +14868,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 227
-Used by: tokio-tungstenite 0.30.0
-
-Copyright (c) 2017 Daniel Abramov
-Copyright (c) 2017 Alexey Galakhov
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-
-================================================================================
-License Text 228
+License Text 224
 Used by: tokio-util 0.7.20, tokio 1.54.1
 
 MIT License
@@ -15082,7 +14894,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 229
+License Text 225
 Used by: tower-http 0.6.11
 
 Copyright (c) 2019-2021 Tower Contributors
@@ -15112,7 +14924,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 230
+License Text 226
 Used by: tower-layer 0.3.3, tower-service 0.3.3, tower 0.5.3
 
 Copyright (c) 2019 Tower Contributors
@@ -15142,7 +14954,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 231
+License Text 227
 Used by: tracing-appender 0.2.5, tracing-attributes 0.1.31, tracing-core 0.1.36, tracing-error 0.2.1, tracing-log 0.2.0, tracing-subscriber 0.3.23, tracing 0.1.44
 
 Copyright (c) 2019 Tokio Contributors
@@ -15172,7 +14984,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 232
+License Text 228
 Used by: tray-icon 0.26.1
 
 SPDXVersion: SPDX-2.1
@@ -15196,7 +15008,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/tray-icon.git
 Creator: Person: Daniel Thompson-Yvetot
 
 ================================================================================
-License Text 233
+License Text 229
 Used by: try-lock 0.2.5
 
 Copyright (c) 2018-2023 Sean McArthur
@@ -15221,38 +15033,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ================================================================================
-License Text 234
-Used by: tungstenite 0.30.0
-
-Copyright (c) 2017 Alexey Galakhov
-Copyright (c) 2016 Jason Housley
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-
-================================================================================
-License Text 235
+License Text 230
 Used by: typenum 1.20.1
 
 MIT OR Apache-2.0
 
 ================================================================================
-License Text 236
+License Text 231
 Used by: typenum 1.20.1
 
 Apache License
@@ -15458,7 +15245,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ================================================================================
-License Text 237
+License Text 232
 Used by: typenum 1.20.1
 
 The MIT License (MIT)
@@ -15484,7 +15271,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 238
+License Text 233
 Used by: typescript 5.7.3
 
 Apache License
@@ -15544,7 +15331,7 @@ If the Work includes a "NOTICE" text file as part of its distribution, then any 
 END OF TERMS AND CONDITIONS
 
 ================================================================================
-License Text 239
+License Text 234
 Used by: unicode-ident 1.0.27
 
 UNICODE LICENSE V3
@@ -15588,33 +15375,7 @@ dealings in these Data Files or Software without prior written
 authorization of the copyright holder.
 
 ================================================================================
-License Text 240
-Used by: unit-prefix 0.5.2
-
-MIT License
-
-Copyright (c) 2024 Benjamin Sago, Fabio Valentini
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-================================================================================
-License Text 241
+License Text 235
 Used by: untrusted 0.9.0
 
 // Copyright 2015-2016 Brian Smith.
@@ -15632,7 +15393,7 @@ Used by: untrusted 0.9.0
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ================================================================================
-License Text 242
+License Text 236
 Used by: use-resize-observer 10.0.0
 
 The MIT License (MIT)
@@ -15658,7 +15419,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ================================================================================
-License Text 243
+License Text 237
 Used by: utf_types 1.0.0
 
 Copyright Mozilla Foundation
@@ -15683,7 +15444,7 @@ Test code is dedicated to the Public Domain when so designated (see
 the individual files for PD/CC0-dedicated sections).
 
 ================================================================================
-License Text 244
+License Text 238
 Used by: utf8_iter 1.1.0
 
 Copyright Mozilla Foundation
@@ -15730,7 +15491,7 @@ licensed under the Apache License, Version 2.0 <LICENSE-APACHE> or
 <LICENSE-MIT> or <http://opensource.org/licenses/MIT>, at your option.
 
 ================================================================================
-License Text 245
+License Text 239
 Used by: utf8parse 0.2.2, vte 0.15.0
 
 Copyright (c) 2016 Joe Wilm
@@ -15760,7 +15521,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 246
+License Text 240
 Used by: uuid 1.29.2
 
 Copyright (c) 2014 The Rust Project Developers
@@ -15791,7 +15552,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 247
+License Text 241
 Used by: want 0.3.2
 
 Copyright (c) 2018-2019 Sean McArthur
@@ -15815,7 +15576,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ================================================================================
-License Text 248
+License Text 242
 Used by: web-time 1.1.0
 
 Apache License
@@ -16021,7 +15782,7 @@ Apache License
    limitations under the License.
 
 ================================================================================
-License Text 249
+License Text 243
 Used by: web-time 1.1.0
 
 MIT License
@@ -16047,7 +15808,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 250
+License Text 244
 Used by: webpki-roots 1.0.12
 
 # Community Data License Agreement - Permissive - Version 2.0
@@ -16113,7 +15874,7 @@ of Data, including for example machine learning models and models'
 insights.
 
 ================================================================================
-License Text 251
+License Text 245
 Used by: which 8.0.6
 
 Copyright (c) 2015 fangyuanziti
@@ -16137,7 +15898,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ================================================================================
-License Text 252
+License Text 246
 Used by: wry 0.57.2
 
 MIT License
@@ -16163,7 +15924,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 253
+License Text 247
 Used by: wry 0.57.2
 
 SPDXVersion: SPDX-2.1
@@ -16188,7 +15949,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/wry.git
 Creator: Person: Daniel Thompson-Yvetot
 
 ================================================================================
-License Text 254
+License Text 248
 Used by: yaml 2.8.3
 
 Copyright Eemeli Aro <eemeli@gmail.com>
@@ -16206,7 +15967,7 @@ TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
 
 ================================================================================
-License Text 255
+License Text 249
 Used by: zeroize 1.9.1
 
 Copyright (c) 2018-2026 The RustCrypto Project Developers
@@ -16236,7 +15997,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 ================================================================================
-License Text 256
+License Text 250
 Used by: zlib-rs 0.6.8
 
 (C) 2024 Trifecta Tech Foundation 
@@ -16260,7 +16021,7 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 
 ================================================================================
-License Text 257
+License Text 251
 Used by: zod 4.6.7
 
 MIT License
@@ -16286,7 +16047,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ================================================================================
-License Text 258
+License Text 252
 Used by: zustand 5.1.0
 
 MIT License

@@ -5,16 +5,13 @@
 ## v2.9.0 - 2026-11-23
 
 - 新增：支持 Orca 和 Antigravity IDE（#268，感谢 @MichaelChene）
-- 变更：`ec uninstall` 会移除 Easy Complete 安装的全部内容，包括应用本身、登录项、偏好设置、辅助功能权限、缓存和网页视图数据。Homebrew 安装会通过 `brew uninstall --zap` 移除，`brew upgrade` 不会再把它装回来（#283、#287、#290）
+- 变更：`ec uninstall` 会移除 Easy Complete 安装的全部内容，包括应用本身；Homebrew 安装会通过 `brew uninstall --zap` 移除（#283、#287、#290）
 - 变更：`ec --help` 会列出 `ec uninstall` 和 `ec debug`（#283）
-- 变更：辅助功能授权引导增加了用列表的 + 按钮手动添加的说明，用于 macOS 不接受拖拽的情况（#302）
-- 变更：应用体积减小约 2.5 MB，因为随附的第三方许可声明中，相同的许可证文本只保留一份（#307）
-- 修复：补全的文件名或分支名中含有 `;`、反引号，或文件名中含有 `$` 时会加上引号，按回车不会把名字的一部分当作命令执行（#305）
-- 修复：已安装的命令比所有分版本补全都旧时，改用最旧那份补全，不再用最新的。例如 pnpm 9 会得到 pnpm 10 的补全，而不是 pnpm 12（#272，感谢 @joshuaallgaier2-cmd）
-- 修复：更新内置的 `url` 库，修复安全公告 RUSTSEC-2026-0592（#311）
+- 变更：辅助功能授权引导补充了用列表的 + 按钮添加的方式，适用于拖拽不生效的情况（#302）
+- 修复：补全的名字含有 `;`、反引号，或文件名含有 `$` 时会加上引号，按回车不会把其中一部分当作命令执行（#305）
+- 修复：已安装的命令比所有分版本补全都旧时，改用最旧的那份而不是最新的，例如 pnpm 9 会得到 pnpm 10 的补全（#272，感谢 @joshuaallgaier2-cmd）
 - 文档：新增 [docs/how-it-works.md](./docs/how-it-works.md)，说明 Easy Complete 如何读取输入内容、定位补全浮层并插入补全
-- 文档：新增 [ACCESSIBILITY.md](./ACCESSIBILITY.md)，说明 Easy Complete 在键盘操作、放大、大字号和读屏方面的目标，以及如何反馈问题（#297）
-- 文档：新增 CONTRIBUTING.md 的中文版 CONTRIBUTING.zh-CN.md（#266）
+- 文档：新增 [ACCESSIBILITY.md](./ACCESSIBILITY.md)（#297）和 CONTRIBUTING 的中文版 CONTRIBUTING.zh-CN.md（#266）
 
 ## v2.8.0 - 2026-11-16
 

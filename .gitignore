@@ -25,5 +25,5 @@ dist/
 
 *.app/
 .codex-audit
-.claude/settings.local.json
 .secrets/
+.claude/

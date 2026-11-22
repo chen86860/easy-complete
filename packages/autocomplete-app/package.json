@@ -28,7 +28,6 @@
     "@easy-complete/autocomplete-parser": "workspace:^",
     "@easy-complete/proto": "workspace:^",
     "@easy-complete/shell-parser": "workspace:^",
-    "@fig/autocomplete-helpers": "workspace:*",
     "@fig/autocomplete-shared": "workspace:*",
     "deep-object-diff": "^1.1.9",
     "loglevel": "^1.9.2",

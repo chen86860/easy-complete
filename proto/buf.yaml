@@ -1,16 +1,21 @@
-version: v1
-deps: []
-build:
-  excludes:
-    - node_modules
-breaking:
-  use:
-    - WIRE_JSON
+version: v2
+modules:
+  - path: .
+    excludes:
+      - node_modules
 lint:
   use:
     - STANDARD
   except:
-    - ENUM_ZERO_VALUE_SUFFIX
-    - PACKAGE_VERSION_SUFFIX
     - DIRECTORY_SAME_PACKAGE
+    - ENUM_ZERO_VALUE_SUFFIX
+    - FIELD_NOT_REQUIRED
     - PACKAGE_DIRECTORY_MATCH
+    - PACKAGE_NO_IMPORT_CYCLE
+    - PACKAGE_VERSION_SUFFIX
+  disallow_comment_ignores: true
+breaking:
+  use:
+    - WIRE_JSON
+  except:
+    - FIELD_SAME_DEFAULT

@@ -1,52 +1,36 @@
 # Proto
 
-We use [protocol buffers](https://developers.google.com/protocol-buffers/) as a
-message format for inter process communication.
+The [protocol buffers](https://protobuf.dev/) here define the messages Easy
+Complete's processes exchange. Both the Rust crates and the TypeScript packages
+are generated from these files, so a change here reaches both sides.
 
-This folder defines three main protocols:
+| File                 | Between                                                                        |
+| -------------------- | ------------------------------------------------------------------------------ |
+| `fig.proto`          | The web UIs (autocomplete, dashboard) and the desktop app                      |
+| `local.proto`        | Local processes (`ec` CLI, `figterm`) and the desktop app                      |
+| `figterm.proto`      | The CLI and `figterm`                                                          |
+| `remote.proto`       | `figterm` and the desktop app                                                  |
+| `fig_common.proto`   | Shared types used by the files above                                           |
 
-1. `local.proto` - Protocol for communication from local processes like
-   `figterm` and the `fig` CLI to the desktop app
-2. `fig.proto` - Protocol for communication between client Fig.js apps like
-   autocomplete and the desktop app
-3. `figterm.proto` - Protocol for sending commands from the CLI to `figterm`
-4. `remote.proto` - Protocol for sending between `figterm` and the desktop app,
-   intended to be secure for remote machines
+## Generated code
 
-## Setup
+**Rust**: `crates/fig_proto/build.rs` compiles every `.proto` file in this
+folder with prost during `cargo build`. It uses the system `protoc` when it is
+3.12 or newer and otherwise downloads protoc 26.1, so no setup is needed.
 
-For any client, you must install the protobuf compiler:
-
-```shell
-brew install protobuf
-```
-
-**Client Installations**
-
-| Client     | Command        |
-| ---------- | -------------- |
-| typescript | `pnpm install` |
-| rust       | N/A\*          |
-
-\* The rust build process handles the installation of the proto toolchain.
-
-## Installation/Usage
-
-To compile protos, run:
+**TypeScript**: this folder is also the `@easy-complete/proto` workspace
+package, used by `api-bindings`, `autocomplete-app` and `dashboard-app`. Its
+build runs `buf generate` (with `protoc-gen-es`) and `tsc`, writing to `dist/`:
 
 ```shell
-./build-ts.sh
+pnpm --filter @easy-complete/proto build
 ```
 
-## Deprecating an Amazon Q API
+`pnpm lint` runs `buf lint` and a `buf format` check here; fix formatting with
+`pnpm --filter @easy-complete/proto lint:fix`.
 
-1. Edit `fig.proto` and add the `[deprecated=true]` annotation to the relevant
-   fields
-2. Add an inline comment specifying the version when this was changed applies
-   using the following format: `//deprecated: 1.2.3`
+## Changing messages
 
-## Contributing
-
-**Adding to protos**
-
-Just edit the appropriate proto file.
+Edit the relevant `.proto` file, then rebuild both sides. Keep changes
+wire-compatible: do not reuse or renumber field tags. To retire a field, mark it
+`[deprecated = true]` instead of removing it.

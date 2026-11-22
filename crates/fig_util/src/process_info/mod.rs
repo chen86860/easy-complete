@@ -3,11 +3,6 @@ use std::{fmt, str};
 
 use cfg_if::cfg_if;
 
-#[cfg(target_os = "linux")]
-mod linux;
-#[cfg(target_os = "linux")]
-pub use linux::*;
-
 #[cfg(target_os = "macos")]
 mod macos;
 // #[cfg(target_os = "macos")]

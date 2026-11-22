@@ -60,23 +60,10 @@ impl BuildDetails {
     }
 }
 
-fn serialize_os_version<S>(version: &Option<&OSVersion>, serializer: S) -> Result<S::Ok, S::Error>
-where
-    S: serde::Serializer,
-{
-    match version {
-        Some(version) => match version {
-            OSVersion::Linux { .. } => version.serialize(serializer),
-            other => serializer.serialize_str(&other.to_string()),
-        },
-        None => serializer.serialize_none(),
-    }
-}
-
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct SystemInfo {
-    #[serde(serialize_with = "serialize_os_version")]
+    #[serde(serialize_with = "serialize_display_option")]
     pub os: Option<&'static OSVersion>,
     pub chip: Option<String>,
     pub total_cores: Option<usize>,
@@ -176,8 +163,6 @@ pub struct CurrentEnvironment {
     #[serde(skip_serializing_if = "is_false")]
     pub in_ci: bool,
     #[serde(skip_serializing_if = "is_false")]
-    pub in_wsl: bool,
-    #[serde(skip_serializing_if = "is_false")]
     pub in_codespaces: bool,
 }
 
@@ -201,7 +186,6 @@ impl CurrentEnvironment {
         let in_cloudshell = fig_util::system_info::in_cloudshell();
         let in_ssh = fig_util::system_info::in_ssh();
         let in_ci = fig_util::system_info::in_ci();
-        let in_wsl = fig_util::system_info::in_wsl();
         let in_codespaces = fig_util::system_info::in_codespaces();
 
         CurrentEnvironment {
@@ -212,7 +196,6 @@ impl CurrentEnvironment {
             in_cloudshell,
             in_ssh,
             in_ci,
-            in_wsl,
             in_codespaces,
         }
     }

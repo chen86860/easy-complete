@@ -48,7 +48,7 @@ dependencies = [
 
 [[package]]
 name = "alacritty_terminal"
-version = "2.9.0-beta.3"
+version = "2.9.0-beta.4"
 dependencies = [
  "bitflags 2.13.2",
  "fig_os_shim",
@@ -829,7 +829,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d045de693cb712d0b22c6a64be5b953f67b3ce00ab5ad3dd5d8b441886ab8e1a"
 dependencies = [
  "quote",
- "syn 3.0.10",
+ "syn 2.0.119",
 ]
 
 [[package]]
@@ -1097,7 +1097,7 @@ checksum = "92773504d58c093f6de2459af4af33faa518c13451eb8f2b5698ed3d36e7c813"
 
 [[package]]
 name = "ec_cli"
-version = "2.9.0-beta.3"
+version = "2.9.0-beta.4"
 dependencies = [
  "anstream",
  "assert_cmd",
@@ -1278,7 +1278,7 @@ dependencies = [
 
 [[package]]
 name = "fig_desktop"
-version = "2.9.0-beta.3"
+version = "2.9.0-beta.4"
 dependencies = [
  "accessibility-sys",
  "anyhow",
@@ -1341,7 +1341,7 @@ dependencies = [
 
 [[package]]
 name = "fig_desktop_api"
-version = "2.9.0-beta.3"
+version = "2.9.0-beta.4"
 dependencies = [
  "anstream",
  "async-trait",
@@ -1371,7 +1371,7 @@ dependencies = [
 
 [[package]]
 name = "fig_diagnostic"
-version = "2.9.0-beta.3"
+version = "2.9.0-beta.4"
 dependencies = [
  "fig_os_shim",
  "fig_util",
@@ -1385,7 +1385,7 @@ dependencies = [
 
 [[package]]
 name = "fig_input_method"
-version = "2.9.0-beta.3"
+version = "2.9.0-beta.4"
 dependencies = [
  "apple-bundle",
  "core-foundation",
@@ -1407,7 +1407,7 @@ dependencies = [
 
 [[package]]
 name = "fig_install"
-version = "2.9.0-beta.3"
+version = "2.9.0-beta.4"
 dependencies = [
  "bitflags 2.13.2",
  "fig_integrations",
@@ -1422,7 +1422,7 @@ dependencies = [
 
 [[package]]
 name = "fig_integrations"
-version = "2.9.0-beta.3"
+version = "2.9.0-beta.4"
 dependencies = [
  "async-trait",
  "cfg-if",
@@ -1433,7 +1433,6 @@ dependencies = [
  "fig_settings",
  "fig_util",
  "indoc",
- "insta",
  "macos-utils",
  "nix 0.31.3",
  "objc2",
@@ -1452,7 +1451,7 @@ dependencies = [
 
 [[package]]
 name = "fig_ipc"
-version = "2.9.0-beta.3"
+version = "2.9.0-beta.4"
 dependencies = [
  "async-trait",
  "base64 0.23.1",
@@ -1473,7 +1472,7 @@ dependencies = [
 
 [[package]]
 name = "fig_log"
-version = "2.9.0-beta.3"
+version = "2.9.0-beta.4"
 dependencies = [
  "fig_os_shim",
  "tempfile",
@@ -1485,7 +1484,7 @@ dependencies = [
 
 [[package]]
 name = "fig_os_shim"
-version = "2.9.0-beta.3"
+version = "2.9.0-beta.4"
 dependencies = [
  "cfg-if",
  "dirs 7.0.0",
@@ -1498,7 +1497,7 @@ dependencies = [
 
 [[package]]
 name = "fig_proto"
-version = "2.9.0-beta.3"
+version = "2.9.0-beta.4"
 dependencies = [
  "arbitrary",
  "bytes",
@@ -1517,7 +1516,7 @@ dependencies = [
 
 [[package]]
 name = "fig_remote_ipc"
-version = "2.9.0-beta.3"
+version = "2.9.0-beta.4"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1535,7 +1534,7 @@ dependencies = [
 
 [[package]]
 name = "fig_settings"
-version = "2.9.0-beta.3"
+version = "2.9.0-beta.4"
 dependencies = [
  "fd-lock",
  "fig_util",
@@ -1552,7 +1551,7 @@ dependencies = [
 
 [[package]]
 name = "fig_telemetry"
-version = "2.9.0-beta.3"
+version = "2.9.0-beta.4"
 dependencies = [
  "chrono",
  "fig_os_shim",
@@ -1567,7 +1566,7 @@ dependencies = [
 
 [[package]]
 name = "fig_util"
-version = "2.9.0-beta.3"
+version = "2.9.0-beta.4"
 dependencies = [
  "camino",
  "cfg-if",
@@ -1600,7 +1599,7 @@ dependencies = [
 
 [[package]]
 name = "figterm"
-version = "2.9.0-beta.3"
+version = "2.9.0-beta.4"
 dependencies = [
  "alacritty_terminal",
  "anyhow",
@@ -1740,9 +1739,9 @@ checksum = "aa9a19cbb55df58761df49b23516a86d432839add4af60fc256da840f66ed35b"
 
 [[package]]
 name = "form_urlencoded"
-version = "1.2.2"
+version = "1.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cb4cb245038516f5f85277875cdaa4f7d2c9a0fa0468de06ed190163b1581fcf"
+checksum = "afa489199eaffb1211795df1c6236ce1ad0d41a6fa45250add73e3b02420f06e"
 dependencies = [
  "percent-encoding",
 ]
@@ -2559,29 +2558,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3bd1574e617a9a6c1f8f8181bd7e841e1f20e4277607ef28945765188d6284d4"
 
 [[package]]
-name = "javascriptcore-rs"
-version = "1.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ca5671e9ffce8ffba57afc24070e906da7fc4b1ba66f2cabebf61bf2ea257fcc"
-dependencies = [
- "bitflags 1.3.2",
- "glib",
- "javascriptcore-rs-sys",
-]
-
-[[package]]
-name = "javascriptcore-rs-sys"
-version = "1.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "af1be78d14ffa4b75b66df31840478fef72b51f8c2465d4ca7c194da9f7a5124"
-dependencies = [
- "glib-sys",
- "gobject-sys",
- "libc",
- "system-deps",
-]
-
-[[package]]
 name = "jni"
 version = "0.21.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2777,7 +2753,7 @@ checksum = "4050469837a6ff301cd14c1f8f24f88549e6d548f24f64e2148eb0f72cebc51f"
 
 [[package]]
 name = "macos-utils"
-version = "2.9.0-beta.3"
+version = "2.9.0-beta.4"
 dependencies = [
  "accessibility",
  "accessibility-sys",
@@ -4553,7 +4529,7 @@ dependencies = [
 
 [[package]]
 name = "shell-color"
-version = "2.9.0-beta.3"
+version = "2.9.0-beta.4"
 dependencies = [
  "bitflags 2.13.2",
  "nu-ansi-term",
@@ -4657,32 +4633,6 @@ checksum = "c3d1e2c7f27f8d4cb10542a02c49005dbd6e93095799d6f3be745fae9f8fedd4"
 dependencies = [
  "libc",
  "windows-sys 0.61.2",
-]
-
-[[package]]
-name = "soup3"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "471f924a40f31251afc77450e781cb26d55c0b650842efafc9c6cbd2f7cc4f9f"
-dependencies = [
- "futures-channel",
- "gio",
- "glib",
- "libc",
- "soup3-sys",
-]
-
-[[package]]
-name = "soup3-sys"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7ebe8950a680a12f24f15ebe1bf70db7af98ad242d9db43596ad3108aab86c27"
-dependencies = [
- "gio-sys",
- "glib-sys",
- "gobject-sys",
- "libc",
- "system-deps",
 ]
 
 [[package]]
@@ -5434,9 +5384,9 @@ checksum = "8ecb6da28b8a351d773b68d5825ac39017e680750f980f3a1a85cd8dd28a47c1"
 
 [[package]]
 name = "url"
-version = "2.5.8"
+version = "2.5.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ff67a8a4397373c3ef660812acab3268222035010ab8680ec4215f38ba3d0eed"
+checksum = "f00cd2407bb42c0ef17be88d4cf020f5cceffd121665bac9b8b9493a369b3b1a"
 dependencies = [
  "form_urlencoded",
  "idna",
@@ -5719,50 +5669,6 @@ dependencies = [
  "phf_codegen",
  "string_cache",
  "string_cache_codegen",
-]
-
-[[package]]
-name = "webkit2gtk"
-version = "2.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a1027150013530fb2eaf806408df88461ae4815a45c541c8975e61d6f2fc4793"
-dependencies = [
- "bitflags 1.3.2",
- "cairo-rs",
- "gdk",
- "gdk-sys",
- "gio",
- "gio-sys",
- "glib",
- "glib-sys",
- "gobject-sys",
- "gtk",
- "gtk-sys",
- "javascriptcore-rs",
- "libc",
- "once_cell",
- "soup3",
- "webkit2gtk-sys",
-]
-
-[[package]]
-name = "webkit2gtk-sys"
-version = "2.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "916a5f65c2ef0dfe12fff695960a2ec3d4565359fdbb2e9943c974e06c734ea5"
-dependencies = [
- "bitflags 1.3.2",
- "cairo-sys-rs",
- "gdk-sys",
- "gio-sys",
- "glib-sys",
- "gobject-sys",
- "gtk-sys",
- "javascriptcore-rs-sys",
- "libc",
- "pkg-config",
- "soup3-sys",
- "system-deps",
 ]
 
 [[package]]
@@ -6279,9 +6185,7 @@ dependencies = [
  "dom_query",
  "dpi",
  "dunce",
- "gtk",
  "http",
- "javascriptcore-rs",
  "jni",
  "libc",
  "ndk",
@@ -6294,12 +6198,9 @@ dependencies = [
  "percent-encoding",
  "raw-window-handle",
  "sha2 0.10.9",
- "soup3",
  "tao-macros",
  "thiserror 2.0.21",
  "url",
- "webkit2gtk",
- "webkit2gtk-sys",
  "webview2-com",
  "windows 0.62.2",
  "windows-core 0.62.2",

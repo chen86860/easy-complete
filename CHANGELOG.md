@@ -2,15 +2,16 @@
 
 **English** · [简体中文](./CHANGELOG.zh-CN.md)
 
-## Unreleased
+## v2.9.0 - 2026-11-23
 
 - new: suggestions work in Orca and Antigravity IDE (#268, thanks @MichaelChene)
-- fix: a CLI older than every versioned spec gets completions for the oldest supported version instead of the newest, so pnpm 9 gets pnpm 10 completions rather than pnpm 12 (#272, thanks @joshuaallgaier2-cmd)
-- change: `ec uninstall` removes everything Easy Complete installed, including the login item, preferences, Accessibility permission and caches, and deletes the app; a Homebrew install is removed with `brew uninstall --zap` (#283)
-- change: `ec uninstall` and `ec debug` are listed in `ec --help` (#283)
-- change: usage stats also report the macOS major version (`os_major`, e.g. 15), the same information `os_version` already carries
+- change: `ec uninstall` removes everything Easy Complete installed, the app included; a Homebrew install is removed with `brew uninstall --zap` (#283, #287, #290)
+- change: `ec --help` lists `ec uninstall` and `ec debug` (#283)
+- change: the Accessibility setup guide also suggests the list's + button, for when dragging the app in does not work (#302)
+- fix: a completed name containing `;`, a backquote, or a `$` in a file name is quoted, so pressing Enter cannot run part of it as a command (#305)
+- fix: a CLI older than every versioned spec gets the oldest spec instead of the newest, so pnpm 9 gets pnpm 10 completions (#272, thanks @joshuaallgaier2-cmd)
 - docs: [docs/how-it-works.md](./docs/how-it-works.md) explains how Easy Complete reads what you type, places the overlay and inserts completions
-- docs: CONTRIBUTING.md has a Chinese version, CONTRIBUTING.zh-CN.md (#266)
+- docs: new [ACCESSIBILITY.md](./ACCESSIBILITY.md) (#297) and a Chinese CONTRIBUTING.zh-CN.md (#266)
 
 ## v2.8.0 - 2026-11-16
 

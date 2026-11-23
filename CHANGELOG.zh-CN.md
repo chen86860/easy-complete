@@ -2,6 +2,10 @@
 
 [English](./CHANGELOG.md) · **简体中文**
 
+## Unreleased
+
+- 新增：macOS 首选语言为简体中文时，更新窗口显示中文更新日志
+
 ## v2.9.0 - 2026-11-23
 
 - 新增：支持 Orca 和 Antigravity IDE（#268，感谢 @MichaelChene）

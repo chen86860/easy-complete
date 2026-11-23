@@ -257,6 +257,14 @@ jobs:
             echo "$NOTES"
             echo "EOF"
           } >> "$GITHUB_ENV"
+          # Sparkle shows the Chinese notes to users whose macOS prefers Chinese. Prereleases
+          # have no CHANGELOG section, so they keep the single English description.
+          NOTES_ZH=$(awk "/^## ${VERSION}( |$)/{flag=1; next} /^## /{flag=0} flag" CHANGELOG.zh-CN.md | sed '/^[[:space:]]*$/d')
+          {
+            echo "SPARKLE_RELEASE_NOTES_ZH<<EOF"
+            echo "$NOTES_ZH"
+            echo "EOF"
+          } >> "$GITHUB_ENV"
           {
             echo "notes<<EOF"
             echo "$NOTES"

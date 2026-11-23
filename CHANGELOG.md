@@ -2,6 +2,10 @@
 
 **English** · [简体中文](./CHANGELOG.zh-CN.md)
 
+## Unreleased
+
+- new: the update window shows release notes in Chinese when macOS prefers Simplified Chinese
+
 ## v2.9.0 - 2026-11-23
 
 - new: suggestions work in Orca and Antigravity IDE (#268, thanks @MichaelChene)

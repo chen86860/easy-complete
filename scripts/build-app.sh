@@ -196,6 +196,15 @@ cat > "${STAGING_BUNDLE}/Contents/Info.plist" <<PLIST
     <string>${APP_DISPLAY}</string>
     <key>CFBundleExecutable</key>
     <string>${APP_NAME}</string>
+    <!-- Sparkle picks the appcast's xml:lang release notes from the languages the app
+         declares; without zh-Hans here it shows English even on a Chinese system. -->
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <key>CFBundleLocalizations</key>
+    <array>
+        <string>en</string>
+        <string>zh-Hans</string>
+    </array>
     <key>CFBundleVersion</key>
     <string>${BUNDLE_VERSION}</string>
     <key>CFBundleShortVersionString</key>

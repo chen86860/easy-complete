@@ -17,7 +17,7 @@ const en = {
   "appearance.language": "Language",
   "appearance.displayLanguage": "Display Language",
   "appearance.displayLanguageDescription":
-    "Choose the language used in the settings panel",
+    "Used by Settings and the update window, which switches after Easy Complete restarts",
   "appearance.followSystem": "Follow System",
   "appearance.english": "English",
   "appearance.simplifiedChinese": "简体中文",
@@ -197,7 +197,8 @@ const zhCN: Record<TranslationKey, string> = {
   "theme.system": "跟随系统",
   "appearance.language": "语言",
   "appearance.displayLanguage": "显示语言",
-  "appearance.displayLanguageDescription": "选择设置窗口使用的语言",
+  "appearance.displayLanguageDescription":
+    "用于设置窗口和更新窗口，更新窗口在重启 Easy Complete 后切换",
   "appearance.followSystem": "跟随系统",
   "appearance.english": "English",
   "appearance.simplifiedChinese": "简体中文",

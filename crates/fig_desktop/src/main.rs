@@ -1,3 +1,4 @@
+mod app_language;
 mod cli;
 mod event;
 // mod figterm;
@@ -93,6 +94,9 @@ async fn main() -> ExitCode {
     if let Err(err) = fig_settings::settings::init_global() {
         error!(%err, "failed to init global settings");
     }
+
+    // Before the tray or Sparkle load anything localized, which fixes the process language.
+    app_language::apply();
 
     let mut launch_on_startup = fig_settings::settings::get_bool_or("app.launchOnStartup", false);
     #[cfg(target_os = "macos")]

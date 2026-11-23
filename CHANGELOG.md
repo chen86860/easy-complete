@@ -5,6 +5,7 @@
 ## Unreleased
 
 - new: the update window shows release notes in Chinese when macOS prefers Simplified Chinese
+- new: the update window uses the display language chosen in Settings, after Easy Complete restarts
 
 ## v2.9.0 - 2026-11-23
 

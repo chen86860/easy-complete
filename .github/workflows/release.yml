@@ -246,21 +246,29 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         id: changelog
         run: |
+          set -euo pipefail
           VERSION="${{ github.ref_name }}"
-          # Headings are "## vX.Y.Z", optionally followed by " - YYYY-MM-DD".
-          NOTES=$(awk "/^## ${VERSION}( |$)/{flag=1; next} /^## /{flag=0} flag" CHANGELOG.md | sed '/^[[:space:]]*$/d')
+          # Headings are "## vX.Y.Z", optionally followed by " - YYYY-MM-DD". A prerelease has
+          # no section of its own, so it ships what is under "## Unreleased" so far.
+          section() {
+            awk -v h="## $1" '$0 == h || index($0, h " ") == 1 {flag=1; next} /^## /{flag=0} flag' "$2" \
+              | sed '/^[[:space:]]*$/d'
+          }
+          NOTES=$(section "$VERSION" CHANGELOG.md)
+          NOTES_ZH=$(section "$VERSION" CHANGELOG.zh-CN.md)
+          if [ -z "$NOTES" ] && [[ "$VERSION" == *-* ]]; then
+            NOTES=$(section Unreleased CHANGELOG.md)
+            NOTES_ZH=$(section Unreleased CHANGELOG.zh-CN.md)
+          fi
           if [ -z "$NOTES" ]; then
             NOTES="See the [GitHub release](https://github.com/${{ github.repository }}/releases/tag/${VERSION}) for details."
           fi
+          # Sparkle shows the Chinese notes to users whose macOS prefers Chinese; without them
+          # the appcast keeps the single English description.
           {
             echo "SPARKLE_RELEASE_NOTES<<EOF"
             echo "$NOTES"
             echo "EOF"
-          } >> "$GITHUB_ENV"
-          # Sparkle shows the Chinese notes to users whose macOS prefers Chinese. Prereleases
-          # have no CHANGELOG section, so they keep the single English description.
-          NOTES_ZH=$(awk "/^## ${VERSION}( |$)/{flag=1; next} /^## /{flag=0} flag" CHANGELOG.zh-CN.md | sed '/^[[:space:]]*$/d')
-          {
             echo "SPARKLE_RELEASE_NOTES_ZH<<EOF"
             echo "$NOTES_ZH"
             echo "EOF"
@@ -436,6 +444,14 @@ jobs:
               --target "${{ github.event.repository.default_branch }}" \
               --title "Beta update feed" \
               --notes "Rolling Sparkle appcast for users who opt into beta updates. Updated by the release workflow on every tag; do not delete."
+          fi
+
+          # The feed works only while this release stays mutable: it predates immutable
+          # releases being turned on. A release published since then, including one recreated
+          # above, takes no new assets, so fail with the cause instead of a bare upload error.
+          if [ "$(gh release view "$FEED_TAG" --json isImmutable -q .isImmutable)" = "true" ]; then
+            echo "::error::The $FEED_TAG release is immutable, so its appcast.xml cannot be replaced. Beta builds read it from ECBetaFeedURL; serve the feed from somewhere mutable and point ECBetaFeedURL there."
+            exit 1
           fi
 
           FEED_DIR="$RUNNER_TEMP/beta-feed"

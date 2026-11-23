@@ -88,7 +88,7 @@ Prereleases use `X.Y.Z-alpha|beta|rc[.N]` tags. They publish as GitHub prereleas
 
 Signing, notarization, the Sparkle appcast and deltas, the required GitHub secrets and the local commands for each step are documented in [docs/release-updates.md](docs/release-updates.md). Read it before touching `release.yml` or the `scripts/*sparkle*`, `sign-macos-app.sh`, `notarize-dmg.sh` and `make-dmg.sh` scripts.
 
-Prereleases follow the same steps without the CHANGELOG change: they get no CHANGELOG section and leave `## Unreleased` as it is. Put their notes in the GitHub prerelease body if needed (copy them from `## Unreleased`), and when the stable version ships, `## Unreleased` becomes its `## vX.Y.Z` entry. Do not mention the beta line in it.
+Prereleases follow the same steps without the CHANGELOG change: they get no CHANGELOG section and leave `## Unreleased` as it is. The release workflow uses the current `## Unreleased` entries of both changelogs as their GitHub release body and Sparkle notes, and when the stable version ships, `## Unreleased` becomes its `## vX.Y.Z` entry. Do not mention the beta line in it.
 
 ### Changelog
 

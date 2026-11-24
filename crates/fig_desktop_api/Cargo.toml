@@ -17,7 +17,6 @@ base64.workspace = true
 camino.workspace = true
 cfg-if.workspace = true
 dashmap.workspace = true
-fig_install.workspace = true
 fig_integrations.workspace = true
 fig_os_shim.workspace = true
 fig_proto.workspace = true
@@ -35,9 +34,6 @@ url.workspace = true
 uuid.workspace = true
 which.workspace = true
 whoami.workspace = true
-
-[dev-dependencies]
-tracing-subscriber.workspace = true
 
 [target.'cfg(target_os="macos")'.dependencies]
 macos-utils = { path = "../macos-utils" }

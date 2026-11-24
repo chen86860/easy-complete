@@ -246,15 +246,31 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         id: changelog
         run: |
+          set -euo pipefail
           VERSION="${{ github.ref_name }}"
-          # Headings are "## vX.Y.Z", optionally followed by " - YYYY-MM-DD".
-          NOTES=$(awk "/^## ${VERSION}( |$)/{flag=1; next} /^## /{flag=0} flag" CHANGELOG.md | sed '/^[[:space:]]*$/d')
+          # Headings are "## vX.Y.Z", optionally followed by " - YYYY-MM-DD". A prerelease has
+          # no section of its own, so it ships what is under "## Unreleased" so far.
+          section() {
+            awk -v h="## $1" '$0 == h || index($0, h " ") == 1 {flag=1; next} /^## /{flag=0} flag' "$2" \
+              | sed '/^[[:space:]]*$/d'
+          }
+          NOTES=$(section "$VERSION" CHANGELOG.md)
+          NOTES_ZH=$(section "$VERSION" CHANGELOG.zh-CN.md)
+          if [ -z "$NOTES" ] && [[ "$VERSION" == *-* ]]; then
+            NOTES=$(section Unreleased CHANGELOG.md)
+            NOTES_ZH=$(section Unreleased CHANGELOG.zh-CN.md)
+          fi
           if [ -z "$NOTES" ]; then
             NOTES="See the [GitHub release](https://github.com/${{ github.repository }}/releases/tag/${VERSION}) for details."
           fi
+          # Sparkle shows the Chinese notes to users whose macOS prefers Chinese; without them
+          # the appcast keeps the single English description.
           {
             echo "SPARKLE_RELEASE_NOTES<<EOF"
             echo "$NOTES"
+            echo "EOF"
+            echo "SPARKLE_RELEASE_NOTES_ZH<<EOF"
+            echo "$NOTES_ZH"
             echo "EOF"
           } >> "$GITHUB_ENV"
           {
@@ -355,9 +371,13 @@ jobs:
             echo "is_prerelease=false" >> "$GITHUB_OUTPUT"
           fi
 
+      # Releases are immutable once published, and an immutable release takes no new assets,
+      # so the release is created as a draft, filled, and only then published.
       - name: Attach DMG to GitHub Release
+        id: gh_release
         uses: softprops/action-gh-release@v3
         with:
+          draft: true
           files: |
             dist/Easy-Complete-arm64.dmg
             dist/Easy-Complete-*-arm64.dmg
@@ -387,6 +407,23 @@ jobs:
             gh attestation verify Easy-Complete-arm64.dmg --repo ${{ github.repository }}
             ```
 
+      # Publishing makes the release immutable, so every asset must be attached by now. The
+      # appcast's download URLs only resolve once it is published, before the feed below.
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_ID: ${{ steps.gh_release.outputs.id }}
+          IS_PRERELEASE: ${{ steps.release_channel.outputs.is_prerelease }}
+        run: |
+          set -euo pipefail
+          make_latest=true
+          [ "$IS_PRERELEASE" = "true" ] && make_latest=false
+          gh api --method PATCH "repos/${{ github.repository }}/releases/${RELEASE_ID}" \
+            -F draft=false \
+            -F prerelease="$IS_PRERELEASE" \
+            -f make_latest="$make_latest" \
+            --jq '"Published \(.tag_name): draft=\(.draft) prerelease=\(.prerelease) immutable=\(.immutable)"'
+
       # Beta testers read a rolling feed instead of releases/latest, which never points at a
       # prerelease. Every tag refreshes it, so testers also move on to the next stable release.
       # A feed already carrying a newer version (e.g. a beta when an older line gets a hotfix)
@@ -407,6 +444,14 @@ jobs:
               --target "${{ github.event.repository.default_branch }}" \
               --title "Beta update feed" \
               --notes "Rolling Sparkle appcast for users who opt into beta updates. Updated by the release workflow on every tag; do not delete."
+          fi
+
+          # The feed works only while this release stays mutable: it predates immutable
+          # releases being turned on. A release published since then, including one recreated
+          # above, takes no new assets, so fail with the cause instead of a bare upload error.
+          if [ "$(gh release view "$FEED_TAG" --json isImmutable -q .isImmutable)" = "true" ]; then
+            echo "::error::The $FEED_TAG release is immutable, so its appcast.xml cannot be replaced. Beta builds read it from ECBetaFeedURL; serve the feed from somewhere mutable and point ECBetaFeedURL there."
+            exit 1
           fi
 
           FEED_DIR="$RUNNER_TEMP/beta-feed"

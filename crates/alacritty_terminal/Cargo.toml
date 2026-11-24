@@ -17,7 +17,6 @@ workspace = true
 
 [dependencies]
 bitflags.workspace = true
-camino.workspace = true
 fig_os_shim.workspace = true
 serde.workspace = true
 shell-color.workspace = true

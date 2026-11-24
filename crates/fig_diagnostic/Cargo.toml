@@ -11,14 +11,9 @@ license.workspace = true
 workspace = true
 
 [dependencies]
-cfg-if.workspace = true
-clap.workspace = true
-fig_ipc.workspace = true
 fig_os_shim.workspace = true
-fig_proto.workspace = true
 fig_util.workspace = true
 serde.workspace = true
-serde_json.workspace = true
 sysinfo.workspace = true
 time.workspace = true
 tokio.workspace = true

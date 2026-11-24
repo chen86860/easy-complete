@@ -16,7 +16,6 @@ fig_os_shim.workspace = true
 fig_settings.workspace = true
 fig_util.workspace = true
 reqwest.workspace = true
-serde.workspace = true
 serde_json.workspace = true
 tokio.workspace = true
 tracing.workspace = true

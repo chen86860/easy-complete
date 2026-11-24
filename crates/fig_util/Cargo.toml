@@ -36,14 +36,12 @@ tracing.workspace = true
 whoami.workspace = true
 
 [target.'cfg(target_os = "macos")'.dependencies]
-core-foundation = "0.10.0"
 macos-utils = { path = "../macos-utils" }
 objc2.workspace = true
 objc2-app-kit = { workspace = true, features = ["NSWorkspace"] }
 objc2-foundation = { workspace = true, features = ["NSURL"] }
 
 [target.'cfg(unix)'.dependencies]
-sysinfo.workspace = true
 nix.workspace = true
 
 [dev-dependencies]

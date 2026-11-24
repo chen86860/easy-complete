@@ -68,10 +68,10 @@ export function Sidebar({
             <button
               className={clsx(
                 "dashboard-sidebar-item mb-0.5 flex h-8 w-full items-center gap-2 rounded-lg border-0 px-1.5 text-left",
-                "font-sans text-[13px] font-normal",
+                "font-sans text-[13px]",
                 active
-                  ? "dashboard-sidebar-item-active"
-                  : "bg-transparent text-(--ds-sidebar-item)",
+                  ? "dashboard-sidebar-item-active font-semibold"
+                  : "bg-transparent font-normal text-(--ds-sidebar-item)",
               )}
               key={item.id}
               onClick={() => onSectionChange(item.id)}

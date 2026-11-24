@@ -66,7 +66,9 @@ printf '%s' "$SPARKLE_PRIVATE_ED_KEY" | \
 # and writes files with spaces on disk. GitHub normalizes those spaces to dots in
 # release asset names, so normalize the files ourselves and keep the appcast URLs
 # aligned with the exact names uploaded to the release.
+SPARKLE_RELEASE_NOTES_ZH="${SPARKLE_RELEASE_NOTES_ZH:-}" \
 python3 - "$APPCAST_DIR/appcast.xml" "$BUNDLE_VERSION" "$APPCAST_DIR" <<'PY'
+import os
 import pathlib
 import re
 import sys
@@ -135,6 +137,30 @@ appcast = re.sub(
     appcast,
     flags=re.DOTALL,
 )
+
+# Sparkle picks one of several <description> elements by xml:lang, using the user's
+# preferred macOS languages, and treats one without xml:lang as "en" with an error log.
+# So when Chinese notes exist, the English one is labelled and listed first: users whose
+# languages match neither get English.
+notes_zh = os.environ.get("SPARKLE_RELEASE_NOTES_ZH", "").strip()
+if notes_zh:
+    descriptions = re.findall(r"<description\b[^>]*>", appcast)
+    if len(descriptions) != 1 or "xml:lang" in descriptions[0]:
+        raise SystemExit(
+            f"error: expected one unlabelled <description> to localize, found {descriptions}"
+        )
+    english = re.search(r"([ \t]*)<description\b([^>]*)>.*?</description>", appcast, flags=re.DOTALL)
+    indent, attributes = english.group(1), english.group(2)
+    cdata = notes_zh.replace("]]>", "]]]]><![CDATA[>")
+    chinese = f'\n{indent}<description xml:lang="zh"{attributes}><![CDATA[{cdata}\n]]></description>'
+    appcast = (
+        appcast[: english.start()]
+        + english.group(0).replace("<description", '<description xml:lang="en"', 1)
+        + chinese
+        + appcast[english.end() :]
+    )
+    print("Added Chinese release notes (xml:lang=zh)")
+
 appcast_path.write_text(appcast)
 
 # Do not upload delta files inherited from an older appcast item.

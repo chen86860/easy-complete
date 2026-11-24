@@ -58,7 +58,7 @@ STEP=1
 # Prereleases get no CHANGELOG section (see AGENTS.md); the stable release covers them.
 # Same pattern release.yml uses to publish a tag as a prerelease.
 if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+-(alpha|beta|rc)(\.[0-9A-Za-z-]+)*$ ]]; then
-  echo "  (prerelease: leave ## Unreleased in CHANGELOG as it is; copy any notes into the GitHub prerelease body)"
+  echo "  (prerelease: leave ## Unreleased in CHANGELOG as it is; the release workflow ships its entries as the notes)"
 else
   echo "  ${STEP}. Rename ## Unreleased to ## v${VERSION} - $(date +%Y-%m-%d) in both CHANGELOG.md (English) and CHANGELOG.zh-CN.md (Chinese)"
   STEP=$((STEP + 1))

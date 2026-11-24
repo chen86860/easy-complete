@@ -230,10 +230,11 @@ function PrivacyPage() {
           >
             PostHog
           </a>
-          . PostHog derives a coarse location (country/city) from the request IP
-          at ingestion; the IP address itself is not stored on events. Data is
-          used solely to understand aggregate usage of Easy Complete and is
-          never sold or shared.
+          . Like any web request, each event reaches PostHog from your IP
+          address. PostHog records that address with the event and derives an
+          approximate location (country and city) from it. Data is used solely
+          to understand aggregate usage of Easy Complete and is never sold or
+          shared.
         </p>
 
         <h2 className={SECTION_HEADING}>Turning it off</h2>

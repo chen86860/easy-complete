@@ -82,7 +82,17 @@ The script also refreshes `Cargo.lock` and regenerates `THIRD_PARTY_NOTICES.txt`
 4. Merge the pull request once CI passes
 5. Tag the merge commit on `main`: `git switch main && git pull --ff-only && git tag v<version> && git push origin v<version>`
 
-Never tag the bump branch before it merges: the tag would point at a commit that is not on `main`, and CI may still reject it (`v2.8.0-beta.6` was tagged on a commit whose lockfile CI later rejected). `release.yml` also fails at once when the tag does not match the `[workspace.package]` version in `Cargo.toml`, so a tag pushed before the bump merges never builds.
+Never tag a `chore/release-*` bump branch before it merges: the tag would point at a commit that is not on `main`, and CI may still reject it (`v2.8.0-beta.6` was tagged on a commit whose lockfile CI later rejected). `release.yml` also fails at once when the tag does not match the `[workspace.package]` version in `Cargo.toml`, so a tag pushed before the bump merges never builds.
+
+Small changes merge to `main` and ship in the next beta. A large or risky change is tested as a beta built from its own pull request branch first, and merges to `main` only after that beta checks out, so `main` never holds a large unverified change:
+
+1. Merge `origin/main` into the feature branch, so the beta also carries everything already on `main`
+2. Add the change's lines under `## Unreleased` in both changelogs: the beta's notes come from there
+3. Run `./scripts/bump-version.sh <next beta>` on the feature branch and commit `chore: bump version to v<version>` there. The number continues the shared beta sequence, so the next beta from `main` takes the one after it
+4. Push and wait for the pull request's CI to pass, then tag that branch's HEAD: `git tag v<version> <sha> && git push origin v<version>`
+5. If the beta holds up, merge the pull request. If not, fix on the branch and ship another beta from it
+
+Until it merges, the next beta built from `main` leaves the change out again, so beta users lose it. Merge or drop the change before tagging another beta from `main`, or say so in that beta's notes.
 
 Prereleases use `X.Y.Z-alpha|beta|rc[.N]` tags. They publish as GitHub prereleases (no Homebrew tap update), and every tag also refreshes the `appcast.xml` on the rolling `beta-feed` release, which users who enable `app.betaUpdates` read. Sparkle's version comparator stops at the first `-`, so `CFBundleVersion` / `sparkle:version` drop the separators (`2.4.0-beta.1` → `2.4.0beta1`, via `scripts/sparkle-version.sh`); `CFBundleShortVersionString` keeps the tag form.
 

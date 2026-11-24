@@ -433,7 +433,7 @@ LICENSE-APACHE: see License Text 15
 LICENSE-MIT: see License Text 40
 
 --------------------------------------------------------------------------------
-cookie 0.18.2
+cookie 0.18.3
 License: MIT OR Apache-2.0
 Authors: Sergio Benitez <sb@sergio.bz>, Alex Crichton <alex@alexcrichton.com>
 Source: https://github.com/SergioBenitez/cookie-rs
@@ -5037,7 +5037,7 @@ SOFTWARE.
 
 ================================================================================
 License Text 41
-Used by: cookie 0.18.2
+Used by: cookie 0.18.3
 
 Apache License
                         Version 2.0, January 2004
@@ -5244,7 +5244,7 @@ limitations under the License.
 
 ================================================================================
 License Text 42
-Used by: cookie 0.18.2
+Used by: cookie 0.18.3
 
 Copyright (c) 2017 Sergio Benitez
 Copyright (c) 2014 Alex Crichton

@@ -68,8 +68,18 @@ enum Section {
 /// The entry that a following, more indented line may continue.
 enum Last {
     None,
-    Opt { index: usize, indent: usize },
-    Subcommand { index: usize, indent: usize },
+    Opt {
+        index: usize,
+        indent: usize,
+    },
+    Subcommand {
+        index: usize,
+        indent: usize,
+    },
+    /// A line that isn't a new entry, or repeats one: the lines under it are dropped too.
+    Dropped {
+        indent: usize,
+    },
 }
 
 /// Parses `text`, the `--help` output of `words` (`["gh", "pr"]`).
@@ -88,6 +98,9 @@ pub fn parse(words: &[&str], text: &str) -> Spec {
     let mut braced: Vec<String> = Vec::new();
     // Headers follow a blank line; `type: boolean` under an entry is text.
     let mut after_blank = true;
+    // The usage names a command (`usage: fastboot [OPTION...] COMMAND...`), so sections under
+    // headers we don't know (`flashing:`, `basics:`) list commands.
+    let mut takes_command = false;
 
     for raw in text.lines() {
         let line = strip_ansi(raw);
@@ -100,12 +113,17 @@ pub fn parse(words: &[&str], text: &str) -> Spec {
         }
         let indent = indent_width(line);
         let first_after_blank = std::mem::replace(&mut after_blank, false);
+        if (section == Section::Usage || trimmed.to_lowercase().starts_with("usage"))
+            && trimmed.to_lowercase().contains("command")
+        {
+            takes_command = true;
+        }
 
         if indent == 0
             && first_after_blank
             && let Some((header, inline)) = header(trimmed)
         {
-            section = classify(&header, inline);
+            section = classify(&header, inline, takes_command);
             last = Last::None;
             braced.clear();
             continue;
@@ -144,6 +162,7 @@ pub fn parse(words: &[&str], text: &str) -> Spec {
                 append_description(&mut spec.subcommands[index].description, trimmed);
                 continue;
             },
+            Last::Dropped { indent: entry } if continues(entry) => continue,
             _ => {},
         }
 
@@ -178,6 +197,13 @@ pub fn parse(words: &[&str], text: &str) -> Spec {
                         index: spec.subcommands.len() - 1,
                         indent,
                     };
+                } else if indent > 0 {
+                    // A command listed again, or a form we can't read (fastboot's
+                    // `flash vendor_boot:RAMDISK`): its description isn't the entry above's.
+                    last = Last::Dropped { indent };
+                } else {
+                    // Text at column 0, such as a header with no blank line above it.
+                    last = Last::None;
                 }
             },
             _ => {},
@@ -208,8 +234,8 @@ fn header(line: &str) -> Option<(String, bool)> {
     if let Some((name, rest)) = line.split_once(':') {
         let name = name.trim();
         let words = name.split_whitespace().count();
-        // kubectl: `Basic Commands (Beginner):`
-        if (1..=5).contains(&words) && name.chars().all(|c| c.is_alphanumeric() || " -_()".contains(c)) {
+        // kubectl: `Basic Commands (Beginner):`, fastboot: `locking/unlocking:`
+        if (1..=5).contains(&words) && name.chars().all(|c| c.is_alphanumeric() || " -_()/".contains(c)) {
             return Some((name.to_lowercase(), !rest.trim().is_empty()));
         }
         return None;
@@ -226,7 +252,7 @@ fn header(line: &str) -> Option<(String, bool)> {
     None
 }
 
-fn classify(header: &str, inline: bool) -> Section {
+fn classify(header: &str, inline: bool, takes_command: bool) -> Section {
     if header.contains("example") || header.contains("topic") || header.contains("environment") {
         return Section::Skip;
     }
@@ -249,6 +275,9 @@ fn classify(header: &str, inline: bool) -> Section {
     }
     if header.contains("argument") {
         return Section::Positional;
+    }
+    if takes_command {
+        return Section::Commands;
     }
     Section::Skip
 }
@@ -509,9 +538,12 @@ fn is_subcommand_name(name: &str) -> bool {
 
 fn parse_subcommand(words: &[&str], line: &str) -> Option<Subcommand> {
     let (names_part, desc) = match split_description(line) {
-        (names, Some(desc)) => (names, desc),
+        (names, Some(desc)) => (names, Some(desc)),
         // gh: `update-branch: Update a pull request branch`
-        (_, None) => line.split_once(": ").filter(|(names, _)| !names.contains(' '))?,
+        (_, None) => match line.split_once(": ").filter(|(names, _)| !names.contains(' ')) {
+            Some((names, desc)) => (names, Some(desc)),
+            None => return parse_usage_entry(words, line),
+        },
     };
     // gh: `auth:          Authenticate gh`
     let names_part = names_part.strip_suffix(':').unwrap_or(names_part);
@@ -549,8 +581,44 @@ fn parse_subcommand(words: &[&str], line: &str) -> Option<Subcommand> {
 
     Some(Subcommand {
         name: names,
-        description: Some(desc.to_owned()),
+        description: desc.map(str::to_owned),
     })
+}
+
+/// fastboot: `flash PARTITION [FILENAME] Flash given partition…`, or `boot KERNEL [RAMDISK]`
+/// with its description on the lines below: the command, its placeholders, then the text,
+/// with no wide gap between them.
+fn parse_usage_entry(words: &[&str], line: &str) -> Option<Subcommand> {
+    let mut rest = line;
+    let name = tokens(line).first().copied()?;
+    // tsc: `tsc` alone, an example of running the command itself.
+    if !is_subcommand_name(name) || name.chars().any(|c| c.is_uppercase()) || words.last() == Some(&name) {
+        return None;
+    }
+    rest = rest[name.len()..].trim_start();
+    let mut placeholders = 0;
+    while let Some(token) = tokens(rest).first().copied()
+        && is_placeholder(token)
+    {
+        placeholders += 1;
+        rest = rest[token.len()..].trim_start();
+    }
+    if placeholders == 0 && !rest.is_empty() {
+        return None;
+    }
+    Some(Subcommand {
+        name: vec![name.to_owned()],
+        description: (!rest.is_empty()).then(|| rest.to_owned()),
+    })
+}
+
+/// `PARTITION`, `[FILENAME]`, `<file>`, `{a,b}`.
+fn is_placeholder(token: &str) -> bool {
+    token.starts_with(['[', '<', '{'])
+        || (token.chars().any(|c| c.is_ascii_uppercase())
+            && token
+                .chars()
+                .all(|c| c.is_ascii_uppercase() || c.is_ascii_digit() || "_|:.-".contains(c)))
 }
 
 /// clap: `build  Compile the project [aliases: b, bld]`
@@ -759,6 +827,39 @@ mod tests {
         assert!(opt(&spec, "--verbose").args.is_none());
         assert_eq!(desc(&opt(&spec, "--verbose").description), "Print each step");
         assert_eq!(arg(opt(&spec, "--env")), ("env", false, vec!["staging", "production"]));
+    }
+
+    #[test]
+    fn commands_under_own_headers() {
+        let spec = parse(&["fastboot"], &fixture("custom-fastboot"));
+        let names = sub_names(&spec);
+        for name in [
+            "update",
+            "flash",
+            "devices",
+            "reboot",
+            "flashing",
+            "boot",
+            "flash:raw",
+            "fetch",
+        ] {
+            assert!(names.contains(&name), "{name} missing from {names:?}");
+        }
+        assert_eq!(names.iter().filter(|n| **n == "flash").count(), 1);
+        assert!(!names.contains(&"ramdisk."), "{names:?}");
+        assert_eq!(
+            desc(&sub(&spec, "flash").description),
+            "Flash given partition, using the image from $ANDROID_PRODUCT_OUT if no filename is given."
+        );
+        assert_eq!(
+            desc(&sub(&spec, "boot").description),
+            "Download and boot kernel from RAM."
+        );
+        assert_eq!(
+            desc(&sub(&spec, "flashing").description),
+            "Lock/unlock partitions for flashing"
+        );
+        assert!(opt(&spec, "--skip-reboot").description.is_some());
     }
 
     #[test]

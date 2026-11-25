@@ -152,6 +152,25 @@ describe("loadSubcommandCached", () => {
     expect(exec).not.toHaveBeenCalled();
   });
 
+  it("stops once the setting is turned off", async () => {
+    await loadSubcommandCached(location, undefined, undefined, true);
+    const loadServe = await firstSubcommandLoader();
+    updateSettings({ [SETTINGS.HELP_FALLBACK]: false });
+    exec.mockClear();
+    await expect(
+      loadSubcommandCached(location, undefined, undefined, true),
+    ).rejects.toBeInstanceOf(MissingSpecError);
+    expect((await loadServe()).options).toBeUndefined();
+    expect(exec).not.toHaveBeenCalled();
+  });
+
+  it("doesn't hand a cached --help spec to history", async () => {
+    await loadSubcommandCached(location, undefined, undefined, true);
+    await expect(loadSubcommandCached(location)).rejects.toBeInstanceOf(
+      MissingSpecError,
+    );
+  });
+
   it("doesn't for a disabled command", async () => {
     updateSettings({ [SETTINGS.DISABLE_FOR_COMMANDS]: ["tool"] });
     await expect(

@@ -58,7 +58,8 @@ export const loadHelpSpec = async (
       const [name] = Array.isArray(sub.name) ? sub.name : [sub.name];
       const plain = { ...sub };
       sub.loadSpec = async () =>
-        (await loadHelpSpec([...words, name])) ?? plain;
+        (helpFallbackEnabled() && (await loadHelpSpec([...words, name]))) ||
+        plain;
     }
   }
   return spec;

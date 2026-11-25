@@ -4,7 +4,7 @@ import { GITHUB_URL } from "../data.ts";
 import { SeoJsonLd, guideSchema, pageHead } from "../seo.tsx";
 
 const PRIVACY_DESCRIPTION =
-  "What anonymous usage data Easy Complete collects, every network request the app can make, what stays on your Mac, and how to turn each one off.";
+  "What usage data Easy Complete collects, every network request the app can make, what stays on your Mac, and how to turn each one off.";
 
 export const Route = createFileRoute("/privacy-policy")({
   head: () =>
@@ -24,7 +24,7 @@ const CODE_INLINE =
 
 const EXAMPLE_EVENT = `{
   "event": "daily_heartbeat",
-  "distinct_id": "fa7ebf5b-....-....",   // random UUID, no identity
+  "distinct_id": "fa7ebf5b-....-....",   // random installation ID
   "timestamp": "2026-07-08T06:53:08Z",
   "properties": {
     "app_name": "Easy Complete",
@@ -156,7 +156,7 @@ function PrivacyPage() {
           command line, generating suggestions, and rendering the overlay all
           happen locally, with no account and no AI requests. The app collects a
           small set of{" "}
-          <strong className="text-[#cdd6e0]">anonymous usage statistics</strong>
+          <strong className="text-[#cdd6e0]">limited usage statistics</strong>
           , checks for updates, and a few completion specs look up live data
           over the network. This page lists every one of those requests, what
           stays on your Mac, and how to turn each one off.
@@ -168,9 +168,11 @@ function PrivacyPage() {
           name (e.g. <code className={CODE_INLINE}>zsh</code>), the terminal app
           name when detectable, your macOS language setting (e.g.{" "}
           <code className={CODE_INLINE}>en-US</code>), and a{" "}
-          <strong className="text-[#cdd6e0]">random device ID</strong> — a UUID
-          generated on first launch that is not derived from your hardware,
-          username, or anything identifying, and resets if you reinstall.
+          <strong className="text-[#cdd6e0]">random installation ID</strong> — a UUID
+          generated on first launch, not derived from your hardware or username.
+          It lets us count active installations without requiring an account;
+          one person using multiple installations may be counted more than once.
+          It is regenerated if the app's local data is removed.
         </p>
         <div className="mb-4 overflow-x-auto rounded-[14px] border border-[#1c232d]">
           <table className="w-full border-collapse text-left text-[14px]">
@@ -203,14 +205,14 @@ function PrivacyPage() {
         </div>
         <p className={PARAGRAPH}>
           Completion usage is aggregated locally into plain counters and
-          reported once per day as totals. A heartbeat event looks like this —
-          this is the complete payload, not an excerpt:
+          reported once per day as totals. Here is an example heartbeat event,
+          with the PostHog project API key omitted:
         </p>
         <pre className="mb-4 overflow-x-auto rounded-[14px] border border-[#1c232d] bg-[#0d1219] p-5 font-mono text-[13px] leading-[1.6] text-[#cdd6e0]">
           {EXAMPLE_EVENT}
         </pre>
 
-        <h2 className={SECTION_HEADING}>What we never collect</h2>
+        <h2 className={SECTION_HEADING}>What usage telemetry does not collect</h2>
         <ul className="m-0 mb-4 list-disc pl-5 text-[15px] leading-[1.8] text-[#9aa4b0]">
           <li>
             The commands you type, their arguments, or their output — command
@@ -221,6 +223,12 @@ function PrivacyPage() {
           <li>Your username, hostname, email, or any account identifier</li>
         </ul>
 
+        <p className={PARAGRAPH}>
+          Some dynamic completions send queries, such as package names, to
+          external services. These are separate from usage telemetry and are
+          described under Every network request below.
+        </p>
+
         <h2 className={SECTION_HEADING}>Where the data goes</h2>
         <p className={PARAGRAPH}>
           Events are sent over HTTPS to our own analytics proxy and stored in{" "}
@@ -230,10 +238,11 @@ function PrivacyPage() {
           >
             PostHog
           </a>
-          . PostHog derives a coarse location (country/city) from the request IP
-          at ingestion; the IP address itself is not stored on events. Data is
-          used solely to understand aggregate usage of Easy Complete and is
-          never sold or shared.
+          . PostHog processes these statistics on our behalf. It uses your IP
+          address to estimate your country and city, then discards the IP address
+          before storing the event. We use these statistics to understand active
+          installation counts, geographic distribution, and how Easy Complete is
+          used. We do not sell this data.
         </p>
 
         <h2 className={SECTION_HEADING}>Turning it off</h2>
@@ -303,10 +312,16 @@ function PrivacyPage() {
             <code className={CODE_INLINE}>
               ~/Library/Application Support/easy-complete/data.sqlite3
             </code>
-            : the random device ID used for usage statistics, today&apos;s
+            : the random installation ID used for usage statistics, today&apos;s
             completion counts until they are sent, and setup state such as the
             last version that ran and whether Accessibility is granted. It holds
             no commands, and only your user account can read it.
+          </li>
+          <li>
+            <code className={CODE_INLINE}>telemetry_queue.jsonl</code> in the
+            same folder: up to 200 events waiting to be sent after setup or
+            retried after a network failure. Disabling telemetry clears this
+            queue.
           </li>
           <li>
             <code className={CODE_INLINE}>settings.json</code> in the same
@@ -320,8 +335,10 @@ function PrivacyPage() {
           </li>
         </ul>
         <p className={PARAGRAPH}>
-          None of it is uploaded, and{" "}
-          <code className={CODE_INLINE}>ec uninstall</code> removes all of it.
+          These files are not uploaded as files. When telemetry is enabled,
+          the event data described above is sent to PostHog. {" "}
+          <code className={CODE_INLINE}>ec uninstall</code> removes the local
+          data; it does not delete events already stored in PostHog.
         </p>
 
         <h2 className={SECTION_HEADING}>Questions</h2>

@@ -1,0 +1,52 @@
+Magical shell history
+
+Usage: atuin <COMMAND>
+
+  search           Interactive history search
+  output           Work with captured command output
+  stats            Calculate statistics for your history
+  history          Manipulate shell history
+  wrapped          Show a fun, year-in-review recap of your shell history
+
+AI:
+  threads          Search, read and resume your coding agents' captured threads
+  resume           Pick a captured coding-agent thread and resume it (short for atuin threads resume)
+  mcp              Start an MCP server exposing history search to AI tools (stdio)
+
+Sync & account:  Keep your history in sync across machines
+  sync             Sync with the configured server
+  login            Login to the configured server
+  logout           Log out
+  register         Register with the configured server
+  status           Display the sync status
+  account          Manage your sync account
+
+Data:            Synced data beyond your shell history
+  kv               Get or set small key-value pairs
+  store            Manage the atuin data store
+  dotfiles         List legacy synced dotfiles data
+  scripts          Manage your scripts with Atuin
+
+Setup:           Install, configure, and troubleshoot Atuin
+  setup            Setup Atuin features
+  init             Print Atuin's shell init script
+  import           Import shell history from file
+  doctor           Run the doctor to check for common issues
+  config           Get, set, or print values in your atuin config file
+  workspace        Set up the .atuin.lua config file of a project
+  gen-completions  Generate shell completions
+
+Advanced:
+  key              Print the encryption key for transfer to another machine
+  hook             Record the commands an AI agent runs, from its hooks
+  default-config   Print the default atuin configuration (config.toml)
+  info             Information about Atuin data locations and ENV vars
+  daemon           Manage the background daemon
+  pty-proxy        PTY proxy for atuin
+  contributors     List the people who have contributed to Atuin
+
+  help             Print this message or the help of the given subcommand(s)
+
+Options:
+  -h, --help     Print help
+  -V, --version  Print version

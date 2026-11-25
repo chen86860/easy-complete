@@ -109,13 +109,16 @@ pub fn parse(words: &[&str], text: &str) -> Spec {
         if trimmed.is_empty() {
             last = Last::None;
             after_blank = true;
+            // atuin: `Usage: atuin <COMMAND>`, a blank line, then its first commands with no
+            // header of their own.
+            if section == Section::Usage && takes_command {
+                section = Section::Commands;
+            }
             continue;
         }
         let indent = indent_width(line);
         let first_after_blank = std::mem::replace(&mut after_blank, false);
-        if (section == Section::Usage || trimmed.to_lowercase().starts_with("usage"))
-            && trimmed.to_lowercase().contains("command")
-        {
+        if (section == Section::Usage || trimmed.to_lowercase().starts_with("usage")) && names_command(trimmed) {
             takes_command = true;
         }
 
@@ -234,8 +237,9 @@ fn header(line: &str) -> Option<(String, bool)> {
     if let Some((name, rest)) = line.split_once(':') {
         let name = name.trim();
         let words = name.split_whitespace().count();
-        // kubectl: `Basic Commands (Beginner):`, fastboot: `locking/unlocking:`
-        if (1..=5).contains(&words) && name.chars().all(|c| c.is_alphanumeric() || " -_()/".contains(c)) {
+        // kubectl: `Basic Commands (Beginner):`, fastboot: `locking/unlocking:`, atuin:
+        // `Sync & account:`
+        if (1..=5).contains(&words) && name.chars().all(|c| c.is_alphanumeric() || " -_()/&".contains(c)) {
             return Some((name.to_lowercase(), !rest.trim().is_empty()));
         }
         return None;
@@ -250,6 +254,20 @@ fn header(line: &str) -> Option<(String, bool)> {
     }
     // Go's flag package: `Usage of tool:` is matched above; anything else is text.
     None
+}
+
+/// A usage line with a command placeholder: `COMMAND...`, `<COMMAND>`, `<command>`, `[COMMAND]`.
+/// Not prose such as ripgrep's `command | rg [OPTIONS] PATTERN`.
+fn names_command(usage: &str) -> bool {
+    usage.split_whitespace().any(|word| {
+        let bare = word.trim_end_matches("...");
+        bare.starts_with("COMMAND")
+            || ["<", "["].iter().any(|open| {
+                bare.to_lowercase()
+                    .strip_prefix(open)
+                    .is_some_and(|rest| rest.starts_with("command"))
+            })
+    })
 }
 
 fn classify(header: &str, inline: bool, takes_command: bool) -> Section {
@@ -860,6 +878,34 @@ mod tests {
             "Lock/unlock partitions for flashing"
         );
         assert!(opt(&spec, "--skip-reboot").description.is_some());
+    }
+
+    #[test]
+    fn groups_without_a_commands_header() {
+        let spec = parse(&["atuin"], &fixture("clap-atuin"));
+        let names = sub_names(&spec);
+        // Right below the usage, under no header.
+        for name in ["search", "history", "stats"] {
+            assert!(names.contains(&name), "{name} missing from {names:?}");
+        }
+        // Under `Sync & account:  Keep your history in sync across machines`.
+        for name in ["sync", "login", "account"] {
+            assert!(names.contains(&name), "{name} missing from {names:?}");
+        }
+        assert!(!names.contains(&"Sync"), "{names:?}");
+        assert_eq!(desc(&sub(&spec, "sync").description), "Sync with the configured server");
+        assert_eq!(names.len(), 33, "{names:?}");
+    }
+
+    #[test]
+    fn usage_prose_is_no_command() {
+        // `command | rg [OPTIONS] PATTERN` pipes into rg; rg has no subcommands.
+        let spec = parse(&["rg"], &fixture("custom-rg"));
+        assert!(spec.subcommands.is_empty(), "{:?}", sub_names(&spec));
+        assert!(names_command("Usage: atuin <COMMAND>"));
+        assert!(names_command("usage: fastboot [OPTION...] COMMAND..."));
+        assert!(names_command("Usage: tool [command]"));
+        assert!(!names_command("    command | rg [OPTIONS] PATTERN"));
     }
 
     #[test]

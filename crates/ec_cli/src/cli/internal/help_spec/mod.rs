@@ -5,6 +5,8 @@
 //! compiled executables and python / node / ruby scripts, whose argument parsers answer
 //! `--help` before doing anything. Shell scripts and anything else may ignore it and just run.
 //! A pnpm global command is an `sh` shim; its target is run instead, under the same rules.
+//! A compiled program reached under another name (a mise shim, OrbStack's `docker`) picks what
+//! to run from that name, so it is skipped too.
 //! macOS's own tools (`/usr/bin`, `/bin`…) are skipped too: they have no `--help`, and some
 //! (`yes`, `say`) treat it as input. The program gets no stdin and is killed after a timeout.
 //!
@@ -31,7 +33,7 @@ use fig_util::directories;
 use tracing::debug;
 
 /// Bump when the parser changes, so cached specs are read again.
-const PARSER_VERSION: u32 = 2;
+const PARSER_VERSION: u32 = 3;
 /// Subcommands read below the command (`cmd a b c`).
 const MAX_DEPTH: usize = 3;
 const TIMEOUT: Duration = Duration::from_secs(2);
@@ -82,6 +84,10 @@ impl HelpSpecArgs {
         }
         if !executable.is_safe() {
             debug!(?path, "not running --help: not a known-safe executable");
+            return None;
+        }
+        if executable.is_dispatcher(&self.command) {
+            debug!(?path, "not running --help: a binary that dispatches on its name");
             return None;
         }
 
@@ -184,6 +190,14 @@ impl Executable {
             return false;
         }
         is_binary(&self.head) || is_safe_script(&self.head)
+    }
+
+    /// A compiled program reached under another name, such as a mise shim (a link to `mise`) or
+    /// OrbStack's `docker` (`docker-tools`): it picks what to run from the name it was called by.
+    /// Run under its own name it prints its own help; run under the shim's, it may start any
+    /// program, shell scripts included, so it isn't run at all.
+    fn is_dispatcher(&self, command: &str) -> bool {
+        is_binary(&self.head) && self.path.file_name().is_some_and(|name| name != command)
     }
 
     /// FNV-1a: stable across builds, unlike `DefaultHasher`.
@@ -398,6 +412,25 @@ mod tests {
                 "notes.txt",
             ]
         );
+    }
+
+    #[test]
+    fn dispatchers() {
+        let dir = tempfile::tempdir().unwrap();
+        let dir = fs::canonicalize(dir.path()).unwrap();
+        let binary = dir.join("mise");
+        fs::write(&binary, [0xcf, 0xfa, 0xed, 0xfe, 0, 0, 0, 0]).unwrap();
+        let script = dir.join("cli.mjs");
+        fs::write(&script, "#!/usr/bin/env node\n").unwrap();
+        for (target, link) in [(&binary, "glab"), (&script, "ef-cli")] {
+            std::os::unix::fs::symlink(target, dir.join(link)).unwrap();
+        }
+        let inspect = |name: &str| Executable::inspect(&dir.join(name)).unwrap();
+
+        assert!(!inspect("mise").is_dispatcher("mise"));
+        assert!(inspect("glab").is_dispatcher("glab"));
+        // npm links global commands to their scripts, which don't read their name.
+        assert!(!inspect("ef-cli").is_dispatcher("ef-cli"));
     }
 
     #[test]

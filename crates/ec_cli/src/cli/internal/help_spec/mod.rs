@@ -8,7 +8,8 @@
 //! (`yes`, `say`) treat it as input. The program gets no stdin and is killed after a timeout.
 //!
 //! The parsed spec, or the lack of one, is cached per executable version (path, size and
-//! modification time), so `--help` runs once.
+//! modification time), so `--help` runs once. Cache files are named after the command
+//! (`gh-pr-<hash>.json`), and a new version's file replaces the old one.
 
 mod parse;
 
@@ -77,31 +78,55 @@ impl HelpSpecArgs {
             return None;
         }
 
-        let cache = directories::cache_dir().ok().map(|dir| {
-            dir.join("help-specs")
-                .join(format!("{:016x}.json", executable.cache_key(&self.subcommands)))
-        });
-        if let Some(cached) = cache.as_deref().and_then(|path| fs::read_to_string(path).ok())
+        let mut words = vec![self.command.as_str()];
+        words.extend(self.subcommands.iter().map(String::as_str));
+        let label = words.join("-");
+        let file_name = format!("{label}-{:016x}.json", executable.cache_key(&self.subcommands));
+        let cache_dir = directories::cache_dir().ok().map(|dir| dir.join("help-specs"));
+        if let Some(cached) = cache_dir
+            .as_deref()
+            .and_then(|dir| fs::read_to_string(dir.join(&file_name)).ok())
             && let Ok(value) = serde_json::from_str(&cached)
         {
             return value;
         }
 
         let spec = run_help(&executable.path, &self.subcommands).and_then(|text| {
-            let mut words = vec![self.command.as_str()];
-            words.extend(self.subcommands.iter().map(String::as_str));
             let spec = parse::parse(&words, &text);
             (!spec.is_empty()).then(|| serde_json::to_value(spec).ok()).flatten()
         });
 
-        if let Some(cache) = cache {
+        if let Some(dir) = cache_dir {
             let value = spec.clone().unwrap_or(serde_json::Value::Null);
-            if let Some(dir) = cache.parent() {
-                let _ = fs::create_dir_all(dir);
-            }
-            let _ = fs::write(cache, value.to_string());
+            let _ = fs::create_dir_all(&dir);
+            remove_stale(&dir, &label, &file_name);
+            let _ = fs::write(dir.join(&file_name), value.to_string());
         }
         spec
+    }
+}
+
+/// Removes the cached specs of `label` (`gh-pr`) other than `keep`, read from an earlier
+/// version of the program or parser, and those named by the hash alone (before 2.10.0-beta.6).
+fn remove_stale(dir: &Path, label: &str, keep: &str) {
+    let Ok(entries) = fs::read_dir(dir) else { return };
+    for entry in entries.flatten() {
+        let name = entry.file_name();
+        let Some(name) = name.to_str() else { continue };
+        if name == keep {
+            continue;
+        }
+        let Some(stem) = name.strip_suffix(".json") else {
+            continue;
+        };
+        let is_hash = |s: &str| s.len() == 16 && s.bytes().all(|b| b.is_ascii_hexdigit());
+        let stale = match stem.rsplit_once('-') {
+            Some((l, hash)) => l == label && is_hash(hash),
+            None => is_hash(stem),
+        };
+        if stale {
+            let _ = fs::remove_file(entry.path());
+        }
     }
 }
 
@@ -315,6 +340,37 @@ mod tests {
         assert!(!is_word("a b"));
         assert!(!is_word("$(x)"));
         assert!(!is_word(""));
+    }
+
+    #[test]
+    fn stale_cache() {
+        let dir = tempfile::tempdir().unwrap();
+        let names = [
+            "dlv-0123456789abcdef.json",
+            "dlv-fedcba9876543210.json",
+            "dlv-debug-0123456789abcdef.json",
+            "fastboot-0123456789abcdef.json",
+            "7c97d6a6d45e1de3.json",
+            "notes.txt",
+        ];
+        for name in names {
+            fs::write(dir.path().join(name), "null").unwrap();
+        }
+        remove_stale(dir.path(), "dlv", "dlv-fedcba9876543210.json");
+        let mut left: Vec<String> = fs::read_dir(dir.path())
+            .unwrap()
+            .map(|e| e.unwrap().file_name().into_string().unwrap())
+            .collect();
+        left.sort();
+        assert_eq!(
+            left,
+            [
+                "dlv-debug-0123456789abcdef.json",
+                "dlv-fedcba9876543210.json",
+                "fastboot-0123456789abcdef.json",
+                "notes.txt",
+            ]
+        );
     }
 
     #[test]

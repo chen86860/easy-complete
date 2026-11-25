@@ -1,0 +1,104 @@
+# Weekly report of bundled specs that drifted from the CLIs they describe (#260).
+# Installs the CLIs listed in scripts/spec-drift.ts, compares each spec with the
+# command's --help, and keeps one open "Spec drift report" issue up to date.
+# A report only: it never fails because of what it finds.
+name: Spec drift
+
+on:
+  schedule:
+    - cron: "0 3 * * 1" # Mondays 03:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: spec-drift
+  cancel-in-progress: true
+
+jobs:
+  report:
+    name: Spec drift report
+    # `ec` (which parses --help) only builds on macOS.
+    runs-on: macos-26
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      issues: write
+    env:
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
+      HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
+      HOMEBREW_NO_ENV_HINTS: 1
+    steps:
+      - uses: actions/checkout@v7
+
+      # Same prebuilt protoc as the Rust jobs in ci.yml.
+      - name: Install protoc
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/protoc.zip" \
+            "https://github.com/protocolbuffers/protobuf/releases/download/v26.1/protoc-26.1-osx-aarch_64.zip"
+          echo "26a29befa8891ecc48809958c909d284f2b9539a2eb47f22cadc631fe6abe8fd  $RUNNER_TEMP/protoc.zip" | shasum -a 256 -c -
+          unzip -q -o "$RUNNER_TEMP/protoc.zip" -d "$RUNNER_TEMP/protoc"
+          echo "$RUNNER_TEMP/protoc/bin" >> "$GITHUB_PATH"
+
+      - name: Set up Rust
+        run: |
+          channel="$(sed -n 's/^channel = "\(.*\)"/\1/p' rust-toolchain.toml)"
+          rustup toolchain install "$channel" --profile minimal
+          echo "RUSTUP_TOOLCHAIN=$channel" >> "$GITHUB_ENV"
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: macos-26-arm64-spec-drift
+
+      - name: Build ec
+        run: cargo build --locked -p ec_cli --bin ec
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6.0.10
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: package.json
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build specs
+        run: pnpm turbo build --filter=@easy-complete/autocomplete-specs --output-logs=errors-only
+
+      # One formula failing to install only drops that CLI from the report.
+      - name: Install CLIs
+        run: |
+          brew update --quiet
+          for formula in $(node scripts/spec-drift.ts --formulae); do
+            brew install --quiet "$formula" || echo "::warning::brew install $formula failed"
+          done
+
+      - name: Compare specs with --help
+        env:
+          EC_BINARY: target/debug/ec
+        run: |
+          node scripts/spec-drift.ts --out "$RUNNER_TEMP/drift"
+          cat "$RUNNER_TEMP/drift/report.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Update the report issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TITLE: Spec drift report
+        run: |
+          set -euo pipefail
+          body="$RUNNER_TEMP/drift/issue.md"
+          printf '\n\n_Updated by [this run](%s/%s/actions/runs/%s)._\n' \
+            "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" >> "$body"
+          number="$(gh issue list --state open --search "in:title \"$TITLE\"" --json number,title \
+            --jq "map(select(.title == env.TITLE)) | .[0].number // empty")"
+          if [ -n "$number" ]; then
+            gh issue edit "$number" --body-file "$body"
+          else
+            gh issue create --title "$TITLE" --label specs --body-file "$body"
+          fi

@@ -8,6 +8,7 @@
 - new: the update window shows release notes in Chinese when macOS prefers Simplified Chinese
 - new: the update window uses the display language chosen in Settings, after Easy Complete restarts
 - new: a command without built-in completions gets its subcommands and options from its own `--help`, read once per installed version. Only compiled programs and Python, Node or Ruby scripts are run, never macOS system tools. Turn it off with "Learn Commands From Their Help" in Settings › Autocomplete (#280)
+- change: `atuin` completions match atuin 18.25, adding `threads`, `mcp`, `config`, `daemon`, `scripts`, `doctor` and the other commands added since the spec was written, and dropping `server` and `uuid`
 
 ## v2.9.0 - 2026-11-23
 

@@ -109,6 +109,11 @@ pub fn parse(words: &[&str], text: &str) -> Spec {
         if trimmed.is_empty() {
             last = Last::None;
             after_blank = true;
+            // atuin: `Usage: atuin <COMMAND>`, a blank line, then its first commands with no
+            // header of their own.
+            if section == Section::Usage && takes_command {
+                section = Section::Commands;
+            }
             continue;
         }
         let indent = indent_width(line);
@@ -234,8 +239,9 @@ fn header(line: &str) -> Option<(String, bool)> {
     if let Some((name, rest)) = line.split_once(':') {
         let name = name.trim();
         let words = name.split_whitespace().count();
-        // kubectl: `Basic Commands (Beginner):`, fastboot: `locking/unlocking:`
-        if (1..=5).contains(&words) && name.chars().all(|c| c.is_alphanumeric() || " -_()/".contains(c)) {
+        // kubectl: `Basic Commands (Beginner):`, fastboot: `locking/unlocking:`, atuin:
+        // `Sync & account:`
+        if (1..=5).contains(&words) && name.chars().all(|c| c.is_alphanumeric() || " -_()/&".contains(c)) {
             return Some((name.to_lowercase(), !rest.trim().is_empty()));
         }
         return None;
@@ -860,6 +866,23 @@ mod tests {
             "Lock/unlock partitions for flashing"
         );
         assert!(opt(&spec, "--skip-reboot").description.is_some());
+    }
+
+    #[test]
+    fn groups_without_a_commands_header() {
+        let spec = parse(&["atuin"], &fixture("clap-atuin"));
+        let names = sub_names(&spec);
+        // Right below the usage, under no header.
+        for name in ["search", "history", "stats"] {
+            assert!(names.contains(&name), "{name} missing from {names:?}");
+        }
+        // Under `Sync & account:  Keep your history in sync across machines`.
+        for name in ["sync", "login", "account"] {
+            assert!(names.contains(&name), "{name} missing from {names:?}");
+        }
+        assert!(!names.contains(&"Sync"), "{names:?}");
+        assert_eq!(desc(&sub(&spec, "sync").description), "Sync with the configured server");
+        assert_eq!(names.len(), 33, "{names:?}");
     }
 
     #[test]

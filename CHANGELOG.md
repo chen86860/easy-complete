@@ -7,7 +7,7 @@
 - docs: clarify privacy policy wording about usage statistics, location data and local telemetry storage
 - new: the update window shows release notes in Chinese when macOS prefers Simplified Chinese
 - new: the update window uses the display language chosen in Settings, after Easy Complete restarts
-- new: a command without built-in completions gets its subcommands and options from its own `--help`, read once per installed version. Only compiled programs and Python, Node or Ruby scripts are run, never macOS system tools. Turn it off with "Learn Commands From --help" in Settings › Autocomplete (#280)
+- new: a command without built-in completions gets its subcommands and options from its own `--help`, read once per installed version. Only compiled programs and Python, Node or Ruby scripts are run, never macOS system tools. Turn it off with "Learn Commands From Their Help" in Settings › Autocomplete (#280)
 
 ## v2.9.0 - 2026-11-23
 

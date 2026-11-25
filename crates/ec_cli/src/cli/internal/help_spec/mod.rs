@@ -4,6 +4,7 @@
 //! Running a program the user hasn't asked to run must be safe, so `--help` only runs for
 //! compiled executables and python / node / ruby scripts, whose argument parsers answer
 //! `--help` before doing anything. Shell scripts and anything else may ignore it and just run.
+//! A pnpm global command is an `sh` shim; its target is run instead, under the same rules.
 //! macOS's own tools (`/usr/bin`, `/bin`…) are skipped too: they have no `--help`, and some
 //! (`yes`, `say`) treat it as input. The program gets no stdin and is killed after a timeout.
 //!
@@ -72,7 +73,13 @@ impl HelpSpecArgs {
             return None;
         }
         let path = resolve(&self.command, std::env::var_os("PATH").as_deref())?;
-        let executable = Executable::inspect(&path)?;
+        let mut executable = Executable::inspect(&path)?;
+        // A pnpm shim runs its target, which is judged and run in its place.
+        if let Some(target) = cmd_shim_target(&executable)
+            && let Some(target) = Executable::inspect(&target)
+        {
+            executable = target;
+        }
         if !executable.is_safe() {
             debug!(?path, "not running --help: not a known-safe executable");
             return None;
@@ -246,6 +253,26 @@ fn is_safe_script(head: &[u8]) -> bool {
     matches!(name, "python" | "node" | "ruby")
 }
 
+/// The program a pnpm shim runs. pnpm puts its global commands in `PNPM_HOME` as `sh` scripts
+/// (cmd-shim) that end with `# cmd-shim-target=<path>`, absolute or relative to the shim.
+fn cmd_shim_target(shim: &Executable) -> Option<PathBuf> {
+    const MAX_SHIM: u64 = 64 * 1024;
+    if !shim.head.starts_with(b"#!/bin/sh") || shim.len > MAX_SHIM {
+        return None;
+    }
+    let text = fs::read_to_string(&shim.path).ok()?;
+    let target = text
+        .lines()
+        .rev()
+        .find(|line| !line.trim().is_empty())?
+        .strip_prefix("# cmd-shim-target=")?
+        .trim();
+    if target.is_empty() {
+        return None;
+    }
+    Some(shim.path.parent()?.join(target))
+}
+
 fn basename(path: &str) -> &str {
     path.rsplit('/').next().unwrap_or(path)
 }
@@ -371,6 +398,44 @@ mod tests {
                 "notes.txt",
             ]
         );
+    }
+
+    #[test]
+    fn pnpm_shims() {
+        let dir = tempfile::tempdir().unwrap();
+        let dir = fs::canonicalize(dir.path()).unwrap();
+        let target = dir.join("global/node_modules/tool/cli.mjs");
+        fs::create_dir_all(target.parent().unwrap()).unwrap();
+        fs::write(&target, "#!/usr/bin/env node\n").unwrap();
+        let shim = |name: &str, body: &str| {
+            let path = dir.join(name);
+            fs::write(&path, body).unwrap();
+            Executable::inspect(&path).unwrap()
+        };
+
+        let body = format!(
+            "#!/bin/sh\nexec node \"$basedir/x\" \"$@\"\n# cmd-shim-target={}\n",
+            target.display()
+        );
+        assert_eq!(cmd_shim_target(&shim("absolute", &body)), Some(target.clone()));
+
+        let relative = shim(
+            "relative",
+            "#!/bin/sh\nexec node x\n# cmd-shim-target=global/node_modules/tool/cli.mjs\n",
+        );
+        let resolved = cmd_shim_target(&relative).unwrap();
+        assert_eq!(fs::canonicalize(resolved).unwrap(), target);
+
+        // pnpm's own `pn` launcher: no marker. Markers only count on the last line of an sh script.
+        assert_eq!(cmd_shim_target(&shim("pn", "#!/bin/sh\nexec pnpm \"$@\"\n")), None);
+        let not_last = format!("#!/bin/sh\n# cmd-shim-target={}\nrm -rf x\n", target.display());
+        assert_eq!(cmd_shim_target(&shim("not-last", &not_last)), None);
+        let bash = format!("#!/bin/bash\n# cmd-shim-target={}\n", target.display());
+        assert_eq!(cmd_shim_target(&shim("bash", &bash)), None);
+
+        // The shim itself is never safe to run; its target is judged on its own.
+        assert!(!shim("absolute", &body).is_safe());
+        assert!(Executable::inspect(&target).unwrap().is_safe());
     }
 
     #[test]

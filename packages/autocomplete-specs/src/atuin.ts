@@ -131,14 +131,6 @@ const completionSpec: Fig.Spec = {
           },
         },
         {
-          name: "--result-file",
-          description:
-            "File name to write the result to (hidden from help as this is meant to be used from a script)",
-          args: {
-            name: "result-file",
-          },
-        },
-        {
           name: "--shell",
           description: "Filter by the shell that was used to run the command",
           args: {
@@ -148,11 +140,6 @@ const completionSpec: Fig.Spec = {
         {
           name: ["--interactive", "-i"],
           description: "Open interactive search UI",
-        },
-        {
-          name: "--shell-up-key-binding",
-          description:
-            "Marker argument used to inform atuin that it was invoked from a shell up-key binding (hidden from help to avoid confusion)",
         },
         {
           name: "--human",
@@ -320,9 +307,6 @@ const completionSpec: Fig.Spec = {
             name: "totp-code",
           },
         },
-        {
-          name: "--from-registration",
-        },
       ],
     },
     {
@@ -406,9 +390,6 @@ const completionSpec: Fig.Spec = {
               args: {
                 name: "totp-code",
               },
-            },
-            {
-              name: "--from-registration",
             },
           ],
         },
@@ -525,16 +506,6 @@ const completionSpec: Fig.Spec = {
                 name: "intent",
               },
             },
-            {
-              name: "--command-from-env",
-              description:
-                "Collects the command from the `ATUIN_COMMAND_LINE` environment variable, which does not need escaping and is more compatible between OS and shells",
-            },
-            {
-              name: "--hook",
-              description:
-                "Passed by shell hooks; this flag disables logging to avoid corrupting the terminal and to minimize the amount of time the command takes to run",
-            },
           ],
         },
         {
@@ -553,11 +524,6 @@ const completionSpec: Fig.Spec = {
               args: {
                 name: "duration",
               },
-            },
-            {
-              name: "--hook",
-              description:
-                "Passed by shell hooks; this flag disables logging to avoid corrupting the terminal and to minimize the amount of time the command takes to run",
             },
           ],
           args: [
@@ -735,14 +701,6 @@ const completionSpec: Fig.Spec = {
           },
         },
         {
-          name: "--upload-threads",
-          description:
-            "Which agent threads Atuin for Teams uploads: all, those started in a workspace, or none",
-          args: {
-            name: "upload-threads",
-          },
-        },
-        {
           name: "--yes",
           description:
             "Set up without asking, as the flags say: sync is off unless `--sync` says otherwise",
@@ -825,23 +783,6 @@ const completionSpec: Fig.Spec = {
           name: "--no-daemon",
           description: "Stop the daemon, and keep it off",
         },
-        {
-          name: "--hub",
-          description: "Turn on Atuin for Teams [or --no-hub]",
-        },
-        {
-          name: "--no-hub",
-          description: "Turn off Atuin for Teams",
-        },
-        {
-          name: "--backfill",
-          description:
-            "Upload what Atuin has already to Atuin for Teams [or --no-backfill]",
-        },
-        {
-          name: "--no-backfill",
-          description: "Upload only what Atuin records from now on",
-        },
       ],
     },
     {
@@ -855,11 +796,6 @@ const completionSpec: Fig.Spec = {
         {
           name: "--disable-up-arrow",
           description: "Disable the binding of the Up Arrow key to atuin",
-        },
-        {
-          name: "--disable-ai",
-          description:
-            "No longer does anything: `?` isn't bound any more. Kept so old init lines still work",
         },
         {
           name: "--bind-ai-resume",
@@ -1528,14 +1464,6 @@ const completionSpec: Fig.Spec = {
               },
             },
             {
-              name: "--keymap-mode",
-              description: "Keymap mode, as passed by the shell widget",
-              args: {
-                name: "keymap-mode",
-                suggestions: ["emacs", "vim-normal", "vim-insert", "auto"],
-              },
-            },
-            {
               name: "--print",
               description: "Print the resume command instead of running it",
             },
@@ -1553,10 +1481,6 @@ const completionSpec: Fig.Spec = {
               name: "--switch",
               description:
                 "Switch this machine's copy of the thread QUERY names to another branch (the one `--branch` names, else the only one it can be switched to), in place, and resume it: the history it shares with that branch is kept as it is, and the branch's messages since are appended from sync. The branch it was on stays in atuin, for `--fork` to bring back, and the copy as it was is kept as a backup. Only when sync holds all of it and no agent here has it open",
-            },
-            {
-              name: "--shell-widget",
-              description: "Report the result on stderr for the shell widget",
             },
           ],
           args: {
@@ -1618,14 +1542,6 @@ const completionSpec: Fig.Spec = {
           },
         },
         {
-          name: "--keymap-mode",
-          description: "Keymap mode, as passed by the shell widget",
-          args: {
-            name: "keymap-mode",
-            suggestions: ["emacs", "vim-normal", "vim-insert", "auto"],
-          },
-        },
-        {
           name: "--print",
           description: "Print the resume command instead of running it",
         },
@@ -1643,10 +1559,6 @@ const completionSpec: Fig.Spec = {
           name: "--switch",
           description:
             "Switch this machine's copy of the thread QUERY names to another branch (the one `--branch` names, else the only one it can be switched to), in place, and resume it: the history it shares with that branch is kept as it is, and the branch's messages since are appended from sync. The branch it was on stays in atuin, for `--fork` to bring back, and the copy as it was is kept as a backup. Only when sync holds all of it and no agent here has it open",
-        },
-        {
-          name: "--shell-widget",
-          description: "Report the result on stderr for the shell widget",
         },
       ],
       args: {
@@ -1786,9 +1698,6 @@ const completionSpec: Fig.Spec = {
           description: "Start the daemon server",
           options: [
             {
-              name: "--daemonize",
-            },
-            {
               name: "--show-logs",
               description:
                 "Also write daemon logs to the console (useful for debugging)",
@@ -1814,10 +1723,6 @@ const completionSpec: Fig.Spec = {
         },
       ],
       options: [
-        {
-          name: "--daemonize",
-          description: "Internal flag for daemonization",
-        },
         {
           name: "--show-logs",
           description:

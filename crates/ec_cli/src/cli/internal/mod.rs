@@ -1,3 +1,4 @@
+pub mod help_spec;
 pub mod local_state;
 pub mod should_figterm_launch;
 
@@ -108,6 +109,8 @@ pub enum InternalSubcommand {
     AttemptToFinishInputMethodInstallation {
         bundle_path: Option<PathBuf>,
     },
+    /// Print a completion spec read from a command's `--help`, or `null`
+    HelpSpec(help_spec::HelpSpecArgs),
 }
 
 impl InternalSubcommand {
@@ -162,6 +165,7 @@ impl InternalSubcommand {
                 },
                 Err(_) => Ok(ExitCode::FAILURE),
             },
+            InternalSubcommand::HelpSpec(args) => args.execute(),
             InternalSubcommand::ShouldFigtermLaunch => {
                 Ok(should_figterm_launch::should_figterm_launch(&OsContext::new()))
             },

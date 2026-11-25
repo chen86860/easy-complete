@@ -23,8 +23,9 @@ import {
   importFromLocalhost,
 } from "./loadHelpers.js";
 import { DisabledSpecError, MissingSpecError } from "./errors.js";
-import { specCache } from "./caches.js";
+import { createCache, specCache } from "./caches.js";
 import { tryResolveSpecToSubcommand } from "./tryResolveSpecToSubcommand.js";
+import { helpFallbackEnabled, loadHelpSpec } from "./helpSpec.js";
 
 /**
  * This searches for the first directory containing a .fig/ folder in the parent directories
@@ -207,10 +208,19 @@ export const loadFigSubcommand = async (
   return subcommand;
 };
 
+/** Keys of `specCache` entries read from a command's `--help`. */
+const fromHelp = createCache<true>();
+
+/**
+ * With `helpFallback`, a command that has no spec is completed from its
+ * `--help` (see `loadHelpSpec`), unless the `autocomplete.helpFallback`
+ * setting is off.
+ */
 export const loadSubcommandCached = async (
   specLocation: SpecLocation,
   context?: Fig.ShellContext,
   localLogger: Logger = logger,
+  helpFallback = false,
 ): Promise<Subcommand> => {
   const { name, type: source } = specLocation;
   const path =
@@ -229,14 +239,38 @@ export const loadSubcommandCached = async (
     specCache.clear();
     Settings.set(SETTINGS.DEV_MODE_NPM_INVALIDATE_CACHE, false);
   } else if (!getSetting(SETTINGS.DEV_MODE_NPM) && specCache.has(key)) {
+    // A spec read from --help stands in for a missing one, only while allowed.
+    if (fromHelp.has(key) && !(helpFallback && helpFallbackEnabled())) {
+      throw new MissingSpecError("No spec found");
+    }
     return specCache.get(key) as Subcommand;
   }
 
+  let readFromHelp = false;
+
   const subcommand = await withTimeout(
     5000,
-    loadFigSubcommand(specLocation, context, localLogger),
+    loadFigSubcommand(specLocation, context, localLogger).catch(async (err) => {
+      if (
+        helpFallback &&
+        err instanceof MissingSpecError &&
+        source === SpecLocationSource.GLOBAL &&
+        helpFallbackEnabled()
+      ) {
+        const spec = await loadHelpSpec([name]);
+        if (spec) {
+          localLogger.info(`Completing ${name} from its --help`);
+          readFromHelp = true;
+          return spec;
+        }
+      }
+      throw err;
+    }),
   );
   const converted = convertSubcommand(subcommand, initializeDefault);
   specCache.set(key, converted);
+  if (readFromHelp) {
+    fromHelp.set(key, true);
+  }
   return converted;
 };

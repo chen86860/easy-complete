@@ -22,6 +22,6 @@
 
     "types": ["@withfig/autocomplete-types", "@easy-complete/types", "node"]
   },
-  "include": ["src"],
+  "include": ["src", "scripts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

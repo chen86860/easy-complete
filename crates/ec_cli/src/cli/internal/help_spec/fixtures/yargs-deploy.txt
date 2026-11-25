@@ -1,0 +1,12 @@
+deploy <command>
+
+Commands:
+  deploy push [target]  Push a release
+  deploy rollback       Roll back the last release
+
+Options:
+      --version  Show version number                                   [boolean]
+  -v, --verbose  Print each step                      [boolean] [default: false]
+      --env      Target environment
+                            [string] [choices: "staging", "production"]
+  -h, --help     Show help                                             [boolean]

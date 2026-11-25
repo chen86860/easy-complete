@@ -1,0 +1,14 @@
+Usage: app [options] [command]
+
+CLI to some JavaScript string utilities
+
+Options:
+  -V, --version                output the version number
+  -p, --port <number>          port number (default: "3000")
+  --log-level [level]          set the log level (choices: "debug", "info", "warn")
+  -h, --help                   display help for command
+
+Commands:
+  serve|s [options] <dir>      start the dev server
+  build [options]              build for production
+  help [command]               display help for command

@@ -534,6 +534,7 @@ describe("parseArguments", () => {
           location[0],
           context,
           logger,
+          true,
         );
       } else {
         expect(false);
@@ -597,6 +598,7 @@ describe("parseArguments", () => {
         },
         context,
         logger,
+        true,
       );
     });
 
@@ -621,6 +623,7 @@ describe("parseArguments", () => {
         },
         context,
         logger,
+        true,
       );
 
       expect(result.suggestionFlags).toBe(SuggestionFlag.Any);

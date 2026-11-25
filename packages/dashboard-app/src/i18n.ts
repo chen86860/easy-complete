@@ -66,6 +66,9 @@ const en = {
   "behavior.firstTokenCompletion": "Suggest Commands While Typing",
   "behavior.firstTokenCompletionDescription":
     "Suggest matching commands from your PATH while typing the first word, such as git for gi. Subcommands still need a space after the command",
+  "behavior.helpFallback": "Learn Commands From Their Help",
+  "behavior.helpFallbackDescription":
+    "For a command without built-in completions, read its --help once and suggest its subcommands and options. Only runs compiled programs and Python, Node or Ruby scripts",
   "behavior.sortOrder": "Sort Order",
   "behavior.byRelevance": "Recently used first",
   "behavior.alphabetical": "Alphabetical",
@@ -247,6 +250,9 @@ const zhCN: Record<TranslationKey, string> = {
   "behavior.firstTokenCompletion": "输入时提示命令名",
   "behavior.firstTokenCompletionDescription":
     "输入第一个词时从 PATH 中提示匹配的命令，例如输入 gi 提示 git。子命令仍需先输入空格",
+  "behavior.helpFallback": "从帮助信息学习命令",
+  "behavior.helpFallbackDescription":
+    "没有内置补全的命令，读取一次它的 --help，提示其中的子命令和选项。只运行编译好的程序和 Python、Node、Ruby 脚本",
   "behavior.sortOrder": "排序方式",
   "behavior.byRelevance": "最近使用优先",
   "behavior.alphabetical": "按字母顺序",

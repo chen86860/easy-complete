@@ -1673,26 +1673,261 @@ const completionSpec: Fig.Spec = {
             {
               name: "create",
               description: "Create issue artifacts (preview)",
+
+              options: [
+                {
+                  name: "--attach",
+                  description:
+                    "Attach an image or video file, in '<file>#<image alt text>' format",
+                  args: {
+                    name: "file",
+                  },
+                },
+                {
+                  name: ["-b", "--body"],
+                  description: "Content for a single document",
+                  args: {
+                    name: "string",
+                  },
+                },
+                {
+                  name: ["-F", "--body-file"],
+                  description:
+                    'Read content for a single artifact from file (use "-" to read from standard input)',
+                  args: {
+                    name: "file",
+                  },
+                },
+                {
+                  name: "--name",
+                  description: "Name for a single artifact",
+                  args: {
+                    name: "string",
+                  },
+                },
+                {
+                  name: "--type",
+                  description:
+                    "Type for documents: {generic|plan|embedded_html}",
+                  args: {
+                    name: "string",
+                  },
+                },
+                {
+                  name: ["-R", "--repo"],
+                  description:
+                    "Select another repository using the [HOST/]OWNER/REPO format",
+                  args: {
+                    name: "host/owner/repo",
+                  },
+                },
+              ],
             },
             {
               name: "delete",
               description: "Delete issue artifacts (preview)",
+
+              options: [
+                {
+                  name: "--yes",
+                  description: "Confirm deletion without prompting",
+                },
+                {
+                  name: ["-R", "--repo"],
+                  description:
+                    "Select another repository using the [HOST/]OWNER/REPO format",
+                  args: {
+                    name: "host/owner/repo",
+                  },
+                },
+              ],
             },
             {
               name: "download",
               description: "Download issue artifacts (preview)",
+
+              options: [
+                {
+                  name: "--clobber",
+                  description: "Overwrite existing files of the same name",
+                },
+                {
+                  name: ["-D", "--dir"],
+                  description:
+                    'The directory to download files into (default ".")',
+                  args: {
+                    name: "directory",
+                  },
+                },
+                {
+                  name: ["-O", "--output"],
+                  description:
+                    'The file to write a single artifact to (use "-" to write to standard output)',
+                  args: {
+                    name: "file",
+                  },
+                },
+                {
+                  name: "--skip-existing",
+                  description:
+                    "Skip downloading when files of the same name exist",
+                },
+                {
+                  name: ["-R", "--repo"],
+                  description:
+                    "Select another repository using the [HOST/]OWNER/REPO format",
+                  args: {
+                    name: "host/owner/repo",
+                  },
+                },
+              ],
             },
             {
               name: "edit",
               description: "Edit an issue artifact (preview)",
+
+              options: [
+                {
+                  name: "--attach",
+                  description:
+                    "Attach an image or video file, in '<file>#<image alt text>' format",
+                  args: {
+                    name: "file",
+                  },
+                },
+                {
+                  name: ["-b", "--body"],
+                  description: "New content; for a link, a URL",
+                  args: {
+                    name: "string",
+                  },
+                },
+                {
+                  name: ["-F", "--body-file"],
+                  description:
+                    'Read new content from file (use "-" to read from standard input)',
+                  args: {
+                    name: "file",
+                  },
+                },
+                {
+                  name: "--name",
+                  description: "New name",
+                  args: {
+                    name: "string",
+                  },
+                },
+                {
+                  name: "--restore-version",
+                  description:
+                    "Restore the version with this number from the edit history",
+                  args: {
+                    name: "number",
+                  },
+                },
+                {
+                  name: ["-R", "--repo"],
+                  description:
+                    "Select another repository using the [HOST/]OWNER/REPO format",
+                  args: {
+                    name: "host/owner/repo",
+                  },
+                },
+              ],
             },
             {
               name: "list",
               description: "List artifacts on an issue (preview)",
+
+              options: [
+                {
+                  name: ["-q", "--jq"],
+                  description: "Filter JSON output using a jq expression",
+                  args: {
+                    name: "expression",
+                  },
+                },
+                {
+                  name: "--json",
+                  description: "Output JSON with the specified fields",
+                  args: {
+                    name: "fields",
+                  },
+                },
+                {
+                  name: ["-L", "--limit"],
+                  description: "Maximum number of artifacts to fetch",
+                  args: {
+                    name: "int",
+                  },
+                },
+                {
+                  name: ["-t", "--template"],
+                  description:
+                    'Format JSON output using a Go template; see "gh help formatting"',
+                  args: {
+                    name: "string",
+                  },
+                },
+                {
+                  name: "--type",
+                  description:
+                    "Filter by type: {generic|plan|link|embedded_html}",
+                  args: {
+                    name: "string",
+                  },
+                },
+                {
+                  name: ["-R", "--repo"],
+                  description:
+                    "Select another repository using the [HOST/]OWNER/REPO format",
+                  args: {
+                    name: "host/owner/repo",
+                  },
+                },
+              ],
             },
             {
               name: "view",
               description: "View an issue artifact (preview)",
+
+              options: [
+                {
+                  name: ["-q", "--jq"],
+                  description: "Filter JSON output using a jq expression",
+                  args: {
+                    name: "expression",
+                  },
+                },
+                {
+                  name: "--json",
+                  description: "Output JSON with the specified fields",
+                  args: {
+                    name: "fields",
+                  },
+                },
+                {
+                  name: ["-t", "--template"],
+                  description:
+                    'Format JSON output using a Go template; see "gh help formatting"',
+                  args: {
+                    name: "string",
+                  },
+                },
+                {
+                  name: ["-w", "--web"],
+                  description:
+                    "Open a document's page on GitHub, or a link's URL",
+                },
+                {
+                  name: ["-R", "--repo"],
+                  description:
+                    "Select another repository using the [HOST/]OWNER/REPO format",
+                  args: {
+                    name: "host/owner/repo",
+                  },
+                },
+              ],
             },
           ],
           options: [
@@ -2878,6 +3113,467 @@ const completionSpec: Fig.Spec = {
           },
         },
       ],
+
+      subcommands: [
+        {
+          name: "create",
+          description: "Create a new release",
+          options: [
+            {
+              name: "--discussion-category",
+              description: "Start a discussion in the specified category",
+              args: {
+                name: "string",
+              },
+            },
+            {
+              name: ["-d", "--draft"],
+              description:
+                "Save the release as a draft instead of publishing it",
+            },
+            {
+              name: "--fail-on-no-commits",
+              description:
+                "Fail if there are no commits since the last release (no impact on the first release)",
+            },
+            {
+              name: "--generate-notes",
+              description:
+                "Automatically generate title and notes for the release via GitHub Release Notes API",
+            },
+            {
+              name: "--latest",
+              description:
+                'Mark this release as "Latest" (default [automatic based on date and version]). --latest=false to explicitly NOT set as latest',
+            },
+            {
+              name: ["-n", "--notes"],
+              description: "Release notes",
+              args: {
+                name: "string",
+              },
+            },
+            {
+              name: ["-F", "--notes-file"],
+              description:
+                'Read release notes from file (use "-" to read from standard input)',
+              args: {
+                name: "file",
+              },
+            },
+            {
+              name: "--notes-from-tag",
+              description:
+                "Fetch notes from the tag annotation or message of commit associated with tag",
+            },
+            {
+              name: "--notes-start-tag",
+              description:
+                "Tag to use as the starting point for generating release notes",
+              args: {
+                name: "string",
+              },
+            },
+            {
+              name: ["-p", "--prerelease"],
+              description: "Mark the release as a prerelease",
+            },
+            {
+              name: "--target",
+              description:
+                "Target branch or full commit SHA (default [main branch])",
+              args: {
+                name: "branch",
+              },
+            },
+            {
+              name: ["-t", "--title"],
+              description: "Release title",
+              args: {
+                name: "string",
+              },
+            },
+            {
+              name: "--verify-tag",
+              description:
+                "Abort in case the git tag doesn't already exist in the remote repository",
+            },
+            {
+              name: ["-R", "--repo"],
+              description:
+                "Select another repository using the [HOST/]OWNER/REPO format",
+              args: {
+                name: "host/owner/repo",
+              },
+            },
+          ],
+        },
+        {
+          name: "list",
+          description: "List releases in a repository",
+          options: [
+            {
+              name: "--exclude-drafts",
+              description: "Exclude draft releases",
+            },
+            {
+              name: "--exclude-pre-releases",
+              description: "Exclude pre-releases",
+            },
+            {
+              name: ["-q", "--jq"],
+              description: "Filter JSON output using a jq expression",
+              args: {
+                name: "expression",
+              },
+            },
+            {
+              name: "--json",
+              description: "Output JSON with the specified fields",
+              args: {
+                name: "fields",
+              },
+            },
+            {
+              name: ["-L", "--limit"],
+              description: "Maximum number of items to fetch (default 30)",
+              args: {
+                name: "int",
+              },
+            },
+            {
+              name: ["-O", "--order"],
+              description:
+                'Order of releases returned: {asc|desc} (default "desc")',
+              args: {
+                name: "string",
+              },
+            },
+            {
+              name: ["-t", "--template"],
+              description:
+                'Format JSON output using a Go template; see "gh help formatting"',
+              args: {
+                name: "string",
+              },
+            },
+            {
+              name: ["-R", "--repo"],
+              description:
+                "Select another repository using the [HOST/]OWNER/REPO format",
+              args: {
+                name: "host/owner/repo",
+              },
+            },
+          ],
+        },
+        {
+          name: "delete",
+          description: "Delete a release",
+          options: [
+            {
+              name: "--cleanup-tag",
+              description:
+                "Delete the specified tag in addition to its release",
+            },
+            {
+              name: ["-y", "--yes"],
+              description: "Skip the confirmation prompt",
+            },
+            {
+              name: ["-R", "--repo"],
+              description:
+                "Select another repository using the [HOST/]OWNER/REPO format",
+              args: {
+                name: "host/owner/repo",
+              },
+            },
+          ],
+        },
+        {
+          name: "delete-asset",
+          description: "Delete an asset from a release",
+          options: [
+            {
+              name: ["-y", "--yes"],
+              description: "Skip the confirmation prompt",
+            },
+            {
+              name: ["-R", "--repo"],
+              description:
+                "Select another repository using the [HOST/]OWNER/REPO format",
+              args: {
+                name: "host/owner/repo",
+              },
+            },
+          ],
+        },
+        {
+          name: "download",
+          description: "Download release assets",
+          options: [
+            {
+              name: "--allow-escape-sequences",
+              description:
+                "Allow printing terminal escape sequences when writing an asset to standard output",
+            },
+            {
+              name: ["-A", "--archive"],
+              description:
+                "Download the source code archive in the specified format (zip or tar.gz)",
+              args: {
+                name: "format",
+              },
+            },
+            {
+              name: "--clobber",
+              description: "Overwrite existing files of the same name",
+            },
+            {
+              name: ["-D", "--dir"],
+              description: 'The directory to download files into (default ".")',
+              args: {
+                name: "directory",
+              },
+            },
+            {
+              name: ["-O", "--output"],
+              description:
+                'The file to write a single asset to (use "-" to write to standard output)',
+              args: {
+                name: "file",
+              },
+            },
+            {
+              name: ["-p", "--pattern"],
+              description: "Download only assets that match a glob pattern",
+              args: {
+                name: "stringarray",
+              },
+            },
+            {
+              name: "--skip-existing",
+              description: "Skip downloading when files of the same name exist",
+            },
+            {
+              name: ["-R", "--repo"],
+              description:
+                "Select another repository using the [HOST/]OWNER/REPO format",
+              args: {
+                name: "host/owner/repo",
+              },
+            },
+          ],
+        },
+        {
+          name: "edit",
+          description: "Edit a release",
+          options: [
+            {
+              name: "--discussion-category",
+              description:
+                "Start a discussion in the specified category when publishing a draft",
+              args: {
+                name: "string",
+              },
+            },
+            {
+              name: "--draft",
+              description:
+                "Save the release as a draft instead of publishing it",
+            },
+            {
+              name: "--latest",
+              description: 'Explicitly mark the release as "Latest"',
+            },
+            {
+              name: ["-n", "--notes"],
+              description: "Release notes",
+              args: {
+                name: "string",
+              },
+            },
+            {
+              name: ["-F", "--notes-file"],
+              description:
+                'Read release notes from file (use "-" to read from standard input)',
+              args: {
+                name: "file",
+              },
+            },
+            {
+              name: "--prerelease",
+              description: "Mark the release as a prerelease",
+            },
+            {
+              name: "--tag",
+              description: "The name of the tag",
+              args: {
+                name: "string",
+              },
+            },
+            {
+              name: "--target",
+              description:
+                "Target branch or full commit SHA (default [main branch])",
+              args: {
+                name: "branch",
+              },
+            },
+            {
+              name: ["-t", "--title"],
+              description: "Release title",
+              args: {
+                name: "string",
+              },
+            },
+            {
+              name: "--verify-tag",
+              description:
+                "Abort in case the git tag doesn't already exist in the remote repository",
+            },
+            {
+              name: ["-R", "--repo"],
+              description:
+                "Select another repository using the [HOST/]OWNER/REPO format",
+              args: {
+                name: "host/owner/repo",
+              },
+            },
+          ],
+        },
+        {
+          name: "upload",
+          description: "Upload assets to a release",
+          options: [
+            {
+              name: "--clobber",
+              description:
+                "Delete and re-upload existing assets of the same name",
+            },
+            {
+              name: ["-R", "--repo"],
+              description:
+                "Select another repository using the [HOST/]OWNER/REPO format",
+              args: {
+                name: "host/owner/repo",
+              },
+            },
+          ],
+        },
+        {
+          name: "verify",
+          description: "Verify the attestation for a release",
+          options: [
+            {
+              name: "--format",
+              description: "Output format: {json}",
+              args: {
+                name: "string",
+              },
+            },
+            {
+              name: ["-q", "--jq"],
+              description: "Filter JSON output using a jq expression",
+              args: {
+                name: "expression",
+              },
+            },
+            {
+              name: ["-t", "--template"],
+              description:
+                'Format JSON output using a Go template; see "gh help formatting"',
+              args: {
+                name: "string",
+              },
+            },
+            {
+              name: ["-R", "--repo"],
+              description:
+                "Select another repository using the [HOST/]OWNER/REPO format",
+              args: {
+                name: "host/owner/repo",
+              },
+            },
+          ],
+        },
+        {
+          name: "verify-asset",
+          description: "Verify that a given asset originated from a release",
+          options: [
+            {
+              name: "--format",
+              description: "Output format: {json}",
+              args: {
+                name: "string",
+              },
+            },
+            {
+              name: ["-q", "--jq"],
+              description: "Filter JSON output using a jq expression",
+              args: {
+                name: "expression",
+              },
+            },
+            {
+              name: ["-t", "--template"],
+              description:
+                'Format JSON output using a Go template; see "gh help formatting"',
+              args: {
+                name: "string",
+              },
+            },
+            {
+              name: ["-R", "--repo"],
+              description:
+                "Select another repository using the [HOST/]OWNER/REPO format",
+              args: {
+                name: "host/owner/repo",
+              },
+            },
+          ],
+        },
+        {
+          name: "view",
+          description: "View information about a release",
+          options: [
+            {
+              name: ["-q", "--jq"],
+              description: "Filter JSON output using a jq expression",
+              args: {
+                name: "expression",
+              },
+            },
+            {
+              name: "--json",
+              description: "Output JSON with the specified fields",
+              args: {
+                name: "fields",
+              },
+            },
+            {
+              name: ["-t", "--template"],
+              description:
+                'Format JSON output using a Go template; see "gh help formatting"',
+              args: {
+                name: "string",
+              },
+            },
+            {
+              name: ["-w", "--web"],
+              description: "Open the release in the browser",
+            },
+            {
+              name: ["-R", "--repo"],
+              description:
+                "Select another repository using the [HOST/]OWNER/REPO format",
+              args: {
+                name: "host/owner/repo",
+              },
+            },
+          ],
+        },
+      ],
     },
     {
       name: "repo",
@@ -3561,18 +4257,118 @@ For more information about output formatting flags, see 'gh help formatting'`,
             {
               name: "create",
               description: "Create a new autolink reference",
+
+              options: [
+                {
+                  name: ["-n", "--numeric"],
+                  description: "Mark autolink as numeric",
+                },
+                {
+                  name: ["-R", "--repo"],
+                  description:
+                    "Select another repository using the [HOST/]OWNER/REPO format",
+                  args: {
+                    name: "host/owner/repo",
+                  },
+                },
+              ],
             },
             {
               name: "delete",
               description: "Delete an autolink reference",
+
+              options: [
+                {
+                  name: "--yes",
+                  description: "Confirm deletion without prompting",
+                },
+                {
+                  name: ["-R", "--repo"],
+                  description:
+                    "Select another repository using the [HOST/]OWNER/REPO format",
+                  args: {
+                    name: "host/owner/repo",
+                  },
+                },
+              ],
             },
             {
               name: "list",
               description: "List autolink references for a GitHub repository",
+
+              options: [
+                {
+                  name: ["-q", "--jq"],
+                  description: "Filter JSON output using a jq expression",
+                  args: {
+                    name: "expression",
+                  },
+                },
+                {
+                  name: "--json",
+                  description: "Output JSON with the specified fields",
+                  args: {
+                    name: "fields",
+                  },
+                },
+                {
+                  name: ["-t", "--template"],
+                  description:
+                    'Format JSON output using a Go template; see "gh help formatting"',
+                  args: {
+                    name: "string",
+                  },
+                },
+                {
+                  name: ["-w", "--web"],
+                  description: "List autolink references in the web browser",
+                },
+                {
+                  name: ["-R", "--repo"],
+                  description:
+                    "Select another repository using the [HOST/]OWNER/REPO format",
+                  args: {
+                    name: "host/owner/repo",
+                  },
+                },
+              ],
             },
             {
               name: "view",
               description: "View an autolink reference",
+
+              options: [
+                {
+                  name: ["-q", "--jq"],
+                  description: "Filter JSON output using a jq expression",
+                  args: {
+                    name: "expression",
+                  },
+                },
+                {
+                  name: "--json",
+                  description: "Output JSON with the specified fields",
+                  args: {
+                    name: "fields",
+                  },
+                },
+                {
+                  name: ["-t", "--template"],
+                  description:
+                    'Format JSON output using a Go template; see "gh help formatting"',
+                  args: {
+                    name: "string",
+                  },
+                },
+                {
+                  name: ["-R", "--repo"],
+                  description:
+                    "Select another repository using the [HOST/]OWNER/REPO format",
+                  args: {
+                    name: "host/owner/repo",
+                  },
+                },
+              ],
             },
           ],
           options: [
@@ -3611,6 +4407,14 @@ For more information about output formatting flags, see 'gh help formatting'`,
             {
               name: "view",
               description: "View a specific repository license",
+
+              options: [
+                {
+                  name: ["-w", "--web"],
+                  description:
+                    "Open https://choosealicense.com/ in the browser",
+                },
+              ],
             },
           ],
         },
@@ -4081,7 +4885,23 @@ For more information about output formatting flags, see 'gh help formatting'`,
         {
           name: ["delete", "remove"],
           description: "Remove secrets",
-          options: [ghOptions.all, ghOptions.env, ghOptions.org],
+          options: [
+            ghOptions.all,
+            ghOptions.env,
+            ghOptions.org,
+            {
+              name: ["-a", "--app"],
+              description:
+                "Delete a secret for a specific application: {actions|agents|codespaces|dependabot}",
+              args: {
+                name: "string",
+              },
+            },
+            {
+              name: ["-u", "--user"],
+              description: "Delete a secret for your user",
+            },
+          ],
         },
         {
           name: "set",
@@ -8509,6 +9329,46 @@ For more information about output formatting flags, see 'gh help formatting'`,
             {
               name: "create",
               description: "Create an event subscription (preview)",
+
+              options: [
+                {
+                  name: "--event",
+                  description:
+                    "Event type to subscribe to; repeat or separate with commas for more than one",
+                  args: {
+                    name: "type",
+                  },
+                },
+                {
+                  name: ["-q", "--jq"],
+                  description: "Filter JSON output using a jq expression",
+                  args: {
+                    name: "expression",
+                  },
+                },
+                {
+                  name: "--json",
+                  description: "Output JSON with the specified fields",
+                  args: {
+                    name: "fields",
+                  },
+                },
+                {
+                  name: "--resource",
+                  description: "URL of the resource to subscribe to",
+                  args: {
+                    name: "string",
+                  },
+                },
+                {
+                  name: ["-t", "--template"],
+                  description:
+                    'Format JSON output using a Go template; see "gh help formatting"',
+                  args: {
+                    name: "string",
+                  },
+                },
+              ],
             },
             {
               name: "delete",
@@ -8517,10 +9377,68 @@ For more information about output formatting flags, see 'gh help formatting'`,
             {
               name: "list",
               description: "List event subscriptions (preview)",
+
+              options: [
+                {
+                  name: ["-q", "--jq"],
+                  description: "Filter JSON output using a jq expression",
+                  args: {
+                    name: "expression",
+                  },
+                },
+                {
+                  name: "--json",
+                  description: "Output JSON with the specified fields",
+                  args: {
+                    name: "fields",
+                  },
+                },
+                {
+                  name: ["-L", "--limit"],
+                  description:
+                    "Maximum number of subscriptions to list (default 30)",
+                  args: {
+                    name: "int",
+                  },
+                },
+                {
+                  name: ["-t", "--template"],
+                  description:
+                    'Format JSON output using a Go template; see "gh help formatting"',
+                  args: {
+                    name: "string",
+                  },
+                },
+              ],
             },
             {
               name: "view",
               description: "View an event subscription (preview)",
+
+              options: [
+                {
+                  name: ["-q", "--jq"],
+                  description: "Filter JSON output using a jq expression",
+                  args: {
+                    name: "expression",
+                  },
+                },
+                {
+                  name: "--json",
+                  description: "Output JSON with the specified fields",
+                  args: {
+                    name: "fields",
+                  },
+                },
+                {
+                  name: ["-t", "--template"],
+                  description:
+                    'Format JSON output using a Go template; see "gh help formatting"',
+                  args: {
+                    name: "string",
+                  },
+                },
+              ],
             },
           ],
         },

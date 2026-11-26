@@ -240,11 +240,13 @@ const globalOptions: Fig.Option[] = [
     name: ["-j", "--jobs"],
     description: "How many jobs to run in parallel",
     args: { name: "jobs", default: "8" },
+    isPersistent: true,
   },
   {
     name: "--raw",
     description:
       "Read/write directly to stdin/stdout/stderr instead of by line",
+    isPersistent: true,
   },
   helpOption,
 ];
@@ -506,11 +508,31 @@ const completionSpec: Fig.Spec = {
               name: "apply",
               description:
                 "Create, update, or remove the configured Linux users and groups",
+
+              options: [
+                {
+                  name: ["-n", "--dry-run"],
+                  description:
+                    "Show what would change without changing anything",
+                },
+              ],
             },
             {
               name: "status",
               description:
                 "Show the state of the configured Linux users and groups",
+
+              options: [
+                {
+                  name: ["-J", "--json"],
+                  description: "Output in JSON format",
+                },
+                {
+                  name: "--missing",
+                  description:
+                    "Exit with status 1 if any account differs from the config (all are still listed)",
+                },
+              ],
             },
           ],
           options: [
@@ -575,11 +597,31 @@ const completionSpec: Fig.Spec = {
               name: "apply",
               description:
                 "Apply Docker Compose projects from `[bootstrap.compose]`",
+
+              options: [
+                {
+                  name: ["-n", "--dry-run"],
+                  description:
+                    "Show what would change without changing anything",
+                },
+              ],
             },
             {
               name: "status",
               description:
                 "Show the state of Docker Compose projects from `[bootstrap.compose]`",
+
+              options: [
+                {
+                  name: ["-J", "--json"],
+                  description: "Output in JSON format",
+                },
+                {
+                  name: "--missing",
+                  description:
+                    "Exit with status 1 if any Compose project differs from the config (all are still listed)",
+                },
+              ],
             },
           ],
           options: [
@@ -644,11 +686,41 @@ const completionSpec: Fig.Spec = {
               name: "apply",
               description:
                 "Create, update, or remove the configured system files and directories",
+
+              options: [
+                {
+                  name: ["-n", "--dry-run"],
+                  description:
+                    "Show what would change without changing anything",
+                },
+                {
+                  name: "--prompt-secrets",
+                  description:
+                    "Prompt securely for missing bootstrap secret inputs",
+                },
+              ],
             },
             {
               name: "status",
               description:
                 "Show the state of the configured system files and directories",
+
+              options: [
+                {
+                  name: ["-J", "--json"],
+                  description: "Output in JSON format",
+                },
+                {
+                  name: "--missing",
+                  description:
+                    "Exit with status 1 if any file or directory differs from the config (all are still listed)",
+                },
+                {
+                  name: "--prompt-secrets",
+                  description:
+                    "Prompt securely for missing bootstrap secret inputs",
+                },
+              ],
             },
           ],
           options: [
@@ -713,11 +785,31 @@ const completionSpec: Fig.Spec = {
               name: "apply",
               description:
                 "Apply the firewall from `[bootstrap.linux.firewall]`",
+
+              options: [
+                {
+                  name: ["-n", "--dry-run"],
+                  description:
+                    "Show what would change without changing anything",
+                },
+              ],
             },
             {
               name: "status",
               description:
                 "Show the state of the firewall from `[bootstrap.linux.firewall]`",
+
+              options: [
+                {
+                  name: ["-J", "--json"],
+                  description: "Output in JSON format",
+                },
+                {
+                  name: "--missing",
+                  description:
+                    "Exit with status 1 if the firewall differs from the config",
+                },
+              ],
             },
           ],
           options: [
@@ -782,6 +874,19 @@ const completionSpec: Fig.Spec = {
               name: ["systemd-units", "systemd"],
               description:
                 "Manage systemd user units from `[bootstrap.linux.systemd.units]`",
+
+              subcommands: [
+                {
+                  name: "apply",
+                  description:
+                    "Install and start the configured systemd user units",
+                },
+                {
+                  name: "status",
+                  description:
+                    "Show the state of the configured systemd user units",
+                },
+              ],
             },
           ],
           options: [
@@ -846,11 +951,35 @@ const completionSpec: Fig.Spec = {
               name: "defaults",
               description:
                 "Manage macOS preferences such as Dock, Finder, and keyboard settings",
+
+              subcommands: [
+                {
+                  name: "apply",
+                  description: "Write the configured macOS preferences",
+                },
+                {
+                  name: "status",
+                  description:
+                    "Show the state of the configured macOS preferences",
+                },
+              ],
             },
             {
               name: ["launchd-agents", "launchd"],
               description:
                 "Manage macOS LaunchAgents from `[bootstrap.macos.launchd.agents]`",
+
+              subcommands: [
+                {
+                  name: "apply",
+                  description:
+                    "Install and load LaunchAgents from `[bootstrap.macos.launchd.agents]`",
+                },
+                {
+                  name: "status",
+                  description: "Show the state of the configured LaunchAgents",
+                },
+              ],
             },
           ],
           options: [
@@ -915,10 +1044,30 @@ const completionSpec: Fig.Spec = {
               name: "apply",
               description:
                 "Write mise activation into the configured shell startup files",
+
+              options: [
+                {
+                  name: ["-n", "--dry-run"],
+                  description:
+                    "Show what would change without changing anything",
+                },
+              ],
             },
             {
               name: "status",
               description: "Show the state of the configured shell activation",
+
+              options: [
+                {
+                  name: ["-J", "--json"],
+                  description: "Output in JSON format",
+                },
+                {
+                  name: "--missing",
+                  description:
+                    "Exit with status 1 if any shell activation differs from the config (all are still listed)",
+                },
+              ],
             },
           ],
           options: [
@@ -982,40 +1131,192 @@ const completionSpec: Fig.Spec = {
               name: ["apply", "i", "install"],
               description:
                 "Install or remove packages to match `[bootstrap.packages]`",
+
+              options: [
+                {
+                  name: ["-m", "--manager"],
+                  description:
+                    "Only apply packages for this built-in or plugin manager",
+                  args: {
+                    name: "manager",
+                  },
+                },
+                {
+                  name: ["-n", "--dry-run"],
+                  description:
+                    "Show what would change without changing anything",
+                },
+                {
+                  name: "--update",
+                  description:
+                    "Refresh package manager metadata first, where the manager supports it",
+                },
+              ],
             },
             {
               name: "brew",
               description:
                 "Manage Homebrew tap URLs in `[bootstrap.brew.taps]`",
+
+              subcommands: [
+                {
+                  name: "tap",
+                  description:
+                    "Add a Homebrew tap URL to the global `[bootstrap.brew.taps]`",
+                },
+                {
+                  name: ["untap", "remove", "rm"],
+                  description:
+                    "Remove Homebrew tap URLs from `[bootstrap.brew.taps]`",
+                },
+              ],
             },
             {
               name: "export",
               description:
                 "Print the configured `nix:` packages as a NixOS module",
+
+              options: [
+                {
+                  name: "--format",
+                  description: "Output format",
+                  args: {
+                    name: "format",
+                    suggestions: ["nix"],
+                  },
+                },
+              ],
             },
             {
               name: "import",
               description:
                 "Record installed Homebrew formulae in `[bootstrap.packages]`",
+
+              options: [
+                {
+                  name: ["-g", "--global"],
+                  description:
+                    "Write to the global config (~/.config/mise/config.toml)",
+                },
+                {
+                  name: ["-m", "--manager"],
+                  description: "Package manager to import from",
+                  args: {
+                    name: "manager",
+                    suggestions: ["brew"],
+                  },
+                },
+                {
+                  name: "--all",
+                  description:
+                    "Import every linked formula, including dependencies",
+                },
+                {
+                  name: ["-n", "--dry-run"],
+                  description:
+                    "Show the entries that would be written without writing them",
+                },
+                {
+                  name: ["-p", "--path"],
+                  description: "Write to this config file or directory",
+                  args: {
+                    name: "path",
+                  },
+                },
+              ],
             },
             {
               name: "prune",
               description: "Uninstall packages that no config declares",
+
+              options: [
+                {
+                  name: ["-m", "--manager"],
+                  description:
+                    "Package manager to prune: `brew`, `brew-cask`, or a package plugin",
+                  args: {
+                    name: "manager",
+                  },
+                },
+                {
+                  name: ["-n", "--dry-run"],
+                  description:
+                    "Show what would be removed without removing anything",
+                },
+                {
+                  name: "--force",
+                  description:
+                    "Remove `brew-cask` casks that mise installed even when it cannot prove they are unchanged, such as self-updating apps or casks with install scripts",
+                },
+              ],
             },
             {
               name: ["status", "ls", "list"],
               description:
                 "Show the state of packages from `[bootstrap.packages]`",
+
+              options: [
+                {
+                  name: ["-J", "--json"],
+                  description: "Output in JSON format",
+                },
+                {
+                  name: "--missing",
+                  description:
+                    "Exit with status 1 if any package differs from the config (all are still listed)",
+                },
+              ],
             },
             {
               name: ["upgrade", "up"],
               description:
                 "Upgrade installed packages from `[bootstrap.packages]`",
+
+              options: [
+                {
+                  name: ["-m", "--manager"],
+                  description:
+                    "Only upgrade packages for this built-in or plugin manager",
+                  args: {
+                    name: "manager",
+                  },
+                },
+                {
+                  name: ["-n", "--dry-run"],
+                  description:
+                    "Show what would change without changing anything",
+                },
+              ],
             },
             {
               name: ["use", "u"],
               description:
                 "Add packages to `[bootstrap.packages]` and install them",
+
+              options: [
+                {
+                  name: ["-g", "--global"],
+                  description:
+                    "Write to the global config (~/.config/mise/config.toml) instead of the local one",
+                },
+                {
+                  name: ["-n", "--dry-run"],
+                  description:
+                    "Show what would change without writing config or installing",
+                },
+                {
+                  name: ["-p", "--path"],
+                  description: "Write to this config file or directory",
+                  args: {
+                    name: "path",
+                  },
+                },
+                {
+                  name: "--no-install",
+                  description:
+                    "Write the package declarations without checking or installing packages",
+                },
+              ],
             },
             {
               name: "where",
@@ -1156,11 +1457,27 @@ const completionSpec: Fig.Spec = {
               name: "apply",
               description:
                 "Install package manager plugins declared in `[bootstrap.plugins]`",
+
+              options: [
+                {
+                  name: ["-n", "--dry-run"],
+                  description:
+                    "Show which plugins would be installed without installing them",
+                },
+              ],
             },
             {
               name: "status",
               description:
                 "Show whether declared package manager plugins are installed",
+
+              options: [
+                {
+                  name: "--missing",
+                  description:
+                    "Exit with status 1 if a declared plugin is not installed",
+                },
+              ],
             },
           ],
           options: [
@@ -1497,20 +1814,71 @@ const completionSpec: Fig.Spec = {
               name: "apply",
               description:
                 "Clone missing Git repositories and check out configured refs",
+
+              options: [
+                {
+                  name: ["-n", "--dry-run"],
+                  description:
+                    "Show what would change without changing anything",
+                },
+                {
+                  name: "--skip-dirty",
+                  description:
+                    "Skip repositories with local changes instead of failing",
+                },
+              ],
             },
             {
               name: "exec",
               description: "Run a command in each configured Git repository",
+
+              options: [
+                {
+                  name: ["-c", "--continue-on-error"],
+                  description:
+                    "Continue running in other repositories after a command fails",
+                },
+                {
+                  name: ["-n", "--dry-run"],
+                  description:
+                    "Print the commands that would run without running them",
+                },
+              ],
             },
             {
               name: "status",
               description:
                 "Show the state of Git repositories from `[bootstrap.repos]`",
+
+              options: [
+                {
+                  name: ["-J", "--json"],
+                  description: "Output in JSON format",
+                },
+                {
+                  name: "--missing",
+                  description:
+                    "Exit with status 1 if any repository differs from the config (all are still listed)",
+                },
+              ],
             },
             {
               name: "update",
               description:
                 "Clone missing Git repositories and fast-forward the rest",
+
+              options: [
+                {
+                  name: ["-n", "--dry-run"],
+                  description:
+                    "Show what would change without changing anything",
+                },
+                {
+                  name: "--skip-dirty",
+                  description:
+                    "Skip repositories with local changes instead of failing",
+                },
+              ],
             },
           ],
           options: [
@@ -1575,6 +1943,18 @@ const completionSpec: Fig.Spec = {
               name: "status",
               description:
                 "Show whether declared bootstrap secret inputs are available",
+
+              options: [
+                {
+                  name: ["-J", "--json"],
+                  description: "Output in JSON format",
+                },
+                {
+                  name: "--missing",
+                  description:
+                    "Exit with status 1 if a declared secret input is unset, empty, or not valid Unicode",
+                },
+              ],
             },
           ],
           options: [
@@ -1638,15 +2018,42 @@ const completionSpec: Fig.Spec = {
               name: "apply",
               description:
                 "Apply the service state declared in `[bootstrap.services]`",
+
+              options: [
+                {
+                  name: ["-n", "--dry-run"],
+                  description:
+                    "Show what would change without changing anything",
+                },
+              ],
             },
             {
               name: "remove",
               description: "Uninstall a user-scope service",
+
+              options: [
+                {
+                  name: ["-n", "--dry-run"],
+                  description: "Show what would be removed without removing it",
+                },
+              ],
             },
             {
               name: "status",
               description:
                 "Show the state of services from `[bootstrap.services]`",
+
+              options: [
+                {
+                  name: ["-J", "--json"],
+                  description: "Output in JSON format",
+                },
+                {
+                  name: "--missing",
+                  description:
+                    "Exit with status 1 if any service differs from the config (all are still listed)",
+                },
+              ],
             },
           ],
           options: [
@@ -1711,11 +2118,31 @@ const completionSpec: Fig.Spec = {
               name: "apply",
               description:
                 "Write the settings that differ from `[bootstrap.settings]`",
+
+              options: [
+                {
+                  name: ["-n", "--dry-run"],
+                  description:
+                    "Show which settings would change without changing them",
+                },
+              ],
             },
             {
               name: "status",
               description:
                 "Show each setting in `[bootstrap.settings]` and its current value",
+
+              options: [
+                {
+                  name: "--missing",
+                  description:
+                    "Exit with status 1 if a setting differs from the config or its plugin cannot run",
+                },
+                {
+                  name: ["-J", "--json"],
+                  description: "Output in JSON format",
+                },
+              ],
             },
           ],
           options: [
@@ -1920,11 +2347,31 @@ const completionSpec: Fig.Spec = {
             {
               name: "apply",
               description: "Set your login shell from `[bootstrap.user]`",
+
+              options: [
+                {
+                  name: ["-n", "--dry-run"],
+                  description:
+                    "Show what would change without changing anything",
+                },
+              ],
             },
             {
               name: "status",
               description:
                 "Show whether your login shell matches `[bootstrap.user]`",
+
+              options: [
+                {
+                  name: ["-J", "--json"],
+                  description: "Output in JSON format",
+                },
+                {
+                  name: "--missing",
+                  description:
+                    "Exit with status 1 if your login shell differs from the config",
+                },
+              ],
             },
           ],
           options: [
@@ -6012,6 +6459,13 @@ const completionSpec: Fig.Spec = {
             {
               name: "ls",
               description: "[experimental] List shared servers",
+
+              options: [
+                {
+                  name: "--json",
+                  description: "Output in JSON format",
+                },
+              ],
             },
             {
               name: "restart",
@@ -7222,19 +7676,122 @@ const completionSpec: Fig.Spec = {
             {
               name: "diff",
               description: "Compare checkpoints, or your files against one",
+
+              options: [
+                {
+                  name: "--operation",
+                  description:
+                    "Compare an operation with the checkpoint it saved before it ran",
+                },
+                {
+                  name: ["-p", "--patch"],
+                  description:
+                    "Print the full patch instead of a per-file summary",
+                },
+                {
+                  name: "--path",
+                  description: "Restrict to one path (a file or a directory)",
+                  args: {
+                    name: "path",
+                  },
+                },
+                {
+                  name: "--exit-code",
+                  description: "Exit 1 when the two sides differ",
+                },
+              ],
             },
             {
               name: ["ls", "list"],
               description: "List checkpoints, newest first",
+
+              options: [
+                {
+                  name: ["-J", "--json"],
+                  description: "Output in JSON format",
+                },
+                {
+                  name: ["-n", "--limit"],
+                  description: "Show at most this many checkpoints (0 for all)",
+                  args: {
+                    name: "limit",
+                  },
+                },
+                {
+                  name: "--path",
+                  description:
+                    "Only checkpoints where this path (or something under it) changed",
+                  args: {
+                    name: "path",
+                  },
+                },
+                {
+                  name: "--trigger",
+                  description:
+                    "Only checkpoints with this trigger, such as edit, save, agent, bootstrap, apply, rollback, or undo",
+                  args: {
+                    name: "trigger",
+                  },
+                },
+                {
+                  name: "--label",
+                  description: "Only checkpoints with this label",
+                  args: {
+                    name: "label",
+                  },
+                },
+                {
+                  name: "--pending",
+                  description:
+                    "Only checkpoints recorded by operations that did not finish",
+                },
+              ],
             },
             {
               name: "purge",
               description: "Erase a path's saved versions from history",
+
+              options: [
+                {
+                  name: ["-n", "--dry-run"],
+                  description:
+                    "Show what would change without changing anything",
+                },
+                {
+                  name: "--backup",
+                  description:
+                    "Keep the replaced history in the repository under `refs/mise/purge-backup/`",
+                },
+                {
+                  name: "--keep-objects",
+                  description:
+                    "Leave the replaced objects on disk instead of deleting them",
+                },
+              ],
             },
             {
               name: "show",
               description:
                 "Show a checkpoint: its trigger, changes, and operation journal",
+
+              options: [
+                {
+                  name: ["-J", "--json"],
+                  description: "Output in JSON format",
+                },
+                {
+                  name: "--files",
+                  description: "List every file in the snapshot",
+                },
+                {
+                  name: "--path",
+                  description:
+                    "Resolve `latest~N` among the checkpoints where this path changed",
+                  args: {
+                    name: "path",
+                  },
+                },
+              ],
             },
           ],
           options: [
@@ -7448,6 +8005,24 @@ const completionSpec: Fig.Spec = {
             {
               name: "set",
               description: "Connect an origin repository",
+
+              options: [
+                {
+                  name: "--branch",
+                  description: "The branch to sync",
+                  args: {
+                    name: "branch",
+                  },
+                },
+                {
+                  name: "--sync",
+                  description:
+                    "How to sync with the repository: sync, fetch-only, or manual",
+                  args: {
+                    name: "mode",
+                  },
+                },
+              ],
             },
           ],
           options: [

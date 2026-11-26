@@ -9,6 +9,7 @@
 - 新增：更新窗口使用设置中选择的显示语言，重启 Easy Complete 后生效
 - 新增：没有内置补全的命令，会从它自己的 `--help` 读取子命令和选项，每个安装版本只读一次。只运行编译好的程序和 Python、Node、Ruby 脚本，不会运行 macOS 系统工具。可在设置「补全」中关闭「从帮助信息学习命令」（#280）
 - 变更：`atuin` 补全更新到 atuin 18.25，新增 `threads`、`mcp`、`config`、`daemon`、`scripts`、`doctor` 等原 spec 之后加入的命令，移除 `server` 和 `uuid`
+- 变更：`gh`、`mise`、`uv` 补全跟上 gh 2.105、mise 2026.11 和 uv 0.13，补上 spec 缺少的命令和选项，例如 `gh release create`、`gh discussion`、`mise dotfiles`、`mise bootstrap`、`uv auth` 和 `uv format`
 
 ## v2.9.0 - 2026-11-23
 

@@ -4,9 +4,6 @@
 
 ## Unreleased
 
-- docs: clarify privacy policy wording about usage statistics, location data and local telemetry storage
-- new: the update window shows release notes in Chinese when macOS prefers Simplified Chinese
-- new: the update window uses the display language chosen in Settings, after Easy Complete restarts
 - new: a command without built-in completions gets its subcommands and options from its own `--help`, read once per installed version. Only compiled programs and Python, Node or Ruby scripts are run, never macOS system tools. Turn it off with "Learn Commands From Their Help" in Settings › Autocomplete (#280)
 - change: `atuin` completions match atuin 18.25, adding `threads`, `mcp`, `config`, `daemon`, `scripts`, `doctor` and the other commands added since the spec was written, and dropping `server` and `uuid`
 - change: `gh`, `mise` and `uv` completions catch up with gh 2.105, mise 2026.11 and uv 0.13, adding the commands and options their specs were missing, such as `gh release create`, `gh discussion`, `mise dotfiles`, `mise bootstrap`, `uv auth` and `uv format`

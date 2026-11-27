@@ -5,7 +5,7 @@
 ## Unreleased
 
 - new: a command without built-in completions gets its subcommands and options from its own `--help`, read once per installed version. Only compiled programs and Python, Node or Ruby scripts are run, never macOS system tools. Turn it off with "Learn Commands From Their Help" in Settings › Autocomplete (#280)
-- new: completions for `ghostty`, `ffprobe`, `diskutil`, `hdiutil` and `git lfs`. Themes, fonts, codecs, disks and attached images come from your Mac, and the commands that erase or overwrite disks are marked as dangerous (#337–#341, thanks @kitschpatrol)
+- new: completions for `ghostty`, `ffprobe`, `diskutil`, `hdiutil`, `git lfs` and `sv` (the Svelte CLI). Themes, fonts, codecs, disks and attached images come from your Mac, and the commands that erase or overwrite disks are marked as dangerous (#337–#342, thanks @kitschpatrol)
 - change: `atuin` completions match atuin 18.25, adding `threads`, `mcp`, `config`, `daemon`, `scripts`, `doctor` and the other commands added since the spec was written, and dropping `server` and `uuid`
 - change: `gh`, `mise` and `uv` completions catch up with gh 2.105, mise 2026.11 and uv 0.13, adding the commands and options their specs were missing, such as `gh release create`, `gh discussion`, `mise dotfiles`, `mise bootstrap`, `uv auth` and `uv format`
 

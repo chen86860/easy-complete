@@ -33,7 +33,7 @@ use fig_util::directories;
 use tracing::debug;
 
 /// Bump when the parser changes, so cached specs are read again.
-const PARSER_VERSION: u32 = 3;
+const PARSER_VERSION: u32 = 4;
 /// Subcommands read below the command (`cmd a b c`).
 const MAX_DEPTH: usize = 3;
 const TIMEOUT: Duration = Duration::from_secs(2);

@@ -282,7 +282,9 @@ fn classify(header: &str, inline: bool, takes_command: bool) -> Section {
             Section::Other
         };
     }
-    if header.contains("command") {
+    // `Commands:`, `Available Commands:`, `CORE COMMANDS`, `Subcommands:`. A singular `Command:`
+    // (mise watch) or `COMMAND LINE FLAGS` (tsc) names a group of options.
+    if header.contains("commands") || header.contains("subcommand") {
         return Section::Commands;
     }
     if header.contains("positional") {
@@ -297,7 +299,8 @@ fn classify(header: &str, inline: bool, takes_command: bool) -> Section {
     if takes_command {
         return Section::Commands;
     }
-    Section::Skip
+    // mise watch's `Filtering:`, `Output:`: groups of options.
+    Section::Other
 }
 
 fn indent_width(line: &str) -> usize {
@@ -906,6 +909,14 @@ mod tests {
         assert!(names_command("usage: fastboot [OPTION...] COMMAND..."));
         assert!(names_command("Usage: tool [command]"));
         assert!(!names_command("    command | rg [OPTIONS] PATTERN"));
+    }
+
+    #[test]
+    fn option_group_named_command() {
+        // mise watch groups its options under `Command:`; their long descriptions aren't commands.
+        let spec = parse(&["mise", "watch"], &fixture("clap-mise-watch"));
+        assert!(spec.subcommands.is_empty(), "{:?}", sub_names(&spec));
+        assert!(opt(&spec, "--shell").description.is_some());
     }
 
     #[test]

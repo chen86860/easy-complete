@@ -4004,6 +4004,10 @@ const optionalCommands: Record<string, Omit<Fig.Subcommand, "name">> = {
     description: "Extensions to follow Vincent Driessen's branching model",
     loadSpec: "git-flow",
   },
+  lfs: {
+    description: "Manage large files with Git Large File Storage",
+    loadSpec: "git-lfs",
+  },
 };
 
 const daemonServices: Fig.Suggestion[] = [
